@@ -1,6 +1,6 @@
 {
-  "id": "module",
-  "title": "New Module",
+  "id": "modulebattle-transitions",
+  "title": "Battle Transitions",
   "description": "",
   "version": "#{VERSION}#",
   "library": "false",

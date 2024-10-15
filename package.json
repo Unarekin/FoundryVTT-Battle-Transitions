@@ -1,6 +1,6 @@
 {
-  "name": "foundryvtt-module-template",
-  "version": "0.0.4",
+  "name": "foundryvtt-battle-transitions",
+  "version": "0.1.0",
   "description": "",
   "main": "dist/module.js",
   "scripts": {
