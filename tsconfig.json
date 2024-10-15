@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "include": ["./@types", "./src/module.ts"],
+  "exclude": ["./node_modules"],
+  "compilerOptions": {
+    "typeRoots": ["./@types", "./node_modules/@types"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "noEmit": false,
+    "target": "ES2023",
+    "strict": true,
+    "noUncheckedIndexedAccess": false,
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/module.ts"],
+  "sourcesContent": ["\nHooks.on(\"ready\", () => {\n  console.log(`${__MODULE_TITLE__} ready!`);\n})"],
+  "mappings": ";;;AACA,QAAM,GAAG,SAAS,MAAM;AACtB,YAAQ,IAAI,GAAG,YAAgB,SAAS;AAAA,EAC1C,CAAC;",
+  "names": []
+}
