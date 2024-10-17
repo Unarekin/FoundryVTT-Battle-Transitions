@@ -20,7 +20,7 @@ const STYLE_PATH = path.join(SRC_PATH, "styles");
 const TEMPLATE_PATH = path.join(SRC_PATH, "templates");
 
 // Import module.json for some config options
-import moduleConfig from "./module.json" assert { type: "json" };
+import moduleConfig from "./module.json" with { type: "json" };
 
 // Constants to be inserted into process.env during build
 const __DEV__ = process.env.NODE_ENV !== "production";
@@ -85,6 +85,7 @@ const STATIC_FILES = [
   { src: TEMPLATE_PATH, dest: "templates" },
   { src: STYLE_PATH, dest: "styles" },
   { src: path.join(SRC_PATH, "packs"), dest: "packs" },
+  { src: path.join(SRC_PATH, "vendor"), dest: "vendor"}
 ];
 
 const copyPlugins = [];
