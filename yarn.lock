@@ -3026,6 +3026,11 @@ esbuild-plugin-json-merge@^0.1.0:
     fs-extra "^11.2.0"
     glob "^10.3.10"
 
+esbuild-plugin-noexternal@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/esbuild-plugin-noexternal/-/esbuild-plugin-noexternal-0.1.6.tgz#442c773c08e47e839d5f113d4e3de083b818dfed"
+  integrity sha512-cXu0/dfFIEJIPqZCHBdJWK/FqDgBSOd4W/Auo1rcPASbYHC7KsjgVGmB1Hy1nPzz4rakGEcUvGEfHmXZsh+3LA==
+
 esbuild-sass-plugin@^3.3.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/esbuild-sass-plugin/-/esbuild-sass-plugin-3.3.1.tgz#74d096127bff10072042de30119235f276655566"
