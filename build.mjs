@@ -137,8 +137,7 @@ const buildResults = await build({
     cleanPlugin({ patterns: "./dist/**" }),
     sassPlugin(),
     ...copyPlugins,
-    ...jsonMergers,
-    
+    ...jsonMergers
   ],
 });
 
