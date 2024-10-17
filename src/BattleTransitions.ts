@@ -1,11 +1,7 @@
 import { transitionTo } from './transitionUtils';
 import { logImage } from './utils';
-import { CustomFilter } from './filters';
 
-
-const Filters: { [x: string]: typeof PIXI.Filter } = {
-  CustomFilter
-}
+import Filters from './filters';
 
 
 export default {

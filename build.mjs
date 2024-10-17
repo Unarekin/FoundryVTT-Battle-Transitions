@@ -128,12 +128,17 @@ const buildResults = await build({
     __MODULE_VERSION__: `"${__MODULE_VERSION__}"`,
   },
   external: ["*.woff", "*.woff2", "*.otf", "*.ttf", "*.webp"],
+  loader: {
+    ".frag": "text",
+    ".vert": "text"
+  },
   plugins: [
     nodeExternalsPlugin(),
     cleanPlugin({ patterns: "./dist/**" }),
     sassPlugin(),
     ...copyPlugins,
     ...jsonMergers,
+    
   ],
 });
 
