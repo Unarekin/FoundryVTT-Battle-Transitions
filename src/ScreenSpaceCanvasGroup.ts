@@ -6,6 +6,10 @@ export class ScreenSpaceCanvasGroup extends PIXI.Container {
 
   constructor() {
     super();
+    this.interactiveChildren = false;
+    this.interactive = false;
+    this.eventMode = "none";
+
     if (canvas?.app) {
       canvas.app.renderer.addListener("prerender", () => {
         this.setInverseMatrix();
