@@ -36,37 +36,14 @@ export function initializeCanvas() {
 
 export async function createSnapshot() {
   if (!canvas) throw new CanvasNotFoundError();
-  if (!(canvas.app && canvas.hidden && canvas.primary && canvas.tiles && canvas.drawings && canvas.scene)) throw new NotInitializedError();
+  if (!(canvas.app && canvas.hidden && canvas.primary && canvas.tiles && canvas.drawings && canvas.scene && canvas.stage)) throw new NotInitializedError();
 
   const { sceneWidth, sceneHeight } = canvas.scene.dimensions;
 
   const renderer = canvas.app.renderer;
 
   const rt = PIXI.RenderTexture.create({ width: sceneWidth, height: sceneHeight });
-  renderer.render(canvas.hidden, { renderTexture: rt, skipUpdateTransform: true, clear: true });
-  renderer.render(canvas.primary.background, { renderTexture: rt, skipUpdateTransform: true });
-
-  for (const tile of (canvas as any).tiles.placeables.filter((x: any) => !x.document.hidden))
-    renderer.render(tile.mesh, { renderTexture: rt, skipUpdateTransform: true, clear: false });
-
-  for (const drawing of (canvas as any).drawings.placeables.filter((x: any) => !x.document.hidden && !x.document.interface))
-    renderer.render(drawing.shape, { renderTexture: rt, skipUpdateTransform: true, clear: false });
-
-  renderer.render((canvas as any).visibility, { renderTexture: rt, skipUpdateTransform: true, clear: false });
-
-  renderer.render((canvas as any).interface.grid.mesh, { renderTexture: rt, skipUpdateTransform: true, clear: false });
-
-  for (const token of (canvas as any).tokens.placeables.filter((x: any) => !x.document.hidden))
-    renderer.render(token.mesh, { renderTexture: rt, skipUpdateTransform: true, clear: false });
-
-  for (const drawing of (canvas as any).drawings.placeables.filter((x: any) => !x.document.hidden && x.document.interface))
-    renderer.render(drawing.shape, { renderTexture: rt, skipUpdateTransform: true, clear: false });
-
-
-  // renderer.resolution = oldRes;
-  // (canvas as any)._onResize();
-  // (canvas as any).pan(oldView);
-
+  renderer.render(canvas.stage, { renderTexture: rt, skipUpdateTransform: true, clear: true });
 
   const transitionCover = document.getElementById(COVER_ID) as HTMLImageElement | null;
   if (!transitionCover) throw new NoCoverElementError();
