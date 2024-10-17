@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -95,9 +94,6 @@ function cleanupTransition() {
   canvasGroup.filters = [];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function transitionTo(name: string, callback: TransitionCallback): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     (async () => {
