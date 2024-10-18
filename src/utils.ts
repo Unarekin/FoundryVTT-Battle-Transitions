@@ -95,3 +95,21 @@ export function createGradient1DTexture(size: number, startColor?: PIXI.Color, e
 
   return PIXI.Texture.from(canvas);
 }
+
+
+/**
+ * Generates a 1x1 {@link PIXI.Texture} with a given color
+ * @param {PIXI.Color} color {@link PIXI.Color}
+ * @returns 
+ */
+export function createColorTexture(color: PIXI.Color): PIXI.Texture {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1;
+  canvas.height = 1;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new CannotInitializeCanvasError();
+  ctx.fillStyle = color.toHexa();
+  ctx.fillRect(0, 0, 1, 1);
+  return PIXI.Texture.from(canvas);
+}

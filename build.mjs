@@ -78,13 +78,14 @@ const jsonMergers = (
 // Create our copy plugins, ensuring that the paths we're copying from exist
 const STATIC_FILES = [
   { src: "./module.json", dest: "module.json" },
-  { src: "./system.json", dest: "system.json" },
+  // { src: "./system.json", dest: "system.json" },
   { src: "./LICENSE", dest: "LICENSE" },
   { src: "./README.md", dest: "README.md" },
-  { src: path.join(SRC_PATH, "fonts"), dest: "fonts" },
-  { src: TEMPLATE_PATH, dest: "templates" },
+  // { src: path.join(SRC_PATH, "fonts"), dest: "fonts" },
+  // { src: TEMPLATE_PATH, dest: "templates" },
   { src: STYLE_PATH, dest: "styles" },
-  { src: path.join(SRC_PATH, "packs"), dest: "packs" },
+  // { src: path.join(SRC_PATH, "packs"), dest: "packs" },
+  { src: path.join(SRC_PATH, "assets"), dest: "assets" },
   { src: path.join(SRC_PATH, "vendor"), dest: "vendor"}
 ];
 
