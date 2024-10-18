@@ -10,6 +10,21 @@ type FireDissolveUniforms = {
   burn_size: number;
 }
 
+Hooks.once("canvasReady", () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  BattleTransitions.Presets = {
+    fireDissolve: () => async function (container: PIXI.DisplayObject) {
+      const filter = new FireDissolveFilter();
+      container.filters = [filter];
+      await TweenMax.to(filter.uniforms, { integrity: 0, duration: 3 });
+      filter.destroy();
+      container.filters = [];
+    },
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    ...BattleTransitions.Presets
+  }
+})
+
 export class FireDissolveFilter extends CustomFilter<FireDissolveUniforms> {
 
 

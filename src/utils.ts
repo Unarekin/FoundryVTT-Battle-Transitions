@@ -102,14 +102,75 @@ export function createGradient1DTexture(size: number, startColor?: PIXI.Color, e
  * @param {PIXI.Color} color {@link PIXI.Color}
  * @returns 
  */
-export function createColorTexture(color: PIXI.Color): PIXI.Texture {
+export function createColorTexture(color: PIXI.ColorSource): PIXI.Texture {
   const canvas = document.createElement("canvas");
   canvas.width = 1;
   canvas.height = 1;
 
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new CannotInitializeCanvasError();
-  ctx.fillStyle = color.toHexa();
+  const actualColor = new PIXI.Color(color);
+  ctx.fillStyle = actualColor.toHexa();
   ctx.fillRect(0, 0, 1, 1);
   return PIXI.Texture.from(canvas);
+}
+
+/**
+ * Inverts a {@link PIXI.Texture}
+ * @param {PIXI.Texture} texture {@link PIXI.Texture} to be inverted
+ * @returns {PIXI.Texture} {@link PIXI.Texture}
+ */
+export function invertTexture(texture: PIXI.Texture): PIXI.Texture {
+  const extracted = canvas?.app?.renderer.extract.canvas(PIXI.Sprite.from(texture)) as HTMLCanvasElement;
+  if (!extracted) throw new CannotInitializeCanvasError();
+
+  const newCanvas = document.createElement("canvas");
+  newCanvas.width = extracted.width;
+  newCanvas.height = extracted.height;
+  const ctx = newCanvas.getContext("2d");
+  if (!ctx) throw new CannotInitializeCanvasError();
+  ctx.drawImage(extracted, 0, 0);
+  ctx.globalCompositeOperation = "difference";
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+  return PIXI.Texture.from(newCanvas);
+}
+
+/**
+ * Rotates a texture by a preset
+ * @param {PIXI.Texture} texture {@link PIXI.Texture}
+ * @param {number} rotation 
+ * @returns {PIXI.Texture} {@link PIXI.Texture}
+ */
+export function rotateTexture(texture: PIXI.Texture, rotation: number): PIXI.Texture {
+  const { frame } = texture;
+
+  const h = PIXI.groupD8.isVertical(rotation) ? texture.frame.width : texture.frame.height;
+  const w = PIXI.groupD8.isVertical(rotation) ? texture.frame.height : texture.frame.width;
+
+  const crop = new PIXI.Rectangle(texture.frame.x, texture.frame.y, w, h);
+  const trim = crop;
+
+  let rotated: PIXI.Texture;
+  if (rotation % 2 === 0) {
+    rotated = new PIXI.Texture(texture.baseTexture, frame, crop, trim, rotation);
+  } else {
+    rotated = new PIXI.Texture(texture.baseTexture, frame, crop, trim, rotation - 1);
+    rotated.rotate++;
+  }
+
+  return rotated;
+}
+
+/**
+ * Quick wrapper to wait for a hook to get called
+ * @param {string} hook The hook to await
+ * @returns 
+ */
+export async function awaitHook(hook: string): Promise<unknown[]> {
+  return new Promise<unknown[]>(resolve => {
+    Hooks.once(hook, (...args: unknown[]) => {
+      resolve(args);
+    })
+  })
 }

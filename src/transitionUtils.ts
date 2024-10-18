@@ -1,13 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
 import { COVER_ID } from "./constants";
 import { ScreenSpaceCanvasGroup } from './ScreenSpaceCanvasGroup';
-import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError } from './errors';
-
+import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError } from './errors';
+import { awaitHook } from "./utils";
 
 
 
@@ -25,13 +19,6 @@ let canvasGroup: ScreenSpaceCanvasGroup | null = null;
 export function initializeCanvas() {
   canvasGroup = new ScreenSpaceCanvasGroup();
   canvas?.stage?.addChild(canvasGroup);
-
-  const bgSprite = new PIXI.Sprite(PIXI.Texture.WHITE);
-  bgSprite.tint = canvas?.app?.renderer.background.backgroundColor ?? new PIXI.Color("white")
-  bgSprite.width = window.innerWidth;
-  bgSprite.height = window.innerHeight;
-  canvasGroup?.addChild(bgSprite);
-  canvasGroup.alpha = 0;
 }
 
 export async function createSnapshot() {
@@ -61,45 +48,45 @@ export async function createSnapshot() {
   return sprite;
 }
 
-export type TransitionCallback = (placeholder: PIXI.DisplayObject) => Promise<void>;
+export type TransitionCallback = (container: PIXI.DisplayObject) => Promise<void>;
 
-function cleanupTransition() {
-  if (!canvasGroup) return;
-  canvasGroup.children[1].destroy();
-  canvasGroup.alpha = 0;
-  if (Array.isArray(canvasGroup.filters) && canvasGroup.filters.length) console.warn("PIXI filters left on transition overlay, please be sure to clean these up when you're done.");
-  canvasGroup.filters = [];
+
+export async function transitionTo(name: string, callback: TransitionCallback): Promise<void>
+export async function transitionTo(scene: Scene, callback: TransitionCallback): Promise<void>
+export async function transitionTo(arg: string | Scene, callback: TransitionCallback): Promise<void> {
+  if (!canvasGroup) throw new CannotInitializeCanvasError();
+  const scene = typeof arg === "string" ? (game as Game).scenes?.getName(arg) : arg;
+  if (!scene) throw new InvalidSceneError(arg as string);
+
+  const sprite = await createSnapshot();
+
+  // Create container
+  const container = new PIXI.Container();
+
+  const bgSprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+  bgSprite.tint = canvas?.app?.renderer.background.backgroundColor ?? new PIXI.Color("white")
+  bgSprite.width = window.innerWidth;
+  bgSprite.height = window.innerHeight;
+  container.addChild(bgSprite);
+
+  container.addChild(sprite);
+
+  canvasGroup.addChild(container);
+
+  // Hide loading bar for transition
+  const loadingBar = document.getElementById("loading");
+  if (loadingBar) loadingBar.style.opacity = "0";
+
+  void scene.activate();
+  // Wait for transition
+  await awaitHook("canvasReady");
+
+  if (loadingBar) loadingBar.style.removeProperty("opacity");
+  transitionCover.style.display = "none";
+  transitionCover.style.backgroundImage = "";
+
+  await callback(container);
+  container.destroy();
 }
 
-export async function transitionTo(name: string, callback: TransitionCallback): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    (async () => {
-      if (!canvasGroup) throw new NotInitializedError();
-      const scene = (game as any).scenes.getName(name) as Scene;
-      if (!scene) throw new InvalidSceneError(name);
 
-      const sprite = await createSnapshot();
-      canvasGroup?.addChild(sprite);
-
-      const loadingBar = document.getElementById("loading");
-      if (loadingBar) loadingBar.style.opacity = "0";
-
-      canvasGroup.alpha = 1;
-      Hooks.once("canvasReady", () => {
-        if (loadingBar) loadingBar.style.removeProperty("opacity");
-        if (!canvasGroup) return;
-        transitionCover.style.display = "none";
-        transitionCover.style.backgroundImage = "";
-
-        if (callback) {
-          const res = callback(canvasGroup);
-          if (res?.then) res.then(() => { cleanupTransition(); resolve() }).catch(reject);
-          else cleanupTransition(); resolve();
-        }
-      })
-
-
-      void scene.activate();
-    })().then(resolve).catch(reject);
-  })
-}

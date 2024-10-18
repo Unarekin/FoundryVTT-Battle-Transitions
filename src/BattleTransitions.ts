@@ -1,12 +1,22 @@
 import { transitionTo } from './transitionUtils';
-import { logImage } from './utils';
+import { createColorTexture, logImage } from './utils';
 
-import Filters from './filters';
+import { filters } from './filters';
 
 
 export default {
   transitionTo,
   logImage,
+  createColorTexture,
 
-  Filters
+  Filters: filters,
+  Presets: {},
+
+  Textures: {
+    Black: createColorTexture("#000000"),
+    White: createColorTexture("#FFFFFF"),
+    Transparent: createColorTexture("#00000000"),
+
+    fromColor: createColorTexture
+  }
 };

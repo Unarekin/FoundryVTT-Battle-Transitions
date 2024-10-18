@@ -4,9 +4,9 @@ import { DiamondTransitionFilter } from './DiamondTransition/DiamondTransitionFi
 import { TextureWipeFilter } from './TextureWipe/TextureWipeFilter';
 
 
-export default {
+export const filters = {
   CustomFilter,
   FireDissolveFilter,
   DiamondTransitionFilter,
   TextureWipeFilter
-}
+};
