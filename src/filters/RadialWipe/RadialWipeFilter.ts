@@ -9,7 +9,7 @@ const TextureHash = {
   outside: "radial-outside.webp"
 }
 
-export class RadialTransitionFilter extends TextureWipeFilter {
+export class RadialWipeFilter extends TextureWipeFilter {
   constructor(direction: RadialDirection, bg: PIXI.TextureSource | PIXI.ColorSource) {
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
     const texture = TextureHash[direction];

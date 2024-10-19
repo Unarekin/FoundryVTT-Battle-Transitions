@@ -7,6 +7,7 @@ import { BilinearWipeFilter } from './BilinearWipe/BilinearWipeFilter';
 import { LinearWipeFilter } from "./LinearWipe/LinearWipeFilter";
 import { ClockWipeFilter } from './ClockWipe/ClockWipeFilter';
 import { SpotlightWipeFilter } from './SpotlightWipe/SpotlightWipeFilter';
+import { RadialWipeFilter } from './RadialWipe/RadialWipeFilter';
 
 export const filters = {
   CustomFilter,
@@ -18,5 +19,6 @@ export const filters = {
   LinearWipeFilter,
   BilinearWipeFilter,
   ClockWipeFilter,
-  SpotlightWipeFilter
+  SpotlightWipeFilter,
+  RadialWipeFilter
 };
