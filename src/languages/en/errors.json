@@ -6,7 +6,8 @@
       "CANVASNOTFOUND": "Canvas not found",
       "NOAPPLICATION": "No PIXI Application",
       "NOCOVERELEMENT": "Unable to locate transition cover facade",
-      "NOTINITIALIZED": "Not initialized"
+      "NOTINITIALIZED": "Not initialized",
+      "INVALIDDIRECTION": "Invalid direction provided: {direction}"
     }
   }
 }
