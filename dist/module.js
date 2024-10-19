@@ -268,9 +268,6 @@
       });
     });
   }
-  function getCanvasGroup() {
-    return canvas?.stage?.children.find((child) => child instanceof ScreenSpaceCanvasGroup);
-  }
 
   // src/coercion.ts
   function coerceColor(source) {
@@ -717,58 +714,45 @@
 
   // src/TransitionChain.ts
   var TransitionChain = class {
+    #scene;
     #sequence = [];
-    #containers = [];
-    get currentContainer() {
-      return this.#containers.length ? this.#containers[this.#containers.length - 1] : void 0;
-    }
-    async execute() {
-      for (const step of this.#sequence) {
-        await step(this.currentContainer);
-      }
-      if (this.currentContainer) cleanupTransition(this.currentContainer);
-    }
-    to(arg) {
-      const scene = coerceScene(arg);
-      if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : "[Object object]");
-      this.#sequence.push(async (outer) => {
-        const container = await setupTransition(outer);
-        this.#containers.push(container);
-        hideLoadingBar();
-        await activateScene(scene);
-        showLoadingBar();
-        hideTransitionCover();
-        container.destroy();
-      });
-      return this;
-    }
-    wait(time) {
-      this.#sequence.push(async () => new Promise((resolve) => {
-        setTimeout(resolve, time);
-      }));
-      return this;
-    }
     call(func) {
       this.#sequence.push(func);
       return this;
     }
     macro(arg) {
       const macro = coerceMacro(arg);
-      if (!(macro instanceof Macro)) throw new InvalidMacroError(typeof arg === "string" ? arg : "[Object object]");
-      this.#sequence.push(() => new Promise((resolve, reject) => {
+      if (!macro) throw new InvalidMacroError(typeof arg === "string" ? arg : "[Object object]");
+      this.#sequence.push(async () => {
         const res = macro.execute();
-        if (res instanceof Promise) res.then(() => {
-          resolve();
-        }).catch(reject);
-        else resolve();
+        if (res instanceof Promise) await res;
+      });
+      return this;
+    }
+    /**
+     * Causes the sequence to wait the specified amount of time before continuing.
+     * @param {number} duration Amount of time to wait, in milliseconds
+     * @returns 
+     */
+    wait(duration) {
+      this.#sequence.push(() => new Promise((resolve) => {
+        setTimeout(resolve, duration);
       }));
       return this;
     }
-    constructor() {
-      const canvasGroup2 = getCanvasGroup();
-      if (!(canvasGroup2 instanceof ScreenSpaceCanvasGroup)) throw new CanvasNotFoundError();
-      const container = new PIXI.Container();
-      this.#containers.push(container);
+    async execute() {
+      const container = await setupTransition();
+      await activateScene(this.#scene);
+      for (const step of this.#sequence) {
+        await step(container);
+      }
+      cleanupTransition(container);
+    }
+    constructor(arg) {
+      const scene = coerceScene(arg);
+      console.log("Scene:", scene);
+      if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : "[Object object]");
+      this.#scene = scene;
     }
   };
 
