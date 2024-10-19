@@ -17,7 +17,7 @@ const TextureHash = {
 
 export class LinearWipeFilter extends TextureWipeFilter {
 
-  constructor(direction: WipeDirection, bg: PIXI.TextureSource) {
+  constructor(direction: WipeDirection, bg: PIXI.TextureSource | PIXI.ColorSource) {
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
     const texture = TextureHash[direction];
     if (texture) throw new InvalidDirectionError(direction);
