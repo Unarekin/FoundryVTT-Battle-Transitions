@@ -42,8 +42,20 @@ Hooks.once("canvasReady", () => {
     spotlightRightOutside: wipePreset("spotlight-right-outside.webp"),
     spotlightTopOutside: wipePreset("spotlight-top-outside.webp"),
 
+    clockwiseTop: wipePreset("clockwise-top.webp"),
+    clockwiseRight: wipePreset("clockwise-right.webp"),
+    clockwiseBottom: wipePreset("clockwise-bottom.webp"),
+    clockwiseLeft: wipePreset("clockwise-left.webp"),
+    anticlockwiseTop: wipePreset("anticlockwise-top.webp"),
+    anticlockwiseRight: wipePreset("anticlockwise-right.webp"),
+    anticlockwiseBottom: wipePreset("anticlockwise-bottom.webp"),
+    anticlcokwiseLeft: wipePreset("anticlockwise-left.webp"),
+    counterclockwiseTop: wipePreset("anticlockwise-top.webp"),
+    counterclockwiseRight: wipePreset("counterclockwise-top.webp"),
+    counterclockwiseBottom: wipePreset("counterclockwise-bottom.webp"),
+    coutnerclockwiseLeft: wipePreset("counterclockwise-left.webp"),
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     ...BattleTransitions.Presets
   }
 
