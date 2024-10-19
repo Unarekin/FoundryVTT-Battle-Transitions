@@ -1,7 +1,9 @@
 import { COVER_ID } from "./constants";
 import { ScreenSpaceCanvasGroup } from './ScreenSpaceCanvasGroup';
 import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError } from './errors';
-import { awaitHook } from "./utils";
+import { awaitHook, createColorTexture } from "./utils";
+import { TransitionStep } from "./types";
+import { coerceScene } from "./coercion";
 
 
 
@@ -48,45 +50,70 @@ export async function createSnapshot() {
   return sprite;
 }
 
-export type TransitionCallback = (container: PIXI.DisplayObject) => Promise<void>;
+export async function setupTransition(parent?: PIXI.Container): Promise<PIXI.Container> {
+  const actualParent = parent instanceof PIXI.Container ? parent : canvasGroup;
+  if (!actualParent) throw new CannotInitializeCanvasError();
+  const snapshot = await createSnapshot();
+  const container = new PIXI.Container();
 
+  const bgTexture = createColorTexture(canvas?.app?.renderer.background.backgroundColor ?? "white");
+  container.addChild(new PIXI.Sprite(bgTexture));
+  container.addChild(snapshot);
+  actualParent.addChild(container);
 
-export async function transitionTo(name: string, callback: TransitionCallback): Promise<void>
-export async function transitionTo(scene: Scene, callback: TransitionCallback): Promise<void>
-export async function transitionTo(arg: string | Scene, callback: TransitionCallback): Promise<void> {
-  if (!canvasGroup) throw new CannotInitializeCanvasError();
+  return container;
+}
+
+export function cleanupTransition(container: PIXI.DisplayObject) {
+  container.destroy();
+  // Ensure our cover is hidden
+  transitionCover.style.display = "none";
+  transitionCover.style.removeProperty("backgroundImage");
+}
+
+export function hideLoadingBar() {
+  const loadingBar = document.getElementById('loading');
+  if (loadingBar) loadingBar.style.opacity = "0";
+}
+
+export function showLoadingBar() {
+  const loadingBar = document.getElementById("loading");
+  if (loadingBar) loadingBar.style.removeProperty("opacity");
+}
+
+export function hideTransitionCover() {
+  transitionCover.style.display = "none";
+  transitionCover.style.removeProperty("backgroundImage");
+}
+
+export async function activateScene(name: string): Promise<Scene>
+export async function activateScene(id: string): Promise<Scene>
+export async function activateScene(uuid: string): Promise<Scene>
+export async function activateScene(scene: Scene): Promise<Scene>
+export async function activateScene(arg: unknown): Promise<Scene> {
+  const scene = coerceScene(arg);
+  if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : "[Object object]");
+  void scene.activate();
+  await awaitHook("canvasReady");
+  return scene;
+}
+
+export async function transitionTo(name: string, callback: TransitionStep): Promise<void>
+export async function transitionTo(scene: Scene, callback: TransitionStep): Promise<void>
+export async function transitionTo(arg: string | Scene, callback: TransitionStep): Promise<void> {
   const scene = typeof arg === "string" ? (game as Game).scenes?.getName(arg) : arg;
   if (!scene) throw new InvalidSceneError(arg as string);
 
-  const sprite = await createSnapshot();
-
-  // Create container
-  const container = new PIXI.Container();
-
-  const bgSprite = new PIXI.Sprite(PIXI.Texture.WHITE);
-  bgSprite.tint = canvas?.app?.renderer.background.backgroundColor ?? new PIXI.Color("white")
-  bgSprite.width = window.innerWidth;
-  bgSprite.height = window.innerHeight;
-  container.addChild(bgSprite);
-
-  container.addChild(sprite);
-
-  canvasGroup.addChild(container);
+  const container = await setupTransition();
 
   // Hide loading bar for transition
-  const loadingBar = document.getElementById("loading");
-  if (loadingBar) loadingBar.style.opacity = "0";
-
-  void scene.activate();
-  // Wait for transition
-  await awaitHook("canvasReady");
-
-  if (loadingBar) loadingBar.style.removeProperty("opacity");
-  transitionCover.style.display = "none";
-  transitionCover.style.backgroundImage = "";
+  hideLoadingBar();
+  await activateScene(scene);
+  showLoadingBar();
+  hideTransitionCover();
 
   await callback(container);
-  container.destroy();
+  cleanupTransition(container);
 }
 
 

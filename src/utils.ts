@@ -1,5 +1,6 @@
-import { CannotInitializeCanvasError } from "./errors";
+import { CannotInitializeCanvasError, CanvasNotFoundError } from "./errors";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise"
+import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 
 /**
  * Linearly interpolates between two values
@@ -173,4 +174,15 @@ export async function awaitHook(hook: string): Promise<unknown[]> {
       resolve(args);
     })
   })
+}
+
+export function getCanvasGroup(): ScreenSpaceCanvasGroup | undefined {
+  return canvas?.stage?.children.find(child => child instanceof ScreenSpaceCanvasGroup);
+}
+
+export function getCurrentOverlayObject(): PIXI.DisplayObject | undefined {
+  const canvasGroup = getCanvasGroup();
+  if (!canvasGroup) throw new CanvasNotFoundError();
+  if (canvasGroup.children.length === 0) return;
+  return canvasGroup.children[canvasGroup.children.length - 1];
 }

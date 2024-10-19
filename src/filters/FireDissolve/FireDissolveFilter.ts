@@ -1,3 +1,4 @@
+import { CUSTOM_HOOKS } from "../../constants";
 import { createGradient1DTexture, createNoiseTexture } from "../../utils";
 import { CustomFilter } from "../CustomFilter";
 import fragment from "./firedissolve.frag";
@@ -10,7 +11,7 @@ type FireDissolveUniforms = {
   burn_size: number;
 }
 
-Hooks.once("canvasReady", () => {
+Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   BattleTransitions.Presets = {
     fireDissolve: () => async function (container: PIXI.DisplayObject) {
