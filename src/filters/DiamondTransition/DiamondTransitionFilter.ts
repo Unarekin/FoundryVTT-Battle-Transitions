@@ -1,5 +1,6 @@
 import frag from "./diamondtransition.frag";
 import { CustomFilter } from '../CustomFilter';
+import { CUSTOM_HOOKS } from "../../constants";
 
 type DiamondTransitionUniforms = {
   progress: number;
@@ -8,7 +9,7 @@ type DiamondTransitionUniforms = {
   screen_size: { x: number; y: number }
 }
 
-Hooks.once("canvasReady", () => {
+Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   BattleTransitions.Presets = {
     diamondWipe: (duration: number) => {

@@ -3,6 +3,7 @@ import { ScreenSpaceCanvasGroup } from './ScreenSpaceCanvasGroup';
 import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError } from './errors';
 import { awaitHook, createColorTexture } from "./utils";
 import { TransitionStep } from "./types";
+import { coerceScene } from "./coercion";
 
 
 
@@ -49,21 +50,25 @@ export async function createSnapshot() {
   return sprite;
 }
 
-export async function setupTransition(): Promise<PIXI.DisplayObject> {
-  if (!canvasGroup) throw new CannotInitializeCanvasError();
+export async function setupTransition(parent?: PIXI.Container): Promise<PIXI.Container> {
+  const actualParent = parent instanceof PIXI.Container ? parent : canvasGroup;
+  if (!actualParent) throw new CannotInitializeCanvasError();
   const snapshot = await createSnapshot();
   const container = new PIXI.Container();
 
   const bgTexture = createColorTexture(canvas?.app?.renderer.background.backgroundColor ?? "white");
   container.addChild(new PIXI.Sprite(bgTexture));
   container.addChild(snapshot);
-  canvasGroup.addChild(container);
+  actualParent.addChild(container);
 
   return container;
 }
 
 export function cleanupTransition(container: PIXI.DisplayObject) {
   container.destroy();
+  // Ensure our cover is hidden
+  transitionCover.style.display = "none";
+  transitionCover.style.removeProperty("backgroundImage");
 }
 
 export function hideLoadingBar() {
@@ -78,7 +83,19 @@ export function showLoadingBar() {
 
 export function hideTransitionCover() {
   transitionCover.style.display = "none";
-  transitionCover.style.backgroundImage = "";
+  transitionCover.style.removeProperty("backgroundImage");
+}
+
+export async function activateScene(name: string): Promise<Scene>
+export async function activateScene(id: string): Promise<Scene>
+export async function activateScene(uuid: string): Promise<Scene>
+export async function activateScene(scene: Scene): Promise<Scene>
+export async function activateScene(arg: unknown): Promise<Scene> {
+  const scene = coerceScene(arg);
+  if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : "[Object object]");
+  void scene.activate();
+  await awaitHook("canvasReady");
+  return scene;
 }
 
 export async function transitionTo(name: string, callback: TransitionStep): Promise<void>
@@ -91,11 +108,7 @@ export async function transitionTo(arg: string | Scene, callback: TransitionStep
 
   // Hide loading bar for transition
   hideLoadingBar();
-  void scene.activate();
-  // Wait for transition
-  await awaitHook("canvasReady");
-
-
+  await activateScene(scene);
   showLoadingBar();
   hideTransitionCover();
 

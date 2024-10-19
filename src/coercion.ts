@@ -28,3 +28,20 @@ export function coerceScene(arg: unknown): Scene | undefined {
     return arg;
   }
 }
+
+export function coerceMacro(id: string): Macro | undefined
+export function coerceMacro(name: string): Macro | undefined
+export function coerceMacro(uuid: string): Macro | undefined
+export function coerceMacro(macro: Macro): Macro
+export function coerceMacro(arg: unknown): Macro | undefined {
+  if (arg instanceof Macro) return arg;
+  if (!(game as Game).macros) return;
+
+  if (typeof arg === "string") {
+    let macro = (game as Game).macros?.get(arg);
+    if (macro) return macro;
+    macro = (game as Game).macros?.getName(arg);
+    if (macro) return macro;
+    if (arg.split(".")[0] === "Macro") return (game as Game).macros?.get(arg.split(".").slice(1).join("."));
+  }
+}

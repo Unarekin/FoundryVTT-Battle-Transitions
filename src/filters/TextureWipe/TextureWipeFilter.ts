@@ -2,6 +2,7 @@
 import frag from "./texturewipe.frag";
 import { CustomFilter } from '../CustomFilter';
 import { createColorTexture } from '../../utils';
+import { CUSTOM_HOOKS } from "../../constants";
 
 type TextureWipeUniforms = {
   progress: number;
@@ -11,7 +12,7 @@ type TextureWipeUniforms = {
 
 
 
-Hooks.once("canvasReady", () => {
+Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   BattleTransitions.Presets = {
     linearLeft: wipePreset("linear-left.webp"),
@@ -46,11 +47,7 @@ Hooks.once("canvasReady", () => {
     clockwiseRight: wipePreset("clockwise-right.webp"),
     clockwiseBottom: wipePreset("clockwise-bottom.webp"),
     clockwiseLeft: wipePreset("clockwise-left.webp"),
-    anticlockwiseTop: wipePreset("anticlockwise-top.webp"),
-    anticlockwiseRight: wipePreset("anticlockwise-right.webp"),
-    anticlockwiseBottom: wipePreset("anticlockwise-bottom.webp"),
-    anticlcokwiseLeft: wipePreset("anticlockwise-left.webp"),
-    counterclockwiseTop: wipePreset("anticlockwise-top.webp"),
+    counterclockwiseTop: wipePreset("counterclockwise-top.webp"),
     counterclockwiseRight: wipePreset("counterclockwise-top.webp"),
     counterclockwiseBottom: wipePreset("counterclockwise-bottom.webp"),
     coutnerclockwiseLeft: wipePreset("counterclockwise-left.webp"),

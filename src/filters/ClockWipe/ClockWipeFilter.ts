@@ -23,6 +23,7 @@ export class ClockWipeFilter extends TextureWipeFilter {
 
   constructor(clockDirection: ClockDirection, direction: WipeDirection, bg: PIXI.ColorSource | PIXI.TextureSource) {
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const texture = TextureHash[clockDirection]?.[direction];
     if (!texture) throw new InvalidDirectionError(`${clockDirection}-${direction}`);
     const wipeTexture = PIXI.Texture.from(`/modules/${__MODULE_ID__}/assets/wipes/${texture}`);
