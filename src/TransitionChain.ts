@@ -2,6 +2,7 @@ import { coerceMacro, coerceScene } from "./coercion";
 import { InvalidMacroError, InvalidSceneError } from "./errors";
 import { BilinearWipeFilter } from "./filters/BilinearWipe/BilinearWipeFilter";
 import { ClockWipeFilter } from "./filters/ClockWipe/ClockWipeFilter";
+import { DiamondTransitionFilter } from "./filters/DiamondTransition/DiamondTransitionFilter";
 import { LinearWipeFilter } from "./filters/LinearWipe/LinearWipeFilter";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from "./types";
@@ -101,6 +102,18 @@ export class TransitionChain {
   }
 
 
+  public diamondWipe(size: number, duration: number = 2000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+    const filter = new DiamondTransitionFilter(size, bg);
+    this.#sequence.push(async container => {
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1000 });
+      return;
+    });
+    return this;
+  }
+
   public clockWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number = 2000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
     const filter = new ClockWipeFilter(clockDirection, direction, bg);
     this.#sequence.push(async container => {
@@ -111,7 +124,6 @@ export class TransitionChain {
       await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1000 });
       return;
     })
-    this.#sequence.push()
 
     return this;
   }
