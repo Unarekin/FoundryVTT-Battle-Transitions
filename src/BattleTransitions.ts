@@ -11,7 +11,7 @@ export default {
   cleanupTransition,
 
   Filters: filters,
-
+  Presets: {},
   Textures: {
     Black: createColorTexture("#000000"),
     White: createColorTexture("#FFFFFF"),
