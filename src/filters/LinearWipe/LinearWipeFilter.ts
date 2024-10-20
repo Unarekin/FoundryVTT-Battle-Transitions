@@ -20,7 +20,7 @@ export class LinearWipeFilter extends TextureWipeFilter {
   constructor(direction: WipeDirection, bg: PIXI.TextureSource | PIXI.ColorSource) {
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
     const texture = TextureHash[direction];
-    if (texture) throw new InvalidDirectionError(direction);
+    if (!texture) throw new InvalidDirectionError(direction);
 
     const wipeTexture = PIXI.Texture.from(`/modules/${__MODULE_ID__}/assets/wipes/${texture}`);
     super(wipeTexture, bgTexture);

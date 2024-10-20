@@ -9,6 +9,9 @@ declare var BattleTransitions: {
   Presets: { [x: string]: uknown }
 };
 
+declare var TweenMax: any;
+declare var gsap: any;
+
 declare module '*.frag' {
   const content: string;
   export default content;

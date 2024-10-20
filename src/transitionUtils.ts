@@ -50,25 +50,28 @@ export async function createSnapshot() {
   return sprite;
 }
 
-export async function setupTransition(parent?: PIXI.Container): Promise<PIXI.Container> {
-  const actualParent = parent instanceof PIXI.Container ? parent : canvasGroup;
-  if (!actualParent) throw new CannotInitializeCanvasError();
+export async function setupTransition(): Promise<PIXI.Container> {
+  if (!canvasGroup) throw new CannotInitializeCanvasError();
   const snapshot = await createSnapshot();
   const container = new PIXI.Container();
 
   const bgTexture = createColorTexture(canvas?.app?.renderer.background.backgroundColor ?? "white");
   container.addChild(new PIXI.Sprite(bgTexture));
   container.addChild(snapshot);
-  actualParent.addChild(container);
+  canvasGroup.addChild(container);
 
   return container;
 }
 
 export function cleanupTransition(container: PIXI.DisplayObject) {
-  container.destroy();
+  console.log("Cleaning:", container.children)
   // Ensure our cover is hidden
   transitionCover.style.display = "none";
-  transitionCover.style.removeProperty("backgroundImage");
+  transitionCover.style.backgroundImage = "";
+  if (Array.isArray(container.children) && container.children.length)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    for (let i = container.children.length - 1; i >= 0; i--) container.children[i].destroy();
+  container.destroy();
 }
 
 export function hideLoadingBar() {
@@ -117,3 +120,9 @@ export async function transitionTo(arg: string | Scene, callback: TransitionStep
 }
 
 
+export function removeFilter(element: PIXI.DisplayObject, filter: PIXI.Filter) {
+  if (Array.isArray(element.filters)) {
+    const index = element.filters.indexOf(filter);
+    if (index !== -1) element.filters.splice(index, 1);
+  }
+}
