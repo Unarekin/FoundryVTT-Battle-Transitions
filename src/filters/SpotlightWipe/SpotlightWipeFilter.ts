@@ -3,6 +3,8 @@ import { createColorTexture } from '../../utils';
 import { coerceTexture } from "../../coercion";
 import { TextureWipeFilter } from '../TextureWipe/TextureWipeFilter';
 import { InvalidDirectionError } from '../../errors';
+import { TransitionChain } from '../../TransitionChain';
+import { CUSTOM_HOOKS } from '../../constants';
 
 const TextureHash = {
   left: {
@@ -22,6 +24,51 @@ const TextureHash = {
     outside: "spotlgiht-bottom-outside.webp"
   }
 }
+
+function generatePreset(direction: WipeDirection, radial: RadialDirection): (scene: string | Scene, duration: number) => Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+  return (scene: string | Scene, duration: number) => new TransitionChain(scene as any).spotlight(direction, radial, duration).execute();
+}
+
+Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
+
+  BattleTransitions.Presets = {
+    spotlightTopOutside: generatePreset("top", "outside"),
+    spotlightRightOutside: generatePreset("right", "outside"),
+    spotlightBottomOutside: generatePreset("bottom", "outside"),
+    spotlightLeftOutside: generatePreset("left", "outside"),
+
+    spotlightTopInside: generatePreset("top", "inside"),
+    spotlightRightInside: generatePreset("right", "inside"),
+    spotlightBottomInside: generatePreset("bottom", "inside"),
+    spotlightLeftInside: generatePreset("left", "inside"),
+
+    ...(BattleTransitions.Presets ?? {})
+  }
+})
+
+/*
+Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
+  BattleTransitions.Presets = {
+    clockwiseTop: generatePreset("clockwise", "top"),
+    clockwiseRight: generatePreset("clockwise", "right"),
+    clockwiseBottom: generatePreset("clockwise", "bottom"),
+    clockwiseLeft: generatePreset("clockwise", "left"),
+    counterClockwiseTop: generatePreset("counterclockwise", "top"),
+    counterClockwiseRight: generatePreset("counterclockwise", "right"),
+    counterClockwiseBottom: generatePreset("counterclockwise", "bottom"),
+    counterClockwiseLeft: generatePreset("counterclockwise", "left"),
+
+    ...(BattleTransitions.Presets ?? {})
+  }
+})
+
+function generatePreset(clockDirection: ClockDirection, direction: WipeDirection): (scene: string | Scene, duration: number) => Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+  return (scene: string | Scene, duration: number = 1000) => new TransitionChain(scene as any).clockWipe(clockDirection, direction, duration).execute();
+}
+
+*/
 
 export class SpotlightWipeFilter extends TextureWipeFilter {
   constructor(direction: WipeDirection, radial: RadialDirection, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent") {
