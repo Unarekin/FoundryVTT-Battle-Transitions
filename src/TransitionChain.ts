@@ -1,6 +1,6 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { InvalidMacroError, InvalidSceneError } from "./errors";
-import { LinearWipeFilter, BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, ClockWipeFilter } from "./filters";
+import { LinearWipeFilter, BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, ClockWipeFilter, FireDissolveFilter } from "./filters";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from "./types";
 import { createColorTexture } from "./utils";
@@ -135,6 +135,17 @@ export class TransitionChain {
       return;
     })
 
+    return this;
+  }
+
+  public burn(duration: number = 1000, texture: PIXI.TextureSource): this {
+    const filter = new FireDissolveFilter(texture);
+    this.#sequence.push(async container => {
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await TweenMax.to(filter.uniforms, { integrity: 0, duration: duration / 1000 });
+    })
     return this;
   }
 
