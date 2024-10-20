@@ -1,8 +1,9 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { InvalidMacroError, InvalidSceneError } from "./errors";
+import { BilinearWipeFilter } from "./filters/BilinearWipe/BilinearWipeFilter";
 import { LinearWipeFilter } from "./filters/LinearWipe/LinearWipeFilter";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, removeFilter, setupTransition, showLoadingBar } from "./transitionUtils";
-import { WipeDirection } from "./types";
+import { BilinearDirection, RadialDirection, WipeDirection } from "./types";
 import { createColorTexture } from "./utils";
 
 
@@ -74,6 +75,21 @@ export class TransitionChain {
     return this;
   }
 
+  public bilinearWipe(direction: BilinearDirection, radial: RadialDirection, duration: number = 2000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+    const filter = new BilinearWipeFilter(direction, radial, bg);
+    this.#sequence.push(async container => {
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1000 });
+      filter.destroy();
+      removeFilter(container, filter);
+      return;
+    })
+    return this;
+  }
+
   public async execute() {
     const container = await setupTransition();
     hideLoadingBar();
@@ -81,7 +97,6 @@ export class TransitionChain {
     showLoadingBar();
     hideTransitionCover();
     for (const step of this.#sequence) {
-      console.log("Step:", step.toString())
       await step(container)
     }
 

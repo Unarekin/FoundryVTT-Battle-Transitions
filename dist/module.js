@@ -339,21 +339,22 @@
     const sprite = PIXI.Sprite.from(rt);
     return sprite;
   }
-  async function setupTransition(parent) {
-    const actualParent = parent instanceof PIXI.Container ? parent : canvasGroup;
-    if (!actualParent) throw new CannotInitializeCanvasError();
+  async function setupTransition() {
+    if (!canvasGroup) throw new CannotInitializeCanvasError();
     const snapshot = await createSnapshot();
     const container = new PIXI.Container();
     const bgTexture = createColorTexture(canvas?.app?.renderer.background.backgroundColor ?? "white");
     container.addChild(new PIXI.Sprite(bgTexture));
     container.addChild(snapshot);
-    actualParent.addChild(container);
+    canvasGroup.addChild(container);
     return container;
   }
   function cleanupTransition(container) {
-    container.destroy();
     transitionCover.style.display = "none";
-    transitionCover.style.removeProperty("backgroundImage");
+    transitionCover.style.backgroundImage = "";
+    if (Array.isArray(container.children) && container.children.length)
+      for (let i = container.children.length - 1; i >= 0; i--) container.children[i].destroy();
+    container.destroy();
   }
   function hideLoadingBar() {
     const loadingBar = document.getElementById("loading");
@@ -384,6 +385,12 @@
     hideTransitionCover();
     await callback(container);
     cleanupTransition(container);
+  }
+  function removeFilter(element, filter) {
+    if (Array.isArray(element.filters)) {
+      const index = element.filters.indexOf(filter);
+      if (index !== -1) element.filters.splice(index, 1);
+    }
   }
 
   // src/filters/default.frag
@@ -608,7 +615,7 @@
     constructor(direction, bg) {
       const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
       const texture = TextureHash2[direction];
-      if (texture) throw new InvalidDirectionError(direction);
+      if (!texture) throw new InvalidDirectionError(direction);
       const wipeTexture = PIXI.Texture.from(`/modules/${"battle-transitions"}/assets/wipes/${texture}`);
       super(wipeTexture, bgTexture);
     }
@@ -740,9 +747,36 @@
       }));
       return this;
     }
+    linearWipe(direction, duration = 2e3, bg) {
+      const wipe = new LinearWipeFilter(direction, bg ?? createColorTexture("transparent").baseTexture);
+      this.#sequence.push(async (container) => {
+        if (Array.isArray(container.filters)) container.filters.push(wipe);
+        else container.filters = [wipe];
+        await TweenMax.to(wipe.uniforms, { progress: 1, duration: duration / 1e3 });
+        wipe.destroy();
+        removeFilter(container, wipe);
+        return;
+      });
+      return this;
+    }
+    bilinearWipe(direction, radial, duration = 2e3, bg = "transparent") {
+      const filter = new BilinearWipeFilter(direction, radial, bg);
+      this.#sequence.push(async (container) => {
+        if (Array.isArray(container.filters)) container.filters.push(filter);
+        else container.filters = [filter];
+        await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1e3 });
+        filter.destroy();
+        removeFilter(container, filter);
+        return;
+      });
+      return this;
+    }
     async execute() {
       const container = await setupTransition();
+      hideLoadingBar();
       await activateScene(this.#scene);
+      showLoadingBar();
+      hideTransitionCover();
       for (const step of this.#sequence) {
         await step(container);
       }

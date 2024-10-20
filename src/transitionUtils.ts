@@ -64,7 +64,6 @@ export async function setupTransition(): Promise<PIXI.Container> {
 }
 
 export function cleanupTransition(container: PIXI.DisplayObject) {
-  console.log("Cleaning:", container.children)
   // Ensure our cover is hidden
   transitionCover.style.display = "none";
   transitionCover.style.backgroundImage = "";

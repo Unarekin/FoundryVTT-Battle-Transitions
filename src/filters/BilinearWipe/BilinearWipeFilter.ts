@@ -1,6 +1,6 @@
 import { coerceTexture } from '../../coercion';
 import { InvalidDirectionError } from '../../errors';
-import { RadialDirection, WipeDirection } from '../../types';
+import { BilinearDirection, RadialDirection, WipeDirection } from '../../types';
 import { createColorTexture } from '../../utils';
 import { TextureWipeFilter } from '../TextureWipe/TextureWipeFilter';
 
@@ -33,7 +33,7 @@ const TextureHash = {
 
 export class BilinearWipeFilter extends TextureWipeFilter {
 
-  constructor(direction: "horizontal" | "vertical" | "topleft" | "bottomleft" | "topright" | "bottomright", radial: RadialDirection, bg: PIXI.TextureSource | PIXI.ColorSource) {
+  constructor(direction: BilinearDirection, radial: RadialDirection, bg: PIXI.TextureSource | PIXI.ColorSource) {
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
     const texture = TextureHash[direction]?.[radial];
     if (!texture) throw new InvalidDirectionError(`${direction}-${radial}`);
