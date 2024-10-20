@@ -7,13 +7,14 @@ export function coerceColor(source: unknown): PIXI.Color | undefined {
 }
 
 export function coerceTexture(source: unknown): PIXI.Texture | undefined {
+  const color = coerceColor(source);
+  if (color) return createColorTexture(color);
+
+
   // Attempt to get a texture directly
   try {
     return PIXI.Texture.from(source as PIXI.TextureSource);
   } catch { /* empty */ }
-
-  const color = coerceColor(source as PIXI.ColorSource);
-  if (color) return createColorTexture(color);
 }
 
 export function coerceScene(arg: unknown): Scene | undefined {

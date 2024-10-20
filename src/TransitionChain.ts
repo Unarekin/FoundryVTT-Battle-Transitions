@@ -2,7 +2,7 @@ import { coerceMacro, coerceScene } from "./coercion";
 import { InvalidMacroError, InvalidSceneError } from "./errors";
 import { BilinearWipeFilter } from "./filters/BilinearWipe/BilinearWipeFilter";
 import { LinearWipeFilter } from "./filters/LinearWipe/LinearWipeFilter";
-import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, removeFilter, setupTransition, showLoadingBar } from "./transitionUtils";
+import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, RadialDirection, WipeDirection } from "./types";
 import { createColorTexture } from "./utils";
 
@@ -61,15 +61,13 @@ export class TransitionChain {
   }
 
   public linearWipe(direction: WipeDirection, duration: number = 2000, bg?: PIXI.TextureSource | PIXI.ColorSource): this {
-    const wipe = new LinearWipeFilter(direction, bg ?? createColorTexture("transparent").baseTexture);
+    const wipe = new LinearWipeFilter(direction, bg ?? createColorTexture("transparent").baseTexture)
     this.#sequence.push(async container => {
       if (Array.isArray(container.filters)) container.filters.push(wipe);
       else container.filters = [wipe];
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       await TweenMax.to(wipe.uniforms, { progress: 1, duration: duration / 1000 });
-      wipe.destroy();
-      removeFilter(container, wipe);
       return;
     });
     return this;
@@ -83,8 +81,6 @@ export class TransitionChain {
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1000 });
-      filter.destroy();
-      removeFilter(container, filter);
       return;
     })
     return this;
@@ -110,7 +106,6 @@ export class TransitionChain {
   constructor(sccene: Scene)
   constructor(arg: unknown) {
     const scene = coerceScene(arg);
-    console.log("Scene:", scene);
     if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : "[Object object]");
     this.#scene = scene;
   }
