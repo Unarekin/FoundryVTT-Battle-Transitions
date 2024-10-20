@@ -1,4 +1,4 @@
-import { transitionTo } from './transitionUtils';
+import { cleanupTransition, transitionTo } from './transitionUtils';
 import { createColorTexture, logImage } from './utils';
 
 import { filters } from './filters';
@@ -8,9 +8,9 @@ export default {
   transitionTo,
   logImage,
   createColorTexture,
+  cleanupTransition,
 
   Filters: filters,
-  Presets: {},
 
   Textures: {
     Black: createColorTexture("#000000"),
