@@ -1,9 +1,6 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { InvalidMacroError, InvalidSceneError } from "./errors";
-import { BilinearWipeFilter } from "./filters/BilinearWipe/BilinearWipeFilter";
-import { ClockWipeFilter } from "./filters/ClockWipe/ClockWipeFilter";
-import { DiamondTransitionFilter } from "./filters/DiamondTransition/DiamondTransitionFilter";
-import { LinearWipeFilter } from "./filters/LinearWipe/LinearWipeFilter";
+import { LinearWipeFilter, BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, ClockWipeFilter } from "./filters";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from "./types";
 import { createColorTexture } from "./utils";
@@ -107,6 +104,19 @@ export class TransitionChain {
     this.#sequence.push(async container => {
       if (Array.isArray(container.filters)) container.filters.push(filter);
       else container.filters = [filter];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1000 });
+      return;
+    });
+    return this;
+  }
+
+  public fade(duration: number, bg: PIXI.TextureSource | PIXI.ColorSource = "ransparent"): this {
+    const filter = new FadeTransitionFilter(bg);
+    this.#sequence.push(async container => {
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1000 });
       return;

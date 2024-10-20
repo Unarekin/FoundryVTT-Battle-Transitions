@@ -1,6 +1,7 @@
 import frag from "./fadetransition.frag";
 import { CustomFilter } from '../CustomFilter';
 import { createColorTexture } from '../../utils';
+import { coerceTexture } from "../../coercion";
 
 type FadeTransitionUniforms = {
   progress: number;
@@ -8,8 +9,12 @@ type FadeTransitionUniforms = {
 }
 
 export class FadeTransitionFilter extends CustomFilter<FadeTransitionUniforms> {
-  constructor(color?: PIXI.ColorSource) {
-    const texture = createColorTexture(color ?? "#00000000");
-    super(undefined, frag, { bgColor: texture, progress: 0 });
+
+  constructor(bg?: PIXI.ColorSource | PIXI.TextureSource = "transparent") {
+    const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
+    super(undefined, frag, {
+      bgColor: bgTexture,
+      progress: 0
+    });
   }
 }
