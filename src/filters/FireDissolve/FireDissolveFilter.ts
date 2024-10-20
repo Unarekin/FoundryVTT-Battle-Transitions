@@ -1,4 +1,3 @@
-import { CUSTOM_HOOKS } from "../../constants";
 import { createGradient1DTexture, createNoiseTexture } from "../../utils";
 import { CustomFilter } from "../CustomFilter";
 import fragment from "./firedissolve.frag";
@@ -11,24 +10,20 @@ type FireDissolveUniforms = {
   burn_size: number;
 }
 
+const defaultBurnTexture = createGradient1DTexture(1024, new PIXI.Color("#ff0400"), new PIXI.Color("#ffff01"));
+
 export class FireDissolveFilter extends CustomFilter<FireDissolveUniforms> {
 
-
-  constructor(uniforms?: Partial<FireDissolveUniforms>) {
+  constructor(burnTexture?: PIXI.TextureSource) {
     const noise_texture = createNoiseTexture();
-    const burn_texture = createGradient1DTexture(1024, new PIXI.Color("#ff0400"), new PIXI.Color("#ffff01"));
-
-
-    // logImage(canvas?.app?.renderer.extract.canvas(burn_texture).toDataURL());
-
-    const actualUniforms = {
+    const uniforms = {
       noise_texture,
-      burn_texture,
       integrity: 1,
-      burn_size: 1.5,
-      ...uniforms
-    };
+      burn_size: 1.3,
+      burn_texture: burnTexture ? PIXI.Texture.from(burnTexture) : defaultBurnTexture
+    }
 
-    super(undefined, fragment, actualUniforms);
+    super(undefined, fragment, uniforms);
   }
+
 }

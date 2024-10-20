@@ -1,9 +1,8 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { InvalidMacroError, InvalidSceneError } from "./errors";
-import { BilinearWipeFilter } from "./filters/BilinearWipe/BilinearWipeFilter";
-import { LinearWipeFilter } from "./filters/LinearWipe/LinearWipeFilter";
+import { LinearWipeFilter, BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, ClockWipeFilter, FireDissolveFilter, RadialWipeFilter, SpotlightWipeFilter } from "./filters";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
-import { BilinearDirection, RadialDirection, WipeDirection } from "./types";
+import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from "./types";
 import { createColorTexture } from "./utils";
 
 
@@ -99,6 +98,80 @@ export class TransitionChain {
     cleanupTransition(container);
   }
 
+
+  public diamondWipe(size: number, duration: number = 2000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+    const filter = new DiamondTransitionFilter(size, bg);
+    this.#sequence.push(async container => {
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1000 });
+      return;
+    });
+    return this;
+  }
+
+  public fade(duration: number, bg: PIXI.TextureSource | PIXI.ColorSource = "ransparent"): this {
+    const filter = new FadeTransitionFilter(bg);
+    this.#sequence.push(async container => {
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1000 });
+      return;
+    });
+    return this;
+  }
+
+  public clockWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number = 2000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+    const filter = new ClockWipeFilter(clockDirection, direction, bg);
+    this.#sequence.push(async container => {
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1000 });
+      return;
+    })
+
+    return this;
+  }
+
+  public burn(duration: number = 1000, texture: PIXI.TextureSource): this {
+    const filter = new FireDissolveFilter(texture);
+    this.#sequence.push(async container => {
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await TweenMax.to(filter.uniforms, { integrity: 0, duration: duration / 1000 });
+    })
+    return this;
+  }
+
+  public radial(direction: RadialDirection, duration: number = 1000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+    const filter = new RadialWipeFilter(direction, bg);
+    this.#sequence.push(async container => {
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1000 });
+    });
+    return this;
+  }
+
+  public spotlight(direction: WipeDirection, radial: RadialDirection, duration: number = 1000, bg: PIXI.ColorSource | PIXI.TextureSource = "transparent"): this {
+    const filter = new SpotlightWipeFilter(direction, radial, bg);
+    this.#sequence.push(async container => {
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1000 });
+    });
+    return this;
+  }
 
   constructor(id: string)
   constructor(name: string)
