@@ -186,3 +186,26 @@ export function getCurrentOverlayObject(): PIXI.DisplayObject | undefined {
   if (canvasGroup.children.length === 0) return;
   return canvasGroup.children[canvasGroup.children.length - 1];
 }
+
+// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
+export async function injectConfigUI(html: JQuery<HTMLElement>, scene: Scene) {
+  const navBar = html.find("nav.sheet-tabs.tabs[data-group='main']");
+  const link = document.createElement("a");
+  link.classList.add("item");
+  link.dataset.tab = "battle-transition";
+  const icon = document.createElement("i");
+  icon.classList.add("fas", "crossed-swords", "fa-fw", "icon");
+
+  link.appendChild(icon);
+  link.innerHTML += " " + ((game as Game).i18n?.localize("BATTLETRANSITIONS.SCENECONFIG.TAB") ?? "")
+  navBar[0].appendChild(link);
+
+  const transitionConfig = scene.getFlag(__MODULE_ID__, "transition-config");
+
+  const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, transitionConfig ?? {
+    steps: [
+      { type: "fade" }
+    ]
+  });
+  html.find("footer.sheet-footer").before(`<div class="tab" data-group="main" data-tab="battle-transition">${content}</div>`);
+}

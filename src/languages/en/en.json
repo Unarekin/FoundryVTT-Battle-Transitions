@@ -1,3 +1,19 @@
 {
-  "BATTLETRANSITIONS": {}
+  "BATTLETRANSITIONS": {
+    "SCENECONFIG": {
+      "TAB": "Battle Transition",
+      "DURATION": "Duration",
+      "COLOR": "Color",
+      "AUTOTRIGGER": {
+        "LABEL": "Automatically Trigger",
+        "HINT": "Automatically trigger this transition any time this scene is activated."
+      },
+      "TRANSITIONCONFIG": {
+        "LABEL": "Transition Configuration"
+      },
+      "FADE": {
+        "NAME": "Fade"
+      }
+    }
+  }
 }
