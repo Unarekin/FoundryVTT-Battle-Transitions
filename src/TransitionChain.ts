@@ -111,7 +111,7 @@ export class TransitionChain {
     return this;
   }
 
-  public fade(duration: number, bg: PIXI.TextureSource | PIXI.ColorSource = "ransparent"): this {
+  public fade(duration: number, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
     const filter = new FadeTransitionFilter(bg);
     this.#sequence.push(async container => {
       if (Array.isArray(container.filters)) container.filters.push(filter);

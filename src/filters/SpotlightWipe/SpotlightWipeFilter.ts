@@ -47,29 +47,6 @@ Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
   }
 })
 
-/*
-Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
-  BattleTransitions.Presets = {
-    clockwiseTop: generatePreset("clockwise", "top"),
-    clockwiseRight: generatePreset("clockwise", "right"),
-    clockwiseBottom: generatePreset("clockwise", "bottom"),
-    clockwiseLeft: generatePreset("clockwise", "left"),
-    counterClockwiseTop: generatePreset("counterclockwise", "top"),
-    counterClockwiseRight: generatePreset("counterclockwise", "right"),
-    counterClockwiseBottom: generatePreset("counterclockwise", "bottom"),
-    counterClockwiseLeft: generatePreset("counterclockwise", "left"),
-
-    ...(BattleTransitions.Presets ?? {})
-  }
-})
-
-function generatePreset(clockDirection: ClockDirection, direction: WipeDirection): (scene: string | Scene, duration: number) => Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-  return (scene: string | Scene, duration: number = 1000) => new TransitionChain(scene as any).clockWipe(clockDirection, direction, duration).execute();
-}
-
-*/
-
 export class SpotlightWipeFilter extends TextureWipeFilter {
   constructor(direction: WipeDirection, radial: RadialDirection, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent") {
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");

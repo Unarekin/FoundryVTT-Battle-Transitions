@@ -44,7 +44,7 @@ Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
     bilinearTopRightInside: generatePreset("topright", "inside"),
     bilinearTopRightOUtside: generatePreset("topright", "outside"),
 
-    ...(BattleTransitions.Preset ?? {})
+    ...(BattleTransitions.Presets ?? {})
   }
 });
 
