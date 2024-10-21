@@ -9,6 +9,7 @@ import { createColorTexture } from "./utils";
 export class TransitionChain {
   #scene: Scene;
   #sequence: ((container: PIXI.Container) => Promise<void>)[] = [];
+  #sounds: Sound[] = [];
 
   public call(func: (container: PIXI.Container) => Promise<void>): this {
     this.#sequence.push(func);
@@ -95,6 +96,7 @@ export class TransitionChain {
       await step(container)
     }
 
+    for (const sound of this.#sounds) sound.stop();
     cleanupTransition(container);
   }
 
@@ -149,7 +151,19 @@ export class TransitionChain {
     return this;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public sound(file: string, loop: boolean = false): this {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+    (foundry as any).audio.AudioHelper.preloadSound(file);
+    this.#sequence.push(async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+      const sound = await (foundry as any).audio.AudioHelper.play({ src: file, volume: 1, autoplay: true, loop }, true) as Sound;
+      this.#sounds.push(sound);
+    });
+
+    return this;
+  }
+
+
   public video(file: string, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent", chroma: PIXI.ColorSource = [0, 177 / 255, 64 / 255]): this {
     this.#sequence.push(async container => {
 
