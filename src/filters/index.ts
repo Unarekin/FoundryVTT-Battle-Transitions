@@ -8,9 +8,25 @@ import { LinearWipeFilter } from "./LinearWipe/LinearWipeFilter";
 import { ClockWipeFilter } from './ClockWipe/ClockWipeFilter';
 import { SpotlightWipeFilter } from './SpotlightWipe/SpotlightWipeFilter';
 import { RadialWipeFilter } from './RadialWipe/RadialWipeFilter';
+import { ChromaKeyFilter } from './ChromaKey/ChromaKeyFilter';
+import { TextureSwapFilter } from './TextureSwap/TextureSwapFilter';
 
 
-export { CustomFilter, FireDissolveFilter, DiamondTransitionFilter, TextureWipeFilter, FadeTransitionFilter, BilinearWipeFilter, LinearWipeFilter, ClockWipeFilter, SpotlightWipeFilter, RadialWipeFilter }
+
+export {
+  CustomFilter,
+  FireDissolveFilter,
+  DiamondTransitionFilter,
+  TextureWipeFilter,
+  FadeTransitionFilter,
+  BilinearWipeFilter,
+  LinearWipeFilter,
+  ClockWipeFilter,
+  SpotlightWipeFilter,
+  RadialWipeFilter,
+  ChromaKeyFilter,
+  TextureSwapFilter
+}
 
 export const filters = {
   CustomFilter,
@@ -23,5 +39,7 @@ export const filters = {
   BilinearWipeFilter,
   ClockWipeFilter,
   SpotlightWipeFilter,
-  RadialWipeFilter
+  RadialWipeFilter,
+  ChromaKeyFilter,
+  TextureSwapFilter
 };
