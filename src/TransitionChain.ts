@@ -1,6 +1,6 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { InvalidMacroError, InvalidSceneError } from "./errors";
-import { LinearWipeFilter, BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, ClockWipeFilter, FireDissolveFilter, RadialWipeFilter, SpotlightWipeFilter } from "./filters";
+import { LinearWipeFilter, BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, ClockWipeFilter, FireDissolveFilter, RadialWipeFilter, SpotlightWipeFilter, TextureSwapFilter, ChromaKeyFilter } from "./filters";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from "./types";
 import { createColorTexture } from "./utils";
@@ -146,6 +146,41 @@ export class TransitionChain {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       await TweenMax.to(filter.uniforms, { integrity: 0, duration: duration / 1000 });
     })
+    return this;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public video(file: string, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent", chroma: PIXI.ColorSource = [0, 177 / 255, 64 / 255]): this {
+    this.#sequence.push(async container => {
+
+      const texture: PIXI.Texture = await PIXI.Assets.load(file);
+      const resource: PIXI.VideoResource = texture.baseTexture.resource as PIXI.VideoResource;
+      const source = resource.source;
+
+      return new Promise<void>((resolve, reject) => {
+
+        const swapFilter = new TextureSwapFilter(texture.baseTexture);
+        const chromaFilter = new ChromaKeyFilter(chroma, bg);
+
+
+        if (Array.isArray(container.filters)) container.filters.push(swapFilter, chromaFilter);
+        else container.filters = [swapFilter, chromaFilter];
+
+        source.addEventListener("ended", () => {
+          // swapFilter.destroy();
+          // chromaFilter.destroy();
+          resolve();
+        });
+
+        source.addEventListener("error", e => {
+          // swapFilter.destroy();
+          // chromaFilter.destroy();
+          reject(e.error as Error);
+        });
+        void source.play();
+      })
+    });
+
     return this;
   }
 

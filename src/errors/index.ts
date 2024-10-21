@@ -3,6 +3,7 @@ export * from './CanvasNotFoundError';
 export * from './InvalidDirectionError';
 export * from './InvalidMacroError';
 export * from './InvalidSceneError';
+export * from './InvalidTextureError';
 export * from './LocalizedError';
 export * from './NoApplicationError';
 export * from './NoCoverElementError';
