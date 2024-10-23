@@ -1,0 +1,39 @@
+<div
+  class="flexcol step-config-item"
+  data-transition-type="chromakey"
+  data-id="{{id}}"
+>
+  <form>
+    <input type="hidden" value="{{id}}" name="id" id="id" />
+    <div class="form-group">
+      <label for="key-color">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.KEYCOLOR.LABEL"
+        }}</label>
+      <input
+        type="text"
+        data-color-picker="{alphaChannel: false}"
+        name="key-color"
+        id="key-color"
+        value="{{keyColor}}"
+      />
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.KEYCOLOR.HINT"
+      }}</p>
+    <div class="form-group">
+      <label for="background">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.LABEL"
+        }}</label>
+      <input
+        type="text"
+        data-color-picker="{alphaChannel: true}"
+        name="background"
+        id="background"
+        value="{{background}}"
+      />
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.HINT"
+      }}</p>
+  </form>
+</div>
