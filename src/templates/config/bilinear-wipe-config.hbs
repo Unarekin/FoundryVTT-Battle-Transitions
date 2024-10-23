@@ -10,18 +10,7 @@
           "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.LABEL"
         }}</label>
       <select name="direction" id="direction">
-        <option value="horizontal">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.HORIZONTAL"
-          }}</option>
-        <option value="vertical">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.VERTICAL"
-          }}</option>
-        <option value="topleft">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.TOPLEFT"
-          }}</option>
-        <option value="topright">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.TOPRIGHT"
-          }}</option>
+        {{selectOptions directionSelect selected=direction localize=true}}
       </select>
     </div>
     <p class="notes">{{localize
@@ -32,12 +21,7 @@
           "BATTLETRANSITIONS.SCENECONFIG.COMMON.RADIAL.LABEL"
         }}</label>
       <select name="radial" id="radial">
-        <option value="inside">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.INSIDE"
-          }}</option>
-        <option value="outside">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.OUTSIDE"
-          }}</option>
+        {{selectOptions radialSelect selected=radial localize=true}}
       </select>
     </div>
     <p class="notes">{{localize

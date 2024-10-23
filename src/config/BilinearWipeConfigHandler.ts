@@ -27,7 +27,20 @@ export class BilinearWipeConfigHandler implements TransitionConfigHandler<Biline
   }
 
   public renderTemplate(flag?: BilinearWipeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/bilinear-wipe-config.hbs`, flag ?? {});
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/bilinear-wipe-config.hbs`, {
+      ...this.defaultSettings,
+      ...flag,
+      directionSelect: {
+        "horizontal": "BATTLETRANSITIONS.DIRECTIONS.HORIZONTAL",
+        "vertical": "BATTLETRANSITIONS.DIRECTIONS.VERTICAL",
+        "topleft": "BATTLETRANSITIONS.DIRECTIONS.TOPLEFT",
+        "topright": "BATTLETRANSITIONS.DIRECTIONS.TOPRIGHT"
+      },
+      radialSelect: {
+        "inside": "BATTLETRANSITIONS.DIRECTIONS.INSIDE",
+        "outside": "BATTLETRANSITIONS.DIRECTIONS.OUTSIDE"
+      }
+    });
   }
 
   public createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): BilinearWipeConfiguration {
