@@ -10,6 +10,7 @@ import { DiamondTransitionConfigHandler } from './DiamondTransitionConfigHandler
 import { FireDissolveConfigHandler } from './FireDissolveConfigHandler';
 import { RadialWipeConfigHandler } from './RadialWipeConfigHandler';
 import { SpotlightWipeConfigHandler } from './SpotlightWipeConfigHandler';
+import { TextureSwapConfigHandler } from './TextureSwapConfigHandler';
 
 
 const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
@@ -21,7 +22,8 @@ const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
   new DiamondTransitionConfigHandler(),
   new FireDissolveConfigHandler(),
   new RadialWipeConfigHandler(),
-  new SpotlightWipeConfigHandler()
+  new SpotlightWipeConfigHandler(),
+  new TextureSwapConfigHandler()
 ];
 
 
