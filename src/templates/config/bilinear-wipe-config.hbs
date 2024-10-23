@@ -1,0 +1,78 @@
+<div
+  class="flexcol step-config-item"
+  data-transition-type="bilinearwipe"
+  data-id="{{id}}"
+>
+  <form>
+    <input type="hidden" value="{{id}}" name="id" id="id" />
+    <div class="form-group">
+      <label for="direction">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.LABEL"
+        }}</label>
+      <select name="direction" id="direction">
+        <option value="horizontal">{{localize
+            "BATTLETRANSITIONS.DIRECTIONS.HORIZONTAL"
+          }}</option>
+        <option value="vertical">{{localize
+            "BATTLETRANSITIONS.DIRECTIONS.VERTICAL"
+          }}</option>
+        <option value="topleft">{{localize
+            "BATTLETRANSITIONS.DIRECTIONS.TOPLEFT"
+          }}</option>
+        <option value="topright">{{localize
+            "BATTLETRANSITIONS.DIRECTIONS.TOPRIGHT"
+          }}</option>
+      </select>
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.HINT"
+      }}</p>
+    <div class="form-group">
+      <label for="radial">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.RADIAL.LABEL"
+        }}</label>
+      <select name="radial" id="radial">
+        <option value="inside">{{localize
+            "BATTLETRANSITIONS.DIRECTIONS.INSIDE"
+          }}</option>
+        <option value="outside">{{localize
+            "BATTLETRANSITIONS.DIRECTIONS.OUTSIDE"
+          }}</option>
+      </select>
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.RADIAL.HITN"
+      }}</p>
+    <div class="form-group">
+      <label for="duration">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.DURATION.LABEL"
+        }}</label>
+      <input
+        type="number"
+        name="duration"
+        id="duration"
+        value="{{duration}}"
+        step="1"
+        min="0"
+      />
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.DURATION.HINT"
+      }}</p>
+    <div class="form-group">
+      <label for="background">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.LABEL"
+        }}</label>
+      <input
+        type="text"
+        data-color-picker="{alphaChannel: true}"
+        id="background"
+        name="background"
+        value="{{background}}"
+      />
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.HINT"
+      }}</p>
+  </form>
+</div>
