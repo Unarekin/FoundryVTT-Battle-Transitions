@@ -8,6 +8,7 @@ import { ChromaKeyConfigHandler } from './ChromaKeyConfigHandler';
 import { ClockWipeConfigHandler } from './ClockWipeConfigHandler';
 import { DiamondTransitionConfigHandler } from './DiamondTransitionConfigHandler';
 import { FireDissolveConfigHandler } from './FireDissolveConfigHandler';
+import { RadialWipeConfigHandler } from './RadialWipeConfigHandler';
 
 
 const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
@@ -17,7 +18,8 @@ const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
   new ChromaKeyConfigHandler(),
   new ClockWipeConfigHandler(),
   new DiamondTransitionConfigHandler(),
-  new FireDissolveConfigHandler()
+  new FireDissolveConfigHandler(),
+  new RadialWipeConfigHandler()
 ];
 
 
