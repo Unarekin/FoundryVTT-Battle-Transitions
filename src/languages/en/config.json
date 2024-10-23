@@ -1,0 +1,52 @@
+{
+  "BATTLETRANSITIONS": {
+    "SCENECONFIG": {
+      "TAB": "Battle Transition",
+      "REMOVECONFIRM": "Are you sure you wish to remove {name}?",
+      "BUTTONS": {
+        "ADDSTEP": "Add Step",
+        "REMOVE": "Remove {name}",
+        "CONFIGURE": "Configure {name}"
+      },
+      "AUTOTRIGGER": {
+        "LABEL": "Automatically Trigger",
+        "HINT": "Automatically trigger this transition any time this scene is activated."
+      },
+      "TRANSITIONCONFIG": {
+        "LABEL": "Transition Steps"
+      },
+      "ADDSTEPDIALOG": {
+        "TITLE": "Add Transition Step"
+      },
+      "EDITSTEPDIALOG": {
+        "TITLE": "Edit {name}"
+      },
+      "FADE": {
+        "NAME": "Fade",
+        "DURATION": {
+          "LABEL": "Duration",
+          "HINT": "Duration of the fade, in milliseconds"
+        },
+        "BACKGROUND": {
+          "LABEL": "Background Color",
+          "HINT": "Background color to which to fade"
+        }
+      },
+      "LINEARWIPE": {
+        "NAME": "Linear Wipe",
+        "DURATION": {
+          "LABEL": "Duration",
+          "HINT": "Duration of the wipe, in milliseconds"
+        },
+        "BACKGROUND": {
+          "LABEL": "BG Color",
+          "HINT": "Background color to which to wipe"
+        },
+        "DIRECTION": {
+          "LABEL": "Start Direction",
+          "HINT": "The direction from which the wipe should start."
+        }
+      }
+    }
+  }
+}

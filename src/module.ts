@@ -4,8 +4,8 @@ import { initializeCanvas } from './transitionUtils';
 import BattleTransitions from "./BattleTransitions";
 import { CUSTOM_HOOKS } from "./constants"
 import { TransitionChain } from "./TransitionChain"
-import { injectConfigUI } from './utils';
 import { registerHelpers, registerTemplates } from "./templates"
+import { ConfigurationHandler } from './config/ConfigurationHandler';
 
 // CONFIG.debug.hooks = true;
 
@@ -18,9 +18,8 @@ Hooks.once("canvasReady", () => {
   Hooks.callAll(CUSTOM_HOOKS.INITIALIZE)
 })
 
-Hooks.on("renderSceneConfig", async (app: Application, html: JQuery<HTMLElement>) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  await injectConfigUI(html, (app as any).object);
+Hooks.on("renderSceneConfig", (app: Application) => {
+  new ConfigurationHandler(app, (app as any).object as Scene);
 });
 
 
@@ -28,3 +27,4 @@ Hooks.once("init", async () => {
   registerHelpers();
   await registerTemplates();
 })
+

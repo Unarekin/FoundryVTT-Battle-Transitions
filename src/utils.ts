@@ -187,25 +187,12 @@ export function getCurrentOverlayObject(): PIXI.DisplayObject | undefined {
   return canvasGroup.children[canvasGroup.children.length - 1];
 }
 
-// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
-export async function injectConfigUI(html: JQuery<HTMLElement>, scene: Scene) {
-  const navBar = html.find("nav.sheet-tabs.tabs[data-group='main']");
-  const link = document.createElement("a");
-  link.classList.add("item");
-  link.dataset.tab = "battle-transition";
-  const icon = document.createElement("i");
-  icon.classList.add("fas", "crossed-swords", "fa-fw", "icon");
 
-  link.appendChild(icon);
-  link.innerHTML += " " + ((game as Game).i18n?.localize("BATTLETRANSITIONS.SCENECONFIG.TAB") ?? "")
-  navBar[0].appendChild(link);
+export function localize(key: string, data: Record<string, unknown> = {}): string {
+  return game.i18n?.format(key, data) ?? key;
+}
 
-  const transitionConfig = scene.getFlag(__MODULE_ID__, "transition-config");
+export function shouldUseAppV2(): boolean {
 
-  const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, transitionConfig ?? {
-    steps: [
-      { type: "fade" }
-    ]
-  });
-  html.find("footer.sheet-footer").before(`<div class="tab" data-group="main" data-tab="battle-transition">${content}</div>`);
+  return game.release?.isNewer("12") ?? false;
 }

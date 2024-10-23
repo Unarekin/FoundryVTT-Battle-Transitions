@@ -1,1 +1,21 @@
 @import "./icons.scss";
+
+button[data-action="add-step"] {
+  position: relative;
+  nav#context-menu {
+    position: absolute;
+  }
+}
+
+.step-config-item {
+  margin-bottom: 5px;
+}
+
+.step-button {
+  cursor: pointer;
+  margin-left: 3px;
+}
+
+.link {
+  cursor: pointer;
+}

@@ -1,4 +1,36 @@
-<div class="flexrow">
-  <div>{{localize "BATTLETRANSITIONS.SCENECONFIG.FADE.NAME"}}</div>
-  <div></div>
+<div class="flexcol step-config-item" data-transition-type="fade">
+  <form>
+    <input type="hidden" value="{{id}}" name="id" id="id" />
+    <div class="form-group">
+      <label for="duration">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.FADE.DURATION.LABEL"
+        }}</label>
+      <input
+        type="number"
+        name="duration"
+        id="duration"
+        value="{{duration}}"
+        step="1"
+        min="0"
+      />
+      <p class="notes">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.FADE.DURATION.HINT"
+        }}</p>
+    </div>
+    <div class="form-group">
+      <label for="background">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.FADE.BACKGROUND.LABEL"
+        }}</label>
+      <input
+        type="text"
+        data-color-picker="{alphaChannel: true}"
+        id="background"
+        name="background"
+        value="{{background}}"
+      />
+      <p class="notes">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.FADE.BACKGROUND.HINT"
+        }}</p>
+    </div>
+  </form>
 </div>

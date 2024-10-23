@@ -1,0 +1,29 @@
+<div
+  class="flexrow step-config-item"
+  data-transition-type="{{type}}"
+  data-flag="{{flag}}"
+  data-id="{{id}}"
+>
+  {{log this}}
+  <div><span class="link" data-action="configure">{{name}}</span></div>
+  <div>{{summary}}</div>
+  <i
+    class="fas fa-cogs fa-fw step-button flex0"
+    data-action="configure"
+    data-step="{{id}}"
+    title="{{localize
+      'BATTLETRANSITIONS.SCENECONFIG.BUTTONS.CONFIGURE'
+      name=name
+    }}"
+  ></i>
+  <i
+    class="fas fa-trash fa-fw step-button flex0"
+    data-action="remove"
+    data-step="{{id}}"
+    title="{{localize
+      'BATTLETRANSITIONS.SCENECONFIG.BUTTONS.REMOVE'
+      name=name
+    }}"
+  ></i>
+
+</div>

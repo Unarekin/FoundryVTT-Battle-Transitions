@@ -1,6 +1,6 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { InvalidMacroError, InvalidSceneError } from "./errors";
-import { LinearWipeFilter, BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, ClockWipeFilter, FireDissolveFilter, RadialWipeFilter, SpotlightWipeFilter, TextureSwapFilter, ChromaKeyFilter } from "./filters";
+import { LinearWipeFilter, BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, ClockWipeFilter, FireDissolveFilter, RadialWipeFilter, SpotlightWipeFilter, TextureSwapFilter } from "./filters";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from "./types";
 import { createColorTexture } from "./utils";
@@ -164,7 +164,7 @@ export class TransitionChain {
   }
 
 
-  public video(file: string, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent", chroma: PIXI.ColorSource = [0, 177 / 255, 64 / 255]): this {
+  public video(file: string): this {
     this.#sequence.push(async container => {
 
       const texture: PIXI.Texture = await PIXI.Assets.load(file);
@@ -174,11 +174,10 @@ export class TransitionChain {
       return new Promise<void>((resolve, reject) => {
 
         const swapFilter = new TextureSwapFilter(texture.baseTexture);
-        const chromaFilter = new ChromaKeyFilter(chroma, bg);
 
 
-        if (Array.isArray(container.filters)) container.filters.push(swapFilter, chromaFilter);
-        else container.filters = [swapFilter, chromaFilter];
+        if (Array.isArray(container.filters)) container.filters.push(swapFilter);
+        else container.filters = [swapFilter];
 
         source.addEventListener("ended", () => {
           // swapFilter.destroy();

@@ -1,19 +1,28 @@
 {
   "BATTLETRANSITIONS": {
-    "SCENECONFIG": {
-      "TAB": "Battle Transition",
-      "DURATION": "Duration",
-      "COLOR": "Color",
-      "AUTOTRIGGER": {
-        "LABEL": "Automatically Trigger",
-        "HINT": "Automatically trigger this transition any time this scene is activated."
-      },
-      "TRANSITIONCONFIG": {
-        "LABEL": "Transition Configuration"
-      },
-      "FADE": {
-        "NAME": "Fade"
+    "DIALOGS": {
+      "BUTTONS": {
+        "OK": "Ok",
+        "CANCEL": "Cancel"
       }
+    },
+    "FORMATTERS": {
+      "MILLISECONDS": "{value}ms"
+    },
+    "TRANSITIONTYPES": {
+      "FADE": "Fade",
+      "LINEARWIPE": "Linear Wipe",
+      "BILINEARWIPE": "Bilinear Wipe",
+      "DIAMOND": "Diamond",
+      "CLOCKWIPE": "Clock Wipe",
+      "FIREDISSOLVE": "Fire Dissolve",
+      "RADIALWIPE": "Radial Wipe",
+      "SPOTLIGHTWIPE": "Spotlight Wipe",
+      "CHROMAKEY": "Chroma Key",
+      "TEXTURESWAP": "Texture Swap",
+      "VIDEO": "Video",
+      "SOUND": "Sound",
+      "WAIT": "Wait"
     }
   }
 }
