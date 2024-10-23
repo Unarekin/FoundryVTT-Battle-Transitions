@@ -128,7 +128,7 @@ const buildResults = await build({
     __MODULE_ID__: `"${__MODULE_ID__}"`,
     __MODULE_VERSION__: `"${__MODULE_VERSION__}"`,
   },
-  external: ["*.woff", "*.woff2", "*.otf", "*.ttf", "*.webp", "*.svg"],
+  external: ["*.woff", "*.woff2", "*.otf", "*.ttf", "*.webp", "*.svg", "*.jpg", "*.png"],
   loader: {
     ".frag": "text",
     ".vert": "text"

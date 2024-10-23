@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { TransitionConfigHandler } from "../interfaces";
 import { WipeDirection } from "../types";
 
@@ -6,7 +5,7 @@ export interface LinearWipeConfiguration {
   direction: WipeDirection;
   duration: number;
   background: string;
-  id: string;
+  id?: string;
 }
 
 export class LinearWipeConfigHandler implements TransitionConfigHandler<LinearWipeConfiguration> {
@@ -14,8 +13,7 @@ export class LinearWipeConfigHandler implements TransitionConfigHandler<LinearWi
   public readonly defaultSettings: LinearWipeConfiguration = {
     duration: 1000,
     background: "#00000000",
-    direction: "left",
-    id: ""
+    direction: "left"
   };
 
   generateSummary(flag?: LinearWipeConfiguration): string {

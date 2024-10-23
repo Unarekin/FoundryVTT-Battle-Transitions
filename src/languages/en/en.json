@@ -9,6 +9,20 @@
     "FORMATTERS": {
       "MILLISECONDS": "{value}ms"
     },
+    "DIRECTIONS": {
+      "LEFT": "Left",
+      "RIGHT": "Right",
+      "TOP": "Top",
+      "BOTTOM": "Bottom",
+      "TOPLEFT": "Top Left",
+      "TOPRIGHT": "Top Right",
+      "BOTTOMLEFT": "Bottom Left",
+      "BOTTOMRIGHT": "Bottom Right",
+      "INSIDE": "Inside",
+      "OUTSIDE": "Outside",
+      "HORIZONTAL": "Horizontal",
+      "VERTICAL": "Vertical"
+    },
     "TRANSITIONTYPES": {
       "FADE": "Fade",
       "LINEARWIPE": "Linear Wipe",
