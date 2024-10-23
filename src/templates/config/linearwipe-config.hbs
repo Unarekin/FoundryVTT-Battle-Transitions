@@ -10,30 +10,7 @@
           "BATTLETRANSITIONS.SCENECONFIG.LINEARWIPE.DIRECTION.LABEL"
         }}</label>
       <select name="direction" id="direction">
-        <option value="left">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.LEFT"
-          }}</option>
-        <option value="right">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.RIGHT"
-          }}</option>
-        <option value="top">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.TOP"
-          }}</option>
-        <option value="bottom">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.BOTTOM"
-          }}</option>
-        <option value="topleft">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.TOPLEFT"
-          }}</option>
-        <option value="topright">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.TOPRIGHT"
-          }}</option>
-        <option value="bottomleft">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.BOTTOMLEFT"
-          }}</option>
-        <option value="bottomright">{{localize
-            "BATTLETRANSITIONS.DIRECTIONS.BOTTOMRIGHT"
-          }}</option>
+        {{selectOptions directionSelect selected=direction localize=true}}
       </select>
     </div>
     <p class="notes">{{localize

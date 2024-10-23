@@ -28,7 +28,17 @@ export class LinearWipeConfigHandler implements TransitionConfigHandler<LinearWi
   renderTemplate(flag?: LinearWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/linearwipe-config.hbs`, {
       ...this.defaultSettings,
-      ...flag
+      ...flag,
+      directionSelect: {
+        "top": "BATTLETRANSITIONS.DIRECTIONS.TOP",
+        "left": "BATTLETRANSITIONS.DIRECTIONS.LEFT",
+        "right": "BATTLETRANSITIONS.DIRECTIONS.RIGHT",
+        "bottom": "BATTLETRANSITIONS.DIRECTIONS.BOTTOM",
+        "topleft": "BATTLETRANSITIONS.DIRECTIONS.TOPLEFT",
+        "topright": "BATTLETRANSITIONS.DIRECTIONS.TOPRIGHT",
+        "bottomleft": "BATTLETRANSITIONS.DIRECTIONS.BOTTOMLEFT",
+        "bottomright": "BATTLETRANSITIONS.DIRECTIONS.BOTTOMRIGHT"
+      }
     });
   }
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): LinearWipeConfiguration {
