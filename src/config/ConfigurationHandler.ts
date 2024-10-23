@@ -12,6 +12,7 @@ import { RadialWipeConfigHandler } from './RadialWipeConfigHandler';
 import { SpotlightWipeConfigHandler } from './SpotlightWipeConfigHandler';
 import { TextureSwapConfigHandler } from './TextureSwapConfigHandler';
 import { WaitConfigHandler } from './WaitConfigHandler';
+import { SoundConfigHandler } from './SoundConfigHandler';
 
 
 const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
@@ -25,7 +26,8 @@ const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
   new RadialWipeConfigHandler(),
   new SpotlightWipeConfigHandler(),
   new TextureSwapConfigHandler(),
-  new WaitConfigHandler()
+  new WaitConfigHandler(),
+  new SoundConfigHandler()
 ];
 
 
@@ -156,7 +158,6 @@ export class ConfigurationHandler {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private addConfigureStepEventListeners(html: JQuery<HTMLElement>, flag: object = {}) {
     html.find("input[type='text'],input[type='number']").on("focus", e => {
-
       (e.currentTarget as HTMLInputElement).select();
     })
 
