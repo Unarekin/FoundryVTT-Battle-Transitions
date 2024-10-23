@@ -6,13 +6,15 @@ import { LinearWipeConfigHandler } from './LinearWipeConfigHandler';
 import { BilinearWipeConfigHandler } from './BilinearWipeConfigHandler';
 import { ChromaKeyConfigHandler } from './ChromaKeyConfigHandler';
 import { ClockWipeConfigHandler } from './ClockWipeConfigHandler';
+import { DiamondTransitionConfigHandler } from './DiamondTransitionConfigHandler';
 
 const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
   new FadeConfigHandler(),
   new LinearWipeConfigHandler(),
   new BilinearWipeConfigHandler(),
   new ChromaKeyConfigHandler(),
-  new ClockWipeConfigHandler()
+  new ClockWipeConfigHandler(),
+  new DiamondTransitionConfigHandler()
 ];
 
 
