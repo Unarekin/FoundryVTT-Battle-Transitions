@@ -11,7 +11,8 @@
       "INVALIDMARO": "Invalid macro: {macro}",
       "INVALIDTEXTURE": "Invalid texture provided.",
       "INVALIDTRANSITION": "Invalid transition: {name}",
-      "INVALIDELEMENT": "Unable to locate HTML element"
+      "INVALIDELEMENT": "Unable to locate HTML element",
+      "PERMISSIONDENIED": "Permision denied."
     }
   }
 }
