@@ -12,7 +12,8 @@
       "INVALIDTEXTURE": "Invalid texture provided.",
       "INVALIDTRANSITION": "Invalid transition: {name}",
       "INVALIDELEMENT": "Unable to locate HTML element",
-      "PERMISSIONDENIED": "Permision denied."
+      "PERMISSIONDENIED": "Permision denied.",
+      "EXECUTECALLEDPARALLEL": "Do not call execute function when creating parallel transition chains."
     }
   }
 }

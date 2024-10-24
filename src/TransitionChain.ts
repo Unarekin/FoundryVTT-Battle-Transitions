@@ -1,7 +1,7 @@
 import { coerceMacro, coerceScene } from "./coercion";
-import { InvalidMacroError, InvalidSceneError, InvalidTransitionError, PermissionDeniedError } from "./errors";
+import { InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError } from "./errors";
 import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter } from "./filters";
-import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration } from "./interfaces";
+import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from './types';
@@ -9,9 +9,10 @@ import { awaitHook, createColorTexture, deserializeTexture, serializeTexture } f
 
 
 export class TransitionChain {
-  #scene: Scene;
+  #scene: Scene | null = null;
   #sequence: TransitionStep[] = [];
   #sounds: Sound[] = [];
+  #transitionOverlay: PIXI.Container | null = null;
 
   #typeHandlers: { [x: string]: unknown } = {
     bilinearwipe: this.#executeBilinearWipe.bind(this),
@@ -21,7 +22,9 @@ export class TransitionChain {
     firedissolve: this.#executeBurn.bind(this),
     linearwipe: this.#executeLinearWipe.bind(this),
     macro: this.#executeMacro.bind(this),
+    parallel: this.#executeParallel.bind(this),
     radialwipe: this.#executeRadialWipe.bind(this),
+    removeoverlay: this.#executeRemoveOverlay.bind(this),
     spotlightwipe: this.#executeSpotlightWipe.bind(this),
     textureswap: this.#executeTextureSwap.bind(this),
     sound: this.#executeSound.bind(this),
@@ -35,14 +38,27 @@ export class TransitionChain {
   constructor(name: string)
   constructor(uuid: string)
   constructor(scene: Scene)
-  constructor(arg: unknown) {
+  constructor()
+  constructor(arg?: unknown) {
     try {
-      const scene = coerceScene(arg);
-      if (!scene) throw new InvalidSceneError(typeof arg === "string" ? arg : arg as string);
-      this.#scene = scene;
+      if (arg) {
+        const scene = coerceScene(arg);
+        if (!scene) throw new InvalidSceneError(typeof arg === "string" ? arg : arg as string);
+        this.#scene = scene;
+      }
     } catch (err) {
       ui.notifications?.error((err as Error).message);
       throw err;
+    }
+  }
+
+  async #executeSequence(sequence: TransitionStep[], container: PIXI.Container) {
+    for (const step of sequence) {
+      // Execute step
+
+      if (typeof this.#typeHandlers[step.type] !== "function") throw new InvalidTransitionError(step.type);
+      const handler = this.#typeHandlers[step.type];
+      if (typeof handler === "function") await handler(step, container);
     }
   }
 
@@ -55,6 +71,7 @@ export class TransitionChain {
       if (!sequence) throw new InvalidTransitionError(typeof sequence);
       console.log("TransitionChain executing:", sequence, caller);
       const container = await setupTransition();
+      this.#transitionOverlay = container.children[1];
       hideLoadingBar();
 
       // If we did not call this function, wait for the scene to activate
@@ -65,19 +82,14 @@ export class TransitionChain {
       showLoadingBar();
       hideTransitionCover();
 
-      for (const step of sequence) {
-        // Execute step
-
-        if (typeof this.#typeHandlers[step.type] !== "function") throw new InvalidTransitionError(step.type);
-        const handler = this.#typeHandlers[step.type];
-        if (typeof handler === "function") await handler(step, container);
-      }
+      await this.#executeSequence(sequence, container);
 
       for (const sound of this.#sounds) sound.stop();
       cleanupTransition(container);
 
     }
   }
+
 
   async #executeLinearWipe(config: LinearWipeConfiguration, container: PIXI.Container) {
 
@@ -334,8 +346,10 @@ export class TransitionChain {
     return new Promise<void>((resolve, reject) => {
       const swapFilter = new TextureSwapFilter(texture.baseTexture);
 
-      if (Array.isArray(container.filters)) container.filters.push(swapFilter);
-      else container.filters = [swapFilter];
+      const sprite = PIXI.Sprite.from(texture);
+
+      container.addChild(sprite);
+      sprite.filters = [swapFilter];
 
       source.addEventListener("ended", () => { resolve(); });
       source.addEventListener("error", e => { reject(e.error as Error); });
@@ -379,6 +393,40 @@ export class TransitionChain {
       macro: macro.id
     });
 
+    return this;
+  }
+
+  async #executeParallel(config: ParallelConfiguration, container: PIXI.Container) {
+    await Promise.all(config.sequences.map(sequence => this.#executeSequence(sequence, container)));
+  }
+
+  public parallel(...callbacks: ((chain: TransitionChain) => TransitionStep[])[]): this {
+    const sequences: TransitionStep[][] = [];
+    for (const callback of callbacks) {
+      const chain = new TransitionChain();
+      const res = callback(chain);
+      if (res instanceof Promise) throw new ParallelExecuteError();
+      sequences.push(chain.sequence);
+    }
+
+
+    this.#sequence.push({
+      type: "parallel",
+      sequences
+    });
+
+    return this;
+  }
+
+  async #executeRemoveOverlay() {
+    if (this.#transitionOverlay) this.#transitionOverlay.alpha = 0;
+    return Promise.resolve();
+  }
+
+  public removeOverlay(): this {
+    this.#sequence.push({
+      type: "removeoverlay"
+    });
     return this;
   }
 }

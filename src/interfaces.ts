@@ -109,3 +109,7 @@ export interface VideoConfiguration extends TransitionConfiguration {
 export interface WaitConfiguration extends TransitionConfiguration {
   duration: number;
 }
+
+export interface ParallelConfiguration extends TransitionConfiguration {
+  sequences: TransitionStep[][];
+}
