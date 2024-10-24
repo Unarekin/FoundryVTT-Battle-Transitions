@@ -4,7 +4,7 @@ import { localize, shouldUseAppV2 } from "../utils";
 import { FadeConfigHandler } from './FadeConfigHandler';
 import { LinearWipeConfigHandler } from './LinearWipeConfigHandler';
 import { BilinearWipeConfigHandler } from './BilinearWipeConfigHandler';
-import { ChromaKeyConfigHandler } from './ChromaKeyConfigHandler';
+// import { ChromaKeyConfigHandler } from './ChromaKeyConfigHandler';
 import { ClockWipeConfigHandler } from './ClockWipeConfigHandler';
 import { DiamondTransitionConfigHandler } from './DiamondTransitionConfigHandler';
 import { FireDissolveConfigHandler } from './FireDissolveConfigHandler';
@@ -20,7 +20,7 @@ const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
   new FadeConfigHandler(),
   new LinearWipeConfigHandler(),
   new BilinearWipeConfigHandler(),
-  new ChromaKeyConfigHandler(),
+  // new ChromaKeyConfigHandler(),
   new ClockWipeConfigHandler(),
   new DiamondTransitionConfigHandler(),
   new FireDissolveConfigHandler(),
