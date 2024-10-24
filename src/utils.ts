@@ -1,5 +1,8 @@
-import { CannotInitializeCanvasError, CanvasNotFoundError } from "./errors";
-import { createNoise2D, RandomFn } from "./lib/simplex-noise"
+import { coerceTexture } from "./coercion";
+import { LOG_ICON } from "./constants";
+import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidTextureError } from "./errors";
+import { DataURLBuffer, TextureBuffer } from "./interfaces";
+import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 
 /**
@@ -195,4 +198,122 @@ export function localize(key: string, data: Record<string, unknown> = {}): strin
 export function shouldUseAppV2(): boolean {
 
   return game.release?.isNewer("12") ?? false;
+}
+
+
+export function sizeOf(obj: unknown) {
+  const objectList: unknown[] = [];
+  const stack = [obj];
+  let size = 0;
+
+  while (stack.length) {
+    const value = stack.pop();
+
+    switch (typeof value) {
+      case "boolean":
+        size += 4;
+        break;
+      case "string":
+        size += value.length * 2;
+        break;
+      case "number":
+        size += 8;
+        break;
+      case "object":
+        if (!objectList.includes(value)) {
+          objectList.push(value);
+          for (const prop in value) {
+            if (Object.prototype.hasOwnProperty.call(value, prop))
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+              stack.push((value as any)[prop]);
+          }
+        }
+        break;
+    }
+  }
+  return size;
+}
+
+
+
+function dataURLToBuffer(url: string): Uint8Array {
+  const binary = atob(url.split(",")[1]);
+  const buffer = new Uint8Array(binary.length);
+  for (let i = 0; i < buffer.length; i++)
+    buffer[i] = binary.charCodeAt(i);
+  return buffer;
+}
+
+function serializeCanvas(canvas: HTMLCanvasElement): TextureBuffer {
+  const buffer = dataURLToBuffer(canvas.toDataURL());
+  return {
+    width: canvas.width,
+    height: canvas.height,
+    buffer
+  }
+}
+
+function serializeDataURL(url: string): DataURLBuffer {
+  const buffer = dataURLToBuffer(url);
+  return {
+    mimeType: url.split(";")[0].split(":")[1],
+    buffer
+  }
+}
+
+
+export function serializeTexture(texture: any): string | TextureBuffer | DataURLBuffer {
+
+  if (typeof texture === "string" && texture.startsWith("data:")) return serializeDataURL(texture);
+  if (typeof texture === "string") return texture;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  if (typeof texture.src === "string") return texture.src;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+  if (typeof texture.value !== "undefined") return texture.value;
+
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+  const baseTexture: PIXI.BaseTexture = texture.baseTexture;
+  const resource = baseTexture.resource;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+  if (typeof (resource as any).data !== "undefined") return { width: resource.width, height: resource.height, buffer: (resource as any).data };
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+  const source = (resource as any).source;
+
+  if (source instanceof HTMLImageElement) return source.getAttribute("src") as string;
+  else if (source instanceof HTMLCanvasElement) return serializeCanvas(source);
+
+  console.error(texture);
+  throw new InvalidTextureError();
+}
+
+function deserializeDataURL(data: DataURLBuffer): PIXI.Texture {
+  const base64 = btoa(String.fromCharCode.apply(null, data.buffer as unknown as number[]));
+  return PIXI.Texture.from(`data:${data.mimeType};base64,${base64}`);
+}
+
+function deserializeTextureBuffer(data: TextureBuffer): PIXI.Texture {
+  return PIXI.Texture.fromBuffer(data.buffer, data.width, data.height);
+}
+
+export function deserializeTexture(data: string | DataURLBuffer | TextureBuffer): PIXI.Texture {
+  if (typeof data === "string") {
+    const texture = coerceTexture(data);
+    if (texture) return texture;
+  }
+
+  const urlBuffer = data as DataURLBuffer;
+  if (urlBuffer.buffer && urlBuffer.mimeType) return deserializeDataURL(urlBuffer);
+  const textureBuffer = data as TextureBuffer;
+  if (textureBuffer.buffer && textureBuffer.width && textureBuffer.height) return deserializeTextureBuffer(textureBuffer);
+
+  else throw new InvalidTextureError()
+}
+
+export function log(...args: unknown[]) {
+  console.log(LOG_ICON, __MODULE_TITLE__, ...args);
 }

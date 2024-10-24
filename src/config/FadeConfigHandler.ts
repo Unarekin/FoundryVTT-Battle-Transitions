@@ -1,12 +1,7 @@
-import { TransitionConfigHandler } from '../interfaces';
+import { TransitionConfigHandler, FadeConfiguration } from '../interfaces';
 import { localize } from '../utils';
 
 
-export interface FadeConfiguration {
-  duration: number;
-  background: string;
-  id: string;
-}
 
 export class FadeConfigHandler implements TransitionConfigHandler<FadeConfiguration> {
 
@@ -15,13 +10,12 @@ export class FadeConfigHandler implements TransitionConfigHandler<FadeConfigurat
 
   public readonly defaultSettings: FadeConfiguration = {
     duration: 1000,
-    background: "#00000000",
-    id: ""
+    background: "#00000000"
   }
 
 
   generateSummary(flag: FadeConfiguration): string {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (flag) return [localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: (flag as any).duration }), (flag as any).background].join("; ");
     else return "";
   }

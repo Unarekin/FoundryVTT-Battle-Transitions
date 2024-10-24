@@ -1,14 +1,7 @@
-import { TransitionConfigHandler } from "../interfaces";
+import { BilinearWipeConfiguration, TransitionConfigHandler } from "../interfaces";
 import { localize } from "../utils";
 import { BilinearDirection, RadialDirection } from '../types';
 
-export interface BilinearWipeConfiguration {
-  duration: number;
-  direction: BilinearDirection;
-  radial: RadialDirection;
-  background: string;
-  id?: string;
-}
 
 export class BilinearWipeConfigHandler implements TransitionConfigHandler<BilinearWipeConfiguration> {
   public get key() { return "bilinear-wipe"; }
@@ -21,7 +14,7 @@ export class BilinearWipeConfigHandler implements TransitionConfigHandler<Biline
   }
 
   public generateSummary(flag?: BilinearWipeConfiguration): string {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (flag) return [localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: (flag as any).duration }), flag.direction, flag.radial, (flag as any).background].join("; ");
     else return "";
   }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { initializeCanvas } from './transitionUtils';
 import BattleTransitions from "./BattleTransitions";
@@ -6,6 +5,8 @@ import { CUSTOM_HOOKS } from "./constants"
 import { TransitionChain } from "./TransitionChain"
 import { registerHelpers, registerTemplates } from "./templates"
 import { ConfigurationHandler } from './config/ConfigurationHandler';
+
+import SocketHandler from "./SocketHandler";
 
 // CONFIG.debug.hooks = true;
 
@@ -26,5 +27,9 @@ Hooks.on("renderSceneConfig", (app: Application) => {
 Hooks.once("init", async () => {
   registerHelpers();
   await registerTemplates();
-})
+});
 
+Hooks.once("socketlib.ready", () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  SocketHandler.register(socketlib.registerModule(__MODULE_ID__));
+})

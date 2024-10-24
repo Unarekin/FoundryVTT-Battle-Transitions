@@ -1,12 +1,6 @@
-import { TransitionConfigHandler } from '../interfaces';
+import { TransitionConfigHandler, DiamondTransitionConfiguration } from '../interfaces';
 import { localize } from '../utils';
 
-export interface DiamondTransitionConfiguration {
-  size: number;
-  background: string;
-  duration: number;
-  id?: string;
-}
 
 
 export class DiamondTransitionConfigHandler implements TransitionConfigHandler<DiamondTransitionConfiguration> {

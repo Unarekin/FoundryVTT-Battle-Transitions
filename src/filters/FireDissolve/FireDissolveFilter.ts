@@ -10,17 +10,18 @@ type FireDissolveUniforms = {
   burn_size: number;
 }
 
-const defaultBurnTexture = createGradient1DTexture(1024, new PIXI.Color("#ff0400"), new PIXI.Color("#ffff01"));
+export const defaultBurnTexture = createGradient1DTexture(1024, new PIXI.Color("#ff0400"), new PIXI.Color("#ffff01"));
 
 export class FireDissolveFilter extends CustomFilter<FireDissolveUniforms> {
 
-  constructor(burnTexture?: PIXI.TextureSource) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  constructor(background?: PIXI.TextureSource | PIXI.ColorSource = "transparent", burnSize: number = 1.3) {
     const noise_texture = createNoiseTexture();
     const uniforms = {
       noise_texture,
       integrity: 1,
-      burn_size: 1.3,
-      burn_texture: burnTexture ? PIXI.Texture.from(burnTexture) : defaultBurnTexture
+      burn_size: burnSize,
+      burn_texture: defaultBurnTexture
     }
 
     super(undefined, fragment, uniforms);

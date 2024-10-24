@@ -13,6 +13,8 @@ declare var TweenMax: any;
 declare var gsap: any;
 declare var ColorPicker: any;
 
+declare var socketlib: any;
+
 declare module '*.frag' {
   const content: string;
   export default content;

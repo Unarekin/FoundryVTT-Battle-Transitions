@@ -1,14 +1,8 @@
-import { TransitionConfigHandler } from '../interfaces';
+import { TransitionConfigHandler, RadialWipeConfiguration } from '../interfaces';
 import { localize } from '../utils';
 import { RadialDirection } from '../types';
 
-export interface RadialWipeConfiguration {
-  duration: number;
-  background: string;
-  radial: RadialDirection;
 
-  id?: string;
-}
 
 export class RadialWipeConfigHandler implements TransitionConfigHandler<RadialWipeConfiguration> {
   public get key() { return "radialwipe"; }

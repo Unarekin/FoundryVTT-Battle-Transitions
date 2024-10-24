@@ -10,4 +10,5 @@ export * from './LocalizedError';
 export * from './NoApplicationError';
 export * from './NoCoverElementError';
 export * from './NotInitializedError';
+export * from './PermissionDeniedError';
 export * from './TransitionHasToStepError';

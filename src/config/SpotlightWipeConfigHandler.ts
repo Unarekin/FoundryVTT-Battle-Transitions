@@ -1,15 +1,8 @@
-import { TransitionConfigHandler } from '../interfaces';
+import { TransitionConfigHandler, SpotlightWipeConfiguration } from '../interfaces';
 import { localize } from '../utils';
 import { RadialDirection, WipeDirection } from '../types';
 
 
-export interface SpotlightWipeConfiguration {
-  duration: number;
-  direction: WipeDirection;
-  radial: RadialDirection;
-  background: string;
-  id?: string;
-}
 
 export class SpotlightWipeConfigHandler implements TransitionConfigHandler<SpotlightWipeConfiguration> {
   public get name() { return "BATTLETRANSITIONS.TRANSITIONTYPES.SPOTLIGHTWIPE"; }

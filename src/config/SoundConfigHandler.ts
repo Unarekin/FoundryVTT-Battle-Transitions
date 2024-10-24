@@ -1,11 +1,6 @@
-import { TransitionConfigHandler } from "../interfaces";
+import { TransitionConfigHandler, SoundConfiguration } from "../interfaces";
 import { localize } from "../utils";
 
-export interface SoundConfiguration {
-  file: string;
-  volume: number;
-  id?: string;
-}
 
 export class SoundConfigHandler implements TransitionConfigHandler<SoundConfiguration> {
   public get key() { return "sound"; }

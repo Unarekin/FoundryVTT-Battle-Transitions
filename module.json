@@ -27,6 +27,14 @@
         "compatibility": {
           "verified": "1.3"
         }
+      },
+      {
+        "id": "socketlib",
+        "type": "module",
+        "manifest": "https://raw.githubusercontent.com/manuelVo/foundryvtt-socketlib/master/module.json",
+        "compatibility": {
+          "verified": "1.1.0"
+        }
       }
     ]
   },
@@ -52,6 +60,7 @@
   "download": "#{DOWNLOAD}#",
   "license": "LICENSE",
   "readme": "README.md",
+  "socket": true,
   "media": [
     {
       "type": "icon",

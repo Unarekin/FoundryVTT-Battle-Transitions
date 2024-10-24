@@ -2,7 +2,7 @@ import { COVER_ID } from "./constants";
 import { ScreenSpaceCanvasGroup } from './ScreenSpaceCanvasGroup';
 import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError } from './errors';
 import { awaitHook, createColorTexture } from "./utils";
-import { TransitionStep } from "./types";
+import { TransitionStep } from "./interfaces";
 import { coerceScene } from "./coercion";
 
 
