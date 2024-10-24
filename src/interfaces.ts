@@ -30,6 +30,7 @@ export interface TransitionStep {
 
 interface TransitionConfiguration {
   id?: string;
+  easing?: string;
 }
 
 export interface BilinearWipeConfiguration extends TransitionConfiguration {
