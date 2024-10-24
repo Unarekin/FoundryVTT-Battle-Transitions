@@ -1,5 +1,5 @@
 import { TransitionConfigHandler, FireDissolveConfiguration } from '../interfaces';
-import { localize } from '../utils';
+import { generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
 
 
 export class FireDissolveConfigHandler implements TransitionConfigHandler<FireDissolveConfiguration> {
@@ -26,24 +26,15 @@ export class FireDissolveConfigHandler implements TransitionConfigHandler<FireDi
   async renderTemplate(flag?: FireDissolveConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/fire-dissolve-config.hbs`, {
       ...this.defaultSettings,
-      ...flag
+      ...flag,
+      easingSelect: generateEasingSelectOptions()
     });
   }
 
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): FireDissolveConfiguration {
-    const form = $(html).find("form").serializeArray();
-
-    const duration = form.find(elem => elem.name === "duration");
-    const background = form.find(elem => elem.name === "background");
-    const burnSize = form.find(elem => elem.name === "burnsize");
-    const id = form.find(elem => elem.name === "id");
-
     return {
       ...this.defaultSettings,
-      ...(duration ? { duration: parseFloat(duration.value) } : {}),
-      ...(background ? { background: background.value } : {}),
-      ...(burnSize ? { burnSize: parseFloat(burnSize.value) } : {}),
-      id: id ? id.value : foundry.utils.randomID()
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "background", "burnsize", "easing")
     }
   }
 }

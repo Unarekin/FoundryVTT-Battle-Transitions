@@ -55,6 +55,10 @@
           "LABEL": "Size"
         }
       },
+      "EASING": {
+        "DESCRIPTION": "The easing function to use when animating this transition.",
+        "LABEL": "Easing"
+      },
       "EDITSTEPDIALOG": {
         "TITLE": "Edit {name}"
       },

@@ -226,13 +226,14 @@ export class TransitionChain {
     await TweenMax.to(filter.uniforms, { integrity: 0, duration: config.duration / 1000, ease: config.easing || this.#defaultEasing });
   }
 
-  public burn(duration: number = 1000, background: PIXI.ColorSource | PIXI.TextureSource = "transparent", burnSize: number = 1.3): this {
+  public burn(duration: number = 1000, background: PIXI.ColorSource | PIXI.TextureSource = "transparent", burnSize: number = 1.3, easing: Easing = this.#defaultEasing): this {
     new FireDissolveFilter(background, burnSize);
     this.#sequence.push({
       type: "firedissolve",
       background: serializeTexture(background),
       duration,
-      burnSize
+      burnSize,
+      easing
     });
 
     return this;
