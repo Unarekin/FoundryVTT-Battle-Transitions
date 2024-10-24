@@ -2,7 +2,6 @@ import { COVER_ID } from "./constants";
 import { ScreenSpaceCanvasGroup } from './ScreenSpaceCanvasGroup';
 import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError } from './errors';
 import { awaitHook, createColorTexture } from "./utils";
-import { TransitionStep } from "./interfaces";
 import { coerceScene } from "./coercion";
 
 
@@ -98,24 +97,6 @@ export async function activateScene(arg: unknown): Promise<Scene> {
   void scene.activate();
   await awaitHook("canvasReady");
   return scene;
-}
-
-export async function transitionTo(name: string, callback: TransitionStep): Promise<void>
-export async function transitionTo(scene: Scene, callback: TransitionStep): Promise<void>
-export async function transitionTo(arg: string | Scene, callback: TransitionStep): Promise<void> {
-  const scene = typeof arg === "string" ? (game as Game).scenes?.getName(arg) : arg;
-  if (!scene) throw new InvalidSceneError(arg as string);
-
-  const container = await setupTransition();
-
-  // Hide loading bar for transition
-  hideLoadingBar();
-  await activateScene(scene);
-  showLoadingBar();
-  hideTransitionCover();
-
-  await callback(container);
-  cleanupTransition(container);
 }
 
 
