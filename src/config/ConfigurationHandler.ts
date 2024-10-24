@@ -30,7 +30,7 @@ const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
   new WaitConfigHandler(),
   new SoundConfigHandler(),
   new VideoConfigHandler()
-];
+].sort((a, b) => localize(a.name).localeCompare(localize(b.name)))
 
 
 export class ConfigurationHandler {
