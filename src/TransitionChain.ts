@@ -1,7 +1,7 @@
 import { coerceScene } from "./coercion";
 import { InvalidSceneError, InvalidTransitionError, PermissionDeniedError } from "./errors";
 import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter } from "./filters";
-import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration } from "./interfaces";
+import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from './types';
@@ -23,6 +23,7 @@ export class TransitionChain {
     radialwipe: this.#executeRadialWipe.bind(this),
     spotlightwipe: this.#executeSpotlightWipe.bind(this),
     textureswap: this.#executeTextureSwap.bind(this),
+    sound: this.#executeSound.bind(this),
     wait: this.#executeWait.bind(this)
   }
 
@@ -293,6 +294,29 @@ export class TransitionChain {
       type: "wait",
       duration
     });
+    return this;
+  }
+
+  async #executeSound(config: SoundConfiguration) {
+    console.log("Preloading sound:", config);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    await foundry.audio.AudioHelper.preloadSound(config.file);
+
+    console.log("Done");
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    const sound = await foundry.audio.AudioHelper.play({ src: config.file, volume: config.volume / 100, autoplay: true }, true) as Sound;
+    this.#sounds.push(sound);
+
+    return Promise.resolve();
+  }
+
+  public sound(sound: Sound | string, volume: number = 100): this {
+    this.#sequence.push({
+      type: "sound",
+      file: typeof sound === "string" ? sound : sound.src,
+      volume
+    });
+
     return this;
   }
 }
