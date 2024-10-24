@@ -1,9 +1,10 @@
 import { coerceTexture } from "./coercion";
 import { LOG_ICON } from "./constants";
-import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidTextureError } from "./errors";
-import { DataURLBuffer, TextureBuffer } from "./interfaces";
+import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidSceneError, InvalidTextureError } from "./errors";
+import { DataURLBuffer, TextureBuffer, TransitionStep } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
+import SocketHandler from "./SocketHandler";
 
 /**
  * Linearly interpolates between two values
@@ -316,4 +317,27 @@ export function deserializeTexture(data: string | DataURLBuffer | TextureBuffer)
 
 export function log(...args: unknown[]) {
   console.log(LOG_ICON, __MODULE_TITLE__, ...args);
+}
+
+export function addNavigationButton(buttons: any[]) {
+  buttons.push({
+    name: "BATTLETRANSITIONS.NAVIGATION.TRIGGER",
+    icon: `<i class="fas icon fa-fw crossed-swords"></i>`,
+    condition: (li: JQuery<HTMLLIElement>) => {
+      const scene = game.scenes?.get(li.data("sceneId") as string);
+      const steps: TransitionStep[] = scene?.getFlag(__MODULE_ID__, "steps") ?? [];
+
+      return (game.users?.current && scene?.canUserModify(game.users?.current, "update")) && !scene.active && steps.length;
+    },
+    callback: (li: JQuery<HTMLLIElement>) => {
+      const sceneId = li.data("sceneId") as string | undefined;
+      if (!sceneId) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+      const scene = game.scenes?.get(sceneId);
+      if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+      const steps: TransitionStep[] = scene.getFlag(__MODULE_ID__, "steps") ?? [];
+      if (!steps.length) return;
+
+      SocketHandler.transition(sceneId, steps);
+    }
+  })
 }

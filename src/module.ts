@@ -6,6 +6,7 @@ import { registerHelpers, registerTemplates } from "./templates"
 import { ConfigurationHandler } from './config/ConfigurationHandler';
 
 import SocketHandler from "./SocketHandler";
+import { addNavigationButton } from './utils';
 
 (window as any).BattleTransition = TransitionChain;
 
@@ -28,4 +29,8 @@ Hooks.once("init", async () => {
 Hooks.once("socketlib.ready", () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   SocketHandler.register(socketlib.registerModule(__MODULE_ID__));
+});
+
+Hooks.on("getSceneNavigationContext", (html: JQuery<HTMLElement>, buttons: any[]) => {
+  addNavigationButton(buttons);
 })

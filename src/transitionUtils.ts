@@ -1,7 +1,7 @@
 import { COVER_ID } from "./constants";
 import { ScreenSpaceCanvasGroup } from './ScreenSpaceCanvasGroup';
 import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError } from './errors';
-import { awaitHook, createColorTexture } from "./utils";
+import { awaitHook, createColorTexture, log } from "./utils";
 import { coerceScene } from "./coercion";
 
 
@@ -40,7 +40,7 @@ export async function createSnapshot() {
   const start = Date.now();
   const img = await renderer.extract.image(rt);
   // const img = renderer.extract.canvas(rt) as HTMLCanvasElement;
-  console.log(`Image transfered in ${Date.now() - start}ms`);
+  log(`Image transfered in ${Date.now() - start}ms`);
   transitionCover.style.backgroundImage = `url(${img.src})`;
   transitionCover.style.backgroundColor = renderer.background.backgroundColor.toHex()
   transitionCover.style.display = "block";

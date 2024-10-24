@@ -6,6 +6,9 @@
         "CANCEL": "Cancel"
       }
     },
+    "NAVIGATION": {
+      "TRIGGER": "Transition"
+    },
     "FORMATTERS": {
       "MILLISECONDS": "{value}ms",
       "PIXELS": "{value}px",
