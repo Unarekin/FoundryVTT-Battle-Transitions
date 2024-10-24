@@ -13,6 +13,7 @@ import { SpotlightWipeConfigHandler } from './SpotlightWipeConfigHandler';
 import { TextureSwapConfigHandler } from './TextureSwapConfigHandler';
 import { WaitConfigHandler } from './WaitConfigHandler';
 import { SoundConfigHandler } from './SoundConfigHandler';
+import { VideoConfigHandler } from './VideoConfigHandler';
 
 
 const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
@@ -27,7 +28,8 @@ const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
   new SpotlightWipeConfigHandler(),
   new TextureSwapConfigHandler(),
   new WaitConfigHandler(),
-  new SoundConfigHandler()
+  new SoundConfigHandler(),
+  new VideoConfigHandler()
 ];
 
 
