@@ -1,5 +1,5 @@
 import { InvalidElementError, InvalidTransitionError } from "../errors";
-import { TransitionConfigHandler } from "../interfaces";
+import { TransitionConfigHandler, TransitionStep } from "../interfaces";
 import { localize, shouldUseAppV2 } from "../utils";
 import { FadeConfigHandler } from './FadeConfigHandler';
 import { LinearWipeConfigHandler } from './LinearWipeConfigHandler';
@@ -331,6 +331,39 @@ export class ConfigurationHandler {
   }
 
   private async inject() {
+    if (game.release?.isNewer("12")) return this.injectV12();
+    else return this.injectV11();
+  }
+
+  private async injectV11() {
+    console.log("Injecting:", this.rootElement[0]);
+    const navBar = this.rootElement.find("nav.sheet-tabs.tabs");
+    const link = document.createElement("a");
+    link.classList.add("item");
+    link.dataset.tab = this.tabName;
+    const icon = document.createElement("i");
+    icon.classList.add(...this.icon);
+
+    link.appendChild(icon);
+    link.innerHTML += " " + localize("BATTLETRANSITIONS.SCENECONFIG.TAB");
+
+    navBar.append(link);
+
+    const transitionConfig = this.#scene.getFlag(__MODULE_ID__, this.configKey);
+    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, transitionConfig);
+    this.rootElement.find("button[type='submit']").before(`<div class="tab" data-tab="${this.tabName}">${content}</div>`);
+
+    const steps = this.#scene.getFlag(__MODULE_ID__, this.stepKey) as TransitionStep[];
+    if (Array.isArray(steps)) {
+      for (const step of steps) {
+        await this.addUpdateTransitionStep(step.type, step);
+      }
+    }
+    this.addEventListeners();
+  }
+
+  private async injectV12() {
+
     const navBar = this.rootElement.find("nav.sheet-tabs.tabs[data-group='main']");
     const link = document.createElement("a");
     link.classList.add("item");
@@ -350,11 +383,10 @@ export class ConfigurationHandler {
     this.rootElement.find("footer.sheet-footer").before(`<div class="tab" data-group="main" data-tab="${this.tabName}">${content}</div>`);
 
 
-    const steps = this.#scene.getFlag(__MODULE_ID__, this.stepKey) as object[];
+    const steps = this.#scene.getFlag(__MODULE_ID__, this.stepKey) as TransitionStep[];
     if (Array.isArray(steps)) {
       for (const step of steps) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-        await this.addUpdateTransitionStep((step as any).type, step);
+        await this.addUpdateTransitionStep(step.type, step);
       }
     }
 
