@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { initializeCanvas } from './transitionUtils';
-import { CUSTOM_HOOKS } from "./constants"
-import { TransitionChain } from "./TransitionChain"
-import { registerHelpers, registerTemplates } from "./templates"
+import { CUSTOM_HOOKS } from "./constants";
+import { TransitionChain } from "./TransitionChain";
+import { registerHelpers, registerTemplates } from "./templates";
 import { ConfigurationHandler } from './config/ConfigurationHandler';
 
 import SocketHandler from "./SocketHandler";
 import { addNavigationButton } from './utils';
+import { TransitionStep } from './interfaces';
 
 (window as any).BattleTransition = TransitionChain;
 
@@ -33,4 +34,19 @@ Hooks.once("socketlib.ready", () => {
 
 Hooks.on("getSceneNavigationContext", (html: JQuery<HTMLElement>, buttons: any[]) => {
   addNavigationButton(buttons);
-})
+});
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+Hooks.on("preUpdateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
+
+  if (delta.active && !(delta as any).isAutoTriggered) {
+    const config: any = scene.getFlag(__MODULE_ID__, "config");
+    const steps: TransitionStep[] = scene.getFlag(__MODULE_ID__, "steps");
+
+    if (config.autoTrigger && steps.length) {
+      // SocketHandler.autoTrigger(steps);
+      delta.active = false;
+      SocketHandler.transition(scene.id as string, steps);
+    }
+  }
+});

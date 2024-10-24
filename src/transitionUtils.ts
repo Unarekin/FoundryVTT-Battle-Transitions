@@ -94,7 +94,13 @@ export async function activateScene(scene: Scene): Promise<Scene>
 export async function activateScene(arg: unknown): Promise<Scene> {
   const scene = coerceScene(arg);
   if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : "[Object object]");
-  void scene.activate();
+  // void scene.activate();
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  void (scene as any).update({
+    active: true,
+    isAutoTriggered: true
+  });
   await awaitHook("canvasReady");
   return scene;
 }
