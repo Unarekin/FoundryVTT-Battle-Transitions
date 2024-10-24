@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { initializeCanvas } from './transitionUtils';
-import BattleTransitions from "./BattleTransitions";
 import { CUSTOM_HOOKS } from "./constants"
 import { TransitionChain } from "./TransitionChain"
 import { registerHelpers, registerTemplates } from "./templates"
@@ -8,9 +7,6 @@ import { ConfigurationHandler } from './config/ConfigurationHandler';
 
 import SocketHandler from "./SocketHandler";
 
-// CONFIG.debug.hooks = true;
-
-(window as any).BattleTransitions = BattleTransitions;
 (window as any).BattleTransition = TransitionChain;
 
 

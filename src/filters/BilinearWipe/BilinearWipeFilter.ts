@@ -1,8 +1,6 @@
 import { coerceTexture } from '../../coercion';
-import { CUSTOM_HOOKS } from '../../constants';
 import { InvalidDirectionError } from '../../errors';
-import { TransitionChain } from '../../TransitionChain';
-import { BilinearDirection, RadialDirection, WipeDirection } from '../../types';
+import { BilinearDirection, RadialDirection } from '../../types';
 import { createColorTexture } from '../../utils';
 import { TextureWipeFilter } from '../TextureWipe/TextureWipeFilter';
 
@@ -33,24 +31,6 @@ const TextureHash = {
   }
 }
 
-Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
-  BattleTransitions.Presets = {
-    bilinearHorizontalInside: generatePreset("horizontal", "inside"),
-    bilinearHorizontalOutside: generatePreset("horizontal", "outside"),
-    bilinearVerticalInside: generatePreset("vertical", "inside"),
-    bilinearVerticalOutside: generatePreset("vertical", "outside"),
-    bilinearTopLeftInisde: generatePreset("topleft", "inside"),
-    bilinearTopLeftOutside: generatePreset("topleft", "outside"),
-    bilinearTopRightInside: generatePreset("topright", "inside"),
-    bilinearTopRightOUtside: generatePreset("topright", "outside"),
-
-    ...(BattleTransitions.Presets ?? {})
-  }
-});
-
-function generatePreset(direction: BilinearDirection, radial: RadialDirection): (scene: string | Scene, duration: number) => Promise<void> {
-  return (scene: string | Scene, duration: number = 1000) => new TransitionChain(scene as any).bilinearWipe(direction, radial, duration).execute();
-}
 
 export class BilinearWipeFilter extends TextureWipeFilter {
 
