@@ -1,10 +1,10 @@
 import { coerceScene } from "./coercion";
 import { InvalidSceneError, InvalidTransitionError, PermissionDeniedError } from "./errors";
-import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter } from "./filters";
-import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration } from "./interfaces";
+import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter } from "./filters";
+import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
-import { BilinearDirection, RadialDirection, WipeDirection } from './types';
+import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from './types';
 import { awaitHook, createColorTexture, deserializeTexture, serializeTexture } from "./utils";
 
 
@@ -13,13 +13,14 @@ export class TransitionChain {
   #sequence: TransitionStep[] = [];
   #sounds: Sound[] = [];
 
-  #typeHandlers: {[x: string]: unknown} = {
-    linearwipe: this.#executeLinearWipe.bind(this),
+  #typeHandlers: { [x: string]: unknown } = {
     bilinearwipe: this.#executeBilinearWipe.bind(this),
-    radialwipe: this.#executeRadialWipe.bind(this),
+    clockwipe: this.#executeClockWipe.bind(this),
     diamondwipe: this.#executeDiamondWipe.bind(this),
     fade: this.#executeFade.bind(this),
-    firedissolve: this.#executeBurn.bind(this)
+    firedissolve: this.#executeBurn.bind(this),
+    linearwipe: this.#executeLinearWipe.bind(this),
+    radialwipe: this.#executeRadialWipe.bind(this),    
   }
 
   constructor(id: string)
@@ -205,6 +206,33 @@ export class TransitionChain {
       burnSize
     });
 
+    return this;
+  }
+
+  
+
+  async #executeClockWipe(config: ClockWipeConfiguration, container: PIXI.Container) {
+    const background = deserializeTexture(config.background);
+    const filter = new ClockWipeFilter(config.clockdirection, config.direction, background.baseTexture);
+    
+    if (Array.isArray(container.filters)) container.filters.push(filter);
+    else container.filters = [filter];
+    
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000 });
+
+  }
+
+  public clockWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number = 1000, background: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+
+    this.#sequence.push({
+      type: "clockwipe",
+      duration,
+      background: serializeTexture(background),
+      direction,
+      clockdirection: clockDirection
+    });
+    
     return this;
   }
 
