@@ -1,5 +1,4 @@
-import { TransitionConfigHandler } from "../interfaces";
-import { TextureSwapConfiguration } from "../types";
+import { TransitionConfigHandler, TextureSwapConfiguration } from "../interfaces";
 
 
 

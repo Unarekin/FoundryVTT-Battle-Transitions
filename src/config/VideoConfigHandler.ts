@@ -1,6 +1,5 @@
-import { TransitionConfigHandler } from "../interfaces";
+import { TransitionConfigHandler, VideoConfiguration } from "../interfaces";
 import { localize } from "../utils";
-import { VideoConfiguration } from "../types";
 
 
 

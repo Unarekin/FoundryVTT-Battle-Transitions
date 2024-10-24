@@ -1,10 +1,11 @@
 import { coerceScene } from "./coercion";
 import { InvalidSceneError, InvalidTransitionError, PermissionDeniedError } from "./errors";
-import { BilinearWipeFilter, LinearWipeFilter, RadialWipeFilter } from "./filters";
+import { BilinearWipeFilter, DiamondTransitionFilter, LinearWipeFilter, RadialWipeFilter } from "./filters";
+import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
-import { BilinearDirection, BilinearWipeConfiguration, LinearWipeConfiguration, RadialDirection, RadialWipeConfiguration, TransitionStep, WipeDirection } from './types';
-import { awaitHook, createColorTexture, serializeTexture } from "./utils";
+import { BilinearDirection, RadialDirection, WipeDirection } from './types';
+import { awaitHook, createColorTexture, deserializeTexture, serializeTexture } from "./utils";
 
 
 export class TransitionChain {
@@ -15,7 +16,8 @@ export class TransitionChain {
   #typeHandlers: {[x: string]: unknown} = {
     linearwipe: this.#executeLinearWipe.bind(this),
     bilinearwipe: this.#executeBilinearWipe.bind(this),
-    radialwipe: this.#executeRadialWipe.bind(this)
+    radialwipe: this.#executeRadialWipe.bind(this),
+    diamondwipe: this.#executeDiamondWipe.bind(this)
   }
 
   constructor(id: string)
@@ -66,7 +68,10 @@ export class TransitionChain {
   }
 
   async #executeLinearWipe(config: LinearWipeConfiguration, container: PIXI.Container) {
-    const wipe = new LinearWipeFilter(config.direction, config.background ?? createColorTexture("transparent").baseTexture);
+
+    const background = deserializeTexture(config.background ?? createColorTexture("transparent"));
+
+    const wipe = new LinearWipeFilter(config.direction, background.baseTexture);
     
     if (Array.isArray(container.filters)) container.filters.push(wipe);
     else container.filters=[wipe];
@@ -125,7 +130,7 @@ export class TransitionChain {
 
   }
   
-  public radial(direction: RadialDirection, duration: number = 1000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+  public radialWipe(direction: RadialDirection, duration: number = 1000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
     new RadialWipeFilter(direction, bg);
     
     this.#sequence.push({
@@ -134,6 +139,26 @@ export class TransitionChain {
       radial: direction,
       background: serializeTexture(bg)
     })
+    return this;
+  }
+ 
+
+  async #executeDiamondWipe(config: DiamondTransitionConfiguration, container: PIXI.Container) {
+    const filter = new DiamondTransitionFilter(config.size, config.background);
+    if (Array.isArray(container.filters)) container.filters.push(filter);
+    else container.filters = [filter];
+
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+          await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000 });
+  }
+
+  public diamondWipe(size: number, duration: number = 1000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+    this.#sequence.push({
+      type: "diamondwipe",
+      size,
+      background: serializeTexture(bg),
+      duration
+    });
     return this;
   }
   

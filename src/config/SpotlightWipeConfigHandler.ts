@@ -1,6 +1,6 @@
-import { TransitionConfigHandler } from '../interfaces';
+import { TransitionConfigHandler, SpotlightWipeConfiguration } from '../interfaces';
 import { localize } from '../utils';
-import { RadialDirection, SpotlightWipeConfiguration, WipeDirection } from '../types';
+import { RadialDirection, WipeDirection } from '../types';
 
 
 

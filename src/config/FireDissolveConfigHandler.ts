@@ -1,5 +1,4 @@
-import { TransitionConfigHandler } from '../interfaces';
-import { FireDissolveConfiguration } from '../types';
+import { TransitionConfigHandler, FireDissolveConfiguration } from '../interfaces';
 import { localize } from '../utils';
 
 

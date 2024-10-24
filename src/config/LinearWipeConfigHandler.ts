@@ -1,5 +1,5 @@
-import { TransitionConfigHandler } from "../interfaces";
-import { LinearWipeConfiguration, WipeDirection } from "../types";
+import { TransitionConfigHandler, LinearWipeConfiguration } from "../interfaces";
+import { WipeDirection } from "../types";
 
 
 export class LinearWipeConfigHandler implements TransitionConfigHandler<LinearWipeConfiguration> {

@@ -1,5 +1,4 @@
-import { TransitionConfigHandler } from '../interfaces';
-import { DiamondTransitionConfiguration } from '../types';
+import { TransitionConfigHandler, DiamondTransitionConfiguration } from '../interfaces';
 import { localize } from '../utils';
 
 

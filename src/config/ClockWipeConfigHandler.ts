@@ -1,6 +1,6 @@
-import { TransitionConfigHandler } from "../interfaces";
+import { TransitionConfigHandler, ClockWipeConfiguration } from "../interfaces";
 import { localize } from "../utils";
-import { ClockDirection, ClockWipeConfiguration, WipeDirection } from "../types";
+import { ClockDirection, WipeDirection } from "../types";
 
 
 export class ClockWipeConfigHandler implements TransitionConfigHandler<ClockWipeConfiguration> {

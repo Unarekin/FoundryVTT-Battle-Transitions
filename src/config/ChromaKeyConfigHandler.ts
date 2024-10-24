@@ -1,5 +1,4 @@
-import { TransitionConfigHandler } from "../interfaces";
-import { ChromaKeyConfiguration } from "../types";
+import { TransitionConfigHandler, ChromaKeyConfiguration } from "../interfaces";
 
 
 

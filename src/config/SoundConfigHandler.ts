@@ -1,5 +1,4 @@
-import { TransitionConfigHandler } from "../interfaces";
-import { SoundConfiguration } from "../types";
+import { TransitionConfigHandler, SoundConfiguration } from "../interfaces";
 import { localize } from "../utils";
 
 

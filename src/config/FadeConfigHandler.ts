@@ -1,5 +1,4 @@
-import { TransitionConfigHandler } from '../interfaces';
-import { FadeConfiguration } from '../types';
+import { TransitionConfigHandler, FadeConfiguration } from '../interfaces';
 import { localize } from '../utils';
 
 
@@ -16,7 +15,7 @@ export class FadeConfigHandler implements TransitionConfigHandler<FadeConfigurat
 
 
   generateSummary(flag: FadeConfiguration): string {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (flag) return [localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: (flag as any).duration }), (flag as any).background].join("; ");
     else return "";
   }

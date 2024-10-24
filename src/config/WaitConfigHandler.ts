@@ -1,5 +1,4 @@
-import { TransitionConfigHandler } from "../interfaces";
-import { WaitConfiguration } from "../types";
+import { TransitionConfigHandler, WaitConfiguration } from "../interfaces";
 import { localize } from "../utils";
 
 
