@@ -13,6 +13,7 @@ class SocketHandler {
   }
 
   private _execute(scene: string, config: TransitionStep[], caller: string) {
+    log("Executing transition chain:", config);
     void new TransitionChain(scene).execute(true, config, caller);
   }
 

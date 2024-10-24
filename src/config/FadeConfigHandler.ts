@@ -1,5 +1,5 @@
 import { TransitionConfigHandler, FadeConfiguration } from '../interfaces';
-import { localize } from '../utils';
+import { generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
 
 
 
@@ -21,23 +21,18 @@ export class FadeConfigHandler implements TransitionConfigHandler<FadeConfigurat
   }
 
   renderTemplate(flag?: FadeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/fade-config.hbs`, flag ?? {});
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/fade-config.hbs`, {
+      ...this.defaultSettings,
+      ...flag,
+      easingSelect: generateEasingSelectOptions()
+    }
+    );
   }
 
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): FadeConfiguration {
-
-
-    const form = $(html).find("form").serializeArray();
-
-    const duration = form.find(elem => elem.name === "duration");
-    const background = form.find(elem => elem.name === "background");
-    const id = form.find(elem => elem.name === "id");
-
     return {
       ...this.defaultSettings,
-      ...(duration ? { duration: parseFloat(duration.value) } : {}),
-      ...(background ? { background: background.value } : {}),
-      ...(id ? { id: id.value } : { id: foundry.utils.randomID() })
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "background", "easing")
     }
   }
 

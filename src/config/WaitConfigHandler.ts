@@ -1,5 +1,5 @@
 import { TransitionConfigHandler, WaitConfiguration } from "../interfaces";
-import { localize } from "../utils";
+import { localize, parseConfigurationFormElements } from "../utils";
 
 
 export class WaitConfigHandler implements TransitionConfigHandler<WaitConfiguration> {
@@ -24,14 +24,9 @@ export class WaitConfigHandler implements TransitionConfigHandler<WaitConfigurat
   }
 
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): WaitConfiguration {
-    const form = $(html).find("form").serializeArray()
-    const duration = form.find(elem => elem.name === "duration");
-    const id = form.find(elem => elem.name === "id");
-
     return {
       ...this.defaultSettings,
-      ...(duration ? { duration: parseFloat(duration.value) } : {}),
-      id: id ? id.value : foundry.utils.randomID()
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration")
     }
   }
 }

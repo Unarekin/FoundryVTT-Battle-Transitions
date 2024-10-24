@@ -341,3 +341,53 @@ export function addNavigationButton(buttons: any[]) {
     }
   })
 }
+
+export function generateEasingSelectOptions(): { [x: string]: string } {
+  return {
+    "none": "BATTLETRANSITIONS.EASINGS.NONE",
+    "power1in": "BATTLETRANSITIONS.EASINGS.POWER1IN",
+    "power1out": "BATTLETRANSITIONS.EASINGS.POWER1OUT",
+    "power1inout": "BATTLETRANSITIONS.EASINGS.POWER1INOUT",
+    "power2in": "BATTLETRANSITIONS.EASINGS.POWER2IN",
+    "power2out": "BATTLETRANSITIONS.EASINGS.POWER2OUT",
+    "power2inout": "BATTLETRANSITIONS.EASINGS.POWER2INOUT",
+    "power3in": "BATTLETRANSITIONS.EASINGS.POWER3IN",
+    "power3out": "BATTLETRANSITIONS.EASINGS.POWER3OUT",
+    "power3inout": "BATTLETRANSITIONS.EASINGS.POWER3INOUT",
+    "power4in": "BATTLETRANSITIONS.EASINGS.POWER4IN",
+    "power4out": "BATTLETRANSITIONS.EASINGS.POWER4OUT",
+    "power4inout": "BATTLETRANSITIONS.EASINGS.POWER4INOUT",
+    "backin": "BATTLETRANSITIONS.EASINGS.BACKIN",
+    "backout": "BATTLETRANSITIONS.EASINGS.BACKOUT",
+    "backinout": "BATTLETRANSITIONS.EASINGS.BACKINOUT",
+    "bouncein": "BATTLETRANSITIONS.EASINGS.BOUNCEIN",
+    "bounceout": "BATTLETRANSITIONS.EASINGS.BOUNCEOUT",
+    "bounceinout": "BATTLETRANSITIONS.EASINGS.BOUNCEINOUT",
+    "circin": "BATTLETRANSITIONS.EASINGS.CIRCIN",
+    "circout": "BATTLETRANSITIONS.EASINGS.CIRCOUT",
+    "circinout": "BATTLETRANSITIONS.EASINGS.CIRCINOUT",
+    "elasticin": "BATTLETRANSITIONS.EASINGS.ELASTICIN",
+    "elasticout": "BATTLETRANSITIONS.EASINGS.ELASTICOUT",
+    "elasticinout": "BATTLETRANSITIONS.EASINGS.ELASTICINOUT",
+    "expoin": "BATTLETRANSITIONS.EASINGS.EXPOIN",
+    "expoout": "BATTLETRANSITIONS.EASINGS.EXPOOUT",
+    "expoinout": "BATTLETRANSITIONS.EASINGS.EXPOINOUT",
+    "sinein": "BATTLETRANSITIONS.EASINGS.SINEIN",
+    "sineout": "BATTLETRANSITIONS.EASINGS.SINEOUT",
+    "sineinout": "BATTLETRANSITIONS.EASINGS.SINEINOUT"
+  }
+}
+
+
+export function parseConfigurationFormElements(form: JQuery<HTMLFormElement>, ...elements: string[]): { [x: string]: unknown } {
+  const serialized = form.serializeArray();
+
+  const elem = elements.reduce((prev, curr) => {
+    return {
+      ...prev,
+      [curr]: serialized.reduce((prev2, curr2) => curr2.name === curr ? curr === "id" && !curr2.value ? foundry.utils.randomID() : curr2.value : prev2, "")
+    }
+  }, {});
+  console.log("Parsed:", elem);
+  return elem;
+}

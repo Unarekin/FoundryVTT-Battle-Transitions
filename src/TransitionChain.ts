@@ -4,7 +4,7 @@ import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, Line
 import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
-import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from './types';
+import { BilinearDirection, ClockDirection, Easing, RadialDirection, WipeDirection } from './types';
 import { awaitHook, createColorTexture, deserializeTexture, serializeTexture } from "./utils";
 
 
@@ -13,6 +13,7 @@ export class TransitionChain {
   #sequence: TransitionStep[] = [];
   #sounds: Sound[] = [];
   #transitionOverlay: PIXI.Container | null = null;
+  #defaultEasing: Easing = "none";
 
   #typeHandlers: { [x: string]: unknown } = {
     bilinearwipe: this.#executeBilinearWipe.bind(this),
@@ -100,11 +101,11 @@ export class TransitionChain {
     else container.filters = [wipe];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(wipe.uniforms, { progress: 1, duration: config.duration / 1000 });
+    await TweenMax.to(wipe.uniforms, { progress: 1, duration: config.duration / 1000, ease: config.easing || this.#defaultEasing });
 
   }
 
-  public linearWipe(direction: WipeDirection, duration: number = 1000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+  public linearWipe(direction: WipeDirection, duration: number = 1000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent", easing: Easing = this.#defaultEasing): this {
     new LinearWipeFilter(direction, bg);
 
     const background = serializeTexture(bg);
@@ -113,7 +114,8 @@ export class TransitionChain {
       type: "linearwipe",
       duration,
       direction,
-      background
+      background,
+      easing
     });
     return this;
   }
@@ -127,10 +129,10 @@ export class TransitionChain {
     else container.filters = [filter];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000 });
+    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000, ease: config.easing || this.#defaultEasing });
   }
 
-  public bilinearWipe(direction: BilinearDirection, radial: RadialDirection, duration: number = 1000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+  public bilinearWipe(direction: BilinearDirection, radial: RadialDirection, duration: number = 1000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent", easing: Easing = this.#defaultEasing): this {
     new BilinearWipeFilter(direction, radial, bg);
     const background = serializeTexture(bg);
     this.#sequence.push({
@@ -138,7 +140,8 @@ export class TransitionChain {
       duration,
       direction,
       radial,
-      background
+      background,
+      easing
     });
     return this;
   }
@@ -151,18 +154,19 @@ export class TransitionChain {
     else container.filters = [filter];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000 });
+    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000, ease: config.easing || this.#defaultEasing });
 
   }
 
-  public radialWipe(direction: RadialDirection, duration: number = 1000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+  public radialWipe(direction: RadialDirection, duration: number = 1000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent", easing: Easing = this.#defaultEasing): this {
     new RadialWipeFilter(direction, bg);
 
     this.#sequence.push({
       type: "radialwipe",
       duration,
       radial: direction,
-      background: serializeTexture(bg)
+      background: serializeTexture(bg),
+      easing
     })
     return this;
   }
@@ -175,16 +179,17 @@ export class TransitionChain {
     else container.filters = [filter];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000 });
+    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000, ease: config.easing || this.#defaultEasing });
   }
 
-  public diamondWipe(size: number, duration: number = 1000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+  public diamondWipe(size: number, duration: number = 1000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent", easing: Easing = this.#defaultEasing): this {
     new DiamondTransitionFilter(size, bg);
     this.#sequence.push({
       type: "diamondwipe",
       size,
       background: serializeTexture(bg),
-      duration
+      duration,
+      easing
     });
     return this;
   }
@@ -197,16 +202,17 @@ export class TransitionChain {
     else container.filters = [filter];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000 });
+    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000, ease: config.easing || this.#defaultEasing });
 
   }
 
-  public fade(duration: number, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+  public fade(duration: number, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent", easing: Easing = this.#defaultEasing): this {
     new FadeTransitionFilter(bg);
     this.#sequence.push({
       type: "fade",
       duration,
-      background: serializeTexture(bg)
+      background: serializeTexture(bg),
+      easing
     });
     return this;
   }
@@ -217,16 +223,17 @@ export class TransitionChain {
     else container.filters = [filter];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { integrity: 0, duration: config.duration / 1000 });
+    await TweenMax.to(filter.uniforms, { integrity: 0, duration: config.duration / 1000, ease: config.easing || this.#defaultEasing });
   }
 
-  public burn(duration: number = 1000, background: PIXI.ColorSource | PIXI.TextureSource = "transparent", burnSize: number = 1.3): this {
+  public burn(duration: number = 1000, background: PIXI.ColorSource | PIXI.TextureSource = "transparent", burnSize: number = 1.3, easing: Easing = this.#defaultEasing): this {
     new FireDissolveFilter(background, burnSize);
     this.#sequence.push({
       type: "firedissolve",
       background: serializeTexture(background),
       duration,
-      burnSize
+      burnSize,
+      easing
     });
 
     return this;
@@ -242,11 +249,11 @@ export class TransitionChain {
     else container.filters = [filter];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000 });
+    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000, ease: config.easing || this.#defaultEasing });
 
   }
 
-  public clockWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number = 1000, background: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+  public clockWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number = 1000, background: PIXI.TextureSource | PIXI.ColorSource = "transparent", easing: Easing = this.#defaultEasing): this {
     new ClockWipeFilter(clockDirection, direction, background);
 
     this.#sequence.push({
@@ -254,7 +261,8 @@ export class TransitionChain {
       duration,
       background: serializeTexture(background),
       direction,
-      clockdirection: clockDirection
+      clockdirection: clockDirection,
+      easing
     });
 
     return this;
@@ -268,17 +276,18 @@ export class TransitionChain {
     else container.filters = [filter];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000 });
+    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000, ease: config.easing || this.#defaultEasing });
   }
 
-  public spotlightWipe(direction: WipeDirection, radial: RadialDirection, duration: number = 1000, background: PIXI.ColorSource | PIXI.TextureSource = "transparent"): this {
+  public spotlightWipe(direction: WipeDirection, radial: RadialDirection, duration: number = 1000, background: PIXI.ColorSource | PIXI.TextureSource = "transparent", easing: Easing = this.#defaultEasing): this {
     new SpotlightWipeFilter(direction, radial, background);
     this.#sequence.push({
       type: "spotlightwipe",
       direction,
       radial,
       duration,
-      background: serializeTexture(background)
+      background: serializeTexture(background),
+      easing
     });
 
     return this;

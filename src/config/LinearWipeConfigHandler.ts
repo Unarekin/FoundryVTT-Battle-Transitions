@@ -1,5 +1,5 @@
 import { TransitionConfigHandler, LinearWipeConfiguration } from "../interfaces";
-import { WipeDirection } from "../types";
+import { generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
 
 
 export class LinearWipeConfigHandler implements TransitionConfigHandler<LinearWipeConfiguration> {
@@ -32,24 +32,14 @@ export class LinearWipeConfigHandler implements TransitionConfigHandler<LinearWi
         "topright": "BATTLETRANSITIONS.DIRECTIONS.TOPRIGHT",
         "bottomleft": "BATTLETRANSITIONS.DIRECTIONS.BOTTOMLEFT",
         "bottomright": "BATTLETRANSITIONS.DIRECTIONS.BOTTOMRIGHT"
-      }
+      },
+      easingSelect: generateEasingSelectOptions()
     });
   }
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): LinearWipeConfiguration {
-    const form = $(html).find("form").serializeArray();
-
-    const duration = form.find(elem => elem.name === "duration");
-    const background = form.find(elem => elem.name === "background");
-    const direction = form.find(elem => elem.name === "direction");
-
-    const id = form.find(elem => elem.name === "id");
-
     return {
       ...this.defaultSettings,
-      ...(duration ? { duration: parseFloat(duration.value) } : {}),
-      ...(background ? { background: background.value } : {}),
-      ...(direction ? { direction: direction.value as WipeDirection } : {}),
-      id: id ? id.value : foundry.utils.randomID()
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "direction", "background", "easing")
     }
   }
   public get key() { return "linearwipe"; }

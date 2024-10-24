@@ -2,48 +2,81 @@
   "BATTLETRANSITIONS": {
     "DIALOGS": {
       "BUTTONS": {
-        "OK": "Ok",
-        "CANCEL": "Cancel"
+        "CANCEL": "Cancel",
+        "OK": "Ok"
       }
+    },
+    "DIRECTIONS": {
+      "BOTTOM": "Bottom",
+      "BOTTOMLEFT": "Bottom Left",
+      "BOTTOMRIGHT": "Bottom Right",
+      "CLOCKWISE": "Clockwise",
+      "COUNTERCLOCKWISE": "Counterclockwise",
+      "HORIZONTAL": "Horizontal",
+      "INSIDE": "Inside",
+      "LEFT": "Left",
+      "OUTSIDE": "Outside",
+      "RIGHT": "Right",
+      "TOP": "Top",
+      "TOPLEFT": "Top Left",
+      "TOPRIGHT": "Top Right",
+      "VERTICAL": "Vertical"
+    },
+    "FORMATTERS": {
+      "MILLISECONDS": "{value}ms",
+      "PERCENT": "{value}%",
+      "PIXELS": "{value}px"
     },
     "NAVIGATION": {
       "TRIGGER": "Transition"
     },
-    "FORMATTERS": {
-      "MILLISECONDS": "{value}ms",
-      "PIXELS": "{value}px",
-      "PERCENT": "{value}%"
-    },
-    "DIRECTIONS": {
-      "LEFT": "Left",
-      "RIGHT": "Right",
-      "TOP": "Top",
-      "BOTTOM": "Bottom",
-      "TOPLEFT": "Top Left",
-      "TOPRIGHT": "Top Right",
-      "BOTTOMLEFT": "Bottom Left",
-      "BOTTOMRIGHT": "Bottom Right",
-      "INSIDE": "Inside",
-      "OUTSIDE": "Outside",
-      "HORIZONTAL": "Horizontal",
-      "VERTICAL": "Vertical",
-      "CLOCKWISE": "Clockwise",
-      "COUNTERCLOCKWISE": "Counterclockwise"
-    },
     "TRANSITIONTYPES": {
-      "FADE": "Fade",
-      "LINEARWIPE": "Linear Wipe",
       "BILINEARWIPE": "Bilinear Wipe",
-      "DIAMOND": "Diamond",
-      "CLOCKWIPE": "Clock Wipe",
-      "FIREDISSOLVE": "Fire Dissolve",
-      "RADIALWIPE": "Radial Wipe",
-      "SPOTLIGHTWIPE": "Spotlight Wipe",
       "CHROMAKEY": "Chroma Key",
+      "CLOCKWIPE": "Clock Wipe",
+      "DIAMOND": "Diamond",
+      "FADE": "Fade",
+      "FIREDISSOLVE": "Fire Dissolve",
+      "LINEARWIPE": "Linear Wipe",
+      "RADIALWIPE": "Radial Wipe",
+      "SOUND": "Sound",
+      "SPOTLIGHTWIPE": "Spotlight Wipe",
       "TEXTURESWAP": "Texture Swap",
       "VIDEO": "Video",
-      "SOUND": "Sound",
       "WAIT": "Wait"
+    },
+    "EASINGS": {
+      "BACKINOUT": "back.inOut",
+      "BACKIN": "back.in",
+      "BACKOUT": "back.out",
+      "BOUNCEINOUT": "bounce.inOut",
+      "BOUNCEIN": "bounce.in",
+      "BOUNCEOUT": "bounce.out",
+      "CIRCINOUT": "circ.inOut",
+      "CIRCIN": "circ.in",
+      "CIRCOUT": "circ.out",
+      "ELASTICINOUT": "elastic.inOut",
+      "ELASTICIN": "elastic.in",
+      "ELASTICOUT": "elastic.out",
+      "EXPOINOUT": "expo.inOut",
+      "EXPOIN": "expo.in",
+      "EXPOOUT": "expo.out",
+      "NONE": "none",
+      "POWER1INOUT": "power1.inOut",
+      "POWER1IN": "power1.in",
+      "POWER1OUT": "power1.out",
+      "POWER2INOUT": "power2.inOut",
+      "POWER2IN": "power2.in",
+      "POWER2OUT": "power2.out",
+      "POWER3INOUT": "power3.inOut",
+      "POWER3IN": "power3.in",
+      "POWER3OUT": "power3.out",
+      "POWER4INOUT": "power4.inOut",
+      "POWER4IN": "power4.in",
+      "POWER4OUT": "power4.out",
+      "SINEINOUT": "sine.inOut",
+      "SINEIN": "sine.in",
+      "SINEOUT": "sine.out"
     }
   }
 }

@@ -1,6 +1,5 @@
 import { TransitionConfigHandler, SpotlightWipeConfiguration } from '../interfaces';
-import { localize } from '../utils';
-import { RadialDirection, WipeDirection } from '../types';
+import { generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
 
 
 
@@ -29,21 +28,9 @@ export class SpotlightWipeConfigHandler implements TransitionConfigHandler<Spotl
   }
 
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): SpotlightWipeConfiguration {
-    const form = $(html).find("form").serializeArray();
-
-    const duration = form.find(elem => elem.name === "duration");
-    const direction = form.find(elem => elem.name === "direction");
-    const radial = form.find(elem => elem.name === "radial");
-    const background = form.find(elem => elem.name === "background");
-    const id = form.find(elem => elem.name === "id");
-
     return {
       ...this.defaultSettings,
-      ...(duration ? { duration: parseFloat(duration.value) } : {}),
-      ...(background ? { background: background.value } : {}),
-      ...(direction ? { direction: direction.value as WipeDirection } : {}),
-      ...(radial ? { radial: radial.value as RadialDirection } : {}),
-      ...(id ? { id: id.value } : { id: foundry.utils.randomID() })
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "direction", "radial", "background", "easing"),
     }
   }
 
@@ -59,7 +46,8 @@ export class SpotlightWipeConfigHandler implements TransitionConfigHandler<Spotl
       radialSelect: {
         inside: "BATTLETRANSITIONS.DIRECTIONS.INSIDE",
         outside: "BATTLETRANSITIONS.DIRECTIONS.OUTSIDE"
-      }
+      },
+      easingSelect: generateEasingSelectOptions()
     })
   }
 

@@ -1,5 +1,5 @@
 import { TransitionConfigHandler, DiamondTransitionConfiguration } from '../interfaces';
-import { localize } from '../utils';
+import { generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
 
 
 
@@ -29,25 +29,16 @@ export class DiamondTransitionConfigHandler implements TransitionConfigHandler<D
   public async renderTemplate(flag?: DiamondTransitionConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/diamond-config.hbs`, {
       ...this.defaultSettings,
-      ...flag
+      ...flag,
+      easingSelect: generateEasingSelectOptions()
     });
   }
 
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): DiamondTransitionConfiguration {
-    const form = $(html).find("form").serializeArray();
-
-    const duration = form.find(elem => elem.name === "duration");
-    const size = form.find(elem => elem.name === "size");
-    const background = form.find(elem => elem.name === "background");
-
-    const id = form.find(elem => elem.name === "id");
 
     return {
       ...this.defaultSettings,
-      ...(duration ? { duration: parseFloat(duration.value) } : {}),
-      ...(size ? { size: parseFloat(size.value) } : {}),
-      ...(background ? { background: background.value } : {}),
-      id: id ? id.value : foundry.utils.randomID()
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "size", "easing")
     }
 
   }

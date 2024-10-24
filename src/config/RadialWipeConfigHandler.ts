@@ -1,5 +1,5 @@
 import { TransitionConfigHandler, RadialWipeConfiguration } from '../interfaces';
-import { localize } from '../utils';
+import { generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
 import { RadialDirection } from '../types';
 
 
@@ -33,24 +33,15 @@ export class RadialWipeConfigHandler implements TransitionConfigHandler<RadialWi
       radialOptions: {
         "inside": "BATTLETRANSITIONS.DIRECTIONS.INSIDE",
         "outside": "BATTLETRANSITIONS.DIRECTIONS.OUTSIDE"
-      }
+      },
+      easingSelect: generateEasingSelectOptions()
     });
   }
 
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): RadialWipeConfiguration {
-    const form = $(html).find("form").serializeArray();
-
-    const duration = form.find(elem => elem.name === "duration");
-    const radial = form.find(elem => elem.name === "radial");
-    const background = form.find(elem => elem.name === "background");
-    const id = form.find(elem => elem.name === "id");
-
     return {
       ...this.defaultSettings,
-      ...(background ? { background: background.value } : {}),
-      ...(duration ? { duration: parseFloat(duration.value) } : {}),
-      ...(radial ? { radial: radial.value as RadialDirection } : {}),
-      id: id ? id.value : foundry.utils.randomID()
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "radial", "background", "easing")
     }
   }
 }

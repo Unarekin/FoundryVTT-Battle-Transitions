@@ -1,6 +1,5 @@
 import { TransitionConfigHandler, ClockWipeConfiguration } from "../interfaces";
-import { localize } from "../utils";
-import { ClockDirection, WipeDirection } from "../types";
+import { generateEasingSelectOptions, localize, parseConfigurationFormElements } from "../utils";
 
 
 export class ClockWipeConfigHandler implements TransitionConfigHandler<ClockWipeConfiguration> {
@@ -36,27 +35,15 @@ export class ClockWipeConfigHandler implements TransitionConfigHandler<ClockWipe
       clockDirectionSelect: {
         clockwise: "BATTLETRANSITIONS.DIRECTIONS.CLOCKWISE",
         counterclockwise: "BATTLETRANSITIONS.DIRECTIONS.COUNTERCLOCKWISE"
-      }
+      },
+      easingSelect: generateEasingSelectOptions()
     });
   }
 
   public createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): ClockWipeConfiguration {
-    const form = $(html).find("form").serializeArray();
-
-    const duration = form.find(elem => elem.name === "duration");
-    const direction = form.find(elem => elem.name === "direction");
-    const background = form.find(elem => elem.name === "background");
-    const clockDirection = form.find(elem => elem.name === "clockdirection");
-
-    const id = form.find(elem => elem.name === "id");
-
     return {
       ...this.defaultSettings,
-      ...(duration ? { duration: parseFloat(duration.value) } : {}),
-      ...(direction ? { direction: direction.value as WipeDirection } : {}),
-      ...(background ? { background: background.value } : {}),
-      ...(clockDirection ? { clockdirection: clockDirection.value as ClockDirection } : {}),
-      id: id ? id.value : foundry.utils.randomID()
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "direction", "background", "clockdirection", "easing")
     }
   }
 
