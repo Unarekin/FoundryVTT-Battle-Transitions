@@ -1,4 +1,4 @@
-import { CannotInitializeCanvasError, CanvasNotFoundError } from "./errors";
+import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidTextureError } from "./errors";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise"
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 
@@ -195,4 +195,39 @@ export function localize(key: string, data: Record<string, unknown> = {}): strin
 export function shouldUseAppV2(): boolean {
 
   return game.release?.isNewer("12") ?? false;
+}
+
+// function canvasToBuffer(canvas: HTMLCanvasElement): Uint8Array {
+//   const url = canvas.toDataURL();
+//   const base64 = url.split(",")[1];
+//   const binaryString = atob(base64);
+//   const len = binaryString.length;
+//   const bytes = new Uint8Array(len);
+//   for (let i = 0; i < len; i++)
+//     bytes[i] = binaryString.charCodeAt(i);
+
+//   return bytes;
+// }
+
+export function serializeTexture(texture: any): string | Uint8Array {
+  if (typeof texture === "string") return texture;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  if (typeof texture.src === "string") return texture.src;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+  if (typeof texture.value !== "undefined") return texture.value;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+  const source: HTMLElement = texture.baseTexture.resource.source;
+
+  if (source instanceof HTMLImageElement) return source.getAttribute("src") as string;
+  else if (source instanceof HTMLCanvasElement) return source.toDataURL();
+
+  console.error(texture);
+  throw new InvalidTextureError();
+}
+
+export function deserializeTexture(data: any): PIXI.Texture {
+  if (typeof data === "string") return PIXI.Texture.from(data);
+  else throw new InvalidTextureError()
 }

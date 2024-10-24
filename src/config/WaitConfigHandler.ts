@@ -1,10 +1,7 @@
 import { TransitionConfigHandler } from "../interfaces";
+import { WaitConfiguration } from "../types";
 import { localize } from "../utils";
 
-export interface WaitConfiguration {
-  duration: number;
-  id?: string;
-}
 
 export class WaitConfigHandler implements TransitionConfigHandler<WaitConfiguration> {
   public get key() { return "wait"; }

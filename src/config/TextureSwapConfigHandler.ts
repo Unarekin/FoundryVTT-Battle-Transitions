@@ -1,10 +1,7 @@
 import { TransitionConfigHandler } from "../interfaces";
+import { TextureSwapConfiguration } from "../types";
 
 
-export interface TextureSwapConfiguration {
-  texture: string;
-  id?: string;
-}
 
 export class TextureSwapConfigHandler implements TransitionConfigHandler<TextureSwapConfiguration> {
   public get name() { return "BATTLETRANSITIONS.TRANSITIONTYPES.TEXTURESWAP"; }

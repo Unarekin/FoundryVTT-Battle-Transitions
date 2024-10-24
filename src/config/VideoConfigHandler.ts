@@ -1,12 +1,7 @@
 import { TransitionConfigHandler } from "../interfaces";
 import { localize } from "../utils";
+import { VideoConfiguration } from "../types";
 
-export interface VideoConfiguration {
-  file: string;
-  background: string;
-  volume: number;
-  id?: string;
-}
 
 
 export class VideoConfigHandler implements TransitionConfigHandler<VideoConfiguration> {

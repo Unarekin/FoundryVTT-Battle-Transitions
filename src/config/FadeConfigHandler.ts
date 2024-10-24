@@ -1,12 +1,8 @@
 import { TransitionConfigHandler } from '../interfaces';
+import { FadeConfiguration } from '../types';
 import { localize } from '../utils';
 
 
-export interface FadeConfiguration {
-  duration: number;
-  background: string;
-  id: string;
-}
 
 export class FadeConfigHandler implements TransitionConfigHandler<FadeConfiguration> {
 
@@ -15,8 +11,7 @@ export class FadeConfigHandler implements TransitionConfigHandler<FadeConfigurat
 
   public readonly defaultSettings: FadeConfiguration = {
     duration: 1000,
-    background: "#00000000",
-    id: ""
+    background: "#00000000"
   }
 
 

@@ -1,13 +1,7 @@
 import { TransitionConfigHandler } from '../interfaces';
+import { FireDissolveConfiguration } from '../types';
 import { localize } from '../utils';
 
-export interface FireDissolveConfiguration {
-  duration: number;
-  background: string;
-  burnSize: number;
-
-  id?: string;
-}
 
 export class FireDissolveConfigHandler implements TransitionConfigHandler<FireDissolveConfiguration> {
   public get key() { return "firedissolve"; }

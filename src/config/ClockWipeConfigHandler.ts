@@ -1,14 +1,7 @@
 import { TransitionConfigHandler } from "../interfaces";
 import { localize } from "../utils";
-import { ClockDirection, WipeDirection } from "../types";
+import { ClockDirection, ClockWipeConfiguration, WipeDirection } from "../types";
 
-export interface ClockWipeConfiguration {
-  clockdirection: ClockDirection;
-  direction: WipeDirection,
-  duration: number;
-  background: string;
-  id?: string;
-}
 
 export class ClockWipeConfigHandler implements TransitionConfigHandler<ClockWipeConfiguration> {
   public get key() { return "clockwipe" }

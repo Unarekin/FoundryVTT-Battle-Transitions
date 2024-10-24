@@ -1,11 +1,6 @@
 import { TransitionConfigHandler } from "../interfaces";
+import { ChromaKeyConfiguration } from "../types";
 
-export interface ChromaKeyConfiguration {
-  keyColor: string;
-  background: string;
-
-  id?: string;
-}
 
 
 export class ChromaKeyConfigHandler implements TransitionConfigHandler<ChromaKeyConfiguration> {

@@ -1,14 +1,7 @@
 import { TransitionConfigHandler } from "../interfaces";
 import { localize } from "../utils";
-import { BilinearDirection, RadialDirection } from '../types';
+import { BilinearDirection, BilinearWipeConfiguration, RadialDirection } from '../types';
 
-export interface BilinearWipeConfiguration {
-  duration: number;
-  direction: BilinearDirection;
-  radial: RadialDirection;
-  background: string;
-  id?: string;
-}
 
 export class BilinearWipeConfigHandler implements TransitionConfigHandler<BilinearWipeConfiguration> {
   public get key() { return "bilinear-wipe"; }
