@@ -1,7 +1,7 @@
 import { coerceScene } from "./coercion";
 import { InvalidSceneError, InvalidTransitionError, PermissionDeniedError } from "./errors";
-import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter } from "./filters";
-import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration } from "./interfaces";
+import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter } from "./filters";
+import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from './types';
@@ -20,7 +20,9 @@ export class TransitionChain {
     fade: this.#executeFade.bind(this),
     firedissolve: this.#executeBurn.bind(this),
     linearwipe: this.#executeLinearWipe.bind(this),
-    radialwipe: this.#executeRadialWipe.bind(this),    
+    radialwipe: this.#executeRadialWipe.bind(this),
+    spotlightwipe: this.#executeSpotlightWipe.bind(this),
+    textureswap: this.#executeTextureSwap.bind(this)
   }
 
   constructor(id: string)
@@ -159,6 +161,7 @@ export class TransitionChain {
   }
 
   public diamondWipe(size: number, duration: number = 1000, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+    new DiamondTransitionFilter(size, bg);
     this.#sequence.push({
       type: "diamondwipe",
       size,
@@ -181,6 +184,7 @@ export class TransitionChain {
   }
 
   public fade(duration: number, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+    new FadeTransitionFilter(bg);
     this.#sequence.push({
       type: "fade",
       duration,
@@ -198,7 +202,8 @@ export class TransitionChain {
     await TweenMax.to(filter.uniforms, { integrity: 0, duration: config.duration / 1000 });
   }
 
-  public burn(duration: number = 1000, background: PIXI.ColorSource | PIXI.TextureSource = "transparent", burnSize: number=1.3): this {
+  public burn(duration: number = 1000, background: PIXI.ColorSource | PIXI.TextureSource = "transparent", burnSize: number = 1.3): this {
+    new FireDissolveFilter(background, burnSize);
     this.#sequence.push({
       type: "firedissolve",
       background: serializeTexture(background),
@@ -224,6 +229,7 @@ export class TransitionChain {
   }
 
   public clockWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number = 1000, background: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+    new ClockWipeFilter(clockDirection, direction, background);
 
     this.#sequence.push({
       type: "clockwipe",
@@ -237,6 +243,45 @@ export class TransitionChain {
   }
 
 
+  async #executeSpotlightWipe(config: SpotlightWipeConfiguration, container: PIXI.Container) {
+    const background = deserializeTexture(config.background);
+    const filter = new SpotlightWipeFilter(config.direction, config.radial, background.baseTexture);
+    if (Array.isArray(container.filters)) container.filters.push(filter);
+    else container.filters=[filter];
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000 });
+  }
+  
+  public spotlightWipe(direction: WipeDirection, radial: RadialDirection, duration: number = 1000, background: PIXI.ColorSource | PIXI.TextureSource = "transparent"): this {
+    new SpotlightWipeFilter(direction, radial, background);
+    this.#sequence.push({
+      type: "spotlightwipe",
+      direction,
+      radial,
+      duration,
+      background: serializeTexture(background)
+    });
+
+    return this;
+  }
+
+  async #executeTextureSwap(config: TextureSwapConfiguration, container: PIXI.Container) {
+    const texture = deserializeTexture(config.texture);
+    const filter = new TextureSwapFilter(texture.baseTexture);
+    if (Array.isArray(container.filters)) container.filters.push(filter);
+    else container.filters = [filter];
+    return Promise.resolve();
+  }
+
+  public textureSwap(texture: PIXI.ColorSource | PIXI.TextureSource): this {
+    new TextureSwapFilter(texture);
+    this.#sequence.push({
+      type: "textureswap",
+      texture: serializeTexture(texture)
+    })
+    return this;
+  }
 }
 
 
