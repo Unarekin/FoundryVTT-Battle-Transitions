@@ -7,7 +7,9 @@
       }
     },
     "FORMATTERS": {
-      "MILLISECONDS": "{value}ms"
+      "MILLISECONDS": "{value}ms",
+      "PIXELS": "{value}px",
+      "PERCENT": "{value}%"
     },
     "DIRECTIONS": {
       "LEFT": "Left",
@@ -21,7 +23,9 @@
       "INSIDE": "Inside",
       "OUTSIDE": "Outside",
       "HORIZONTAL": "Horizontal",
-      "VERTICAL": "Vertical"
+      "VERTICAL": "Vertical",
+      "CLOCKWISE": "Clockwise",
+      "COUNTERCLOCKWISE": "Counterclockwise"
     },
     "TRANSITIONTYPES": {
       "FADE": "Fade",

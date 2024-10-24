@@ -23,6 +23,10 @@ export async function registerTemplates() {
 
   return loadTemplates([
     `/modules/${__MODULE_ID__}/templates/scene-config.hbs`,
-    ...["add-step", "fade-config", "linearwipe-config", "step-item"].map(name => `/modules/${__MODULE_ID__}/templates/config/${name}.hbs`)
+    ...["add-step",
+      "fade-config",
+      "linearwipe-config",
+      "step-item",
+    ].map(name => `/modules/${__MODULE_ID__}/templates/config/${name}.hbs`)
   ]);
 }

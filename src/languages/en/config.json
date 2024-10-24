@@ -21,6 +21,24 @@
       "EDITSTEPDIALOG": {
         "TITLE": "Edit {name}"
       },
+      "COMMON": {
+        "DURATION": {
+          "LABEL": "Duration",
+          "HINT": "Duration in milliseconds"
+        },
+        "BACKGROUND": {
+          "LABEL": "Background Color",
+          "HINT": "Background color to show behind this step"
+        },
+        "DIRECTION": {
+          "LABEL": "Direction",
+          "HINT": "Direction from which to start"
+        },
+        "RADIAL": {
+          "LABEL": "Radial Direction",
+          "HINT": "Start from inside or outside"
+        }
+      },
       "FADE": {
         "NAME": "Fade",
         "DURATION": {
@@ -30,6 +48,10 @@
         "BACKGROUND": {
           "LABEL": "Background Color",
           "HINT": "Background color to which to fade"
+        },
+        "RADIAL": {
+          "LABEL": "Radial Direction",
+          "HINT": "Start transition from inside or outside"
         }
       },
       "LINEARWIPE": {
@@ -45,6 +67,57 @@
         "DIRECTION": {
           "LABEL": "Start Direction",
           "HINT": "The direction from which the wipe should start."
+        }
+      },
+      "BILINEARWIPE": {},
+      "CHROMAKEY": {
+        "KEYCOLOR": {
+          "LABEL": "Key Color",
+          "HINT": "Color to be removed"
+        }
+      },
+      "CLOCKWIPE": {
+        "DIRECTION": {
+          "LABEL": "Clock Direction",
+          "HINT": "Direction to travel"
+        }
+      },
+      "DIAMOND": {
+        "SIZE": {
+          "LABEL": "Size",
+          "HINT": "Size of diamondsudration"
+        }
+      },
+      "FIREDISSOLVE": {
+        "BURNSIZE": {
+          "LABEL": "Burn Size",
+          "HINT": "Size of the burn holes during transiton"
+        }
+      },
+      "TEXTURESWAP": {
+        "TEXTURE": {
+          "LABEL": "Texture",
+          "HINT": "Texture to which to swap"
+        }
+      },
+      "SOUND": {
+        "FILE": {
+          "LABEL": "File",
+          "HINT": "Sound file to play"
+        },
+        "VOLUME": {
+          "LABEL": "Volume",
+          "HINT": ""
+        }
+      },
+      "VIDEO": {
+        "FILE": {
+          "LABEL": "File",
+          "HINT": "Video to play"
+        },
+        "VOLUME": {
+          "LABEL": "Volume",
+          "HINT": ""
         }
       }
     }
