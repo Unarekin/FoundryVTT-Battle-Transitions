@@ -61,6 +61,14 @@
   "license": "LICENSE",
   "readme": "README.md",
   "socket": true,
+  "packs": [
+    {
+      "name": "bt-sample-macros",
+      "label": "Battle Transitions",
+      "path": "./packs/bt-sample-macros",
+      "type": "Macro"
+    }
+  ],
   "media": [
     {
       "type": "icon",

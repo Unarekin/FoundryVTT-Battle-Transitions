@@ -5,7 +5,7 @@ import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, Rad
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, WipeDirection } from './types';
-import { awaitHook, createColorTexture, deserializeTexture, serializeTexture } from "./utils";
+import { awaitHook, createColorTexture, deserializeTexture, localize, serializeTexture } from "./utils";
 
 
 export class TransitionChain {
@@ -449,5 +449,28 @@ export class TransitionChain {
 
   static Cleanup() {
     cleanupTransition();
+  }
+
+  static async SelectScene(): Promise<Scene | null> {
+    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
+      scenes: game.scenes.contents.map(scene => ({ id: scene.id, name: scene.name }))
+    });
+    return Dialog.wait({
+      title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE"),
+      content,
+      default: "ok",
+      buttons: {
+        cancel: {
+          icon: "<i class='fas fa-times'></i>",
+          label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
+          callback: () => null
+        },
+        ok: {
+          icon: "<i class='fas fa-check'></i>",
+          label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+          callback: (html) => game.scenes?.get($(html).find("#scene").val() as string) ?? null
+        }
+      }
+    }) as Promise<Scene | null>
   }
 }
