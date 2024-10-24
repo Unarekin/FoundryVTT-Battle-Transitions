@@ -62,14 +62,20 @@ export async function setupTransition(): Promise<PIXI.Container> {
   return container;
 }
 
-export function cleanupTransition(container: PIXI.DisplayObject) {
+export function cleanupTransition(container?: PIXI.DisplayObject) {
   // Ensure our cover is hidden
   transitionCover.style.display = "none";
   transitionCover.style.backgroundImage = "";
-  if (Array.isArray(container.children) && container.children.length)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    for (let i = container.children.length - 1; i >= 0; i--) container.children[i].destroy();
-  container.destroy();
+  if (container) {
+    if (Array.isArray(container.children) && container.children.length)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      for (let i = container.children.length - 1; i >= 0; i--) container.children[i].destroy();
+    container.destroy();
+  }
+
+  // Ensure no scene is set to trigger
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+  void Promise.all((game.scenes as any).contents.map((scene: any) => scene.unsetFlag(__MODULE_ID__, "autoTriggered")));
 }
 
 export function hideLoadingBar() {

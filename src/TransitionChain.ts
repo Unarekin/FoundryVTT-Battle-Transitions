@@ -437,4 +437,8 @@ export class TransitionChain {
     if (!steps.length) return;
     SocketHandler.transition(scene.id ?? "", steps);
   }
+
+  static Cleanup() {
+    cleanupTransition();
+  }
 }
