@@ -4,7 +4,7 @@ import { localize } from '../utils';
 
 
 export class DiamondTransitionConfigHandler implements TransitionConfigHandler<DiamondTransitionConfiguration> {
-  public get key() { return "diamond"; }
+  public get key() { return "diamondwipe"; }
   public get name() { return "BATTLETRANSITIONS.TRANSITIONTYPES.DIAMOND"; }
 
   public readonly defaultSettings: DiamondTransitionConfiguration = {

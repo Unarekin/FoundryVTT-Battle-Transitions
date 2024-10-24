@@ -4,7 +4,7 @@ import { localize, shouldUseAppV2 } from "../utils";
 import { FadeConfigHandler } from './FadeConfigHandler';
 import { LinearWipeConfigHandler } from './LinearWipeConfigHandler';
 import { BilinearWipeConfigHandler } from './BilinearWipeConfigHandler';
-// import { ChromaKeyConfigHandler } from './ChromaKeyConfigHandler';
+import { ChromaKeyConfigHandler } from './ChromaKeyConfigHandler';
 import { ClockWipeConfigHandler } from './ClockWipeConfigHandler';
 import { DiamondTransitionConfigHandler } from './DiamondTransitionConfigHandler';
 import { FireDissolveConfigHandler } from './FireDissolveConfigHandler';
@@ -15,6 +15,7 @@ import { WaitConfigHandler } from './WaitConfigHandler';
 import { SoundConfigHandler } from './SoundConfigHandler';
 import { VideoConfigHandler } from './VideoConfigHandler';
 
+new ChromaKeyConfigHandler();
 
 const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
   new FadeConfigHandler(),
@@ -336,7 +337,6 @@ export class ConfigurationHandler {
   }
 
   private async injectV11() {
-    console.log("Injecting:", this.rootElement[0]);
     const navBar = this.rootElement.find("nav.sheet-tabs.tabs");
     const link = document.createElement("a");
     link.classList.add("item");

@@ -38,15 +38,22 @@ Hooks.on("getSceneNavigationContext", (html: JQuery<HTMLElement>, buttons: any[]
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 Hooks.on("preUpdateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
-
-  if (delta.active && !(delta as any).isAutoTriggered) {
+  if (delta.active && !(scene.getFlag(__MODULE_ID__, "autoTriggered") as boolean ?? false)) {
     const config: any = scene.getFlag(__MODULE_ID__, "config");
     const steps: TransitionStep[] = scene.getFlag(__MODULE_ID__, "steps");
 
-    if (config.autoTrigger && steps.length) {
+    if (config?.autoTrigger && steps?.length) {
       // SocketHandler.autoTrigger(steps);
       delta.active = false;
       SocketHandler.transition(scene.id as string, steps);
     }
   }
 });
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+Hooks.on("updateScene", async (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
+  if (delta.active && (scene.getFlag(__MODULE_ID__, "autoTriggered") as boolean ?? false)) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    await (scene as any).setFlag(__MODULE_ID__, "autoTriggered", false);
+  }
+})

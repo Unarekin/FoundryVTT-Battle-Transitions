@@ -4,7 +4,7 @@ import { BilinearDirection, RadialDirection } from '../types';
 
 
 export class BilinearWipeConfigHandler implements TransitionConfigHandler<BilinearWipeConfiguration> {
-  public get key() { return "bilinear-wipe"; }
+  public get key() { return "bilinearwipe"; }
   public get name() { return "BATTLETRANSITIONS.TRANSITIONTYPES.BILINEARWIPE"; }
   public readonly defaultSettings: BilinearWipeConfiguration = {
     duration: 1000,

@@ -52,7 +52,7 @@ export class LinearWipeConfigHandler implements TransitionConfigHandler<LinearWi
       id: id ? id.value : foundry.utils.randomID()
     }
   }
-  public get key() { return "linear-wipe"; }
+  public get key() { return "linearwipe"; }
   public get name() { return "BATTLETRANSITIONS.TRANSITIONTYPES.LINEARWIPE"; }
 
 
