@@ -1,7 +1,7 @@
 import { coerceScene } from "./coercion";
 import { InvalidSceneError, InvalidTransitionError, PermissionDeniedError } from "./errors";
 import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter } from "./filters";
-import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration } from "./interfaces";
+import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from './types';
@@ -24,6 +24,7 @@ export class TransitionChain {
     spotlightwipe: this.#executeSpotlightWipe.bind(this),
     textureswap: this.#executeTextureSwap.bind(this),
     sound: this.#executeSound.bind(this),
+    video: this.#executeVideo.bind(this),
     wait: this.#executeWait.bind(this)
   }
 
@@ -319,6 +320,66 @@ export class TransitionChain {
 
     return this;
   }
+
+  async #executeVideo(config: VideoConfiguration, container: PIXI.Container) {
+    const texture: PIXI.Texture = await PIXI.Assets.load(config.file);
+    const resource: PIXI.VideoResource = texture.baseTexture.resource as PIXI.VideoResource;
+    const source = resource.source;
+
+
+    return new Promise<void>((resolve, reject) => {
+      const swapFilter = new TextureSwapFilter(texture.baseTexture);
+
+      if (Array.isArray(container.filters)) container.filters.push(swapFilter);
+      else container.filters = [swapFilter];
+
+      source.addEventListener("ended", () => { resolve(); });
+      source.addEventListener("error", e => { reject(e.error as Error); });
+
+      void source.play();
+
+    })
+
+  }
+
+  public video(file: string, volume: number, background: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+
+    this.#sequence.push({
+      type: "video",
+      file,
+      volume,
+      background: serializeTexture(background)
+    });
+
+    return this;
+  }
+
+  //       return new Promise<void>((resolve, reject) => {
+
+  //         const swapFilter = new TextureSwapFilter(texture.baseTexture);
+
+
+  //         if (Array.isArray(container.filters)) container.filters.push(swapFilter);
+  //         else container.filters = [swapFilter];
+
+  //         source.addEventListener("ended", () => {
+  //           // swapFilter.destroy();
+  //           // chromaFilter.destroy();
+  //           resolve();
+  //         });
+
+  //         source.addEventListener("error", e => {
+  //           // swapFilter.destroy();
+  //           // chromaFilter.destroy();
+  //           reject(e.error as Error);
+  //         });
+  //         void source.play();
+  //       })
+  //     });
+
+  //     return this;
+  //   }
+
 }
 
 
