@@ -1,7 +1,7 @@
 import { coerceScene } from "./coercion";
 import { InvalidSceneError, InvalidTransitionError, PermissionDeniedError } from "./errors";
 import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter } from "./filters";
-import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration } from "./interfaces";
+import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from './types';
@@ -22,7 +22,8 @@ export class TransitionChain {
     linearwipe: this.#executeLinearWipe.bind(this),
     radialwipe: this.#executeRadialWipe.bind(this),
     spotlightwipe: this.#executeSpotlightWipe.bind(this),
-    textureswap: this.#executeTextureSwap.bind(this)
+    textureswap: this.#executeTextureSwap.bind(this),
+    wait: this.#executeWait.bind(this)
   }
 
   constructor(id: string)
@@ -280,6 +281,18 @@ export class TransitionChain {
       type: "textureswap",
       texture: serializeTexture(texture)
     })
+    return this;
+  }
+
+  async #executeWait(config: WaitConfiguration) {
+    return new Promise(resolve => { setTimeout(resolve, config.duration) });
+  }
+
+  public wait(duration: number): this {
+    this.#sequence.push({
+      type: "wait",
+      duration
+    });
     return this;
   }
 }
