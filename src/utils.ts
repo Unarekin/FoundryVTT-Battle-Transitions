@@ -186,3 +186,13 @@ export function getCurrentOverlayObject(): PIXI.DisplayObject | undefined {
   if (canvasGroup.children.length === 0) return;
   return canvasGroup.children[canvasGroup.children.length - 1];
 }
+
+
+export function localize(key: string, data: Record<string, unknown> = {}): string {
+  return game.i18n?.format(key, data) ?? key;
+}
+
+export function shouldUseAppV2(): boolean {
+
+  return game.release?.isNewer("12") ?? false;
+}

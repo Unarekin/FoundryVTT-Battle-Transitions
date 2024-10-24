@@ -82,8 +82,8 @@ const STATIC_FILES = [
   { src: "./LICENSE", dest: "LICENSE" },
   { src: "./README.md", dest: "README.md" },
   // { src: path.join(SRC_PATH, "fonts"), dest: "fonts" },
-  // { src: TEMPLATE_PATH, dest: "templates" },
-  { src: STYLE_PATH, dest: "styles" },
+  { src: TEMPLATE_PATH, dest: "templates" },
+  // { src: STYLE_PATH, dest: "styles" },
   // { src: path.join(SRC_PATH, "packs"), dest: "packs" },
   { src: path.join(SRC_PATH, "assets"), dest: "assets" },
   { src: path.join(SRC_PATH, "vendor"), dest: "vendor"}
@@ -128,7 +128,7 @@ const buildResults = await build({
     __MODULE_ID__: `"${__MODULE_ID__}"`,
     __MODULE_VERSION__: `"${__MODULE_VERSION__}"`,
   },
-  external: ["*.woff", "*.woff2", "*.otf", "*.ttf", "*.webp"],
+  external: ["*.woff", "*.woff2", "*.otf", "*.ttf", "*.webp", "*.svg", "*.jpg", "*.png"],
   loader: {
     ".frag": "text",
     ".vert": "text"

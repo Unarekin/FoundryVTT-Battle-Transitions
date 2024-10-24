@@ -1,3 +1,46 @@
 {
-  "BATTLETRANSITIONS": {}
+  "BATTLETRANSITIONS": {
+    "DIALOGS": {
+      "BUTTONS": {
+        "OK": "Ok",
+        "CANCEL": "Cancel"
+      }
+    },
+    "FORMATTERS": {
+      "MILLISECONDS": "{value}ms",
+      "PIXELS": "{value}px",
+      "PERCENT": "{value}%"
+    },
+    "DIRECTIONS": {
+      "LEFT": "Left",
+      "RIGHT": "Right",
+      "TOP": "Top",
+      "BOTTOM": "Bottom",
+      "TOPLEFT": "Top Left",
+      "TOPRIGHT": "Top Right",
+      "BOTTOMLEFT": "Bottom Left",
+      "BOTTOMRIGHT": "Bottom Right",
+      "INSIDE": "Inside",
+      "OUTSIDE": "Outside",
+      "HORIZONTAL": "Horizontal",
+      "VERTICAL": "Vertical",
+      "CLOCKWISE": "Clockwise",
+      "COUNTERCLOCKWISE": "Counterclockwise"
+    },
+    "TRANSITIONTYPES": {
+      "FADE": "Fade",
+      "LINEARWIPE": "Linear Wipe",
+      "BILINEARWIPE": "Bilinear Wipe",
+      "DIAMOND": "Diamond",
+      "CLOCKWIPE": "Clock Wipe",
+      "FIREDISSOLVE": "Fire Dissolve",
+      "RADIALWIPE": "Radial Wipe",
+      "SPOTLIGHTWIPE": "Spotlight Wipe",
+      "CHROMAKEY": "Chroma Key",
+      "TEXTURESWAP": "Texture Swap",
+      "VIDEO": "Video",
+      "SOUND": "Sound",
+      "WAIT": "Wait"
+    }
+  }
 }

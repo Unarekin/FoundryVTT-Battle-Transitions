@@ -1,0 +1,35 @@
+<div
+  class="flexcol step-config-item"
+  data-transition-type="sound"
+  data-id="{{id}}"
+>
+  <form>
+    <input type="hidden" name="id" id="id" value="{{id}}" />
+    <p>{{localize "BATTLETRANSITIONS.SCENECONFIG.SOUND.DESCRIPTION"}}</p>
+    <div class="form-group">
+      <label for="file">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.SOUND.FILE.LABEL"
+        }}</label>
+      <file-picker name="file" id="file" value="{{file}}"></file-picker>
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.SOUND.FILE.HINT"
+      }}</p>
+    <div class="form-group">
+      <label for="volume">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.SOUND.VOLUME.LABEL"
+        }}</label>
+      <range-picker
+        value="100"
+        min="0"
+        max="100"
+        step="1"
+        id="volume"
+        name="volume"
+      ></range-picker>
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.SOUND.VOLUME.HINT"
+      }}</p>
+  </form>
+</div>

@@ -6,3 +6,4 @@ export const CUSTOM_HOOKS = {
   TRANSITION_START: `${__MODULE_ID__}.transitionStart`,
   TRANSITION_END: `${__MODULE_ID__}.transitionEnd`
 }
+

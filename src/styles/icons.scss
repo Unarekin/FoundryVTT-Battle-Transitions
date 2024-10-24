@@ -1,0 +1,12 @@
+.icon {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+
+  &::before {
+    content: "-";
+  }
+}
+.crossed-swords {
+  background-image: url("/modules/battle-transitions/assets/icons/crossed-swords.svg");
+}

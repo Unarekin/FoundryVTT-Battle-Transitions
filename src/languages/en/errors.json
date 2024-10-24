@@ -9,7 +9,9 @@
       "NOTINITIALIZED": "Not initialized",
       "INVALIDDIRECTION": "Invalid direction provided: {direction}",
       "INVALIDMARO": "Invalid macro: {macro}",
-      "INVALIDTEXTURE": "Invalid texture provided."
+      "INVALIDTEXTURE": "Invalid texture provided.",
+      "INVALIDTRANSITION": "Invalid transition: {name}",
+      "INVALIDELEMENT": "Unable to locate HTML element"
     }
   }
 }

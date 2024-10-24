@@ -11,6 +11,7 @@ declare var BattleTransitions: {
 
 declare var TweenMax: any;
 declare var gsap: any;
+declare var ColorPicker: any;
 
 declare module '*.frag' {
   const content: string;

@@ -1,0 +1,25 @@
+<div class="form-group">
+  <label for="auto-trigger">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.LABEL"
+    }}</label>
+  <input
+    type="checkbox"
+    {{checked autoTrigger}}
+    name="auto-trigger"
+    id="auto-trigger"
+    {{checked autoTrigger}}
+  />
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.HINT"
+    }}</p>
+</div>
+<fieldset>
+  <legend>{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.TRANSITIONCONFIG.LABEL"
+    }}</legend>
+    <section id="transition-step-list"></section>
+  </section>
+  
+  <button data-action="add-step" id="add-step" name="add-step"><i class="fas fa-plus"></i>{{localize "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.ADDSTEP"}}</button>
+
+</fieldset>

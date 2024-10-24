@@ -1,0 +1,145 @@
+{
+  "BATTLETRANSITIONS": {
+    "SCENECONFIG": {
+      "ADDSTEPDIALOG": {
+        "TITLE": "Add Transition Step"
+      },
+      "AUTOTRIGGER": {
+        "HINT": "Automatically trigger this transition any time this scene is activated.",
+        "LABEL": "Automatically Trigger"
+      },
+      "BILINEARWIPE": {
+        "DESCRIPTION": "Two linear wipes along a horizontal, vertical, or diagonal axis originating from either the center or outer edges of the screen."
+      },
+      "BUTTONS": {
+        "ADDSTEP": "Add Step",
+        "CONFIGURE": "Configure {name}",
+        "REMOVE": "Remove {name}"
+      },
+      "CHROMAKEY": {
+        "DESCRIPTION": "Replace one color found in the current transition image with another.  Useful for adding transparency to green screen videos.",
+        "KEYCOLOR": {
+          "HINT": "Color to be removed",
+          "LABEL": "Key Color"
+        }
+      },
+      "CLOCKWIPE": {
+        "DESCRIPTION": "Wipe the screen around the center point in either a clockwise or counterclockwise direction.",
+        "DIRECTION": {
+          "HINT": "Direction to travel",
+          "LABEL": "Clock Direction"
+        }
+      },
+      "COMMON": {
+        "BACKGROUND": {
+          "HINT": "Background color to show behind this step",
+          "LABEL": "Background Color"
+        },
+        "DIRECTION": {
+          "HINT": "Direction from which to start",
+          "LABEL": "Direction"
+        },
+        "DURATION": {
+          "HINT": "Duration in milliseconds",
+          "LABEL": "Duration"
+        },
+        "RADIAL": {
+          "HINT": "Start from inside or outside",
+          "LABEL": "Radial Direction"
+        }
+      },
+      "DIAMOND": {
+        "DESCRIPTION": "Break the screen into diamond shapes that shrink over time, starting from the left to the right.",
+        "SIZE": {
+          "HINT": "Size of diamondsudration",
+          "LABEL": "Size"
+        }
+      },
+      "EDITSTEPDIALOG": {
+        "TITLE": "Edit {name}"
+      },
+      "FADE": {
+        "BACKGROUND": {
+          "HINT": "Background color to which to fade",
+          "LABEL": "Background Color"
+        },
+        "DESCRIPTION": "Fade from the current foreground to a specified background color.",
+        "DURATION": {
+          "HINT": "Duration of the fade, in milliseconds",
+          "LABEL": "Duration"
+        },
+        "NAME": "Fade",
+        "RADIAL": {
+          "HINT": "Start transition from inside or outside",
+          "LABEL": "Radial Direction"
+        }
+      },
+      "FIREDISSOLVE": {
+        "BURNSIZE": {
+          "HINT": "Size of the burn holes during transiton",
+          "LABEL": "Burn Size"
+        },
+        "DESCRIPTION": "Apply a 'burning' effect to the screen, exposing the underlying background."
+      },
+      "LINEARWIPE": {
+        "BACKGROUND": {
+          "HINT": "Background color to which to wipe",
+          "LABEL": "BG Color"
+        },
+        "DESCRIPTION": "A linear wipe from one side of the screen to the other, exposing a given background color along the way.",
+        "DIRECTION": {
+          "HINT": "The direction from which the wipe should start.",
+          "LABEL": "Start Direction"
+        },
+        "DURATION": {
+          "HINT": "Duration of the wipe, in milliseconds",
+          "LABEL": "Duration"
+        },
+        "NAME": "Linear Wipe"
+      },
+      "RADIALWIPE": {
+        "DESCRIPTION": "Circular wipe, starting either from the inside or outside of the screen."
+      },
+      "REMOVECONFIRM": "Are you sure you wish to remove {name}?",
+      "SOUND": {
+        "DESCRIPTION": "Play a sound during the transition.  Unlike most transition steps, this one will NOT wait until the sound is finished to continue to the next.",
+        "FILE": {
+          "HINT": "Sound file to play",
+          "LABEL": "File"
+        },
+        "VOLUME": {
+          "HINT": "",
+          "LABEL": "Volume"
+        }
+      },
+      "SPOTLIGHTWIPE": {
+        "DESCRIPTION": "Bilinear wipe centered on a point along the edge of, and starting from either the inside or outside of the screen."
+      },
+      "TAB": "Battle Transition",
+      "TEXTURESWAP": {
+        "DESCRIPTION": "Set the current transition background to a given image.",
+        "TEXTURE": {
+          "HINT": "Texture to which to swap",
+          "LABEL": "Texture"
+        }
+      },
+      "TRANSITIONCONFIG": {
+        "LABEL": "Transition Steps"
+      },
+      "VIDEO": {
+        "DESCRIPTION": "Play a video a part of the transition.",
+        "FILE": {
+          "HINT": "Video to play",
+          "LABEL": "File"
+        },
+        "VOLUME": {
+          "HINT": "",
+          "LABEL": "Volume"
+        }
+      },
+      "WAIT": {
+        "DESCRIPTION": "Wait a specified amount of time before continuing."
+      }
+    }
+  }
+}
