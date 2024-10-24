@@ -1,4 +1,5 @@
 import { coerceTexture } from "./coercion";
+import { LOG_ICON } from "./constants";
 import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidTextureError } from "./errors";
 import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
@@ -311,4 +312,8 @@ export function deserializeTexture(data: string | DataURLBuffer | TextureBuffer)
   if (textureBuffer.buffer && textureBuffer.width && textureBuffer.height) return deserializeTextureBuffer(textureBuffer);
 
   else throw new InvalidTextureError()
+}
+
+export function log(...args: unknown[]) {
+  console.log(LOG_ICON, __MODULE_TITLE__, ...args);
 }

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import { TransitionChain } from "./TransitionChain";
-import { TransitionStep } from "./types";
+import { TransitionStep } from "./interfaces";
+import { log } from "./utils";
 
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 class SocketHandler {
@@ -16,6 +17,7 @@ class SocketHandler {
   }
 
   public register(socket: any) {
+    log("Registering socket:", socket);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.#socket = socket;
     socket.register("transition.exec", this._execute.bind(this));
