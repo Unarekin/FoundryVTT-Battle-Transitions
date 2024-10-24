@@ -1,7 +1,7 @@
 import { coerceScene } from "./coercion";
 import { InvalidSceneError, InvalidTransitionError, PermissionDeniedError } from "./errors";
-import { BilinearWipeFilter, DiamondTransitionFilter, LinearWipeFilter, RadialWipeFilter } from "./filters";
-import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration } from "./interfaces";
+import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter } from "./filters";
+import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, RadialDirection, WipeDirection } from './types';
@@ -17,7 +17,9 @@ export class TransitionChain {
     linearwipe: this.#executeLinearWipe.bind(this),
     bilinearwipe: this.#executeBilinearWipe.bind(this),
     radialwipe: this.#executeRadialWipe.bind(this),
-    diamondwipe: this.#executeDiamondWipe.bind(this)
+    diamondwipe: this.#executeDiamondWipe.bind(this),
+    fade: this.#executeFade.bind(this),
+    firedissolve: this.#executeBurn.bind(this)
   }
 
   constructor(id: string)
@@ -98,7 +100,8 @@ export class TransitionChain {
 
 
   async #executeBilinearWipe(config: BilinearWipeConfiguration, container: PIXI.Container) {
-    const filter = new BilinearWipeFilter(config.direction, config.radial, config.background);
+    const background = deserializeTexture(config.background);
+    const filter = new BilinearWipeFilter(config.direction, config.radial, background.baseTexture);
     if (Array.isArray(container.filters)) container.filters.push(filter);
     else container.filters = [filter];
 
@@ -121,7 +124,8 @@ export class TransitionChain {
 
 
   async #executeRadialWipe(config: RadialWipeConfiguration, container: PIXI.Container) {
-    const filter = new RadialWipeFilter(config.radial, config.background);
+    const background = deserializeTexture(config.background);
+    const filter = new RadialWipeFilter(config.radial, background.baseTexture);
     if (Array.isArray(container.filters)) container.filters.push(filter);
     else container.filters = [filter];
 
@@ -144,7 +148,8 @@ export class TransitionChain {
  
 
   async #executeDiamondWipe(config: DiamondTransitionConfiguration, container: PIXI.Container) {
-    const filter = new DiamondTransitionFilter(config.size, config.background);
+    const background = deserializeTexture(config.background);
+    const filter = new DiamondTransitionFilter(config.size, background.baseTexture);
     if (Array.isArray(container.filters)) container.filters.push(filter);
     else container.filters = [filter];
 
@@ -162,6 +167,48 @@ export class TransitionChain {
     return this;
   }
   
+
+  async #executeFade(config: FadeConfiguration, container: PIXI.Container) {
+    const bg = deserializeTexture(config.background);
+    const filter = new FadeTransitionFilter(bg.baseTexture);
+    if (Array.isArray(container.filters)) container.filters.push(filter);
+    else container.filters = [filter];
+    
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000 });
+    
+  }
+
+  public fade(duration: number, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+    this.#sequence.push({
+      type: "fade",
+      duration,
+      background: serializeTexture(bg)
+    });
+    return this;
+  }
+
+  async #executeBurn(config: FireDissolveConfiguration, container: PIXI.Container) {
+    const filter = new FireDissolveFilter(config.background, config.burnSize);
+    if (Array.isArray(container.filters)) container.filters.push(filter);
+    else container.filters =[filter];
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    await TweenMax.to(filter.uniforms, { integrity: 0, duration: config.duration / 1000 });
+  }
+
+  public burn(duration: number = 1000, background: PIXI.ColorSource | PIXI.TextureSource = "transparent", burnSize: number=1.3): this {
+    this.#sequence.push({
+      type: "firedissolve",
+      background: serializeTexture(background),
+      duration,
+      burnSize
+    });
+
+    return this;
+  }
+
+
 }
 
 
