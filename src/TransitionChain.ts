@@ -69,7 +69,6 @@ export class TransitionChain {
       SocketHandler.transition(this.#scene.id ?? "", sequence ? sequence : this.#sequence);
     } else {
       if (!sequence) throw new InvalidTransitionError(typeof sequence);
-      console.log("TransitionChain executing:", sequence, caller);
       const container = await setupTransition();
       this.#transitionOverlay = container.children[1] as PIXI.Container;
       hideLoadingBar();
@@ -315,11 +314,8 @@ export class TransitionChain {
   }
 
   async #executeSound(config: SoundConfiguration) {
-    console.log("Preloading sound:", config);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     await foundry.audio.AudioHelper.preloadSound(config.file);
-
-    console.log("Done");
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const sound = await foundry.audio.AudioHelper.play({ src: config.file, volume: config.volume / 100, autoplay: true }, true) as Sound;
     this.#sounds.push(sound);
@@ -428,5 +424,17 @@ export class TransitionChain {
       type: "removeoverlay"
     });
     return this;
+  }
+
+  static TriggerForScene(id: string): void
+  static TriggerForScene(name: string): void
+  static TriggerForScene(uuid: string): void
+  static TriggerForScene(scene: Scene): void
+  static TriggerForScene(arg: unknown): void {
+    const scene = coerceScene(arg);
+    if (!scene) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
+    const steps: TransitionStep[] = scene.getFlag(__MODULE_ID__, "steps") ?? [];
+    if (!steps.length) return;
+    SocketHandler.transition(scene.id ?? "", steps);
   }
 }
