@@ -1,3 +1,4 @@
+import { coerceTexture } from "./coercion";
 import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidTextureError } from "./errors";
 import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
@@ -298,11 +299,16 @@ function deserializeTextureBuffer(data: TextureBuffer): PIXI.Texture {
   return PIXI.Texture.fromBuffer(data.buffer, data.width, data.height);
 }
 
-export function deserializeTexture(data: DataURLBuffer | TextureBuffer): PIXI.Texture {
-  if (typeof data === "string") return PIXI.Texture.from(data);
-  else if (data.buffer && (data as DataURLBuffer).mimeType) return deserializeDataURL(data as DataURLBuffer);
-  else if (data.buffer && (data as TextureBuffer).width && (data as TextureBuffer).height) return deserializeTextureBuffer(data as TextureBuffer);
+export function deserializeTexture(data: string | DataURLBuffer | TextureBuffer): PIXI.Texture {
+  if (typeof data === "string") {
+    const texture = coerceTexture(data);
+    if (texture) return texture;
+  }
 
+  const urlBuffer = data as DataURLBuffer;
+  if (urlBuffer.buffer && urlBuffer.mimeType) return deserializeDataURL(urlBuffer);
+  const textureBuffer = data as TextureBuffer;
+  if (textureBuffer.buffer && textureBuffer.width && textureBuffer.height) return deserializeTextureBuffer(textureBuffer);
 
   else throw new InvalidTextureError()
 }
