@@ -20,7 +20,7 @@ const STYLE_PATH = path.join(SRC_PATH, "styles");
 const TEMPLATE_PATH = path.join(SRC_PATH, "templates");
 
 // Import module.json for some config options
-import moduleConfig from "./module.json" assert { type: "json" };
+import moduleConfig from "./module.json" with { type: "json" };
 
 // Constants to be inserted into process.env during build
 const __DEV__ = process.env.NODE_ENV !== "production";
@@ -78,13 +78,15 @@ const jsonMergers = (
 // Create our copy plugins, ensuring that the paths we're copying from exist
 const STATIC_FILES = [
   { src: "./module.json", dest: "module.json" },
-  { src: "./system.json", dest: "system.json" },
+  // { src: "./system.json", dest: "system.json" },
   { src: "./LICENSE", dest: "LICENSE" },
   { src: "./README.md", dest: "README.md" },
-  { src: path.join(SRC_PATH, "fonts"), dest: "fonts" },
+  // { src: path.join(SRC_PATH, "fonts"), dest: "fonts" },
   { src: TEMPLATE_PATH, dest: "templates" },
-  { src: STYLE_PATH, dest: "styles" },
+  // { src: STYLE_PATH, dest: "styles" },
   { src: path.join(SRC_PATH, "packs"), dest: "packs" },
+  { src: path.join(SRC_PATH, "assets"), dest: "assets" },
+  { src: path.join(SRC_PATH, "vendor"), dest: "vendor"}
 ];
 
 const copyPlugins = [];
@@ -126,13 +128,17 @@ const buildResults = await build({
     __MODULE_ID__: `"${__MODULE_ID__}"`,
     __MODULE_VERSION__: `"${__MODULE_VERSION__}"`,
   },
-  external: ["*.woff", "*.woff2", "*.otf", "*.ttf", "*.webp"],
+  external: ["*.woff", "*.woff2", "*.otf", "*.ttf", "*.webp", "*.svg", "*.jpg", "*.png"],
+  loader: {
+    ".frag": "text",
+    ".vert": "text"
+  },
   plugins: [
     nodeExternalsPlugin(),
     cleanPlugin({ patterns: "./dist/**" }),
     sassPlugin(),
     ...copyPlugins,
-    ...jsonMergers,
+    ...jsonMergers
   ],
 });
 

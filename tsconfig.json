@@ -3,7 +3,11 @@
   "include": ["./@types", "./src/module.ts"],
   "exclude": ["./node_modules"],
   "compilerOptions": {
-    "typeRoots": ["./@types", "./node_modules/@types"],
+    "typeRoots": [
+      "./@types",
+      "./node_modules/@types",
+      "./node_modules/gsap/types"
+    ],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "module": "Node16",

@@ -1,1 +1,86 @@
-{}
+{
+  "BATTLETRANSITIONS": {
+    "DIALOGS": {
+      "BUTTONS": {
+        "CANCEL": "Cancel",
+        "OK": "Ok"
+      }
+    },
+    "DIRECTIONS": {
+      "BOTTOM": "Bottom",
+      "BOTTOMLEFT": "Bottom Left",
+      "BOTTOMRIGHT": "Bottom Right",
+      "CLOCKWISE": "Clockwise",
+      "COUNTERCLOCKWISE": "Counterclockwise",
+      "HORIZONTAL": "Horizontal",
+      "INSIDE": "Inside",
+      "LEFT": "Left",
+      "OUTSIDE": "Outside",
+      "RIGHT": "Right",
+      "TOP": "Top",
+      "TOPLEFT": "Top Left",
+      "TOPRIGHT": "Top Right",
+      "VERTICAL": "Vertical"
+    },
+    "EASINGS": {
+      "BACKIN": "back.in",
+      "BACKINOUT": "back.inOut",
+      "BACKOUT": "back.out",
+      "BOUNCEIN": "bounce.in",
+      "BOUNCEINOUT": "bounce.inOut",
+      "BOUNCEOUT": "bounce.out",
+      "CIRCIN": "circ.in",
+      "CIRCINOUT": "circ.inOut",
+      "CIRCOUT": "circ.out",
+      "ELASTICIN": "elastic.in",
+      "ELASTICINOUT": "elastic.inOut",
+      "ELASTICOUT": "elastic.out",
+      "EXPOIN": "expo.in",
+      "EXPOINOUT": "expo.inOut",
+      "EXPOOUT": "expo.out",
+      "NONE": "none",
+      "POWER1IN": "power1.in",
+      "POWER1INOUT": "power1.inOut",
+      "POWER1OUT": "power1.out",
+      "POWER2IN": "power2.in",
+      "POWER2INOUT": "power2.inOut",
+      "POWER2OUT": "power2.out",
+      "POWER3IN": "power3.in",
+      "POWER3INOUT": "power3.inOut",
+      "POWER3OUT": "power3.out",
+      "POWER4IN": "power4.in",
+      "POWER4INOUT": "power4.inOut",
+      "POWER4OUT": "power4.out",
+      "SINEIN": "sine.in",
+      "SINEINOUT": "sine.inOut",
+      "SINEOUT": "sine.out"
+    },
+    "FORMATTERS": {
+      "MILLISECONDS": "{value}ms",
+      "PERCENT": "{value}%",
+      "PIXELS": "{value}px"
+    },
+    "NAVIGATION": {
+      "TRIGGER": "Transition"
+    },
+    "SCENESELECTOR": {
+      "TITLE": "Scene Selector",
+      "DESCRIPTION": "Please select a scene below:"
+    },
+    "TRANSITIONTYPES": {
+      "BILINEARWIPE": "Bilinear Wipe",
+      "CHROMAKEY": "Chroma Key",
+      "CLOCKWIPE": "Clock Wipe",
+      "DIAMOND": "Diamond",
+      "FADE": "Fade",
+      "FIREDISSOLVE": "Fire Dissolve",
+      "LINEARWIPE": "Linear Wipe",
+      "RADIALWIPE": "Radial Wipe",
+      "SOUND": "Sound",
+      "SPOTLIGHTWIPE": "Spotlight Wipe",
+      "TEXTURESWAP": "Texture Swap",
+      "VIDEO": "Video",
+      "WAIT": "Wait"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "BATTLETRANSITIONS": {
+    "ERRORS": {
+      "INVALIDSCENE": "Invalid scene: {name}",
+      "CANNOTINITIALIZECANVAS": "Unable to initialize canvas",
+      "CANVASNOTFOUND": "Canvas not found",
+      "NOAPPLICATION": "No PIXI Application",
+      "NOCOVERELEMENT": "Unable to locate transition cover facade",
+      "NOTINITIALIZED": "Not initialized",
+      "INVALIDDIRECTION": "Invalid direction provided: {direction}",
+      "INVALIDMARO": "Invalid macro: {macro}",
+      "INVALIDTEXTURE": "Invalid texture provided.",
+      "INVALIDTRANSITION": "Invalid transition: {name}",
+      "INVALIDELEMENT": "Unable to locate HTML element",
+      "PERMISSIONDENIED": "Permision denied.",
+      "EXECUTECALLEDPARALLEL": "Do not call execute function when creating parallel transition chains."
+    }
+  }
+}
