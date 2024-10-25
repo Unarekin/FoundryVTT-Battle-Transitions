@@ -5,6 +5,7 @@
 
 
 - [Battle Transitions](#battle-transitions)
+  - [Installation](#installation)
   - [Examples](#examples)
   - [How does this Work?](#how-does-this-work)
   - [What About \[Some Effect Here\]?](#what-about-some-effect-here)
@@ -18,6 +19,14 @@
 Battle Transitions seeks to empower GMs with the ability to configure interesting, dynamic transitions from one scene to another, geared towards reproducing some of the effects that you might see when starting a random battle in your favorite JRPG-style games.
 
 The current list of transition types is somewhat basic, but with the framework in place, this list ease easy to expand as time goes on and I plan to introduce ever more interesting options.
+
+## Installation
+1. In Foundry, open the 'Add-on Modules' tab
+2. Click 'Install Module'
+3. Enter the following URL into the 'Manifest URL' field at the bottom
+```
+https://github.com/Unarekin/FoundryVTT-Theatre-Inserts-Automation/releases/latest/download/module.json
+```
 
 ## Examples
 For a list of provided effects, please see the [examples wiki page](https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Examples)
