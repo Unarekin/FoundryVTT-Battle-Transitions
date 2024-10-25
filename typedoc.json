@@ -3,5 +3,5 @@
   "entryPoints": ["src/**/*.ts"],
   "out": "pages",
   "cleanOutputDir": true,
-  "plugin": ["typedoc-plugin-rename-defaults", "typedoc-plugin-dt-links"]
+  "plugin": ["typedoc-plugin-rename-defaults"]
 }
