@@ -1,10 +1,11 @@
-[![GitHub License](https://img.shields.io/github/license/Unarekin/FoundryVTT-Module-Template)](https://raw.githubusercontent.com/Unarekin/FoundryVTT-Battle-Transitions/refs/heads/master/LICENSE?token=GHSAT0AAAAAACYQQTQK6ODLNX6QMRS6G7GWZY22EZQ)
-![GitHub package.json version](https://img.shields.io/github/package-json/v/Unarekin/FoundryVTT-Module-Template)
-![Supported Foundry Version](https://img.shields.io/endpoint?url=https%3A%2F%2Ffoundryshields.com%2Fversion%3Fstyle%3Dflat%26url%3Dhttps%3A%2F%2Fgithub.com%2FUnarekin%2FFoundryVTT-Battle-Transitions%2Freleases%2Flatest%2Fdownload%2Fmodule.json)
-![Supported Game Systems](https://img.shields.io/endpoint?url=https%3A%2F%2Ffoundryshields.com%2Fsystem%3FnameType%3Dfull%26showVersion%3D1%26style%3Dflat%26url%3Dhttps%3A%2F%2Fgithub.com%2FUnarekin%2FFoundryVTT-Battle-Transitions%2Freleases%2Flatest%2Fdownload%2Fmodule.json)
+[![GitHub License](https://img.shields.io/github/license/Unarekin/FoundryVTT-Battle-Transitions)](https://raw.githubusercontent.com/Unarekin/FoundryVTT-Battle-Transitions/refs/heads/master/LICENSE?token=GHSAT0AAAAAACYQQTQK6ODLNX6QMRS6G7GWZY22EZQ)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/Unarekin/FoundryVTT-Battle-Transitions)
+![Supported Foundry Version](https://img.shields.io/endpoint?url=https%3A%2F%2Ffoundryshields.com%2Fversion%3Fstyle%3Dflat%26url%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2FUnarekin%2FFoundryVTT-Battle-Transitions%2Frefs%2Fheads%2Fmaster%2Fmodule.json)
+![Supported Game Systems](https://img.shields.io/endpoint?url=https%3A%2F%2Ffoundryshields.com%2Fsystem%3FnameType%3Dfull%26showVersion%3D1%26style%3Dflat%26url%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2FUnarekin%2FFoundryVTT-Battle-Transitions%2Frefs%2Fheads%2Fmaster%2Fmodule.json)
 
 
 - [Battle Transitions](#battle-transitions)
+  - [Installation](#installation)
   - [Examples](#examples)
   - [How does this Work?](#how-does-this-work)
   - [What About \[Some Effect Here\]?](#what-about-some-effect-here)
@@ -18,6 +19,14 @@
 Battle Transitions seeks to empower GMs with the ability to configure interesting, dynamic transitions from one scene to another, geared towards reproducing some of the effects that you might see when starting a random battle in your favorite JRPG-style games.
 
 The current list of transition types is somewhat basic, but with the framework in place, this list ease easy to expand as time goes on and I plan to introduce ever more interesting options.
+
+## Installation
+1. In Foundry, open the 'Add-on Modules' tab
+2. Click 'Install Module'
+3. Enter the following URL into the 'Manifest URL' field at the bottom
+```
+https://github.com/Unarekin/FoundryVTT-Battle-Transitions/releases/latest/download/module.json
+```
 
 ## Examples
 For a list of provided effects, please see the [examples wiki page](https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Examples)
@@ -43,6 +52,7 @@ There *is* a framework in place to allow for automated E2E and component testing
 - This is an early release, and uses some unorthodox methods to accomplish its goals.  As such, there is a non-zero chance that things will break, leaving things in an unusable state.  In general, running the Cleanup macro should resolve many of these, but if all else fails, reloading the browser window will reset things back to normal.
 - Compatibility with [Scene Transitions](https://foundryvtt.com/packages/scene-transitions/) - Currently, no specific measures are taken to ensure compatibility with Scene Transitions or any other modules that affect Foundry's behavior when changing scenes, but preliminary testing shows that the two modules can be used side-by-side if you take some care with how you configure the timing of your Battle Transition sequence.
 - [Theatre of the Mind Manager](https://foundryvtt.com/packages/totm-manager#:~:text=TotM%20Manager%20is%20designed%20to,between%20images%20on%20a%20tile) - Currently, Battle Transitions does not affect how Theatre of the Mind Manager handles it's faked scene transitions.  This is planned for the future.
+- [Token Magic FX](https://foundryvtt.com/packages/tokenmagic/) - TMFX uses effects similar to how Battle Transitions does, but they are customized and very dependent on TMFX's implementation, which does not vibe with BT's.  Support for TMFX effect configurations is planned for the future, but not currently implemented.
 
 For a list of known bugs and feature requests, please see the project's [issues page](https://github.com/Unarekin/FoundryVTT-Battle-Transitions/issues)
 
