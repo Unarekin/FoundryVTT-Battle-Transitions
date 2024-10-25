@@ -53,7 +53,9 @@ Hooks.on("preUpdateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, u
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 Hooks.on("updateScene", async (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
   if (delta.active && (scene.getFlag(__MODULE_ID__, "autoTriggered") as boolean ?? false)) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    await (scene as any).setFlag(__MODULE_ID__, "autoTriggered", false);
+    if (scene.canUserModify(game.users?.current as User, "update")) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      await (scene as any).setFlag(__MODULE_ID__, "autoTriggered", false);
+    }
   }
 })

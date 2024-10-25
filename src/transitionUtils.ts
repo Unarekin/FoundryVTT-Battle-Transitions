@@ -73,9 +73,9 @@ export function cleanupTransition(container?: PIXI.DisplayObject) {
     container.destroy();
   }
 
-  // Ensure no scene is set to trigger
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-  void Promise.all((game.scenes as any).contents.map((scene: any) => scene.unsetFlag(__MODULE_ID__, "autoTriggered")));
+  // // Ensure no scene is set to trigger
+  // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+  // void Promise.all((game.scenes as any).contents.map((scene: any) => scene.unsetFlag(__MODULE_ID__, "autoTriggered")));
 }
 
 export function hideLoadingBar() {
