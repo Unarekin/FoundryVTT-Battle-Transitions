@@ -3,6 +3,7 @@
   // src/constants.ts
   var COVER_ID = "transition-cover";
   var TRANSLATION_KEY = "BATTLETRANSITIONS";
+  var LOG_ICON = "\u2694\uFE0F";
   var CUSTOM_HOOKS = {
     INITIALIZE: `${"battle-transitions"}.init`,
     TRANSITION_START: `${"battle-transitions"}.transitionStart`,
@@ -105,6 +106,58 @@
       super("NOTINITIALIZED");
     }
   };
+
+  // src/errors/ParallelExecuteError.ts
+  var ParallelExecuteError = class extends LocalizedError {
+    constructor() {
+      super("EXECUTECALLEDPARALLEL");
+    }
+  };
+
+  // src/errors/PermissionDeniedError.ts
+  var PermissionDeniedError = class extends LocalizedError {
+    constructor() {
+      super("PERMISSIONDENIED");
+    }
+  };
+
+  // src/coercion.ts
+  function coerceColor(source) {
+    try {
+      return new PIXI.Color(source);
+    } catch {
+    }
+  }
+  function coerceTexture(source) {
+    const color = coerceColor(source);
+    if (color) return createColorTexture(color);
+    try {
+      return PIXI.Texture.from(source);
+    } catch {
+    }
+  }
+  function coerceScene(arg) {
+    if (!(game instanceof Game && game.scenes)) return;
+    if (typeof arg === "string") {
+      let scene = game.scenes.get(arg);
+      if (scene) return scene;
+      scene = game.scenes.getName(arg);
+      if (scene) return scene;
+    } else if (arg instanceof Scene) {
+      return arg;
+    }
+  }
+  function coerceMacro(arg) {
+    if (arg instanceof Macro) return arg;
+    if (!game.macros) return;
+    if (typeof arg === "string") {
+      let macro = game.macros?.get(arg);
+      if (macro) return macro;
+      macro = game.macros?.getName(arg);
+      if (macro) return macro;
+      if (arg.split(".")[0] === "Macro") return game.macros?.get(arg.split(".").slice(1).join("."));
+    }
+  }
 
   // src/lib/simplex-noise.ts
   var SQRT3 = /* @__PURE__ */ Math.sqrt(3);
@@ -217,23 +270,605 @@
     return p;
   }
 
-  // src/utils.ts
-  function logImage(url, size = 256) {
-    const image = new Image();
-    image.onload = function() {
-      const style = [
-        `font-size: 1px`,
-        `padding: ${size}px`,
-        // `padding: ${this.height / 100 * size}px ${this.width / 100 * size}px`,
-        `background: url(${url}) no-repeat`,
-        `background-size:contain`,
-        `border:1px solid black`
-      ].join(";");
-      console.log("%c ", style);
-      ;
+  // src/filters/default.frag
+  var default_default = "precision highp float;\n\nuniform sampler2D uSampler;\nin vec2 vTextureCoord;\nout vec4 color;\n\nvoid main() {\n    color = texture(uSampler, vTextureCoord);\n}";
+
+  // src/filters/default.vert
+  var default_default2 = "in vec2 aVertexPosition;\n\nuniform mat3 projectionMatrix;\n\nout vec2 vTextureCoord;\n\nuniform vec4 inputSize;\nuniform vec4 outputFrame;\n\nvec4 filterVertexPosition(void) {\n    vec2 position = aVertexPosition * max(outputFrame.zw, vec2(0.)) + outputFrame.xy;\n    \n    return vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);\n}\n\nvec2 filterTextureCoord(void) {\n    return aVertexPosition * (outputFrame.zw * inputSize.zw);\n}\n\nvoid main(void) {\n    gl_Position = filterVertexPosition();\n    vTextureCoord = filterTextureCoord();\n}\n";
+
+  // src/filters/CustomFilter.ts
+  var CustomFilter = class extends PIXI.Filter {
+    constructor(vertex, fragment, uniforms) {
+      super(vertex || default_default2, fragment || default_default, uniforms);
+      if (!this.program.fragmentSrc.includes("#version 300 es"))
+        this.program.fragmentSrc = "#version 300 es \n" + this.program.fragmentSrc;
+      if (!this.program.vertexSrc.includes("#version 300 es"))
+        this.program.vertexSrc = "#version 300 es\n" + this.program.vertexSrc;
+    }
+  };
+
+  // src/filters/FireDissolve/firedissolve.frag
+  var firedissolve_default = "precision highp float;\n\nin vec2 vTextureCoord;\nout vec4 color;\n\nuniform sampler2D uSampler;\nuniform sampler2D noise_texture;\nuniform sampler2D burn_texture;\n\nuniform float integrity;\nuniform float burn_size;\n\nfloat inverse_lerp(float a, float b, float v) {\n    return (v - a) / (b - a);\n}\n\nvoid main() {\n    float noise = texture(noise_texture, vTextureCoord).r * vTextureCoord.y;\n    vec4 base_color = texture(uSampler, vTextureCoord) * step(noise, integrity);\n    vec2 burn_uv = vec2(inverse_lerp(integrity, integrity * burn_size, noise), 0.0);\n    vec4 burn_color = texture(burn_texture, burn_uv) * step(noise, integrity * burn_size);\n    \n    color = mix(burn_color, base_color, base_color.a);\n    // color = texture(uSampler, vTextureCoord);\n}";
+
+  // src/filters/FireDissolve/FireDissolveFilter.ts
+  var defaultBurnTexture = createGradient1DTexture(1024, new PIXI.Color("#ff0400"), new PIXI.Color("#ffff01"));
+  var FireDissolveFilter = class extends CustomFilter {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    constructor(background = "transparent", burnSize = 1.3) {
+      const noise_texture = createNoiseTexture();
+      const uniforms = {
+        noise_texture,
+        integrity: 1,
+        burn_size: burnSize,
+        burn_texture: defaultBurnTexture
+      };
+      super(void 0, firedissolve_default, uniforms);
+    }
+  };
+
+  // src/filters/DiamondTransition/diamondtransition.frag
+  var diamondtransition_default = "precision highp float;\n\nuniform sampler2D uSampler;\nin vec2 vTextureCoord;\nout vec4 color;\n\nuniform float progress;\nuniform float size;\nuniform vec2 screen_size;\nuniform sampler2D bgSampler;\n\nvoid main() {\n    vec2 screenCoord = screen_size * vTextureCoord;\n    \n    float x = abs(fract(screenCoord.x / size) - 0.5);\n    float y = abs(fract(screenCoord.y / size) - 0.5);\n    \n    if (x + y + vTextureCoord.x > progress * 2.0) {\n        color = texture(uSampler, vTextureCoord);\n    } else {\n        color = texture(bgSampler, vTextureCoord);\n    }\n}";
+
+  // src/filters/DiamondTransition/DiamondTransitionFilter.ts
+  var DiamondTransitionFilter = class extends CustomFilter {
+    constructor(size, bg = "transparent") {
+      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
+      super(void 0, diamondtransition_default, {
+        progress: 0,
+        size,
+        bgSampler: bgTexture,
+        screen_size: { x: window.innerWidth, y: window.innerHeight }
+      });
+    }
+  };
+
+  // src/filters/TextureWipe/texturewipe.frag
+  var texturewipe_default = "precision highp float;\n\nuniform sampler2D uSampler;\nin vec2 vTextureCoord;\nout vec4 color;\n\nuniform float progress;\nuniform sampler2D wipeSampler;\nuniform sampler2D bgSampler;\n\nvoid main() {\n    vec4 wipe = texture(wipeSampler, vTextureCoord);\n    \n    if (wipe.b < progress) {\n        color = texture(bgSampler, vTextureCoord);\n    } else {\n        color = texture(uSampler, vTextureCoord);\n    }\n}";
+
+  // src/filters/TextureWipe/TextureWipeFilter.ts
+  var transparentTexture = createColorTexture(new PIXI.Color("#00000000"));
+  var TextureWipeFilter = class extends CustomFilter {
+    constructor(wipeSampler, bgSampler) {
+      const uniforms = {
+        progress: 0,
+        wipeSampler,
+        bgSampler: bgSampler ?? transparentTexture
+      };
+      super(void 0, texturewipe_default, uniforms);
+    }
+  };
+
+  // src/filters/FadeTransition/fadetransition.frag
+  var fadetransition_default = "precision highp float;\n\nuniform sampler2D uSampler;\nin vec2 vTextureCoord;\nout vec4 color;\n\nuniform float progress;\nuniform sampler2D bgColor;\n\nvoid main() {\n    color = mix(texture(uSampler, vTextureCoord), texture(bgColor, vTextureCoord), progress);\n}";
+
+  // src/filters/FadeTransition/FadeTransitionFilter.ts
+  var FadeTransitionFilter = class extends CustomFilter {
+    constructor(bg = "transparent") {
+      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
+      super(void 0, fadetransition_default, {
+        bgColor: bgTexture,
+        progress: 0
+      });
+    }
+  };
+
+  // src/filters/BilinearWipe/BilinearWipeFilter.ts
+  var TextureHash = {
+    horizontal: {
+      inside: "bilinear-horizontal-inside.webp",
+      outside: "bilinear-horizontal-outside.webp"
+    },
+    vertical: {
+      inside: "bilinear-vertical-inside.webp",
+      outside: "bilinear-vertical-outside.webp"
+    },
+    topleft: {
+      inside: "bilinear-top-left-inside.webp",
+      outside: "bilinear-top-right-outside.webp"
+    },
+    topright: {
+      inside: "bilinear-top-right-inside.webp",
+      outside: "bilinear-top-right-outside.webp"
+    },
+    bottomleft: {
+      inside: "bilinear-top-right-inside.webp",
+      outside: "bilinear-top-right-outside.webp"
+    },
+    bottomright: {
+      inside: "bilinear-top-left-inside.webp",
+      outside: "bilinear-top-right-outside.webp"
+    }
+  };
+  var BilinearWipeFilter = class extends TextureWipeFilter {
+    constructor(direction, radial, bg) {
+      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
+      const texture = TextureHash[direction]?.[radial];
+      if (!texture) throw new InvalidDirectionError(`${direction}-${radial}`);
+      const wipeTexture = PIXI.Texture.from(`/modules/${"battle-transitions"}/assets/wipes/${texture}`);
+      super(wipeTexture, bgTexture);
+    }
+  };
+
+  // src/filters/LinearWipe/LinearWipeFilter.ts
+  var TextureHash2 = {
+    left: "linear-left.webp",
+    right: "linear-right.webp",
+    top: "linear-top.webp",
+    bottom: "linear-bottom.webp",
+    topleft: "linear-top-left.webp",
+    topright: "linear-top-right.webp",
+    bottomleft: "linear-bottom-left.webp",
+    bottomright: "linear-bottom-right.webp"
+  };
+  var LinearWipeFilter = class extends TextureWipeFilter {
+    constructor(direction, bg) {
+      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
+      const texture = TextureHash2[direction];
+      if (!texture) throw new InvalidDirectionError(direction);
+      const wipeTexture = PIXI.Texture.from(`/modules/${"battle-transitions"}/assets/wipes/${texture}`);
+      super(wipeTexture, bgTexture);
+    }
+  };
+
+  // src/filters/ClockWipe/ClockWipeFilter.ts
+  var TextureHash3 = {
+    clockwise: {
+      top: "clockwise-top.webp",
+      left: "clockwise-left.webp",
+      right: "clockwise-right.webp",
+      bottom: "clockwise-bottom.webp"
+    },
+    counterclockwise: {
+      top: "anticlockwise-top.webp",
+      left: "anticlockwise-left.webp",
+      right: "anticlockwise-right.webp",
+      bottom: "anticlockwise-bottom.webp"
+    }
+  };
+  var ClockWipeFilter = class extends TextureWipeFilter {
+    constructor(clockDirection, direction, bg) {
+      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
+      const texture = TextureHash3[clockDirection]?.[direction];
+      if (!texture) throw new InvalidDirectionError(`${clockDirection}-${direction}`);
+      const wipeTexture = PIXI.Texture.from(`/modules/${"battle-transitions"}/assets/wipes/${texture}`);
+      super(wipeTexture, bgTexture);
+    }
+  };
+
+  // src/filters/SpotlightWipe/SpotlightWipeFilter.ts
+  var TextureHash4 = {
+    left: {
+      inside: "spotlight-left-inside.webp",
+      outside: "spotlight-right-outside.webp"
+    },
+    top: {
+      inside: "spotlight-top-inside.webp",
+      outside: "spotlight-top-outside.webp"
+    },
+    right: {
+      inside: "spotlight-right-inside.webp",
+      outside: "spotlight-right-outside.webp"
+    },
+    bottom: {
+      inside: "spotlight-bottom-inside.webp",
+      outside: "spotlgiht-bottom-outside.webp"
+    }
+  };
+  var SpotlightWipeFilter = class extends TextureWipeFilter {
+    constructor(direction, radial, bg = "transparent") {
+      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
+      const texture = TextureHash4[direction]?.[radial];
+      if (!texture) throw new InvalidDirectionError(`${direction}-${radial}`);
+      const wipeTexture = PIXI.Texture.from(`/modules/${"battle-transitions"}/assets/wipes/${texture}`);
+      super(wipeTexture, bgTexture);
+    }
+  };
+
+  // src/filters/RadialWipe/RadialWipeFilter.ts
+  var TextureHash5 = {
+    inside: "radial-inside.webp",
+    outside: "radial-outside.webp"
+  };
+  var RadialWipeFilter = class extends TextureWipeFilter {
+    constructor(direction, bg) {
+      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
+      const texture = TextureHash5[direction];
+      if (!texture) throw new InvalidDirectionError(direction);
+      const wipeTexture = PIXI.Texture.from(`/modules/${"battle-transitions"}/assets/wipes/${texture}`);
+      super(wipeTexture, bgTexture);
+    }
+  };
+
+  // src/filters/TextureSwap/textureswap.frag
+  var textureswap_default = "precision highp float;\n\nuniform sampler2D uSampler;\nin vec2 vTextureCoord;\nout vec4 color;\n\nuniform sampler2D uTexture;\n\nvoid main() {\n    color = texture(uTexture, vTextureCoord);\n}";
+
+  // src/filters/TextureSwap/TextureSwapFilter.ts
+  var TextureSwapFilter = class extends CustomFilter {
+    constructor(texture) {
+      const actual = coerceTexture(texture);
+      if (!actual) throw new InvalidTextureError();
+      super(void 0, textureswap_default, {
+        uTexture: actual
+      });
+    }
+  };
+
+  // src/TransitionChain.ts
+  var TransitionChain = class _TransitionChain {
+    #scene = null;
+    #sequence = [];
+    #sounds = [];
+    #transitionOverlay = null;
+    #defaultEasing = "none";
+    #typeHandlers = {
+      bilinearwipe: this.#executeBilinearWipe.bind(this),
+      clockwipe: this.#executeClockWipe.bind(this),
+      diamondwipe: this.#executeDiamondWipe.bind(this),
+      fade: this.#executeFade.bind(this),
+      firedissolve: this.#executeBurn.bind(this),
+      linearwipe: this.#executeLinearWipe.bind(this),
+      macro: this.#executeMacro.bind(this),
+      parallel: this.#executeParallel.bind(this),
+      radialwipe: this.#executeRadialWipe.bind(this),
+      removeoverlay: this.#executeRemoveOverlay.bind(this),
+      spotlightwipe: this.#executeSpotlightWipe.bind(this),
+      textureswap: this.#executeTextureSwap.bind(this),
+      sound: this.#executeSound.bind(this),
+      video: this.#executeVideo.bind(this),
+      wait: this.#executeWait.bind(this)
     };
-    image.src = url;
-  }
+    get sequence() {
+      return this.#sequence;
+    }
+    constructor(arg) {
+      try {
+        if (arg) {
+          const scene = coerceScene(arg);
+          if (!scene) throw new InvalidSceneError(typeof arg === "string" ? arg : arg);
+          this.#scene = scene;
+        }
+      } catch (err) {
+        ui.notifications?.error(err.message);
+        throw err;
+      }
+    }
+    async #executeSequence(sequence, container) {
+      for (const step of sequence) {
+        if (typeof this.#typeHandlers[step.type] !== "function") throw new InvalidTransitionError(step.type);
+        const handler = this.#typeHandlers[step.type];
+        if (typeof handler === "function") await handler(step, container);
+      }
+    }
+    async execute(remote = false, sequence, caller) {
+      if (!this.#scene) throw new InvalidSceneError("undefined");
+      if (!remote) {
+        if (!this.#scene.canUserModify(game.users?.current ?? null, "update")) throw new PermissionDeniedError();
+        SocketHandler_default.transition(this.#scene.id ?? "", sequence ? sequence : this.#sequence);
+      } else {
+        if (!sequence) throw new InvalidTransitionError(typeof sequence);
+        const container = await setupTransition();
+        this.#transitionOverlay = container.children[1];
+        hideLoadingBar();
+        if (caller !== game.users?.current?.id) await awaitHook("canvasReady");
+        else if (caller === game.users?.current?.id) await activateScene(this.#scene);
+        showLoadingBar();
+        hideTransitionCover();
+        await this.#executeSequence(sequence, container);
+        for (const sound of this.#sounds) sound.stop();
+        cleanupTransition(container);
+      }
+    }
+    async #executeLinearWipe(config, container) {
+      const background = deserializeTexture(config.background ?? createColorTexture("transparent"));
+      const wipe = new LinearWipeFilter(config.direction, background.baseTexture);
+      if (Array.isArray(container.filters)) container.filters.push(wipe);
+      else container.filters = [wipe];
+      await TweenMax.to(wipe.uniforms, { progress: 1, duration: config.duration / 1e3, ease: config.easing || this.#defaultEasing });
+    }
+    linearWipe(direction, duration = 1e3, bg = "transparent", easing = this.#defaultEasing) {
+      new LinearWipeFilter(direction, bg);
+      const background = serializeTexture(bg);
+      this.#sequence.push({
+        type: "linearwipe",
+        duration,
+        direction,
+        background,
+        easing
+      });
+      return this;
+    }
+    async #executeBilinearWipe(config, container) {
+      const background = deserializeTexture(config.background);
+      const filter = new BilinearWipeFilter(config.direction, config.radial, background.baseTexture);
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1e3, ease: config.easing || this.#defaultEasing });
+    }
+    bilinearWipe(direction, radial, duration = 1e3, bg = "transparent", easing = this.#defaultEasing) {
+      new BilinearWipeFilter(direction, radial, bg);
+      const background = serializeTexture(bg);
+      this.#sequence.push({
+        type: "bilinearwipe",
+        duration,
+        direction,
+        radial,
+        background,
+        easing
+      });
+      return this;
+    }
+    async #executeRadialWipe(config, container) {
+      const background = deserializeTexture(config.background);
+      const filter = new RadialWipeFilter(config.radial, background.baseTexture);
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1e3, ease: config.easing || this.#defaultEasing });
+    }
+    radialWipe(direction, duration = 1e3, bg = "transparent", easing = this.#defaultEasing) {
+      new RadialWipeFilter(direction, bg);
+      this.#sequence.push({
+        type: "radialwipe",
+        duration,
+        radial: direction,
+        background: serializeTexture(bg),
+        easing
+      });
+      return this;
+    }
+    async #executeDiamondWipe(config, container) {
+      const background = deserializeTexture(config.background);
+      const filter = new DiamondTransitionFilter(config.size, background.baseTexture);
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1e3, ease: config.easing || this.#defaultEasing });
+    }
+    diamondWipe(size, duration = 1e3, bg = "transparent", easing = this.#defaultEasing) {
+      new DiamondTransitionFilter(size, bg);
+      this.#sequence.push({
+        type: "diamondwipe",
+        size,
+        background: serializeTexture(bg),
+        duration,
+        easing
+      });
+      return this;
+    }
+    async #executeFade(config, container) {
+      const bg = deserializeTexture(config.background);
+      const filter = new FadeTransitionFilter(bg.baseTexture);
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1e3, ease: config.easing || this.#defaultEasing });
+    }
+    fade(duration, bg = "transparent", easing = this.#defaultEasing) {
+      new FadeTransitionFilter(bg);
+      this.#sequence.push({
+        type: "fade",
+        duration,
+        background: serializeTexture(bg),
+        easing
+      });
+      return this;
+    }
+    async #executeBurn(config, container) {
+      const filter = new FireDissolveFilter(config.background, config.burnSize);
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+      await TweenMax.to(filter.uniforms, { integrity: 0, duration: config.duration / 1e3, ease: config.easing || this.#defaultEasing });
+    }
+    burn(duration = 1e3, background = "transparent", burnSize = 1.3, easing = this.#defaultEasing) {
+      new FireDissolveFilter(background, burnSize);
+      this.#sequence.push({
+        type: "firedissolve",
+        background: serializeTexture(background),
+        duration,
+        burnSize,
+        easing
+      });
+      return this;
+    }
+    async #executeClockWipe(config, container) {
+      const background = deserializeTexture(config.background);
+      const filter = new ClockWipeFilter(config.clockdirection, config.direction, background.baseTexture);
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1e3, ease: config.easing || this.#defaultEasing });
+    }
+    clockWipe(clockDirection, direction, duration = 1e3, background = "transparent", easing = this.#defaultEasing) {
+      new ClockWipeFilter(clockDirection, direction, background);
+      this.#sequence.push({
+        type: "clockwipe",
+        duration,
+        background: serializeTexture(background),
+        direction,
+        clockdirection: clockDirection,
+        easing
+      });
+      return this;
+    }
+    async #executeSpotlightWipe(config, container) {
+      const background = deserializeTexture(config.background);
+      const filter = new SpotlightWipeFilter(config.direction, config.radial, background.baseTexture);
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+      await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1e3, ease: config.easing || this.#defaultEasing });
+    }
+    spotlightWipe(direction, radial, duration = 1e3, background = "transparent", easing = this.#defaultEasing) {
+      new SpotlightWipeFilter(direction, radial, background);
+      this.#sequence.push({
+        type: "spotlightwipe",
+        direction,
+        radial,
+        duration,
+        background: serializeTexture(background),
+        easing
+      });
+      return this;
+    }
+    async #executeTextureSwap(config, container) {
+      const texture = deserializeTexture(config.texture);
+      const filter = new TextureSwapFilter(texture.baseTexture);
+      if (Array.isArray(container.filters)) container.filters.push(filter);
+      else container.filters = [filter];
+      return Promise.resolve();
+    }
+    textureSwap(texture) {
+      new TextureSwapFilter(texture);
+      this.#sequence.push({
+        type: "textureswap",
+        texture: serializeTexture(texture)
+      });
+      return this;
+    }
+    async #executeWait(config) {
+      return new Promise((resolve) => {
+        setTimeout(resolve, config.duration);
+      });
+    }
+    wait(duration) {
+      this.#sequence.push({
+        type: "wait",
+        duration
+      });
+      return this;
+    }
+    async #executeSound(config) {
+      await foundry.audio.AudioHelper.preloadSound(config.file);
+      const sound = await foundry.audio.AudioHelper.play({ src: config.file, volume: config.volume / 100, autoplay: true }, true);
+      this.#sounds.push(sound);
+      return Promise.resolve();
+    }
+    sound(sound, volume = 100) {
+      this.#sequence.push({
+        type: "sound",
+        file: typeof sound === "string" ? sound : sound.src,
+        volume
+      });
+      return this;
+    }
+    async #executeVideo(config, container) {
+      const texture = await PIXI.Assets.load(config.file);
+      const resource = texture.baseTexture.resource;
+      const source = resource.source;
+      return new Promise((resolve, reject) => {
+        const swapFilter = new TextureSwapFilter(texture.baseTexture);
+        const sprite = PIXI.Sprite.from(texture);
+        container.addChild(sprite);
+        sprite.filters = [swapFilter];
+        source.addEventListener("ended", () => {
+          resolve();
+        });
+        source.addEventListener("error", (e) => {
+          reject(e.error);
+        });
+        void source.play();
+      });
+    }
+    video(file, volume, background = "transparent") {
+      this.#sequence.push({
+        type: "video",
+        file,
+        volume,
+        background: serializeTexture(background)
+      });
+      return this;
+    }
+    async #executeMacro(config) {
+      const macro = coerceMacro(config.macro);
+      if (!macro) throw new InvalidMacroError(config.macro);
+      const res = macro.execute();
+      if (res instanceof Promise) await res;
+      else return Promise.resolve();
+    }
+    macro(source) {
+      const macro = coerceMacro(source);
+      if (!macro) throw new InvalidMacroError(typeof source === "string" ? source : typeof source);
+      this.#sequence.push({
+        type: "macro",
+        macro: macro.id
+      });
+      return this;
+    }
+    async #executeParallel(config, container) {
+      await Promise.all(config.sequences.map((sequence) => this.#executeSequence(sequence, container)));
+    }
+    parallel(...callbacks) {
+      const sequences = [];
+      for (const callback of callbacks) {
+        const chain = new _TransitionChain();
+        const res = callback(chain);
+        if (res instanceof Promise) throw new ParallelExecuteError();
+        sequences.push(chain.sequence);
+      }
+      this.#sequence.push({
+        type: "parallel",
+        sequences
+      });
+      return this;
+    }
+    async #executeRemoveOverlay() {
+      if (this.#transitionOverlay) this.#transitionOverlay.alpha = 0;
+      return Promise.resolve();
+    }
+    removeOverlay() {
+      this.#sequence.push({
+        type: "removeoverlay"
+      });
+      return this;
+    }
+    static TriggerForScene(arg) {
+      const scene = coerceScene(arg);
+      if (!scene) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
+      const steps = scene.getFlag("battle-transitions", "steps") ?? [];
+      if (!steps.length) return;
+      SocketHandler_default.transition(scene.id ?? "", steps);
+    }
+    static Cleanup() {
+      cleanupTransition();
+    }
+    static async SelectScene() {
+      const content = await renderTemplate(`/modules/${"battle-transitions"}/templates/scene-selector.hbs`, {
+        scenes: game.scenes?.contents.map((scene) => ({ id: scene.id, name: scene.name }))
+      });
+      return Dialog.wait({
+        title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE"),
+        content,
+        default: "ok",
+        buttons: {
+          cancel: {
+            icon: "<i class='fas fa-times'></i>",
+            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
+            callback: () => null
+          },
+          ok: {
+            icon: "<i class='fas fa-check'></i>",
+            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+            callback: (html) => game.scenes?.get($(html).find("#scene").val()) ?? null
+          }
+        }
+      });
+    }
+  };
+
+  // src/SocketHandler.ts
+  var SocketHandler = class {
+    #socket;
+    transition(scene, config) {
+      this.#socket.executeForEveryone("transition.exec", scene, config, game.users?.current?.id ?? "");
+    }
+    _execute(scene, config, caller) {
+      log("Executing transition chain:", config);
+      void new TransitionChain(scene).execute(true, config, caller);
+    }
+    register(socket) {
+      log("Registering socket:", socket);
+      this.#socket = socket;
+      socket.register("transition.exec", this._execute.bind(this));
+    }
+  };
+  var SocketHandler_default = new SocketHandler();
+
+  // src/utils.ts
   function createNoiseTexture(width = 256, height = 256, random) {
     const noise2D = createNoise2D(random);
     const canvas2 = document.createElement("canvas");
@@ -295,43 +930,128 @@
   function shouldUseAppV2() {
     return game.release?.isNewer("12") ?? false;
   }
-
-  // src/coercion.ts
-  function coerceColor(source) {
-    try {
-      return new PIXI.Color(source);
-    } catch {
-    }
+  function dataURLToBuffer(url) {
+    const binary = atob(url.split(",")[1]);
+    const buffer = new Uint8Array(binary.length);
+    for (let i = 0; i < buffer.length; i++)
+      buffer[i] = binary.charCodeAt(i);
+    return buffer;
   }
-  function coerceTexture(source) {
-    const color = coerceColor(source);
-    if (color) return createColorTexture(color);
-    try {
-      return PIXI.Texture.from(source);
-    } catch {
-    }
+  function serializeCanvas(canvas2) {
+    const buffer = dataURLToBuffer(canvas2.toDataURL());
+    return {
+      width: canvas2.width,
+      height: canvas2.height,
+      buffer
+    };
   }
-  function coerceScene(arg) {
-    if (!(game instanceof Game && game.scenes)) return;
-    if (typeof arg === "string") {
-      let scene = game.scenes.get(arg);
-      if (scene) return scene;
-      scene = game.scenes.getName(arg);
-      if (scene) return scene;
-    } else if (arg instanceof Scene) {
-      return arg;
-    }
+  function serializeDataURL(url) {
+    const buffer = dataURLToBuffer(url);
+    return {
+      mimeType: url.split(";")[0].split(":")[1],
+      buffer
+    };
   }
-  function coerceMacro(arg) {
-    if (arg instanceof Macro) return arg;
-    if (!game.macros) return;
-    if (typeof arg === "string") {
-      let macro = game.macros?.get(arg);
-      if (macro) return macro;
-      macro = game.macros?.getName(arg);
-      if (macro) return macro;
-      if (arg.split(".")[0] === "Macro") return game.macros?.get(arg.split(".").slice(1).join("."));
+  function serializeTexture(texture) {
+    if (typeof texture === "string" && texture.startsWith("data:")) return serializeDataURL(texture);
+    if (typeof texture === "string") return texture;
+    if (typeof texture.src === "string") return texture.src;
+    if (typeof texture.value !== "undefined") return texture.value;
+    const baseTexture = texture.baseTexture;
+    const resource = baseTexture.resource;
+    if (typeof resource.data !== "undefined") return { width: resource.width, height: resource.height, buffer: resource.data };
+    const source = resource.source;
+    if (source instanceof HTMLImageElement) return source.getAttribute("src");
+    else if (source instanceof HTMLCanvasElement) return serializeCanvas(source);
+    console.error(texture);
+    throw new InvalidTextureError();
+  }
+  function deserializeDataURL(data) {
+    const base64 = btoa(String.fromCharCode.apply(null, data.buffer));
+    return PIXI.Texture.from(`data:${data.mimeType};base64,${base64}`);
+  }
+  function deserializeTextureBuffer(data) {
+    return PIXI.Texture.fromBuffer(data.buffer, data.width, data.height);
+  }
+  function deserializeTexture(data) {
+    if (typeof data === "string") {
+      const texture = coerceTexture(data);
+      if (texture) return texture;
     }
+    const urlBuffer = data;
+    if (urlBuffer.buffer && urlBuffer.mimeType) return deserializeDataURL(urlBuffer);
+    const textureBuffer = data;
+    if (textureBuffer.buffer && textureBuffer.width && textureBuffer.height) return deserializeTextureBuffer(textureBuffer);
+    else throw new InvalidTextureError();
+  }
+  function log(...args) {
+    console.log(LOG_ICON, "Battle Transitions", ...args);
+  }
+  function addNavigationButton(buttons) {
+    buttons.push({
+      name: "BATTLETRANSITIONS.NAVIGATION.TRIGGER",
+      icon: `<i class="fas icon fa-fw crossed-swords"></i>`,
+      condition: (li) => {
+        const scene = game.scenes?.get(li.data("sceneId"));
+        const steps = scene?.getFlag("battle-transitions", "steps") ?? [];
+        return game.users?.current && scene?.canUserModify(game.users?.current, "update") && !scene.active && steps.length;
+      },
+      callback: (li) => {
+        const sceneId = li.data("sceneId");
+        if (!sceneId) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+        const scene = game.scenes?.get(sceneId);
+        if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+        const steps = scene.getFlag("battle-transitions", "steps") ?? [];
+        if (!steps.length) return;
+        SocketHandler_default.transition(sceneId, steps);
+      }
+    });
+  }
+  function generateEasingSelectOptions() {
+    return {
+      "none": "BATTLETRANSITIONS.EASINGS.NONE",
+      "power1in": "BATTLETRANSITIONS.EASINGS.POWER1IN",
+      "power1out": "BATTLETRANSITIONS.EASINGS.POWER1OUT",
+      "power1inout": "BATTLETRANSITIONS.EASINGS.POWER1INOUT",
+      "power2in": "BATTLETRANSITIONS.EASINGS.POWER2IN",
+      "power2out": "BATTLETRANSITIONS.EASINGS.POWER2OUT",
+      "power2inout": "BATTLETRANSITIONS.EASINGS.POWER2INOUT",
+      "power3in": "BATTLETRANSITIONS.EASINGS.POWER3IN",
+      "power3out": "BATTLETRANSITIONS.EASINGS.POWER3OUT",
+      "power3inout": "BATTLETRANSITIONS.EASINGS.POWER3INOUT",
+      "power4in": "BATTLETRANSITIONS.EASINGS.POWER4IN",
+      "power4out": "BATTLETRANSITIONS.EASINGS.POWER4OUT",
+      "power4inout": "BATTLETRANSITIONS.EASINGS.POWER4INOUT",
+      "backin": "BATTLETRANSITIONS.EASINGS.BACKIN",
+      "backout": "BATTLETRANSITIONS.EASINGS.BACKOUT",
+      "backinout": "BATTLETRANSITIONS.EASINGS.BACKINOUT",
+      "bouncein": "BATTLETRANSITIONS.EASINGS.BOUNCEIN",
+      "bounceout": "BATTLETRANSITIONS.EASINGS.BOUNCEOUT",
+      "bounceinout": "BATTLETRANSITIONS.EASINGS.BOUNCEINOUT",
+      "circin": "BATTLETRANSITIONS.EASINGS.CIRCIN",
+      "circout": "BATTLETRANSITIONS.EASINGS.CIRCOUT",
+      "circinout": "BATTLETRANSITIONS.EASINGS.CIRCINOUT",
+      "elasticin": "BATTLETRANSITIONS.EASINGS.ELASTICIN",
+      "elasticout": "BATTLETRANSITIONS.EASINGS.ELASTICOUT",
+      "elasticinout": "BATTLETRANSITIONS.EASINGS.ELASTICINOUT",
+      "expoin": "BATTLETRANSITIONS.EASINGS.EXPOIN",
+      "expoout": "BATTLETRANSITIONS.EASINGS.EXPOOUT",
+      "expoinout": "BATTLETRANSITIONS.EASINGS.EXPOINOUT",
+      "sinein": "BATTLETRANSITIONS.EASINGS.SINEIN",
+      "sineout": "BATTLETRANSITIONS.EASINGS.SINEOUT",
+      "sineinout": "BATTLETRANSITIONS.EASINGS.SINEINOUT"
+    };
+  }
+  function parseConfigurationFormElements(form, ...elements) {
+    const serialized = form.serializeArray();
+    const elem = elements.reduce((prev, curr) => {
+      return {
+        ...prev,
+        [curr]: serialized.reduce((prev2, curr2) => curr2.name === curr ? curr === "id" && !curr2.value ? foundry.utils.randomID() : curr2.value : prev2, "")
+      };
+    }, {});
+    console.log("Parsed:", elem);
+    return elem;
   }
 
   // src/transitionUtils.ts
@@ -359,7 +1079,7 @@
     transitionCover2.style.backgroundImage = "";
     const start = Date.now();
     const img = await renderer.extract.image(rt);
-    console.log(`Image transfered in ${Date.now() - start}ms`);
+    log(`Image transfered in ${Date.now() - start}ms`);
     transitionCover2.style.backgroundImage = `url(${img.src})`;
     transitionCover2.style.backgroundColor = renderer.background.backgroundColor.toHex();
     transitionCover2.style.display = "block";
@@ -379,9 +1099,12 @@
   function cleanupTransition(container) {
     transitionCover.style.display = "none";
     transitionCover.style.backgroundImage = "";
-    if (Array.isArray(container.children) && container.children.length)
-      for (let i = container.children.length - 1; i >= 0; i--) container.children[i].destroy();
-    container.destroy();
+    if (container) {
+      if (Array.isArray(container.children) && container.children.length)
+        for (let i = container.children.length - 1; i >= 0; i--) container.children[i].destroy();
+      container.destroy();
+    }
+    void Promise.all(game.scenes.contents.map((scene) => scene.unsetFlag("battle-transitions", "autoTriggered")));
   }
   function hideLoadingBar() {
     const loadingBar = document.getElementById("loading");
@@ -398,529 +1121,11 @@
   async function activateScene(arg) {
     const scene = coerceScene(arg);
     if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : "[Object object]");
+    await scene.setFlag("battle-transitions", "autoTriggered", true);
     void scene.activate();
     await awaitHook("canvasReady");
     return scene;
   }
-  async function transitionTo(arg, callback) {
-    const scene = typeof arg === "string" ? game.scenes?.getName(arg) : arg;
-    if (!scene) throw new InvalidSceneError(arg);
-    const container = await setupTransition();
-    hideLoadingBar();
-    await activateScene(scene);
-    showLoadingBar();
-    hideTransitionCover();
-    await callback(container);
-    cleanupTransition(container);
-  }
-
-  // src/filters/default.frag
-  var default_default = "precision highp float;\n\nuniform sampler2D uSampler;\nin vec2 vTextureCoord;\nout vec4 color;\n\nvoid main() {\n    color = texture(uSampler, vTextureCoord);\n}";
-
-  // src/filters/default.vert
-  var default_default2 = "in vec2 aVertexPosition;\n\nuniform mat3 projectionMatrix;\n\nout vec2 vTextureCoord;\n\nuniform vec4 inputSize;\nuniform vec4 outputFrame;\n\nvec4 filterVertexPosition(void) {\n    vec2 position = aVertexPosition * max(outputFrame.zw, vec2(0.)) + outputFrame.xy;\n    \n    return vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);\n}\n\nvec2 filterTextureCoord(void) {\n    return aVertexPosition * (outputFrame.zw * inputSize.zw);\n}\n\nvoid main(void) {\n    gl_Position = filterVertexPosition();\n    vTextureCoord = filterTextureCoord();\n}\n";
-
-  // src/filters/CustomFilter.ts
-  var CustomFilter = class extends PIXI.Filter {
-    constructor(vertex, fragment, uniforms) {
-      super(vertex || default_default2, fragment || default_default, uniforms);
-      if (!this.program.fragmentSrc.includes("#version 300 es"))
-        this.program.fragmentSrc = "#version 300 es \n" + this.program.fragmentSrc;
-      if (!this.program.vertexSrc.includes("#version 300 es"))
-        this.program.vertexSrc = "#version 300 es\n" + this.program.vertexSrc;
-    }
-  };
-
-  // src/filters/FireDissolve/firedissolve.frag
-  var firedissolve_default = "precision highp float;\n\nin vec2 vTextureCoord;\nout vec4 color;\n\nuniform sampler2D uSampler;\nuniform sampler2D noise_texture;\nuniform sampler2D burn_texture;\n\nuniform float integrity;\nuniform float burn_size;\n\nfloat inverse_lerp(float a, float b, float v) {\n    return (v - a) / (b - a);\n}\n\nvoid main() {\n    float noise = texture(noise_texture, vTextureCoord).r * vTextureCoord.y;\n    vec4 base_color = texture(uSampler, vTextureCoord) * step(noise, integrity);\n    vec2 burn_uv = vec2(inverse_lerp(integrity, integrity * burn_size, noise), 0.0);\n    vec4 burn_color = texture(burn_texture, burn_uv) * step(noise, integrity * burn_size);\n    \n    color = mix(burn_color, base_color, base_color.a);\n    // color = texture(uSampler, vTextureCoord);\n}";
-
-  // src/filters/FireDissolve/FireDissolveFilter.ts
-  var defaultBurnTexture = createGradient1DTexture(1024, new PIXI.Color("#ff0400"), new PIXI.Color("#ffff01"));
-  var FireDissolveFilter = class extends CustomFilter {
-    constructor(burnTexture) {
-      const noise_texture = createNoiseTexture();
-      const uniforms = {
-        noise_texture,
-        integrity: 1,
-        burn_size: 1.3,
-        burn_texture: burnTexture ? PIXI.Texture.from(burnTexture) : defaultBurnTexture
-      };
-      super(void 0, firedissolve_default, uniforms);
-    }
-  };
-
-  // src/filters/DiamondTransition/diamondtransition.frag
-  var diamondtransition_default = "precision highp float;\n\nuniform sampler2D uSampler;\nin vec2 vTextureCoord;\nout vec4 color;\n\nuniform float progress;\nuniform float size;\nuniform vec2 screen_size;\nuniform sampler2D bgSampler;\n\nvoid main() {\n    vec2 screenCoord = screen_size * vTextureCoord;\n    \n    float x = abs(fract(screenCoord.x / size) - 0.5);\n    float y = abs(fract(screenCoord.y / size) - 0.5);\n    \n    if (x + y + vTextureCoord.x > progress * 2.0) {\n        color = texture(uSampler, vTextureCoord);\n    } else {\n        color = texture(bgSampler, vTextureCoord);\n    }\n}";
-
-  // src/filters/DiamondTransition/DiamondTransitionFilter.ts
-  var DiamondTransitionFilter = class extends CustomFilter {
-    constructor(size, bg = "transparent") {
-      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
-      super(void 0, diamondtransition_default, {
-        progress: 0,
-        size,
-        bgSampler: bgTexture,
-        screen_size: { x: window.innerWidth, y: window.innerHeight }
-      });
-    }
-  };
-
-  // src/filters/TextureWipe/texturewipe.frag
-  var texturewipe_default = "precision highp float;\n\nuniform sampler2D uSampler;\nin vec2 vTextureCoord;\nout vec4 color;\n\nuniform float progress;\nuniform sampler2D wipeSampler;\nuniform sampler2D bgSampler;\n\nvoid main() {\n    vec4 wipe = texture(wipeSampler, vTextureCoord);\n    \n    if (wipe.b < progress) {\n        color = texture(bgSampler, vTextureCoord);\n    } else {\n        color = texture(uSampler, vTextureCoord);\n    }\n}";
-
-  // src/filters/TextureWipe/TextureWipeFilter.ts
-  var transparentTexture = createColorTexture(new PIXI.Color("#00000000"));
-  var TextureWipeFilter = class extends CustomFilter {
-    constructor(wipeSampler, bgSampler) {
-      const uniforms = {
-        progress: 0,
-        wipeSampler,
-        bgSampler: bgSampler ?? transparentTexture
-      };
-      super(void 0, texturewipe_default, uniforms);
-    }
-  };
-
-  // src/filters/FadeTransition/fadetransition.frag
-  var fadetransition_default = "precision highp float;\n\nuniform sampler2D uSampler;\nin vec2 vTextureCoord;\nout vec4 color;\n\nuniform float progress;\nuniform sampler2D bgColor;\n\nvoid main() {\n    color = mix(texture(uSampler, vTextureCoord), texture(bgColor, vTextureCoord), progress);\n}";
-
-  // src/TransitionChain.ts
-  var TransitionChain = class {
-    #scene;
-    #sequence = [];
-    #sounds = [];
-    call(func) {
-      this.#sequence.push(func);
-      return this;
-    }
-    macro(arg) {
-      const macro = coerceMacro(arg);
-      if (!macro) throw new InvalidMacroError(typeof arg === "string" ? arg : "[Object object]");
-      this.#sequence.push(async () => {
-        const res = macro.execute();
-        if (res instanceof Promise) await res;
-      });
-      return this;
-    }
-    /**
-     * Causes the sequence to wait the specified amount of time before continuing.
-     * @param {number} duration Amount of time to wait, in milliseconds
-     * @returns 
-     */
-    wait(duration) {
-      this.#sequence.push(() => new Promise((resolve) => {
-        setTimeout(resolve, duration);
-      }));
-      return this;
-    }
-    linearWipe(direction, duration = 2e3, bg) {
-      const wipe = new LinearWipeFilter(direction, bg ?? createColorTexture("transparent").baseTexture);
-      this.#sequence.push(async (container) => {
-        if (Array.isArray(container.filters)) container.filters.push(wipe);
-        else container.filters = [wipe];
-        await TweenMax.to(wipe.uniforms, { progress: 1, duration: duration / 1e3 });
-        return;
-      });
-      return this;
-    }
-    bilinearWipe(direction, radial, duration = 2e3, bg = "transparent") {
-      const filter = new BilinearWipeFilter(direction, radial, bg);
-      this.#sequence.push(async (container) => {
-        if (Array.isArray(container.filters)) container.filters.push(filter);
-        else container.filters = [filter];
-        await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1e3 });
-        return;
-      });
-      return this;
-    }
-    async execute() {
-      const container = await setupTransition();
-      hideLoadingBar();
-      await activateScene(this.#scene);
-      showLoadingBar();
-      hideTransitionCover();
-      for (const step of this.#sequence) {
-        await step(container);
-      }
-      for (const sound of this.#sounds) sound.stop();
-      cleanupTransition(container);
-    }
-    diamondWipe(size, duration = 2e3, bg = "transparent") {
-      const filter = new DiamondTransitionFilter(size, bg);
-      this.#sequence.push(async (container) => {
-        if (Array.isArray(container.filters)) container.filters.push(filter);
-        else container.filters = [filter];
-        await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1e3 });
-        return;
-      });
-      return this;
-    }
-    fade(duration, bg = "transparent") {
-      const filter = new FadeTransitionFilter(bg);
-      this.#sequence.push(async (container) => {
-        if (Array.isArray(container.filters)) container.filters.push(filter);
-        else container.filters = [filter];
-        await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1e3 });
-        return;
-      });
-      return this;
-    }
-    clockWipe(clockDirection, direction, duration = 2e3, bg = "transparent") {
-      const filter = new ClockWipeFilter(clockDirection, direction, bg);
-      this.#sequence.push(async (container) => {
-        if (Array.isArray(container.filters)) container.filters.push(filter);
-        else container.filters = [filter];
-        await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1e3 });
-        return;
-      });
-      return this;
-    }
-    burn(duration = 1e3, texture) {
-      const filter = new FireDissolveFilter(texture);
-      this.#sequence.push(async (container) => {
-        if (Array.isArray(container.filters)) container.filters.push(filter);
-        else container.filters = [filter];
-        await TweenMax.to(filter.uniforms, { integrity: 0, duration: duration / 1e3 });
-      });
-      return this;
-    }
-    sound(file, loop = false) {
-      foundry.audio.AudioHelper.preloadSound(file);
-      this.#sequence.push(async () => {
-        const sound = await foundry.audio.AudioHelper.play({ src: file, volume: 1, autoplay: true, loop }, true);
-        this.#sounds.push(sound);
-      });
-      return this;
-    }
-    video(file) {
-      this.#sequence.push(async (container) => {
-        const texture = await PIXI.Assets.load(file);
-        const resource = texture.baseTexture.resource;
-        const source = resource.source;
-        return new Promise((resolve, reject) => {
-          const swapFilter = new TextureSwapFilter(texture.baseTexture);
-          if (Array.isArray(container.filters)) container.filters.push(swapFilter);
-          else container.filters = [swapFilter];
-          source.addEventListener("ended", () => {
-            resolve();
-          });
-          source.addEventListener("error", (e) => {
-            reject(e.error);
-          });
-          void source.play();
-        });
-      });
-      return this;
-    }
-    radial(direction, duration = 1e3, bg = "transparent") {
-      const filter = new RadialWipeFilter(direction, bg);
-      this.#sequence.push(async (container) => {
-        if (Array.isArray(container.filters)) container.filters.push(filter);
-        else container.filters = [filter];
-        await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1e3 });
-      });
-      return this;
-    }
-    spotlight(direction, radial, duration = 1e3, bg = "transparent") {
-      const filter = new SpotlightWipeFilter(direction, radial, bg);
-      this.#sequence.push(async (container) => {
-        if (Array.isArray(container.filters)) container.filters.push(filter);
-        else container.filters = [filter];
-        await TweenMax.to(filter.uniforms, { progress: 1, duration: duration / 1e3 });
-      });
-      return this;
-    }
-    constructor(arg) {
-      const scene = coerceScene(arg);
-      if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : "[Object object]");
-      this.#scene = scene;
-    }
-  };
-
-  // src/filters/FadeTransition/FadeTransitionFilter.ts
-  Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
-    BattleTransitions.Presets = {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-      fade: (scene, duration = 1e3) => new TransitionChain(scene).fade(duration).execute(),
-      ...BattleTransitions.Presets ?? {}
-    };
-  });
-  var FadeTransitionFilter = class extends CustomFilter {
-    constructor(bg = "transparent") {
-      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
-      super(void 0, fadetransition_default, {
-        bgColor: bgTexture,
-        progress: 0
-      });
-    }
-  };
-
-  // src/filters/BilinearWipe/BilinearWipeFilter.ts
-  var TextureHash = {
-    horizontal: {
-      inside: "bilinear-horizontal-inside.webp",
-      outside: "bilinear-horizontal-outside.webp"
-    },
-    vertical: {
-      inside: "bilinear-vertical-inside.webp",
-      outside: "bilinear-vertical-outside.webp"
-    },
-    topleft: {
-      inside: "bilinear-top-left-inside.webp",
-      outside: "bilinear-top-right-outside.webp"
-    },
-    topright: {
-      inside: "bilinear-top-right-inside.webp",
-      outside: "bilinear-top-right-outside.webp"
-    },
-    bottomleft: {
-      inside: "bilinear-top-right-inside.webp",
-      outside: "bilinear-top-right-outside.webp"
-    },
-    bottomright: {
-      inside: "bilinear-top-left-inside.webp",
-      outside: "bilinear-top-right-outside.webp"
-    }
-  };
-  Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
-    BattleTransitions.Presets = {
-      bilinearHorizontalInside: generatePreset("horizontal", "inside"),
-      bilinearHorizontalOutside: generatePreset("horizontal", "outside"),
-      bilinearVerticalInside: generatePreset("vertical", "inside"),
-      bilinearVerticalOutside: generatePreset("vertical", "outside"),
-      bilinearTopLeftInisde: generatePreset("topleft", "inside"),
-      bilinearTopLeftOutside: generatePreset("topleft", "outside"),
-      bilinearTopRightInside: generatePreset("topright", "inside"),
-      bilinearTopRightOUtside: generatePreset("topright", "outside"),
-      ...BattleTransitions.Presets ?? {}
-    };
-  });
-  function generatePreset(direction, radial) {
-    return (scene, duration = 1e3) => new TransitionChain(scene).bilinearWipe(direction, radial, duration).execute();
-  }
-  var BilinearWipeFilter = class extends TextureWipeFilter {
-    constructor(direction, radial, bg) {
-      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
-      const texture = TextureHash[direction]?.[radial];
-      if (!texture) throw new InvalidDirectionError(`${direction}-${radial}`);
-      const wipeTexture = PIXI.Texture.from(`/modules/${"battle-transitions"}/assets/wipes/${texture}`);
-      super(wipeTexture, bgTexture);
-    }
-  };
-
-  // src/filters/LinearWipe/LinearWipeFilter.ts
-  var TextureHash2 = {
-    left: "linear-left.webp",
-    right: "linear-right.webp",
-    top: "linear-top.webp",
-    bottom: "linear-bottom.webp",
-    topleft: "linear-top-left.webp",
-    topright: "linear-top-right.webp",
-    bottomleft: "linear-bottom-left.webp",
-    bottomright: "linear-bottom-right.webp"
-  };
-  function generatePreset2(direction) {
-    return (scene, duration) => new TransitionChain(scene).linearWipe(direction, duration).execute();
-  }
-  Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
-    BattleTransitions.Presets = {
-      linearLeft: generatePreset2("left"),
-      linearRight: generatePreset2("right"),
-      linearTop: generatePreset2("top"),
-      linearBottom: generatePreset2("bottom"),
-      linearTopLeft: generatePreset2("topleft"),
-      linearTopRight: generatePreset2("topright"),
-      linearBottomLeft: generatePreset2("bottomleft"),
-      linearBottomRight: generatePreset2("bottomright"),
-      ...BattleTransitions.Presets ?? {}
-    };
-  });
-  var LinearWipeFilter = class extends TextureWipeFilter {
-    constructor(direction, bg) {
-      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
-      const texture = TextureHash2[direction];
-      if (!texture) throw new InvalidDirectionError(direction);
-      const wipeTexture = PIXI.Texture.from(`/modules/${"battle-transitions"}/assets/wipes/${texture}`);
-      super(wipeTexture, bgTexture);
-    }
-  };
-
-  // src/filters/ClockWipe/ClockWipeFilter.ts
-  var TextureHash3 = {
-    clockwise: {
-      top: "clockwise-top.webp",
-      left: "clockwise-left.webp",
-      right: "clockwise-right.webp",
-      bottom: "clockwise-bottom.webp"
-    },
-    counterclockwise: {
-      top: "anticlockwise-top.webp",
-      left: "anticlockwise-left.webp",
-      right: "anticlockwise-right.webp",
-      bottom: "anticlockwise-bottom.webp"
-    }
-  };
-  Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
-    BattleTransitions.Presets = {
-      clockwiseTop: generatePreset3("clockwise", "top"),
-      clockwiseRight: generatePreset3("clockwise", "right"),
-      clockwiseBottom: generatePreset3("clockwise", "bottom"),
-      clockwiseLeft: generatePreset3("clockwise", "left"),
-      counterClockwiseTop: generatePreset3("counterclockwise", "top"),
-      counterClockwiseRight: generatePreset3("counterclockwise", "right"),
-      counterClockwiseBottom: generatePreset3("counterclockwise", "bottom"),
-      counterClockwiseLeft: generatePreset3("counterclockwise", "left"),
-      ...BattleTransitions.Presets ?? {}
-    };
-  });
-  function generatePreset3(clockDirection, direction) {
-    return (scene, duration = 1e3) => new TransitionChain(scene).clockWipe(clockDirection, direction, duration).execute();
-  }
-  var ClockWipeFilter = class extends TextureWipeFilter {
-    constructor(clockDirection, direction, bg) {
-      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
-      const texture = TextureHash3[clockDirection]?.[direction];
-      if (!texture) throw new InvalidDirectionError(`${clockDirection}-${direction}`);
-      const wipeTexture = PIXI.Texture.from(`/modules/${"battle-transitions"}/assets/wipes/${texture}`);
-      super(wipeTexture, bgTexture);
-    }
-  };
-
-  // src/filters/SpotlightWipe/SpotlightWipeFilter.ts
-  var TextureHash4 = {
-    left: {
-      inside: "spotlight-left-inside.webp",
-      outside: "spotlight-right-outside.webp"
-    },
-    top: {
-      inside: "spotlight-top-inside.webp",
-      outside: "spotlight-top-outside.webp"
-    },
-    right: {
-      inside: "spotlight-right-inside.webp",
-      outside: "spotlight-right-outside.webp"
-    },
-    bottom: {
-      inside: "spotlight-bottom-inside.webp",
-      outside: "spotlgiht-bottom-outside.webp"
-    }
-  };
-  function generatePreset4(direction, radial) {
-    return (scene, duration) => new TransitionChain(scene).spotlight(direction, radial, duration).execute();
-  }
-  Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
-    BattleTransitions.Presets = {
-      spotlightTopOutside: generatePreset4("top", "outside"),
-      spotlightRightOutside: generatePreset4("right", "outside"),
-      spotlightBottomOutside: generatePreset4("bottom", "outside"),
-      spotlightLeftOutside: generatePreset4("left", "outside"),
-      spotlightTopInside: generatePreset4("top", "inside"),
-      spotlightRightInside: generatePreset4("right", "inside"),
-      spotlightBottomInside: generatePreset4("bottom", "inside"),
-      spotlightLeftInside: generatePreset4("left", "inside"),
-      ...BattleTransitions.Presets ?? {}
-    };
-  });
-  var SpotlightWipeFilter = class extends TextureWipeFilter {
-    constructor(direction, radial, bg = "transparent") {
-      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
-      const texture = TextureHash4[direction]?.[radial];
-      if (!texture) throw new InvalidDirectionError(`${direction}-${radial}`);
-      const wipeTexture = PIXI.Texture.from(`/modules/${"battle-transitions"}/assets/wipes/${texture}`);
-      super(wipeTexture, bgTexture);
-    }
-  };
-
-  // src/filters/RadialWipe/RadialWipeFilter.ts
-  var TextureHash5 = {
-    inside: "radial-inside.webp",
-    outside: "radial-outside.webp"
-  };
-  function generatePreset5(direction) {
-    return (scene, duration) => new TransitionChain(scene).radial(direction, duration).execute();
-  }
-  Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
-    BattleTransitions.Presets = {
-      radialInside: generatePreset5("inside"),
-      radialOutside: generatePreset5("outside"),
-      ...BattleTransitions.Presets ?? {}
-    };
-  });
-  var RadialWipeFilter = class extends TextureWipeFilter {
-    constructor(direction, bg) {
-      const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
-      const texture = TextureHash5[direction];
-      if (!texture) throw new InvalidDirectionError(direction);
-      const wipeTexture = PIXI.Texture.from(`/modules/${"battle-transitions"}/assets/wipes/${texture}`);
-      super(wipeTexture, bgTexture);
-    }
-  };
-
-  // src/filters/ChromaKey/chromakey.frag
-  var chromakey_default = "precision highp float;\n\nuniform sampler2D uSampler;\nin vec2 vTextureCoord;\nout vec4 color;\n\nuniform vec4 chromaKey;\nuniform vec2 maskRange;\nuniform sampler2D bgSampler;\nuniform vec2 iResolution;\n\nmat4 RGBtoYUV = mat4(0.257,  0.439, -0.148, 0.0,\n                     0.504, -0.368, -0.291, 0.0,\n                     0.098, -0.071,  0.439, 0.0,\n                     0.0625, 0.500,  0.500, 1.0 );\n\n\n//compute color distance in the UV (CbCr, PbPr) plane\nfloat colorClose(vec3 yuv, vec3 keyYuv, vec2 tol)\n{\n    float tmp = sqrt(pow(keyYuv.g - yuv.g, 2.0) + pow(keyYuv.b - yuv.b, 2.0));\n    if (tmp < tol.x)\n      return 0.0;\n   	else if (tmp < tol.y)\n      return (tmp - tol.x)/(tol.y - tol.x);\n   	else\n      return 1.0;\n}\n\nvoid main() {\n  vec2 fragPos = vTextureCoord.xy / iResolution.xy;\n  vec4 texColor0 = texture(uSampler, fragPos);\n  vec4 texColor1 = texture(bgSampler, fragPos);\n\n  vec4 keyYUV = RGBtoYUV * chromaKey;\n  vec4 yuv = RGBtoYUV * texColor0;\n\n  float mask = 1.0 - colorClose(yuv.rgb, keyYUV.rgb, maskRange);\n  color = max(texColor0 - mask * chromaKey, 0.0) + texColor1 * mask;\n}\n\n// precision highp float;\n\n// uniform sampler2D uSampler;\n// in vec2 vTextureCoord;\n// out vec4 color;\n\n// uniform vec4 keyRGBA;\n// uniform vec2 keyCC;\n// uniform vec2 range;\n// uniform vec2 iResolution;\n// uniform sampler2D bgSampler;\n\n// vec2 RGBToCC(vec4 rgba) {\n//     float Y = 0.299 * rgba.r + 0.587 * rgba.g + 0.114 * rgba.b;\n//     return vec2((rgba.b - Y) * 0.565, (rgba.r - Y) * 0.713);\n// }\n\n// void main() {\n//     vec4 src1Color = texture(uSampler, vTextureCoord);\n//     vec2 CC = RGBToCC(src1Color);\n//     float mask = sqrt(pow(keyCC.x - CC.x, 2.0) + pow(keyCC.y - CC.y, 2.0));\n//     mask = smoothstep(range.x, range.y, mask);\n//     if (mask == 0.0) {\n//         color = texture(bgSampler, vTextureCoord);\n//     }\n//     else if (mask == 1.0) {\n//         color = src1Color;\n//     }\n//     else {\n//         color = max(src1Color - (1.0 - mask) * keyRGBA, 0.0);\n//     }\n// }\n";
-
-  // src/filters/ChromaKey/ChromaKeyFilter.ts
-  var ChromaKeyFilter = class extends CustomFilter {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    constructor(keyColor = [0.05, 0.63, 0.14, 1], bg = "transparent") {
-      const color = new PIXI.Color(keyColor);
-      const bgSampler = coerceTexture(bg) ?? createColorTexture("transparent");
-      const uniforms = {
-        // chromaKey: [color.red, color.green, color.blue, 1],
-        chromaKey: [color.red, color.green, color.blue, 1],
-        bgSampler,
-        maskRange: [5e-3, 0.26],
-        iResolution: [1, 1]
-      };
-      super(void 0, chromakey_default, uniforms);
-    }
-  };
-
-  // src/filters/TextureSwap/textureswap.frag
-  var textureswap_default = "precision highp float;\n\nuniform sampler2D uSampler;\nin vec2 vTextureCoord;\nout vec4 color;\n\nuniform sampler2D uTexture;\n\nvoid main() {\n    color = texture(uTexture, vTextureCoord);\n}";
-
-  // src/filters/TextureSwap/TextureSwapFilter.ts
-  var TextureSwapFilter = class extends CustomFilter {
-    constructor(texture) {
-      const actual = coerceTexture(texture);
-      if (!actual) throw new InvalidTextureError();
-      super(void 0, textureswap_default, {
-        uTexture: actual
-      });
-    }
-  };
-
-  // src/filters/index.ts
-  var filters = {
-    CustomFilter,
-    FireDissolveFilter,
-    DiamondTransitionFilter,
-    TextureWipeFilter,
-    FadeTransitionFilter,
-    LinearWipeFilter,
-    BilinearWipeFilter,
-    ClockWipeFilter,
-    SpotlightWipeFilter,
-    RadialWipeFilter,
-    ChromaKeyFilter,
-    TextureSwapFilter
-  };
-
-  // src/BattleTransitions.ts
-  var BattleTransitions_default = {
-    transitionTo,
-    logImage,
-    createColorTexture,
-    cleanupTransition,
-    Filters: filters,
-    Presets: {},
-    Textures: {
-      Black: createColorTexture("#000000"),
-      White: createColorTexture("#FFFFFF"),
-      Transparent: createColorTexture("#00000000"),
-      fromColor: createColorTexture
-    }
-  };
 
   // src/templates.ts
   function registerHelpers() {
@@ -957,26 +1162,26 @@
     }
     defaultSettings = {
       duration: 1e3,
-      background: "#00000000",
-      id: ""
+      background: "#00000000"
     };
     generateSummary(flag) {
       if (flag) return [localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: flag.duration }), flag.background].join("; ");
       else return "";
     }
     renderTemplate(flag) {
-      return renderTemplate(`/modules/${"battle-transitions"}/templates/config/fade-config.hbs`, flag ?? {});
+      return renderTemplate(
+        `/modules/${"battle-transitions"}/templates/config/fade-config.hbs`,
+        {
+          ...this.defaultSettings,
+          ...flag,
+          easingSelect: generateEasingSelectOptions()
+        }
+      );
     }
     createFlagFromHTML(html) {
-      const form = $(html).find("form").serializeArray();
-      const duration = form.find((elem) => elem.name === "duration");
-      const background = form.find((elem) => elem.name === "background");
-      const id = form.find((elem) => elem.name === "id");
       return {
         ...this.defaultSettings,
-        ...duration ? { duration: parseFloat(duration.value) } : {},
-        ...background ? { background: background.value } : {},
-        ...id ? { id: id.value } : { id: foundry.utils.randomID() }
+        ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "background", "easing")
       };
     }
   };
@@ -1008,25 +1213,18 @@
           "topright": "BATTLETRANSITIONS.DIRECTIONS.TOPRIGHT",
           "bottomleft": "BATTLETRANSITIONS.DIRECTIONS.BOTTOMLEFT",
           "bottomright": "BATTLETRANSITIONS.DIRECTIONS.BOTTOMRIGHT"
-        }
+        },
+        easingSelect: generateEasingSelectOptions()
       });
     }
     createFlagFromHTML(html) {
-      const form = $(html).find("form").serializeArray();
-      const duration = form.find((elem) => elem.name === "duration");
-      const background = form.find((elem) => elem.name === "background");
-      const direction = form.find((elem) => elem.name === "direction");
-      const id = form.find((elem) => elem.name === "id");
       return {
         ...this.defaultSettings,
-        ...duration ? { duration: parseFloat(duration.value) } : {},
-        ...background ? { background: background.value } : {},
-        ...direction ? { direction: direction.value } : {},
-        id: id ? id.value : foundry.utils.randomID()
+        ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "direction", "background", "easing")
       };
     }
     get key() {
-      return "linear-wipe";
+      return "linearwipe";
     }
     get name() {
       return "BATTLETRANSITIONS.TRANSITIONTYPES.LINEARWIPE";
@@ -1036,7 +1234,7 @@
   // src/config/BilinearWipeConfigHandler.ts
   var BilinearWipeConfigHandler = class {
     get key() {
-      return "bilinear-wipe";
+      return "bilinearwipe";
     }
     get name() {
       return "BATTLETRANSITIONS.TRANSITIONTYPES.BILINEARWIPE";
@@ -1064,23 +1262,14 @@
         radialSelect: {
           "inside": "BATTLETRANSITIONS.DIRECTIONS.INSIDE",
           "outside": "BATTLETRANSITIONS.DIRECTIONS.OUTSIDE"
-        }
+        },
+        easingSelect: generateEasingSelectOptions()
       });
     }
     createFlagFromHTML(html) {
-      const form = $(html).find("form").serializeArray();
-      const duration = form.find((elem) => elem.name === "duration");
-      const background = form.find((elem) => elem.name === "background");
-      const direction = form.find((elem) => elem.name === "direction");
-      const radial = form.find((elem) => elem.name === "radial");
-      const id = form.find((elem) => elem.name === "id");
       return {
         ...this.defaultSettings,
-        ...duration ? { duration: parseFloat(duration.value) } : {},
-        ...background ? { background: background.value } : {},
-        ...direction ? { direction: direction.value } : {},
-        ...radial ? { radial: radial.value } : {},
-        ...id ? { id: id.value } : { id: foundry.utils.randomID() }
+        ...parseConfigurationFormElements($(html).find("form"), "duration", "background", "direction", "radial", "easing", "id")
       };
     }
   };
@@ -1156,23 +1345,14 @@
         clockDirectionSelect: {
           clockwise: "BATTLETRANSITIONS.DIRECTIONS.CLOCKWISE",
           counterclockwise: "BATTLETRANSITIONS.DIRECTIONS.COUNTERCLOCKWISE"
-        }
+        },
+        easingSelect: generateEasingSelectOptions()
       });
     }
     createFlagFromHTML(html) {
-      const form = $(html).find("form").serializeArray();
-      const duration = form.find((elem) => elem.name === "duration");
-      const direction = form.find((elem) => elem.name === "direction");
-      const background = form.find((elem) => elem.name === "background");
-      const clockDirection = form.find((elem) => elem.name === "clockdirection");
-      const id = form.find((elem) => elem.name === "id");
       return {
         ...this.defaultSettings,
-        ...duration ? { duration: parseFloat(duration.value) } : {},
-        ...direction ? { direction: direction.value } : {},
-        ...background ? { background: background.value } : {},
-        ...clockDirection ? { clockdirection: clockDirection.value } : {},
-        id: id ? id.value : foundry.utils.randomID()
+        ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "direction", "background", "clockdirection", "easing")
       };
     }
   };
@@ -1180,7 +1360,7 @@
   // src/config/DiamondTransitionConfigHandler.ts
   var DiamondTransitionConfigHandler = class {
     get key() {
-      return "diamond";
+      return "diamondwipe";
     }
     get name() {
       return "BATTLETRANSITIONS.TRANSITIONTYPES.DIAMOND";
@@ -1204,21 +1384,14 @@
     async renderTemplate(flag) {
       return renderTemplate(`/modules/${"battle-transitions"}/templates/config/diamond-config.hbs`, {
         ...this.defaultSettings,
-        ...flag
+        ...flag,
+        easingSelect: generateEasingSelectOptions()
       });
     }
     createFlagFromHTML(html) {
-      const form = $(html).find("form").serializeArray();
-      const duration = form.find((elem) => elem.name === "duration");
-      const size = form.find((elem) => elem.name === "size");
-      const background = form.find((elem) => elem.name === "background");
-      const id = form.find((elem) => elem.name === "id");
       return {
         ...this.defaultSettings,
-        ...duration ? { duration: parseFloat(duration.value) } : {},
-        ...size ? { size: parseFloat(size.value) } : {},
-        ...background ? { background: background.value } : {},
-        id: id ? id.value : foundry.utils.randomID()
+        ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "size", "easing")
       };
     }
   };
@@ -1249,21 +1422,14 @@
     async renderTemplate(flag) {
       return renderTemplate(`/modules/${"battle-transitions"}/templates/config/fire-dissolve-config.hbs`, {
         ...this.defaultSettings,
-        ...flag
+        ...flag,
+        easingSelect: generateEasingSelectOptions()
       });
     }
     createFlagFromHTML(html) {
-      const form = $(html).find("form").serializeArray();
-      const duration = form.find((elem) => elem.name === "duration");
-      const background = form.find((elem) => elem.name === "background");
-      const burnSize = form.find((elem) => elem.name === "burnsize");
-      const id = form.find((elem) => elem.name === "id");
       return {
         ...this.defaultSettings,
-        ...duration ? { duration: parseFloat(duration.value) } : {},
-        ...background ? { background: background.value } : {},
-        ...burnSize ? { burnSize: parseFloat(burnSize.value) } : {},
-        id: id ? id.value : foundry.utils.randomID()
+        ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "background", "burnsize", "easing")
       };
     }
   };
@@ -1298,21 +1464,14 @@
         radialOptions: {
           "inside": "BATTLETRANSITIONS.DIRECTIONS.INSIDE",
           "outside": "BATTLETRANSITIONS.DIRECTIONS.OUTSIDE"
-        }
+        },
+        easingSelect: generateEasingSelectOptions()
       });
     }
     createFlagFromHTML(html) {
-      const form = $(html).find("form").serializeArray();
-      const duration = form.find((elem) => elem.name === "duration");
-      const radial = form.find((elem) => elem.name === "radial");
-      const background = form.find((elem) => elem.name === "background");
-      const id = form.find((elem) => elem.name === "id");
       return {
         ...this.defaultSettings,
-        ...background ? { background: background.value } : {},
-        ...duration ? { duration: parseFloat(duration.value) } : {},
-        ...radial ? { radial: radial.value } : {},
-        id: id ? id.value : foundry.utils.randomID()
+        ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "radial", "background", "easing")
       };
     }
   };
@@ -1344,19 +1503,9 @@
       ].join("; ");
     }
     createFlagFromHTML(html) {
-      const form = $(html).find("form").serializeArray();
-      const duration = form.find((elem) => elem.name === "duration");
-      const direction = form.find((elem) => elem.name === "direction");
-      const radial = form.find((elem) => elem.name === "radial");
-      const background = form.find((elem) => elem.name === "background");
-      const id = form.find((elem) => elem.name === "id");
       return {
         ...this.defaultSettings,
-        ...duration ? { duration: parseFloat(duration.value) } : {},
-        ...background ? { background: background.value } : {},
-        ...direction ? { direction: direction.value } : {},
-        ...radial ? { radial: radial.value } : {},
-        ...id ? { id: id.value } : { id: foundry.utils.randomID() }
+        ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "direction", "radial", "background", "easing")
       };
     }
     renderTemplate(flag) {
@@ -1371,7 +1520,8 @@
         radialSelect: {
           inside: "BATTLETRANSITIONS.DIRECTIONS.INSIDE",
           outside: "BATTLETRANSITIONS.DIRECTIONS.OUTSIDE"
-        }
+        },
+        easingSelect: generateEasingSelectOptions()
       });
     }
   };
@@ -1435,13 +1585,9 @@
       });
     }
     createFlagFromHTML(html) {
-      const form = $(html).find("form").serializeArray();
-      const duration = form.find((elem) => elem.name === "duration");
-      const id = form.find((elem) => elem.name === "id");
       return {
         ...this.defaultSettings,
-        ...duration ? { duration: parseFloat(duration.value) } : {},
-        id: id ? id.value : foundry.utils.randomID()
+        ...parseConfigurationFormElements($(html).find("form"), "id", "duration")
       };
     }
   };
@@ -1533,11 +1679,12 @@
   };
 
   // src/config/ConfigurationHandler.ts
+  new ChromaKeyConfigHandler();
   var CONFIG_HANDLERS = [
     new FadeConfigHandler(),
     new LinearWipeConfigHandler(),
     new BilinearWipeConfigHandler(),
-    new ChromaKeyConfigHandler(),
+    // new ChromaKeyConfigHandler(),
     new ClockWipeConfigHandler(),
     new DiamondTransitionConfigHandler(),
     new FireDissolveConfigHandler(),
@@ -1547,7 +1694,7 @@
     new WaitConfigHandler(),
     new SoundConfigHandler(),
     new VideoConfigHandler()
-  ];
+  ].sort((a, b) => localize(a.name).localeCompare(localize(b.name)));
   var ConfigurationHandler = class {
     #dialog;
     #scene;
@@ -1581,14 +1728,16 @@
         autoTrigger: container.find("input#auto-trigger").is(":checked")
       };
       void Promise.all([
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
         this.#scene.setFlag("battle-transitions", this.stepKey, flags),
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
         this.#scene.setFlag("battle-transitions", this.configKey, config)
       ]);
     }
     addEventListeners() {
-      this.rootElement.find("button[data-action='add-step']").on("click", this.onAddStep.bind(this));
+      this.rootElement.find("button[data-action='add-step']").on("click", (e) => {
+        if ($(e.currentTarget).is(":focus")) return this.onAddStep(e);
+      });
       this.rootElement.find("#transition-step-list").sortable({
         handle: ".drag-handle",
         containment: "parent",
@@ -1657,7 +1806,7 @@
       const content = await handler.renderTemplate(flag);
       if (shouldUseAppV2() && foundry.applications.api.DialogV2) {
         void foundry.applications.api.DialogV2.wait({
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           window: { title: localize("BATTLETRANSITIONS.SCENECONFIG.EDITSTEPDIALOG.TITLE", { name: localize(handler.name) }) },
           content,
           render: (e, dialog) => {
@@ -1761,7 +1910,7 @@
     async addStepDialogV2() {
       const content = await this.getRenderedDialogTemplate();
       void foundry.applications.api.DialogV2.wait({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         window: { title: "BATTLETRANSITIONS.SCENECONFIG.ADDSTEPDIALOG.TITLE" },
         rejectClose: false,
         render: (e) => {
@@ -1780,6 +1929,31 @@
       });
     }
     async inject() {
+      if (game.release?.isNewer("12")) return this.injectV12();
+      else return this.injectV11();
+    }
+    async injectV11() {
+      const navBar = this.rootElement.find("nav.sheet-tabs.tabs");
+      const link = document.createElement("a");
+      link.classList.add("item");
+      link.dataset.tab = this.tabName;
+      const icon = document.createElement("i");
+      icon.classList.add(...this.icon);
+      link.appendChild(icon);
+      link.innerHTML += " " + localize("BATTLETRANSITIONS.SCENECONFIG.TAB");
+      navBar.append(link);
+      const transitionConfig = this.#scene.getFlag("battle-transitions", this.configKey);
+      const content = await renderTemplate(`/modules/${"battle-transitions"}/templates/scene-config.hbs`, transitionConfig);
+      this.rootElement.find("button[type='submit']").before(`<div class="tab" data-tab="${this.tabName}">${content}</div>`);
+      const steps = this.#scene.getFlag("battle-transitions", this.stepKey);
+      if (Array.isArray(steps)) {
+        for (const step of steps) {
+          await this.addUpdateTransitionStep(step.type, step);
+        }
+      }
+      this.addEventListeners();
+    }
+    async injectV12() {
       const navBar = this.rootElement.find("nav.sheet-tabs.tabs[data-group='main']");
       const link = document.createElement("a");
       link.classList.add("item");
@@ -1808,7 +1982,6 @@
   };
 
   // src/module.ts
-  window.BattleTransitions = BattleTransitions_default;
   window.BattleTransition = TransitionChain;
   Hooks.once("canvasReady", () => {
     initializeCanvas();
@@ -1820,6 +1993,27 @@
   Hooks.once("init", async () => {
     registerHelpers();
     await registerTemplates();
+  });
+  Hooks.once("socketlib.ready", () => {
+    SocketHandler_default.register(socketlib.registerModule("battle-transitions"));
+  });
+  Hooks.on("getSceneNavigationContext", (html, buttons) => {
+    addNavigationButton(buttons);
+  });
+  Hooks.on("preUpdateScene", (scene, delta, mod, userId) => {
+    if (delta.active && !(scene.getFlag("battle-transitions", "autoTriggered") ?? false)) {
+      const config = scene.getFlag("battle-transitions", "config");
+      const steps = scene.getFlag("battle-transitions", "steps");
+      if (config?.autoTrigger && steps?.length) {
+        delta.active = false;
+        SocketHandler_default.transition(scene.id, steps);
+      }
+    }
+  });
+  Hooks.on("updateScene", async (scene, delta, mod, userId) => {
+    if (delta.active && (scene.getFlag("battle-transitions", "autoTriggered") ?? false)) {
+      await scene.setFlag("battle-transitions", "autoTriggered", false);
+    }
   });
 })();
 //# sourceMappingURL=module.js.map

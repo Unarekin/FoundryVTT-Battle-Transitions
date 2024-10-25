@@ -15,7 +15,7 @@ export const defaultBurnTexture = createGradient1DTexture(1024, new PIXI.Color("
 export class FireDissolveFilter extends CustomFilter<FireDissolveUniforms> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  constructor(background?: PIXI.TextureSource | PIXI.ColorSource = "transparent", burnSize: number = 1.3) {
+  constructor(background: PIXI.TextureSource | PIXI.ColorSource = "transparent", burnSize: number = 1.3) {
     const noise_texture = createNoiseTexture();
     const uniforms = {
       noise_texture,

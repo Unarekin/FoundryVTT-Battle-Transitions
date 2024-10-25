@@ -4,9 +4,8 @@
   "description": "",
   "version": "#{VERSION}#",
   "library": "false",
-  "manifestPlusVersion": "1.2.0",
   "compatibility": {
-    "minimum": 10,
+    "minimum": 11,
     "verified": 12,
     "maximum": 12
   },
@@ -26,6 +25,14 @@
         "manifest": "https://github.com/Larkinabout/fvtt-color-picker/releases/latest/download/module.json",
         "compatibility": {
           "verified": "1.3"
+        }
+      },
+      {
+        "id": "socketlib",
+        "type": "module",
+        "manifest": "https://raw.githubusercontent.com/manuelVo/foundryvtt-socketlib/master/module.json",
+        "compatibility": {
+          "verified": "1.1.0"
         }
       }
     ]
@@ -52,10 +59,14 @@
   "download": "#{DOWNLOAD}#",
   "license": "LICENSE",
   "readme": "README.md",
-  "media": [
+  "socket": true,
+  "packs": [
     {
-      "type": "icon",
-      "url": "https://avatars2.githubusercontent.com/u/71292812?s=400&u=ccdb4eeb7abf551ca8f314e5a9bfd0479a4d3d41&v=4"
+      "name": "bt-sample-macros",
+      "label": "Battle Transitions",
+      "path": "./packs/bt-sample-macros",
+      "type": "Macro"
     }
-  ]
+  ],
+  "media": []
 }

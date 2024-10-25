@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 /* src/styles/module.scss */
 .icon {
   background-size: contain;
@@ -5,10 +7,19 @@
   background-position: center center;
 }
 .icon::before {
-  content: "-";
+  content: "\a0";
+}
+#context-menu .icon {
+  background-color: var(--color-text-light-1);
+}
+nav .icon {
+  background-color: var(--color-text-dark-primary);
 }
 .crossed-swords {
-  background-image: url(/modules/battle-transitions/assets/icons/crossed-swords.svg);
+  mask-image: url(/modules/battle-transitions/assets/icons/crossed-swords.svg);
+  -webkit-mask-image: url(/modules/battle-transitions/assets/icons/crossed-swords.svg);
+  mask-repeat: no-repeat;
+  mask-position: center;
 }
 button[data-action=add-step] {
   position: relative;

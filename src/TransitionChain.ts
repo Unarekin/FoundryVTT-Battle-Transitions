@@ -453,7 +453,7 @@ export class TransitionChain {
 
   static async SelectScene(): Promise<Scene | null> {
     const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
-      scenes: game.scenes.contents.map(scene => ({ id: scene.id, name: scene.name }))
+      scenes: game.scenes?.contents.map(scene => ({ id: scene.id, name: scene.name }))
     });
     return Dialog.wait({
       title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE"),

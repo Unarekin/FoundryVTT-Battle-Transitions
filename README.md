@@ -20,7 +20,7 @@ Battle Transitions seeks to empower GMs with the ability to configure interestin
 The current list of transition types is somewhat basic, but with the framework in place, this list ease easy to expand as time goes on and I plan to introduce ever more interesting options.
 
 ## Examples
-For a list of provided effects, please see the [examples wiki page](https://github.com/Unarekin/FoundryVTT-Theatre-Inserts-Automation/wiki/Examples).
+For a list of provided effects, please see the [examples wiki page](https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Examples)
 
 ## How does this Work?
 Short version: Smoke and Mirrors.
