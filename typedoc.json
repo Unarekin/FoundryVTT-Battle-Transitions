@@ -1,7 +1,7 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["src/**/*.ts"],
-  "out": "docs",
+  "out": "pages",
   "cleanOutputDir": true,
   "plugin": ["typedoc-plugin-rename-defaults", "typedoc-plugin-dt-links"]
 }
