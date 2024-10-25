@@ -1,7 +1,7 @@
 {
   "name": "foundryvtt-battle-transitions",
   "version": "1.0.0",
-  "description": "",
+  "description": "A module for Foundry-VTT to provide for JRPG-like scene transitions.",
   "main": "dist/module.js",
   "scripts": {
     "start": "docker compose up --build",
