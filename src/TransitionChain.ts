@@ -1,5 +1,5 @@
 import { coerceMacro, coerceScene } from "./coercion";
-import { InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError } from "./errors";
+import { InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, TransitionToSelfError } from "./errors";
 import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter } from "./filters";
 import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
@@ -65,6 +65,7 @@ export class TransitionChain {
 
   public async execute(remote: boolean = false, sequence?: TransitionStep[], caller?: string) {
     if (!this.#scene) throw new InvalidSceneError(typeof undefined);
+    if (this.#scene.id === canvas.scene?.id) throw new TransitionToSelfError();
     if (!remote) {
       if (!this.#scene.canUserModify(game.users?.current as User ?? null, "update")) throw new PermissionDeniedError();
       SocketHandler.transition(this.#scene.id ?? "", sequence ? sequence : this.#sequence);
