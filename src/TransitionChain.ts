@@ -65,7 +65,7 @@ export class TransitionChain {
 
   public async execute(remote: boolean = false, sequence?: TransitionStep[], caller?: string) {
     if (!this.#scene) throw new InvalidSceneError(typeof undefined);
-    if (this.#scene.id === canvas.scene?.id) throw new TransitionToSelfError();
+    if (this.#scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
     if (!remote) {
       if (!this.#scene.canUserModify(game.users?.current as User ?? null, "update")) throw new PermissionDeniedError();
       SocketHandler.transition(this.#scene.id ?? "", sequence ? sequence : this.#sequence);
