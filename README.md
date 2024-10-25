@@ -25,7 +25,7 @@ The current list of transition types is somewhat basic, but with the framework i
 2. Click 'Install Module'
 3. Enter the following URL into the 'Manifest URL' field at the bottom
 ```
-https://github.com/Unarekin/FoundryVTT-Theatre-Inserts-Automation/releases/latest/download/module.json
+https://github.com/Unarekin/FoundryVTT-Battle-Transitions/releases/latest/download/module.json
 ```
 
 ## Examples
