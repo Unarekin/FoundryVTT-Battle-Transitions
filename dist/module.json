@@ -1,7 +1,7 @@
 {
   "id": "battle-transitions",
   "title": "Battle Transitions",
-  "description": "",
+  "description": "Add automated JRPG-inspired transition sequences when activating scenes.",
   "version": "#{VERSION}#",
   "library": "false",
   "compatibility": {
