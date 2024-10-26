@@ -114,3 +114,8 @@ export interface WaitConfiguration extends TransitionConfiguration {
 export interface ParallelConfiguration extends TransitionConfiguration {
   sequences: TransitionStep[][];
 }
+
+export interface MeltConfiguration extends TransitionConfiguration {
+  background: string;
+  duration: number;
+}
