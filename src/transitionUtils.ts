@@ -1,7 +1,7 @@
 import { COVER_ID } from "./constants";
 import { ScreenSpaceCanvasGroup } from './ScreenSpaceCanvasGroup';
 import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError } from './errors';
-import { awaitHook, createColorTexture, log, logImage } from "./utils";
+import { awaitHook, createColorTexture, log } from "./utils";
 import { coerceScene } from "./coercion";
 
 
@@ -52,8 +52,6 @@ export async function createSnapshot() {
   ctx.drawImage(img, 0, 0);
 
   const src = tempCanvas.toDataURL();
-  logImage(src);
-
 
   // const img = renderer.extract.canvas(rt) as HTMLCanvasElement;
   log(`Image transfered in ${Date.now() - start}ms`);
