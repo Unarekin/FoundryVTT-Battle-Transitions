@@ -348,14 +348,24 @@ export class TransitionChain {
     const resource: PIXI.VideoResource = texture.baseTexture.resource as PIXI.VideoResource;
     const source = resource.source;
 
+    const background = deserializeTexture(config.background);
 
     return new Promise<void>((resolve, reject) => {
       const swapFilter = new TextureSwapFilter(texture.baseTexture);
 
       const sprite = PIXI.Sprite.from(texture);
+      const bgSprite = PIXI.Sprite.from(background);
 
-      container.addChild(sprite);
+      const videoContainer = new PIXI.Container();
+
+      videoContainer.addChild(bgSprite);
+      bgSprite.width = window.innerWidth;
+      bgSprite.height = window.innerHeight;
+
+      videoContainer.addChild(sprite);
       sprite.filters = [swapFilter];
+
+      container.addChild(videoContainer);
 
       source.addEventListener("ended", () => { resolve(); });
       source.addEventListener("error", e => { reject(e.error as Error); });
