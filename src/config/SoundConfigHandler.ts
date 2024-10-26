@@ -8,7 +8,7 @@ export class SoundConfigHandler implements TransitionConfigHandler<SoundConfigur
 
   public readonly defaultSettings = {
     file: "",
-    volume: 1
+    volume: 100
   };
 
   generateSummary(flag?: SoundConfiguration): string {
@@ -38,7 +38,7 @@ export class SoundConfigHandler implements TransitionConfigHandler<SoundConfigur
     return {
       ...this.defaultSettings,
       ...(file ? { file } : {}),
-      ...(volume ? { volume: parseFloat(volume.value) / 100 } : {}),
+      ...(volume ? { volume: parseFloat(volume.value) } : {}),
       id: id ? id.value : foundry.utils.randomID()
     }
   }

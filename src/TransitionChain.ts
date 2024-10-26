@@ -85,7 +85,7 @@ export class TransitionChain {
 
       await this.#executeSequence(sequence, container);
 
-      for (const sound of this.#sounds) sound.stop();
+      // for (const sound of this.#sounds) sound.stop();
       cleanupTransition(container);
 
     }
