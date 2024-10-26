@@ -119,3 +119,8 @@ export interface MeltConfiguration extends TransitionConfiguration {
   background: string;
   duration: number;
 }
+
+export interface GlitchConfiguration extends TransitionConfiguration {
+  background: string;
+  duration: number;
+}
