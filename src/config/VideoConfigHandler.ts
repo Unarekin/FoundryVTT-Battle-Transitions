@@ -1,5 +1,5 @@
 import { TransitionConfigHandler, VideoConfiguration } from "../interfaces";
-import { localize } from "../utils";
+import { localize, parseConfigurationFormElements } from "../utils";
 
 
 
@@ -33,18 +33,14 @@ export class VideoConfigHandler implements TransitionConfigHandler<VideoConfigur
   }
 
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): VideoConfiguration {
-    const form = $(html).find("form").serializeArray();
-
-
     const file = $(html).find("form #file").val() as string ?? "";
     const volume = $(html).find("form #volume input[type='number']").val() as number;
-    const id = form.find(elem => elem.name === "id");
 
     return {
       ...this.defaultSettings,
       ...(file ? { file } : {}),
       ...(volume ? { volume: volume / 100 } : {}),
-      id: id ? id.value : foundry.utils.randomID()
+      ...parseConfigurationFormElements($(html).find("form"), "id", "background")
     }
 
   }
