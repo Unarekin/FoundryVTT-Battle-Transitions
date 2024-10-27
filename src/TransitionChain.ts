@@ -10,11 +10,12 @@ import { awaitHook, createColorTexture, deserializeTexture, localize, log, seria
 export class TransitionChain {
   // #region Properties (6)
 
+  #preloadedVideos: { path: string, texture: PIXI.Texture }[] = [];
   #defaultEasing: Easing = "none";
   #scene: Scene | null = null;
   #sequence: TransitionStep[] = [];
   #sounds: Sound[] = [];
-  #transitionOverlay: PIXI.Container | null = null;
+  #transitionOverlay: PIXI.DisplayObject[] = [];
   #typeHandlers: { [x: string]: unknown } = {
     angularwipe: this.#executeAngularWipe.bind(this),
     bilinearwipe: this.#executeBilinearWipe.bind(this),
@@ -36,6 +37,10 @@ export class TransitionChain {
     sound: this.#executeSound.bind(this),
     video: this.#executeVideo.bind(this),
     wait: this.#executeWait.bind(this)
+  }
+
+  #preparationHandlers: { [x: string]: unknown } = {
+    video: this.#prepareVideo.bind(this)
   }
 
   // #endregion Properties (6)
@@ -168,6 +173,7 @@ export class TransitionChain {
   }
 
   public async execute(remote: boolean = false, sequence?: TransitionStep[], caller?: string) {
+    let container: PIXI.Container | null = null;
     try {
       if (!this.#scene) throw new InvalidSceneError(typeof undefined);
       if (this.#scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
@@ -176,8 +182,9 @@ export class TransitionChain {
         SocketHandler.transition(this.#scene.id ?? "", sequence ? sequence : this.#sequence);
       } else {
         if (!sequence) throw new InvalidTransitionError(typeof sequence);
-        const container = await setupTransition();
-        this.#transitionOverlay = container.children[1] as PIXI.Container;
+        container = await setupTransition();
+        // this.#transitionOverlay = container.children[0] as PIXI.Container;
+        this.#transitionOverlay.push(...container.children);
         hideLoadingBar();
 
         // If we did not call this function, wait for the scene to activate
@@ -188,6 +195,8 @@ export class TransitionChain {
         showLoadingBar();
         hideTransitionCover();
 
+
+        await this.#prepareSequence(sequence);
         await this.#executeSequence(sequence, container);
 
         // for (const sound of this.#sounds) sound.stop();
@@ -195,6 +204,18 @@ export class TransitionChain {
       }
     } catch (err) {
       ui.notifications?.error((err as Error).message);
+    } finally {
+      if (container) container.destroy();
+    }
+  }
+
+  async #prepareSequence(sequence: TransitionStep[]) {
+    this.#preloadedVideos = [];
+    for (const step of sequence) {
+      if (typeof this.#preparationHandlers[step.type] === "function") {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+        await (this.#preparationHandlers[step.type] as Function)(step);
+      }
     }
   }
 
@@ -334,9 +355,6 @@ export class TransitionChain {
     const clear = args.find(arg => typeof arg === "boolean") ?? false;
     const background = args.find(arg => !(typeof arg === "boolean" || typeof arg === "number")) ?? "transparent";
 
-    log("Arguments:", args);
-    log("Parsed:", file, volume, background, clear);
-
     this.#sequence.push({
       type: "video",
       file,
@@ -474,7 +492,8 @@ export class TransitionChain {
   }
 
   async #executeRemoveOverlay() {
-    if (this.#transitionOverlay) this.#transitionOverlay.alpha = 0;
+    // if (this.#transitionOverlay) this.#transitionOverlay.alpha = 0;
+    this.#transitionOverlay.forEach(overlay => overlay.alpha = 0);
     return Promise.resolve();
   }
 
@@ -517,39 +536,62 @@ export class TransitionChain {
   }
 
   async #executeVideo(config: VideoConfiguration, container: PIXI.Container) {
-    const exist = await srcExists(config.file);
-    if (!exist) throw new FileNotFoundError(config.file);
-    const texture: PIXI.Texture = await PIXI.Assets.load(config.file);
+    const texture = this.#preloadedVideos.find(spec => spec.path === config.file)?.texture;
+    if (!texture) throw new FileNotFoundError(config.file);
+    log("Texture:", texture);
+
+    const background = deserializeTexture(config.background);
     const resource: PIXI.VideoResource = texture.baseTexture.resource as PIXI.VideoResource;
     const source = resource.source;
 
-    const background = deserializeTexture(config.background);
-
     return new Promise<void>((resolve, reject) => {
+      const swapFilter = new TextureSwapFilter(texture.baseTexture);
+
+      const sprite = PIXI.Sprite.from(texture);
+      const bgSprite = PIXI.Sprite.from(background);
+
+      const videoContainer = new PIXI.Container();
+
+      videoContainer.addChild(bgSprite);
+      bgSprite.width = window.innerWidth;
+      bgSprite.height = window.innerHeight;
+
+      videoContainer.addChild(sprite);
+      sprite.filters = [swapFilter];
+
+      source.currentTime = 0;
+
+      container.addChild(videoContainer);
+
       source.addEventListener("ended", () => {
         if (config.clear) {
-          if (Array.isArray(container.filters) && container.filters.includes(vidFilter)) container.filters.splice(container.filters.indexOf(vidFilter), 1);
-          vidFilter.destroy();
+          setTimeout(() => { sprite.destroy(); }, 500);
         }
         resolve();
       });
       source.addEventListener("error", e => { reject(e.error as Error); });
 
-
-
-      const bgFilter = new TextureSwapFilter(background.baseTexture);
-      const vidFilter = new TextureSwapFilter(texture.baseTexture);
-
-      if (Array.isArray(container.filters)) container.filters.push(bgFilter, vidFilter);
-      else container.filters = [bgFilter, vidFilter];
-
-      source.volume = config.volume / 100;
       void source.play();
-    });
+    })
   }
 
   async #executeWait(config: WaitConfiguration) {
     return new Promise(resolve => { setTimeout(resolve, config.duration) });
+  }
+
+  async #prepareVideo(config: VideoConfiguration) {
+    log(`Preloading ${config.file}...`);
+    const start = Date.now();
+    // const texture: PIXI.Texture = await PIXI.Assets.load(config.file);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    const texture: PIXI.Texture = await (PIXI.loadVideo as any).load(config.file);
+
+    this.#preloadedVideos.push({
+      path: config.file,
+      texture
+    });
+    log(`Video loaded in ${Date.now() - start}ms`);
   }
 
   // #endregion Private Methods (17)

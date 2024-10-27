@@ -1,4 +1,4 @@
-.icon {
+.bt-icon {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center center;
@@ -8,15 +8,15 @@
   }
 }
 
-#context-menu .icon {
+#context-menu .bt-icon {
   background-color: var(--color-text-light-1);
 }
 
-nav .icon {
+nav .bt-icon {
   background-color: var(--color-text-dark-primary);
 }
 
-.crossed-swords {
+.bt-icon.crossed-swords {
   // background-image: url("/modules/battle-transitions/assets/icons/crossed-swords.svg");
   mask-image: url("/modules/battle-transitions/assets/icons/crossed-swords.svg");
   -webkit-mask-image: url("/modules/battle-transitions/assets/icons/crossed-swords.svg");
