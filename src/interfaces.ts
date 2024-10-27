@@ -105,6 +105,7 @@ export interface VideoConfiguration extends TransitionConfiguration {
   file: string;
   background: string;
   volume: number;
+  clear?: boolean;
 }
 
 export interface WaitConfiguration extends TransitionConfiguration {
