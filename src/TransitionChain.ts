@@ -15,7 +15,7 @@ export class TransitionChain {
   #scene: Scene | null = null;
   #sequence: TransitionStep[] = [];
   #sounds: Sound[] = [];
-  #transitionOverlay: PIXI.Container | null = null;
+  #transitionOverlay: PIXI.DisplayObject[] = [];
   #typeHandlers: { [x: string]: unknown } = {
     bilinearwipe: this.#executeBilinearWipe.bind(this),
     clockwipe: this.#executeClockWipe.bind(this),
@@ -179,7 +179,8 @@ export class TransitionChain {
       } else {
         if (!sequence) throw new InvalidTransitionError(typeof sequence);
         const container = await setupTransition();
-        this.#transitionOverlay = container.children[0] as PIXI.Container;
+        // this.#transitionOverlay = container.children[0] as PIXI.Container;
+        this.#transitionOverlay.push(...container.children);
         hideLoadingBar();
 
         // If we did not call this function, wait for the scene to activate
@@ -485,7 +486,8 @@ export class TransitionChain {
   }
 
   async #executeRemoveOverlay() {
-    if (this.#transitionOverlay) this.#transitionOverlay.alpha = 0;
+    // if (this.#transitionOverlay) this.#transitionOverlay.alpha = 0;
+    this.#transitionOverlay.forEach(overlay => overlay.alpha = 0);
     return Promise.resolve();
   }
 
@@ -528,9 +530,9 @@ export class TransitionChain {
   }
 
   async #executeVideo(config: VideoConfiguration, container: PIXI.Container) {
-    log("Videos:", this.#preloadedVideos);
     const texture = this.#preloadedVideos.find(spec => spec.path === config.file)?.texture;
     if (!texture) throw new FileNotFoundError(config.file);
+    log("Texture:", texture);
 
     const background = deserializeTexture(config.background);
     const resource: PIXI.VideoResource = texture.baseTexture.resource as PIXI.VideoResource;
@@ -556,7 +558,9 @@ export class TransitionChain {
       container.addChild(videoContainer);
 
       source.addEventListener("ended", () => {
-        if (config.clear) sprite.destroy();
+        if (config.clear) {
+          setTimeout(() => { sprite.destroy(); }, 500);
+        }
         resolve();
       });
       source.addEventListener("error", e => { reject(e.error as Error); });
@@ -572,7 +576,10 @@ export class TransitionChain {
   async #prepareVideo(config: VideoConfiguration) {
     log(`Preloading ${config.file}...`);
     const start = Date.now();
-    const texture: PIXI.Texture = await PIXI.Assets.load(config.file);
+    // const texture: PIXI.Texture = await PIXI.Assets.load(config.file);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    const texture: PIXI.Texture = await (PIXI.loadVideo as any).load(config.file);
 
     this.#preloadedVideos.push({
       path: config.file,
