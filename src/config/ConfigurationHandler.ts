@@ -91,8 +91,11 @@ export class ConfigurationHandler {
 
   private addEventListeners() {
 
+    console.log("Root element:", this.rootElement);
     // Add step button handler
     this.rootElement.find("button[data-action='add-step']").on("click", e => {
+      console.log("Beep boop");
+      e.preventDefault();
       if ($(e.currentTarget).is(":focus")) return this.onAddStep(e);
     });
 

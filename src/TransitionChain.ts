@@ -6,7 +6,7 @@ import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, Rad
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, WipeDirection } from './types';
-import { awaitHook, createColorTexture, deserializeTexture, localize, log, serializeTexture } from "./utils";
+import { awaitHook, createColorTexture, deserializeTexture, localize, log, serializeTexture, shouldUseAppV2 } from "./utils";
 
 export class TransitionChain {
   // #region Properties (6)
@@ -671,6 +671,7 @@ export class TransitionChain {
   }
 
 
+
   static BuildTransition(): Promise<void>
   static BuildTransition(id: string): Promise<void>
   static BuildTransition(name: string): Promise<void>
@@ -685,60 +686,76 @@ export class TransitionChain {
       scenes: game.scenes?.contents.reduce((prev, curr) => curr.id === canvas?.scene?.id ? prev : [...prev, { id: curr.id, name: curr.name }], [] as { id: string, name: string }[])
     });
 
+    console.log(content);
     let configHandler: ConfigurationHandler | null = null;
-    const dialog = new Dialog({
-      title: localize("BATTLETRANSITIONS.TRANSITIONBUILDER.TITLE"),
-      content,
-      default: "ok",
-      render: (html: JQuery<HTMLElement> | HTMLElement) => {
-        configHandler = new ConfigurationHandler(dialog);
-        $(html).parents(".dialog").find(".dialog-buttons").addClass("bt");
-      },
-      buttons: {
-        cancel: {
-          label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
-          icon: "<i class='fas fa-times'></i>"
+
+    if (shouldUseAppV2()) {
+      await foundry.applications.api.DialogV2.wait({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        window: ({ title: "BATTLETRANSITIONS.TRANSITIONBUILDER.TITLE" } as any),
+        rejectClose: false,
+        content,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        render: (e: any, elem: JQuery<HTMLElement> | HTMLElement) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+          configHandler = new ConfigurationHandler(e.target);
+
+          // configHandler = new ConfigurationHandler(dialog);
+          // $(dialog.element).parents(".dialog").find(".dialog-buttons").addClass("bt");
         },
-        ok: {
-          label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
-          icon: "<i class='fas fa-check'></i>",
-          callback: (html: JQuery<HTMLElement> | HTMLElement) => {
-            const transition = configHandler?.generateSequence();
-            if (!scene) {
-              const sceneId = $(html).find("#scene").val();
-              scene = coerceScene(sceneId);
-              if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+        buttons: [
+          {
+            label: "<i class='fas fa-times'></i> " + localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
+            action: "cancel"
+          },
+          {
+            label: "<i class='fas fa-check'></i> " + localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+            action: "ok",
+            default: true,
+            callback: (_event: unknown, _button: unknown, html: HTMLElement | JQuery<HTMLElement>) => {
+              const transition = configHandler?.generateSequence();
+              if (!scene) {
+                const sceneId = $(html).find("#scene").val();
+                scene = coerceScene(sceneId);
+                if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+              }
+              SocketHandler.transition(scene.id as string, transition ?? []);
+              return Promise.resolve();
             }
-            SocketHandler.transition(scene.id, transition);
+          }
+        ]
+      });
+    } else {
+      const dialog = new Dialog({
+        title: localize("BATTLETRANSITIONS.TRANSITIONBUILDER.TITLE"),
+        content,
+        default: "ok",
+        render: (html: JQuery<HTMLElement> | HTMLElement) => {
+          configHandler = new ConfigurationHandler(dialog);
+          $(html).parents(".dialog").find(".dialog-buttons").addClass("bt");
+        },
+        buttons: {
+          cancel: {
+            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
+            icon: "<i class='fas fa-times'></i>"
+          },
+          ok: {
+            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+            icon: "<i class='fas fa-check'></i>",
+            callback: (html: JQuery<HTMLElement> | HTMLElement) => {
+              const transition = configHandler?.generateSequence();
+              if (!scene) {
+                const sceneId = $(html).find("#scene").val();
+                scene = coerceScene(sceneId);
+                if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+              }
+              SocketHandler.transition(scene.id as string, transition ?? []);
+            }
           }
         }
-      }
-    });
-    dialog.render(true, { resizable: true });
+      });
+      dialog.render(true, { resizable: true });
+    }
   }
 
 }
-
-
-//   public static async SelectScene(): Promise < Scene | null > {
-//   const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
-//     scenes: game.scenes?.contents.map(scene => ({ id: scene.id, name: scene.name }))
-//   });
-//   return Dialog.wait({
-//     title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE"),
-//     content,
-//     default: "ok",
-//     buttons: {
-//       cancel: {
-//         icon: "<i class='fas fa-times'></i>",
-//         label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
-//         callback: () => null
-//       },
-//       ok: {
-//         icon: "<i class='fas fa-check'></i>",
-//         label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
-//         callback: (html) => game.scenes?.get($(html).find("#scene").val() as string) ?? null
-//       }
-//     }
-//   }) as Promise<Scene | null>
-// }
