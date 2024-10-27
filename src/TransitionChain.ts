@@ -170,6 +170,7 @@ export class TransitionChain {
   }
 
   public async execute(remote: boolean = false, sequence?: TransitionStep[], caller?: string) {
+    let container: PIXI.Container | null = null;
     try {
       if (!this.#scene) throw new InvalidSceneError(typeof undefined);
       if (this.#scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
@@ -178,7 +179,7 @@ export class TransitionChain {
         SocketHandler.transition(this.#scene.id ?? "", sequence ? sequence : this.#sequence);
       } else {
         if (!sequence) throw new InvalidTransitionError(typeof sequence);
-        const container = await setupTransition();
+        container = await setupTransition();
         // this.#transitionOverlay = container.children[0] as PIXI.Container;
         this.#transitionOverlay.push(...container.children);
         hideLoadingBar();
@@ -200,6 +201,8 @@ export class TransitionChain {
       }
     } catch (err) {
       ui.notifications?.error((err as Error).message);
+    } finally {
+      if (container) container.destroy();
     }
   }
 
