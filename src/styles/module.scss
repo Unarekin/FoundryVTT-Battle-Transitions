@@ -1,37 +1,39 @@
 @import "./icons.scss";
 
-button[data-action="add-step"] {
-  position: relative;
-  nav#context-menu {
-    position: absolute;
+[data-tab="battle-transitions"] {
+  button[data-action="add-step"] {
+    position: relative;
+    nav#context-menu {
+      position: absolute;
+    }
   }
-}
 
-.step-config-item {
-  margin-bottom: 5px;
-}
+  .step-config-item {
+    margin-bottom: 5px;
+  }
 
-.step-button {
-  cursor: pointer;
-  margin-left: 3px;
-}
+  .step-button {
+    cursor: pointer;
+    margin-left: 3px;
+  }
 
-.link {
-  cursor: pointer;
-}
+  .link {
+    cursor: pointer;
+  }
 
-.ui-sortable-helper {
-  background-image: url("/ui/parchment.jpg");
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  margin: 2px;
-}
+  .ui-sortable-helper {
+    background-image: url("/ui/parchment.jpg");
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    margin: 2px;
+  }
 
-.ui-sortable-helper .drag-handle {
-  cursor: grabbing;
-}
+  .ui-sortable-helper .drag-handle {
+    cursor: grabbing;
+  }
 
-.drag-handle {
-  margin-right: 2px;
-  cursor: grab;
+  .drag-handle {
+    margin-right: 2px;
+    cursor: grab;
+  }
 }

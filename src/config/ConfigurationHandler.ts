@@ -42,7 +42,7 @@ export class ConfigurationHandler {
   private stepKey = "steps";
   private configKey = "config";
   private tabName: string = "battle-transitions";
-  private icon: string[] = ["fas", "crossed-swords", "fa-fw", "icon"];
+  private icon: string[] = ["fas", "crossed-swords", "fa-fw", "bt-icon"];
 
   public get appId() { return this.#dialog.appId; }
   public get rootElement() { return $(this.#dialog.element); }
