@@ -35,6 +35,10 @@ export class TransitionChain {
     wait: this.#executeWait.bind(this)
   }
 
+  #preparationHandlers: { [x: string]: unknown } = {
+    video: this.#prepareVideo.bind(this)
+  }
+
   // #endregion Properties (6)
 
   // #region Constructors (6)
@@ -185,6 +189,8 @@ export class TransitionChain {
         showLoadingBar();
         hideTransitionCover();
 
+
+        await this.#prepareSequence(sequence);
         await this.#executeSequence(sequence, container);
 
         // for (const sound of this.#sounds) sound.stop();
@@ -192,6 +198,15 @@ export class TransitionChain {
       }
     } catch (err) {
       ui.notifications?.error((err as Error).message);
+    }
+  }
+
+  async #prepareSequence(sequence: TransitionStep[]) {
+    for (const step of sequence) {
+      if (typeof this.#preparationHandlers[step.type] === "function") {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+        await (this.#preparationHandlers[step.type] as Function)(step);
+      }
     }
   }
 
@@ -330,9 +345,6 @@ export class TransitionChain {
     const volume = args.find(arg => typeof arg === "number") ?? 100;
     const clear = args.find(arg => typeof arg === "boolean") ?? false;
     const background = args.find(arg => !(typeof arg === "boolean" || typeof arg === "number")) ?? "transparent";
-
-    log("Arguments:", args);
-    log("Parsed:", file, volume, background, clear);
 
     this.#sequence.push({
       type: "video",
@@ -547,6 +559,13 @@ export class TransitionChain {
 
   async #executeWait(config: WaitConfiguration) {
     return new Promise(resolve => { setTimeout(resolve, config.duration) });
+  }
+
+  async #prepareVideo(config: VideoConfiguration) {
+    log(`Preloading ${config.file}...`);
+    const start = Date.now();
+    await PIXI.Assets.load(config.file);
+    log(`Video loaded in ${Date.now() - start}ms`);
   }
 
   // #endregion Private Methods (17)
