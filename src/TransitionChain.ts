@@ -1,11 +1,11 @@
 import { coerceMacro, coerceScene } from "./coercion";
-import { InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, TransitionToSelfError } from "./errors";
+import { FileNotFoundError, InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, TransitionToSelfError } from "./errors";
 import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter, MeltFilter, GlitchFilter } from "./filters";
 import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration, MeltConfiguration, GlitchConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, WipeDirection } from './types';
-import { awaitHook, createColorTexture, deserializeTexture, localize, serializeTexture } from "./utils";
+import { awaitHook, createColorTexture, deserializeTexture, localize, log, serializeTexture } from "./utils";
 
 export class TransitionChain {
   // #region Properties (6)
@@ -165,29 +165,33 @@ export class TransitionChain {
   }
 
   public async execute(remote: boolean = false, sequence?: TransitionStep[], caller?: string) {
-    if (!this.#scene) throw new InvalidSceneError(typeof undefined);
-    if (this.#scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
-    if (!remote) {
-      if (!this.#scene.canUserModify(game.users?.current as User ?? null, "update")) throw new PermissionDeniedError();
-      SocketHandler.transition(this.#scene.id ?? "", sequence ? sequence : this.#sequence);
-    } else {
-      if (!sequence) throw new InvalidTransitionError(typeof sequence);
-      const container = await setupTransition();
-      this.#transitionOverlay = container.children[1] as PIXI.Container;
-      hideLoadingBar();
+    try {
+      if (!this.#scene) throw new InvalidSceneError(typeof undefined);
+      if (this.#scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
+      if (!remote) {
+        if (!this.#scene.canUserModify(game.users?.current as User ?? null, "update")) throw new PermissionDeniedError();
+        SocketHandler.transition(this.#scene.id ?? "", sequence ? sequence : this.#sequence);
+      } else {
+        if (!sequence) throw new InvalidTransitionError(typeof sequence);
+        const container = await setupTransition();
+        this.#transitionOverlay = container.children[1] as PIXI.Container;
+        hideLoadingBar();
 
-      // If we did not call this function, wait for the scene to activate
-      if (caller !== game.users?.current?.id) await awaitHook("canvasReady");
-      // If we DID, then activate.
-      else if (caller === game.users?.current?.id) await activateScene(this.#scene);
+        // If we did not call this function, wait for the scene to activate
+        if (caller !== game.users?.current?.id) await awaitHook("canvasReady");
+        // If we DID, then activate.
+        else if (caller === game.users?.current?.id) await activateScene(this.#scene);
 
-      showLoadingBar();
-      hideTransitionCover();
+        showLoadingBar();
+        hideTransitionCover();
 
-      await this.#executeSequence(sequence, container);
+        await this.#executeSequence(sequence, container);
 
-      // for (const sound of this.#sounds) sound.stop();
-      cleanupTransition(container);
+        // for (const sound of this.#sounds) sound.stop();
+        cleanupTransition(container);
+      }
+    } catch (err) {
+      ui.notifications?.error((err as Error).message);
     }
   }
 
@@ -313,14 +317,30 @@ export class TransitionChain {
     return this;
   }
 
-  public video(file: string, volume: number, background: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+
+
+  public video(file: string): this
+  public video(file: string, volume: number): this
+  public video(file: string, background: PIXI.TextureSource | PIXI.ColorSource): this
+  public video(file: string, clear: boolean): this
+  public video(file: string, volume: number, clear: boolean): this
+  public video(file: string, background: PIXI.TextureSource | PIXI.ColorSource, clear: boolean): this
+  public video(file: string, volume: number, background: PIXI.TextureSource | PIXI.ColorSource, clear: boolean): this
+  public video(file: string, ...args: unknown[]): this {
+    const volume = args.find(arg => typeof arg === "number") ?? 100;
+    const clear = args.find(arg => typeof arg === "boolean") ?? false;
+    const background = args.find(arg => !(typeof arg === "boolean" || typeof arg === "number")) ?? "transparent";
+
+    log("Arguments:", args);
+    log("Parsed:", file, volume, background, clear);
+
     this.#sequence.push({
       type: "video",
       file,
       volume,
-      background: serializeTexture(background)
+      background,
+      clear
     });
-
     return this;
   }
 
@@ -494,38 +514,35 @@ export class TransitionChain {
   }
 
   async #executeVideo(config: VideoConfiguration, container: PIXI.Container) {
+    const exist = await srcExists(config.file);
+    if (!exist) throw new FileNotFoundError(config.file);
     const texture: PIXI.Texture = await PIXI.Assets.load(config.file);
     const resource: PIXI.VideoResource = texture.baseTexture.resource as PIXI.VideoResource;
     const source = resource.source;
 
-<<<<<<< HEAD
-=======
     const background = deserializeTexture(config.background);
 
->>>>>>> feature/video-background
     return new Promise<void>((resolve, reject) => {
-      const swapFilter = new TextureSwapFilter(texture.baseTexture);
-
-      const sprite = PIXI.Sprite.from(texture);
-      const bgSprite = PIXI.Sprite.from(background);
-
-      const videoContainer = new PIXI.Container();
-
-      videoContainer.addChild(bgSprite);
-      bgSprite.width = window.innerWidth;
-      bgSprite.height = window.innerHeight;
-
-      videoContainer.addChild(sprite);
-      sprite.filters = [swapFilter];
-
-      container.addChild(videoContainer);
-
-      source.addEventListener("ended", () => { resolve(); });
+      source.addEventListener("ended", () => {
+        if (config.clear) {
+          if (Array.isArray(container.filters) && container.filters.includes(vidFilter)) container.filters.splice(container.filters.indexOf(vidFilter), 1);
+          vidFilter.destroy();
+        }
+        resolve();
+      });
       source.addEventListener("error", e => { reject(e.error as Error); });
 
-      void source.play();
 
-    })
+
+      const bgFilter = new TextureSwapFilter(background.baseTexture);
+      const vidFilter = new TextureSwapFilter(texture.baseTexture);
+
+      if (Array.isArray(container.filters)) container.filters.push(bgFilter, vidFilter);
+      else container.filters = [bgFilter, vidFilter];
+
+      source.volume = config.volume / 100;
+      void source.play();
+    });
   }
 
   async #executeWait(config: WaitConfiguration) {

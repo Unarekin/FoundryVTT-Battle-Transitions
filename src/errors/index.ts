@@ -1,5 +1,6 @@
 export * from './CannotInitializeCanvasError';
 export * from './CanvasNotFoundError';
+export * from './FileNotFoundError';
 export * from './InvalidDirectionError';
 export * from './InvalidElementError';
 export * from './InvalidMacroError';
