@@ -130,3 +130,9 @@ export interface AngularWipeConfiguration extends TransitionConfiguration {
   duration: number;
   background: string;
 }
+
+export interface SawWipeConfiguration extends TransitionConfiguration {
+  duration: number;
+  background: string;
+  direction: RadialDirection;
+}
