@@ -14,6 +14,7 @@ import { MeltFilter } from "./Melt/MeltFilter";
 import { GlitchFilter } from './Glitch/GlitchFilter';
 import { AngularWipeFilter } from './AngularWipe/AngularWipeFilter';
 import { SawWipeFilter } from './SawWipe/SawWipeFilter';
+import { SpiralWipeFilter } from './SpiralWipe/SpiralWipeFilter';
 
 
 export {
@@ -32,7 +33,8 @@ export {
   MeltFilter,
   GlitchFilter,
   AngularWipeFilter,
-  SawWipeFilter
+  SawWipeFilter,
+  SpiralWipeFilter
 }
 
 export const filters = {
@@ -52,5 +54,6 @@ export const filters = {
   MeltFilter,
   GlitchFilter,
   AngularWipeFilter,
-  SawWipeFilter
+  SawWipeFilter,
+  SpiralWipeFilter
 };

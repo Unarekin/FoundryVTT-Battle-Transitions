@@ -136,3 +136,10 @@ export interface SawWipeConfiguration extends TransitionConfiguration {
   background: string;
   direction: RadialDirection;
 }
+
+export interface SpiralWipeConfiguration extends TransitionConfiguration {
+  duration: number;
+  background: string;
+  direction: ClockDirection;
+  radial: RadialDirection;
+}
