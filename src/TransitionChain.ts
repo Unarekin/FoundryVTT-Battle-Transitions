@@ -10,6 +10,7 @@ import { awaitHook, createColorTexture, deserializeTexture, localize, log, seria
 export class TransitionChain {
   // #region Properties (6)
 
+  #preloadedVideos: { path: string, texture: PIXI.Texture }[] = [];
   #defaultEasing: Easing = "none";
   #scene: Scene | null = null;
   #sequence: TransitionStep[] = [];
@@ -202,6 +203,7 @@ export class TransitionChain {
   }
 
   async #prepareSequence(sequence: TransitionStep[]) {
+    this.#preloadedVideos = [];
     for (const step of sequence) {
       if (typeof this.#preparationHandlers[step.type] === "function") {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
@@ -526,35 +528,41 @@ export class TransitionChain {
   }
 
   async #executeVideo(config: VideoConfiguration, container: PIXI.Container) {
-    const exist = await srcExists(config.file);
-    if (!exist) throw new FileNotFoundError(config.file);
-    const texture: PIXI.Texture = await PIXI.Assets.load(config.file);
+    log("Videos:", this.#preloadedVideos);
+    const texture = this.#preloadedVideos.find(spec => spec.path === config.file)?.texture;
+    if (!texture) throw new FileNotFoundError(config.file);
+
+    const background = deserializeTexture(config.background);
     const resource: PIXI.VideoResource = texture.baseTexture.resource as PIXI.VideoResource;
     const source = resource.source;
 
-    const background = deserializeTexture(config.background);
-
     return new Promise<void>((resolve, reject) => {
+      const swapFilter = new TextureSwapFilter(texture.baseTexture);
+
+      const sprite = PIXI.Sprite.from(texture);
+      const bgSprite = PIXI.Sprite.from(background);
+
+      const videoContainer = new PIXI.Container();
+
+      videoContainer.addChild(bgSprite);
+      bgSprite.width = window.innerWidth;
+      bgSprite.height = window.innerHeight;
+
+      videoContainer.addChild(sprite);
+      sprite.filters = [swapFilter];
+
+      source.currentTime = 0;
+
+      container.addChild(videoContainer);
+
       source.addEventListener("ended", () => {
-        if (config.clear) {
-          if (Array.isArray(container.filters) && container.filters.includes(vidFilter)) container.filters.splice(container.filters.indexOf(vidFilter), 1);
-          vidFilter.destroy();
-        }
+        if (config.clear) sprite.destroy();
         resolve();
       });
       source.addEventListener("error", e => { reject(e.error as Error); });
 
-
-
-      const bgFilter = new TextureSwapFilter(background.baseTexture);
-      const vidFilter = new TextureSwapFilter(texture.baseTexture);
-
-      if (Array.isArray(container.filters)) container.filters.push(bgFilter, vidFilter);
-      else container.filters = [bgFilter, vidFilter];
-
-      source.volume = config.volume / 100;
       void source.play();
-    });
+    })
   }
 
   async #executeWait(config: WaitConfiguration) {
@@ -564,7 +572,12 @@ export class TransitionChain {
   async #prepareVideo(config: VideoConfiguration) {
     log(`Preloading ${config.file}...`);
     const start = Date.now();
-    await PIXI.Assets.load(config.file);
+    const texture: PIXI.Texture = await PIXI.Assets.load(config.file);
+
+    this.#preloadedVideos.push({
+      path: config.file,
+      texture
+    });
     log(`Video loaded in ${Date.now() - start}ms`);
   }
 
