@@ -125,3 +125,8 @@ export interface GlitchConfiguration extends TransitionConfiguration {
   background: string;
   duration: number;
 }
+
+export interface AngularWipeConfiguration extends TransitionConfiguration {
+  duration: number;
+  background: string;
+}

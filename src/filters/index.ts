@@ -12,6 +12,7 @@ import { ChromaKeyFilter } from './ChromaKey/ChromaKeyFilter';
 import { TextureSwapFilter } from './TextureSwap/TextureSwapFilter';
 import { MeltFilter } from "./Melt/MeltFilter";
 import { GlitchFilter } from './Glitch/GlitchFilter';
+import { AngularWipeFilter } from './AngularWipe/AngularWipeFilter';
 
 
 export {
@@ -28,7 +29,8 @@ export {
   ChromaKeyFilter,
   TextureSwapFilter,
   MeltFilter,
-  GlitchFilter
+  GlitchFilter,
+  AngularWipeFilter
 }
 
 export const filters = {
@@ -46,5 +48,6 @@ export const filters = {
   ChromaKeyFilter,
   TextureSwapFilter,
   MeltFilter,
-  GlitchFilter
+  GlitchFilter,
+  AngularWipeFilter
 };
