@@ -5,6 +5,7 @@ import { DataURLBuffer, TextureBuffer, TransitionStep } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 import SocketHandler from "./SocketHandler";
+import { TransitionChain } from "./TransitionChain";
 
 /**
  * Linearly interpolates between two values
@@ -338,6 +339,23 @@ export function addNavigationButton(buttons: any[]) {
       if (!steps.length) return;
 
       SocketHandler.transition(sceneId, steps);
+    }
+  }, {
+    name: "BATTLETRANSITIONS.NAVIGATION.CUSTOM",
+    icon: "<i class='fas fa-fw fa-hammer'></i>",
+    condition: (li: JQuery<HTMLLIElement>) => {
+      const sceneId = li.data("sceneId") as string;
+      const scene = game.scenes?.get(sceneId);
+      if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+      return (game.users?.current && scene?.canUserModify(game.users?.current, "update")) && !scene.active;
+    },
+    callback: (li: JQuery<HTMLLIElement>) => {
+      const sceneId = li.data("sceneId") as string;
+      const scene = game.scenes?.get(sceneId);
+      if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+      if (scene?.canUserModify(game.users?.current as User, "update")) {
+        void TransitionChain.BuildTransition(scene);
+      }
     }
   })
 }

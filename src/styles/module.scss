@@ -37,3 +37,9 @@
     cursor: grab;
   }
 }
+
+.bt {
+  &.dialog-buttons {
+    max-height: 36px;
+  }
+}

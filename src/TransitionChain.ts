@@ -1,4 +1,5 @@
 import { coerceMacro, coerceScene } from "./coercion";
+import { ConfigurationHandler } from "./config/ConfigurationHandler";
 import { FileNotFoundError, InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, TransitionToSelfError } from "./errors";
 import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter, MeltFilter, GlitchFilter, AngularWipeFilter, SawWipeFilter, SpiralWipeFilter } from "./filters";
 import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration, MeltConfiguration, GlitchConfiguration, AngularWipeConfiguration, SawWipeConfiguration, SpiralWipeConfiguration } from "./interfaces";
@@ -669,4 +670,75 @@ export class TransitionChain {
     return this;
   }
 
+
+  static BuildTransition(): Promise<void>
+  static BuildTransition(id: string): Promise<void>
+  static BuildTransition(name: string): Promise<void>
+  static BuildTransition(uuid: string): Promise<void>
+  static BuildTransition(scene: Scene): Promise<void>
+  static async BuildTransition(arg?: unknown): Promise<void> {
+
+    let scene = arg ? coerceScene(arg) : undefined;
+    if (arg && !(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
+    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/transition-builder.hbs`, {
+      scene,
+      scenes: game.scenes?.contents.reduce((prev, curr) => curr.id === canvas?.scene?.id ? prev : [...prev, { id: curr.id, name: curr.name }], [] as { id: string, name: string }[])
+    });
+
+    let configHandler: ConfigurationHandler | null = null;
+    const dialog = new Dialog({
+      title: localize("BATTLETRANSITIONS.TRANSITIONBUILDER.TITLE"),
+      content,
+      default: "ok",
+      render: (html: JQuery<HTMLElement> | HTMLElement) => {
+        configHandler = new ConfigurationHandler(dialog);
+        $(html).parents(".dialog").find(".dialog-buttons").addClass("bt");
+      },
+      buttons: {
+        cancel: {
+          label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
+          icon: "<i class='fas fa-times'></i>"
+        },
+        ok: {
+          label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+          icon: "<i class='fas fa-check'></i>",
+          callback: (html: JQuery<HTMLElement> | HTMLElement) => {
+            const transition = configHandler?.generateSequence();
+            if (!scene) {
+              const sceneId = $(html).find("#scene").val();
+              scene = coerceScene(sceneId);
+              if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+            }
+            SocketHandler.transition(scene.id, transition);
+          }
+        }
+      }
+    });
+    dialog.render(true, { resizable: true });
+  }
+
 }
+
+
+//   public static async SelectScene(): Promise < Scene | null > {
+//   const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
+//     scenes: game.scenes?.contents.map(scene => ({ id: scene.id, name: scene.name }))
+//   });
+//   return Dialog.wait({
+//     title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE"),
+//     content,
+//     default: "ok",
+//     buttons: {
+//       cancel: {
+//         icon: "<i class='fas fa-times'></i>",
+//         label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
+//         callback: () => null
+//       },
+//       ok: {
+//         icon: "<i class='fas fa-check'></i>",
+//         label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+//         callback: (html) => game.scenes?.get($(html).find("#scene").val() as string) ?? null
+//       }
+//     }
+//   }) as Promise<Scene | null>
+// }

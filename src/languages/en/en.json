@@ -61,7 +61,8 @@
       "PIXELS": "{value}px"
     },
     "NAVIGATION": {
-      "TRIGGER": "Transition"
+      "TRIGGER": "Transition",
+      "CUSTOM": "Transition Builder"
     },
     "SCENESELECTOR": {
       "TITLE": "Scene Selector",
@@ -81,6 +82,9 @@
       "TEXTURESWAP": "Texture Swap",
       "VIDEO": "Video",
       "WAIT": "Wait"
+    },
+    "TRANSITIONBUILDER": {
+      "TITLE": "Transition Builder"
     }
   }
 }
