@@ -179,7 +179,7 @@ export class TransitionChain {
       } else {
         if (!sequence) throw new InvalidTransitionError(typeof sequence);
         const container = await setupTransition();
-        this.#transitionOverlay = container.children[1] as PIXI.Container;
+        this.#transitionOverlay = container.children[0] as PIXI.Container;
         hideLoadingBar();
 
         // If we did not call this function, wait for the scene to activate
