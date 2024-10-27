@@ -10,8 +10,8 @@ import { SpotlightWipeFilter } from './SpotlightWipe/SpotlightWipeFilter';
 import { RadialWipeFilter } from './RadialWipe/RadialWipeFilter';
 import { ChromaKeyFilter } from './ChromaKey/ChromaKeyFilter';
 import { TextureSwapFilter } from './TextureSwap/TextureSwapFilter';
-import { MeltFilter } from "./Melt/MeltFilter";
-import { GlitchFilter } from './Glitch/GlitchFilter';
+// import { MeltFilter } from "./Melt/MeltFilter";
+// import { GlitchFilter } from './Glitch/GlitchFilter';
 
 
 export {
@@ -27,8 +27,8 @@ export {
   RadialWipeFilter,
   ChromaKeyFilter,
   TextureSwapFilter,
-  MeltFilter,
-  GlitchFilter
+  // MeltFilter,
+  // GlitchFilter
 }
 
 export const filters = {
@@ -45,6 +45,6 @@ export const filters = {
   RadialWipeFilter,
   ChromaKeyFilter,
   TextureSwapFilter,
-  MeltFilter,
-  GlitchFilter
+  // MeltFilter,
+  // GlitchFilter
 };
