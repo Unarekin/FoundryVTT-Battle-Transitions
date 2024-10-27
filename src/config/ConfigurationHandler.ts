@@ -36,7 +36,7 @@ const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
 
 export class ConfigurationHandler {
   #dialog: Application;
-  #scene: Scene;
+  #scene: Scene | null = null;
   #addStepDialog: Application | null = null;
 
   private stepKey = "steps";
@@ -48,9 +48,8 @@ export class ConfigurationHandler {
   public get rootElement() { return $(this.#dialog.element); }
   public get addStepDialogElement() { return this.#addStepDialog ? $(this.#addStepDialog.element) : null; }
 
-  private updateConfiguration() {
-
-    const flags: unknown[] = [];
+  public generateSequence(): TransitionStep[] {
+    const flags: TransitionStep[] = [];
 
     // Generate steps
     this.rootElement.find(".step-config-item[data-transition-type]").each((i, element) => {
@@ -64,6 +63,12 @@ export class ConfigurationHandler {
         type: transitionType
       });
     });
+    return flags;
+  }
+
+  private updateConfiguration() {
+
+    const flags = this.generateSequence();
 
     // void (this.#scene as any).setFlag(__MODULE_ID__, this.stepKey, flags);
 
@@ -73,19 +78,24 @@ export class ConfigurationHandler {
       autoTrigger: container.find("input#auto-trigger").is(":checked")
     }
 
-    void Promise.all([
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      (this.#scene as any).setFlag(__MODULE_ID__, this.stepKey, flags),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      (this.#scene as any).setFlag(__MODULE_ID__, this.configKey, config)
-    ]);
+    if (this.#scene) {
+      void Promise.all([
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        (this.#scene as any).setFlag(__MODULE_ID__, this.stepKey, flags),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        (this.#scene as any).setFlag(__MODULE_ID__, this.configKey, config)
+      ]);
+    }
 
   }
 
   private addEventListeners() {
 
+    console.log("Root element:", this.rootElement);
     // Add step button handler
     this.rootElement.find("button[data-action='add-step']").on("click", e => {
+      console.log("Beep boop");
+      e.preventDefault();
       if ($(e.currentTarget).is(":focus")) return this.onAddStep(e);
     });
 
@@ -349,11 +359,12 @@ export class ConfigurationHandler {
 
     navBar.append(link);
 
-    const transitionConfig = this.#scene.getFlag(__MODULE_ID__, this.configKey);
+    const transitionConfig = this.#scene ? this.#scene.getFlag(__MODULE_ID__, this.configKey) : {};
     const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, transitionConfig);
     this.rootElement.find("button[type='submit']").before(`<div class="tab" data-tab="${this.tabName}">${content}</div>`);
 
-    const steps = this.#scene.getFlag(__MODULE_ID__, this.stepKey) as TransitionStep[];
+
+    const steps = this.#scene ? this.#scene.getFlag(__MODULE_ID__, this.stepKey) as TransitionStep[] : [];
     if (Array.isArray(steps)) {
       for (const step of steps) {
         await this.addUpdateTransitionStep(step.type, step);
@@ -377,13 +388,13 @@ export class ConfigurationHandler {
     navBar.append(link);
 
 
-    const transitionConfig = this.#scene.getFlag(__MODULE_ID__, this.configKey);
+    const transitionConfig = this.#scene ? this.#scene.getFlag(__MODULE_ID__, this.configKey) : {};
 
     const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, transitionConfig);
     this.rootElement.find("footer.sheet-footer").before(`<div class="tab" data-group="main" data-tab="${this.tabName}">${content}</div>`);
 
 
-    const steps = this.#scene.getFlag(__MODULE_ID__, this.stepKey) as TransitionStep[];
+    const steps = this.#scene ? this.#scene.getFlag(__MODULE_ID__, this.stepKey) as TransitionStep[] : [];
     if (Array.isArray(steps)) {
       for (const step of steps) {
         await this.addUpdateTransitionStep(step.type, step);
@@ -394,9 +405,9 @@ export class ConfigurationHandler {
     this.addEventListeners();
   }
 
-  constructor(dialog: Application, scene: Scene) {
+  constructor(dialog: Application, scene?: Scene) {
     this.#dialog = dialog;
-    this.#scene = scene;
+    if (scene) this.#scene = scene;
     void this.inject();
   }
 }

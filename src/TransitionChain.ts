@@ -1,11 +1,12 @@
 import { coerceMacro, coerceScene } from "./coercion";
+import { ConfigurationHandler } from "./config/ConfigurationHandler";
 import { FileNotFoundError, InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, TransitionToSelfError } from "./errors";
 import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter, MeltFilter, GlitchFilter, AngularWipeFilter, SawWipeFilter, SpiralWipeFilter } from "./filters";
 import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration, MeltConfiguration, GlitchConfiguration, AngularWipeConfiguration, SawWipeConfiguration, SpiralWipeConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, WipeDirection } from './types';
-import { awaitHook, createColorTexture, deserializeTexture, localize, log, serializeTexture } from "./utils";
+import { awaitHook, createColorTexture, deserializeTexture, localize, log, serializeTexture, shouldUseAppV2 } from "./utils";
 
 export class TransitionChain {
   // #region Properties (6)
@@ -667,6 +668,94 @@ export class TransitionChain {
       radial
     });
     return this;
+  }
+
+
+
+  static BuildTransition(): Promise<void>
+  static BuildTransition(id: string): Promise<void>
+  static BuildTransition(name: string): Promise<void>
+  static BuildTransition(uuid: string): Promise<void>
+  static BuildTransition(scene: Scene): Promise<void>
+  static async BuildTransition(arg?: unknown): Promise<void> {
+
+    let scene = arg ? coerceScene(arg) : undefined;
+    if (arg && !(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
+    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/transition-builder.hbs`, {
+      scene,
+      scenes: game.scenes?.contents.reduce((prev, curr) => curr.id === canvas?.scene?.id ? prev : [...prev, { id: curr.id, name: curr.name }], [] as { id: string, name: string }[])
+    });
+
+    console.log(content);
+    let configHandler: ConfigurationHandler | null = null;
+
+    if (shouldUseAppV2()) {
+      await foundry.applications.api.DialogV2.wait({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        window: ({ title: "BATTLETRANSITIONS.TRANSITIONBUILDER.TITLE" } as any),
+        rejectClose: false,
+        content,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        render: (e: any, elem: JQuery<HTMLElement> | HTMLElement) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+          configHandler = new ConfigurationHandler(e.target);
+
+          // configHandler = new ConfigurationHandler(dialog);
+          // $(dialog.element).parents(".dialog").find(".dialog-buttons").addClass("bt");
+        },
+        buttons: [
+          {
+            label: "<i class='fas fa-times'></i> " + localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
+            action: "cancel"
+          },
+          {
+            label: "<i class='fas fa-check'></i> " + localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+            action: "ok",
+            default: true,
+            callback: (_event: unknown, _button: unknown, html: HTMLElement | JQuery<HTMLElement>) => {
+              const transition = configHandler?.generateSequence();
+              if (!scene) {
+                const sceneId = $(html).find("#scene").val();
+                scene = coerceScene(sceneId);
+                if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+              }
+              SocketHandler.transition(scene.id as string, transition ?? []);
+              return Promise.resolve();
+            }
+          }
+        ]
+      });
+    } else {
+      const dialog = new Dialog({
+        title: localize("BATTLETRANSITIONS.TRANSITIONBUILDER.TITLE"),
+        content,
+        default: "ok",
+        render: (html: JQuery<HTMLElement> | HTMLElement) => {
+          configHandler = new ConfigurationHandler(dialog);
+          $(html).parents(".dialog").find(".dialog-buttons").addClass("bt");
+        },
+        buttons: {
+          cancel: {
+            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
+            icon: "<i class='fas fa-times'></i>"
+          },
+          ok: {
+            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+            icon: "<i class='fas fa-check'></i>",
+            callback: (html: JQuery<HTMLElement> | HTMLElement) => {
+              const transition = configHandler?.generateSequence();
+              if (!scene) {
+                const sceneId = $(html).find("#scene").val();
+                scene = coerceScene(sceneId);
+                if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+              }
+              SocketHandler.transition(scene.id as string, transition ?? []);
+            }
+          }
+        }
+      });
+      dialog.render(true, { resizable: true });
+    }
   }
 
 }
