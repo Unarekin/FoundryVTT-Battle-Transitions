@@ -322,7 +322,7 @@ export function log(...args: unknown[]) {
 export function addNavigationButton(buttons: any[]) {
   buttons.push({
     name: "BATTLETRANSITIONS.NAVIGATION.TRIGGER",
-    icon: `<i class="fas icon fa-fw crossed-swords"></i>`,
+    icon: `<i class="fas bt-icon fa-fw crossed-swords"></i>`,
     condition: (li: JQuery<HTMLLIElement>) => {
       const scene = game.scenes?.get(li.data("sceneId") as string);
       const steps: TransitionStep[] = scene?.getFlag(__MODULE_ID__, "steps") ?? [];

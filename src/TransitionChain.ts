@@ -1,7 +1,7 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { FileNotFoundError, InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, TransitionToSelfError } from "./errors";
-import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter, MeltFilter, GlitchFilter } from "./filters";
-import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration, MeltConfiguration, GlitchConfiguration } from "./interfaces";
+import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter } from "./filters";
+import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, WipeDirection } from './types';
@@ -22,10 +22,10 @@ export class TransitionChain {
     diamondwipe: this.#executeDiamondWipe.bind(this),
     fade: this.#executeFade.bind(this),
     firedissolve: this.#executeBurn.bind(this),
-    glitch: this.#executeGlitch.bind(this),
+    // glitch: this.#executeGlitch.bind(this),
     linearwipe: this.#executeLinearWipe.bind(this),
     macro: this.#executeMacro.bind(this),
-    melt: this.#executeMelt.bind(this),
+    // melt: this.#executeMelt.bind(this),
     parallel: this.#executeParallel.bind(this),
     radialwipe: this.#executeRadialWipe.bind(this),
     removeoverlay: this.#executeRemoveOverlay.bind(this),
@@ -170,6 +170,7 @@ export class TransitionChain {
   }
 
   public async execute(remote: boolean = false, sequence?: TransitionStep[], caller?: string) {
+    let container: PIXI.Container | null = null;
     try {
       if (!this.#scene) throw new InvalidSceneError(typeof undefined);
       if (this.#scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
@@ -178,7 +179,7 @@ export class TransitionChain {
         SocketHandler.transition(this.#scene.id ?? "", sequence ? sequence : this.#sequence);
       } else {
         if (!sequence) throw new InvalidTransitionError(typeof sequence);
-        const container = await setupTransition();
+        container = await setupTransition();
         // this.#transitionOverlay = container.children[0] as PIXI.Container;
         this.#transitionOverlay.push(...container.children);
         hideLoadingBar();
@@ -200,6 +201,8 @@ export class TransitionChain {
       }
     } catch (err) {
       ui.notifications?.error((err as Error).message);
+    } finally {
+      if (container) container.destroy();
     }
   }
 
@@ -252,18 +255,18 @@ export class TransitionChain {
     return this;
   }
 
-  public melt(duration: number = 1000, background: PIXI.TextureSource | PIXI.ColorSource = "transparent", easing: Easing = this.#defaultEasing): this {
-    new MeltFilter(background);
+  // public melt(duration: number = 1000, background: PIXI.TextureSource | PIXI.ColorSource = "transparent", easing: Easing = this.#defaultEasing): this {
+  //   new MeltFilter(background);
 
-    this.#sequence.push({
-      type: "melt",
-      duration,
-      background: serializeTexture(background),
-      easing
-    });
+  //   this.#sequence.push({
+  //     type: "melt",
+  //     duration,
+  //     background: serializeTexture(background),
+  //     easing
+  //   });
 
-    return this;
-  }
+  //   return this;
+  // }
 
   public parallel(...callbacks: ((chain: TransitionChain) => TransitionStep[])[]): this {
     const sequences: TransitionStep[][] = [];
@@ -381,24 +384,24 @@ export class TransitionChain {
     await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000, ease: config.easing || this.#defaultEasing });
   }
 
-  public glitch(duration: number = 1000, background: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
-    new GlitchFilter(background);
-    this.#sequence.push({
-      type: "glitch",
-      duration
-    });
-    return this;
-  }
+  // public glitch(duration: number = 1000, background: PIXI.TextureSource | PIXI.ColorSource = "transparent"): this {
+  //   new GlitchFilter(background);
+  //   this.#sequence.push({
+  //     type: "glitch",
+  //     duration
+  //   });
+  //   return this;
+  // }
 
-  async #executeGlitch(config: GlitchConfiguration, container: PIXI.Container) {
-    const filter = new GlitchFilter();
+  // async #executeGlitch(config: GlitchConfiguration, container: PIXI.Container) {
+  //   const filter = new GlitchFilter();
 
-    if (Array.isArray(container.filters)) container.filters.push(filter);
-    else container.filters = [filter];
+  //   if (Array.isArray(container.filters)) container.filters.push(filter);
+  //   else container.filters = [filter];
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000, ease: config.easing || this.#defaultEasing });
-  }
+  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  //   await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000, ease: config.easing || this.#defaultEasing });
+  // }
 
   async #executeBurn(config: FireDissolveConfiguration, container: PIXI.Container) {
     const filter = new FireDissolveFilter(config.background, config.burnSize);
@@ -461,15 +464,15 @@ export class TransitionChain {
     else return Promise.resolve();
   }
 
-  async #executeMelt(config: MeltConfiguration, container: PIXI.Container) {
-    const background = deserializeTexture(config.background);
-    const filter = new MeltFilter(background.baseTexture);
-    if (Array.isArray(container.filters)) container.filters.push(filter);
-    else container.filters = [filter];
+  // async #executeMelt(config: MeltConfiguration, container: PIXI.Container) {
+  //   const background = deserializeTexture(config.background);
+  //   const filter = new MeltFilter(background.baseTexture);
+  //   if (Array.isArray(container.filters)) container.filters.push(filter);
+  //   else container.filters = [filter];
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000, ease: config.easing ?? "none" });
-  }
+  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  //   await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000, ease: config.easing ?? "none" });
+  // }
 
   async #executeParallel(config: ParallelConfiguration, container: PIXI.Container) {
     await Promise.all(config.sequences.map(sequence => this.#executeSequence(sequence, container)));
