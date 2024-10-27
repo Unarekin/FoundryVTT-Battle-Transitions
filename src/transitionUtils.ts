@@ -39,9 +39,23 @@ export async function createSnapshot() {
   transitionCover.style.backgroundImage = "";
   const start = Date.now();
   const img = await renderer.extract.image(rt);
+
+  const tempCanvas = document.createElement("canvas");
+  const ctx = tempCanvas.getContext("2d");
+  if (!ctx) throw new CannotInitializeCanvasError();
+
+  tempCanvas.width = img.width;
+  tempCanvas.height = img.height;
+
+  ctx.fillStyle = renderer.background.backgroundColor.toHex();
+  ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+  ctx.drawImage(img, 0, 0);
+
+  const src = tempCanvas.toDataURL();
+
   // const img = renderer.extract.canvas(rt) as HTMLCanvasElement;
   log(`Image transfered in ${Date.now() - start}ms`);
-  transitionCover.style.backgroundImage = `url(${img.src})`;
+  transitionCover.style.backgroundImage = `url(${src})`;
   transitionCover.style.backgroundColor = renderer.background.backgroundColor.toHex()
   transitionCover.style.display = "block";
 
@@ -55,7 +69,10 @@ export async function setupTransition(): Promise<PIXI.Container> {
   const container = new PIXI.Container();
 
   const bgTexture = createColorTexture(canvas?.app?.renderer.background.backgroundColor ?? "white");
-  container.addChild(new PIXI.Sprite(bgTexture));
+  const sprite = new PIXI.Sprite(bgTexture);
+  sprite.width = window.innerWidth;
+  sprite.height = window.innerHeight;
+  container.addChild(sprite);
   container.addChild(snapshot);
   canvasGroup.addChild(container);
 

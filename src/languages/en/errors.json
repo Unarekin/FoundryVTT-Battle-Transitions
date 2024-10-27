@@ -14,7 +14,8 @@
       "INVALIDELEMENT": "Unable to locate HTML element",
       "PERMISSIONDENIED": "Permision denied.",
       "EXECUTECALLEDPARALLEL": "Do not call execute function when creating parallel transition chains.",
-      "TRANSITIONTOSELF": "Attempting to transition to the current scene."
+      "TRANSITIONTOSELF": "Attempting to transition to the current scene.",
+      "FILENOTFOUND": "File not found: {file}"
     }
   }
 }

@@ -105,6 +105,7 @@ export interface VideoConfiguration extends TransitionConfiguration {
   file: string;
   background: string;
   volume: number;
+  clear?: boolean;
 }
 
 export interface WaitConfiguration extends TransitionConfiguration {
@@ -113,4 +114,14 @@ export interface WaitConfiguration extends TransitionConfiguration {
 
 export interface ParallelConfiguration extends TransitionConfiguration {
   sequences: TransitionStep[][];
+}
+
+export interface MeltConfiguration extends TransitionConfiguration {
+  background: string;
+  duration: number;
+}
+
+export interface GlitchConfiguration extends TransitionConfiguration {
+  background: string;
+  duration: number;
 }
