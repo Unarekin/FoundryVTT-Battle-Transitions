@@ -1,8 +1,8 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { ConfigurationHandler } from "./config/ConfigurationHandler";
 import { FileNotFoundError, InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, TransitionToSelfError } from "./errors";
-import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter, MeltFilter, GlitchFilter, AngularWipeFilter, SawWipeFilter, SpiralWipeFilter } from "./filters";
-import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration, MeltConfiguration, GlitchConfiguration, AngularWipeConfiguration, SawWipeConfiguration, SpiralWipeConfiguration } from "./interfaces";
+import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter, MeltFilter, GlitchFilter, AngularWipeFilter, WaveWipeFilter, SpiralWipeFilter } from "./filters";
+import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration, MeltConfiguration, GlitchConfiguration, AngularWipeConfiguration, SpiralWipeConfiguration, WaveWipeConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, WipeDirection } from './types';
@@ -31,7 +31,7 @@ export class TransitionChain {
     parallel: this.#executeParallel.bind(this),
     radialwipe: this.#executeRadialWipe.bind(this),
     removeoverlay: this.#executeRemoveOverlay.bind(this),
-    sawwipe: this.#executeSawWipe.bind(this),
+    wavewipe: this.#executeWaveWipe.bind(this),
     spiralwipe: this.#executeSpiralWipe.bind(this),
     spotlightwipe: this.#executeSpotlightWipe.bind(this),
     textureswap: this.#executeTextureSwap.bind(this),
@@ -621,9 +621,9 @@ export class TransitionChain {
     return this;
   }
 
-  async #executeSawWipe(config: SawWipeConfiguration, container: PIXI.Container) {
+  async #executeWaveWipe(config: WaveWipeConfiguration, container: PIXI.Container) {
     const background = deserializeTexture(config.background ?? createColorTexture("transparent"));
-    const filter = new SawWipeFilter(config.direction, background.baseTexture);
+    const filter = new WaveWipeFilter(config.direction, background.baseTexture);
 
     if (Array.isArray(container.filters)) container.filters.push(filter);
     else container.filters = [filter];
@@ -633,10 +633,10 @@ export class TransitionChain {
     await TweenMax.to(filter.uniforms, { progress: 1, duration: config.duration / 1000, ease: config.easing || this.#defaultEasing });
   }
 
-  public sawWipe(direction: RadialDirection, duration: number = 1000, background: PIXI.TextureSource | PIXI.ColorSource = "transparent", easing: Easing = "none"): this {
-    new SawWipeFilter(direction, background);
+  public waveWipe(direction: RadialDirection, duration: number = 1000, background: PIXI.TextureSource | PIXI.ColorSource = "transparent", easing: Easing = "none"): this {
+    new WaveWipeFilter(direction, background);
     this.#sequence.push({
-      type: "sawwipe",
+      type: "wavewipe",
       background,
       direction,
       duration,
