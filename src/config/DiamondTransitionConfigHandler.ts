@@ -38,7 +38,7 @@ export class DiamondTransitionConfigHandler implements TransitionConfigHandler<D
 
     return {
       ...this.defaultSettings,
-      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "size", "easing")
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "size", "easing", "background")
     }
 
   }
