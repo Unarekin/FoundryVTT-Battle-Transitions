@@ -14,6 +14,7 @@ import { TextureSwapConfigHandler } from './TextureSwapConfigHandler';
 import { WaitConfigHandler } from './WaitConfigHandler';
 import { SoundConfigHandler } from './SoundConfigHandler';
 import { VideoConfigHandler } from './VideoConfigHandler';
+import { InvertConfigurationHandler } from './InvertConfigurationHandler';
 
 new ChromaKeyConfigHandler();
 
@@ -25,12 +26,13 @@ const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
   new ClockWipeConfigHandler(),
   new DiamondTransitionConfigHandler(),
   new FireDissolveConfigHandler(),
+  new InvertConfigurationHandler(),
   new RadialWipeConfigHandler(),
   new SpotlightWipeConfigHandler(),
   new TextureSwapConfigHandler(),
   new WaitConfigHandler(),
   new SoundConfigHandler(),
-  new VideoConfigHandler()
+  new VideoConfigHandler(),
 ].sort((a, b) => localize(a.name).localeCompare(localize(b.name)))
 
 
@@ -184,55 +186,60 @@ export class ConfigurationHandler {
     const handler = CONFIG_HANDLERS.find(item => item.key === key);
     if (!handler) throw new InvalidTransitionError(key);
 
-    const content = await handler.renderTemplate(flag);
-
-    if (shouldUseAppV2() && foundry.applications.api.DialogV2) {
-      void foundry.applications.api.DialogV2.wait({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        window: ({ title: localize("BATTLETRANSITIONS.SCENECONFIG.EDITSTEPDIALOG.TITLE", { name: localize(handler.name) }) } as any),
-        content,
-        render: (e, dialog) => {
-          this.addConfigureStepEventListeners($(dialog), flag);
-        },
-        buttons: [
-          {
-            label: "<i class='fas fa-times'></i> " + localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
-            action: "cancel"
-          },
-          {
-            label: "<i class='fas fa-check'></i> " + localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
-            action: "ok",
-            default: true,
-            // eslint-disable-next-line @typescript-eslint/require-await
-            callback: async (e, button, dialog): Promise<void> => {
-              const flag = handler.createFlagFromHTML($(dialog));
-              void this.addUpdateTransitionStep(key, flag);
-            }
-          }
-        ]
-      });
-
+    if (handler.skipConfig) {
+      const flag = handler.createFlagFromHTML();
+      void this.addUpdateTransitionStep(key, flag);
     } else {
-      await Dialog.wait({
-        title: localize("BATTLETRANSITIONS.SCENECONFIG.EDITSTEPDIALOG.TITLE", { name: localize(handler.name) }),
-        content,
-        render: html => { this.addConfigureStepEventListeners(html, flag); },
-        default: 'ok',
-        buttons: {
-          cancel: {
-            icon: "<i class='fas fa-times'></i>",
-            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")
+      const content = await handler.renderTemplate(flag);
+
+      if (shouldUseAppV2() && foundry.applications.api.DialogV2) {
+        void foundry.applications.api.DialogV2.wait({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          window: ({ title: localize("BATTLETRANSITIONS.SCENECONFIG.EDITSTEPDIALOG.TITLE", { name: localize(handler.name) }) } as any),
+          content,
+          render: (e, dialog) => {
+            this.addConfigureStepEventListeners($(dialog), flag);
           },
-          ok: {
-            icon: "<i class='fas fa-check'></i>",
-            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
-            callback: html => {
-              const flag = handler.createFlagFromHTML(html);
-              void this.addUpdateTransitionStep(key, flag);
+          buttons: [
+            {
+              label: "<i class='fas fa-times'></i> " + localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
+              action: "cancel"
+            },
+            {
+              label: "<i class='fas fa-check'></i> " + localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+              action: "ok",
+              default: true,
+              // eslint-disable-next-line @typescript-eslint/require-await
+              callback: async (e, button, dialog): Promise<void> => {
+                const flag = handler.createFlagFromHTML($(dialog));
+                void this.addUpdateTransitionStep(key, flag);
+              }
+            }
+          ]
+        });
+
+      } else {
+        await Dialog.wait({
+          title: localize("BATTLETRANSITIONS.SCENECONFIG.EDITSTEPDIALOG.TITLE", { name: localize(handler.name) }),
+          content,
+          render: html => { this.addConfigureStepEventListeners(html, flag); },
+          default: 'ok',
+          buttons: {
+            cancel: {
+              icon: "<i class='fas fa-times'></i>",
+              label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")
+            },
+            ok: {
+              icon: "<i class='fas fa-check'></i>",
+              label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+              callback: html => {
+                const flag = handler.createFlagFromHTML(html);
+                void this.addUpdateTransitionStep(key, flag);
+              }
             }
           }
-        }
-      })
+        })
+      }
     }
   }
 

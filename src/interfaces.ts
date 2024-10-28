@@ -4,9 +4,10 @@ export interface TransitionConfigHandler<t extends object> {
   key: string;
   name: string;
 
+  skipConfig?: boolean;
   defaultSettings: t;
   renderTemplate(flag?: t): Promise<string>;
-  createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): t;
+  createFlagFromHTML(html?: HTMLElement | JQuery<HTMLElement>): t;
   generateSummary(flag?: t): string;
 }
 
@@ -146,5 +147,4 @@ export interface SpiralWipeConfiguration extends TransitionConfiguration {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface InvertConfiguration extends TransitionConfiguration {
-  duration: number;
 }
