@@ -1,5 +1,6 @@
 import { TransitionConfigHandler, DiamondTransitionConfiguration } from '../interfaces';
-import { generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
+import { BackgroundType } from '../types';
+import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
 
 
 
@@ -10,10 +11,12 @@ export class DiamondTransitionConfigHandler implements TransitionConfigHandler<D
   public readonly defaultSettings: DiamondTransitionConfiguration = {
     duration: 1000,
     size: 40,
-    background: "#00000000"
+    backgroundType: "color" as BackgroundType,
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   }
 
-  generateSummary(flag?: DiamondTransitionConfiguration): string {
+  generateSummary(flag: DiamondTransitionConfiguration): string {
     const settings = {
       ...this.defaultSettings,
       ...flag
@@ -21,7 +24,7 @@ export class DiamondTransitionConfigHandler implements TransitionConfigHandler<D
     return [
       localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: settings.duration }),
       localize("BATTLETRANSITIONS.FORMATTERS.PIXELS", { value: settings.size }),
-      settings.background
+      formatBackgroundSummary(flag)
     ].join("; ")
   }
 
@@ -35,10 +38,11 @@ export class DiamondTransitionConfigHandler implements TransitionConfigHandler<D
   }
 
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): DiamondTransitionConfiguration {
-
+    const backgroundImage = $(html).find("form #backgroundImage").val() as string ?? "";
     return {
       ...this.defaultSettings,
-      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "size", "easing", "background")
+      backgroundImage,
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "size", "easing", "backgroundType", "backgroundColor")
     }
 
   }

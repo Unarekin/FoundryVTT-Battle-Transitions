@@ -19,3 +19,6 @@ export type Easing = "none"
   | "rough"
   | "slow"
   | "expoScale"
+
+
+export type BackgroundType = "color" | "image"

@@ -3,10 +3,7 @@
     <input type="hidden" value="{{id}}">
     <p>{{localize "BATTLETRANSITIONS.SCENECONFIG.MELT.DESCRIPTION"}}</p>
     {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
-    <div class="form-group">
-      <label for="background">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.LABEL"}}</label>
-      <input type="text" data-color-picker="{alphaChannel: true}" value="{{background}}" id="background" name="background">
-    </div>
+    {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
     <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.HINT"}}</p>
   </form>
 </div>

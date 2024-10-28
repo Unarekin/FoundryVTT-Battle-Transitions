@@ -1,22 +1,24 @@
 import { TransitionConfigHandler, LinearWipeConfiguration } from "../interfaces";
-import { generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
+import { BackgroundType } from "../types";
+import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from "../utils";
 
 
 export class LinearWipeConfigHandler implements TransitionConfigHandler<LinearWipeConfiguration> {
 
   public readonly defaultSettings: LinearWipeConfiguration = {
     duration: 1000,
-    background: "#00000000",
-    direction: "left"
+    direction: "left",
+    backgroundType: "color" as BackgroundType,
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   };
 
-  generateSummary(flag?: LinearWipeConfiguration): string {
-    const settings = {
-      ...this.defaultSettings,
-      ...flag
-    };
-
-    return [settings.direction, settings.duration, settings.background].join("; ");
+  generateSummary(flag: LinearWipeConfiguration): string {
+    return [
+      flag?.direction,
+      localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: flag?.duration }),
+      formatBackgroundSummary(flag)
+    ].filter(val => !!val).join(": ");
   }
 
   renderTemplate(flag?: LinearWipeConfiguration): Promise<string> {
@@ -37,9 +39,11 @@ export class LinearWipeConfigHandler implements TransitionConfigHandler<LinearWi
     });
   }
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): LinearWipeConfiguration {
+    const backgroundImage = $(html).find("form #backgroundImage").val() as string ?? "";
     return {
       ...this.defaultSettings,
-      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "direction", "background", "easing")
+      backgroundImage,
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "direction", "easing", "backgroundType", "backgroundColor")
     }
   }
   public get key() { return "linearwipe"; }

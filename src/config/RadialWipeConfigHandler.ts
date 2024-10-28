@@ -1,6 +1,6 @@
 import { TransitionConfigHandler, RadialWipeConfiguration } from '../interfaces';
-import { generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
-import { RadialDirection } from '../types';
+import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
+import { BackgroundType, RadialDirection } from '../types';
 
 
 
@@ -10,8 +10,10 @@ export class RadialWipeConfigHandler implements TransitionConfigHandler<RadialWi
 
   public readonly defaultSettings = {
     duration: 1000,
-    background: "#00000000",
-    radial: "inside" as RadialDirection
+    radial: "inside" as RadialDirection,
+    backgroundType: "color" as BackgroundType,
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   }
 
   generateSummary(flag?: RadialWipeConfiguration): string {
@@ -23,7 +25,7 @@ export class RadialWipeConfigHandler implements TransitionConfigHandler<RadialWi
     return [
       localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: settings.duration }),
       settings.radial,
-      settings.background
+      formatBackgroundSummary(settings)
     ].join("; ")
   }
 
@@ -39,9 +41,11 @@ export class RadialWipeConfigHandler implements TransitionConfigHandler<RadialWi
   }
 
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): RadialWipeConfiguration {
+    const backgroundImage = $(html).find("form #backgroundImage").val() as string ?? "";
     return {
       ...this.defaultSettings,
-      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "radial", "background", "easing")
+      backgroundImage,
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "radial", "backgroundColor", "backgroundType", "easing")
     }
   }
 }

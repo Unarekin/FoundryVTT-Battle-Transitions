@@ -1,5 +1,6 @@
 import { TransitionConfigHandler, FadeConfiguration } from '../interfaces';
-import { generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
+import { BackgroundType } from '../types';
+import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
 
 
 
@@ -10,14 +11,17 @@ export class FadeConfigHandler implements TransitionConfigHandler<FadeConfigurat
 
   public readonly defaultSettings: FadeConfiguration = {
     duration: 1000,
-    background: "#00000000"
+    backgroundType: "color" as BackgroundType,
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   }
 
 
   generateSummary(flag: FadeConfiguration): string {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (flag) return [localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: (flag as any).duration }), (flag as any).background].join("; ");
-    else return "";
+    return [
+      localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: flag.duration }),
+      formatBackgroundSummary(flag)
+    ].filter(val => !!val).join(": ");
   }
 
   renderTemplate(flag?: FadeConfiguration): Promise<string> {
@@ -30,9 +34,11 @@ export class FadeConfigHandler implements TransitionConfigHandler<FadeConfigurat
   }
 
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): FadeConfiguration {
+    const backgroundImage = $(html).find("form #backgroundImage").val() as string ?? "";
     return {
       ...this.defaultSettings,
-      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "background", "easing")
+      backgroundImage,
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "easing", "backgroundType", "backgroundColor")
     }
   }
 

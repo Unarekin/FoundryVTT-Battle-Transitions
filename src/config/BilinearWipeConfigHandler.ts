@@ -1,5 +1,6 @@
 import { BilinearWipeConfiguration, TransitionConfigHandler } from "../interfaces";
-import { generateEasingSelectOptions, localize, parseConfigurationFormElements } from "../utils";
+import { BackgroundType } from "../types";
+import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from "../utils";
 
 
 export class BilinearWipeConfigHandler implements TransitionConfigHandler<BilinearWipeConfiguration> {
@@ -9,13 +10,17 @@ export class BilinearWipeConfigHandler implements TransitionConfigHandler<Biline
     duration: 1000,
     direction: "horizontal",
     radial: "inside",
-    background: "#00000000",
+    backgroundType: "color" as BackgroundType,
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   }
 
-  public generateSummary(flag?: BilinearWipeConfiguration): string {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (flag) return [localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: (flag as any).duration }), flag.direction, flag.radial, (flag as any).background].join("; ");
-    else return "";
+  public generateSummary(flag: BilinearWipeConfiguration): string {
+    return [
+      localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: flag.duration }),
+      flag.direction, flag.radial,
+      formatBackgroundSummary(flag)
+    ].filter(val => !!val).join("; ");
   }
 
   public renderTemplate(flag?: BilinearWipeConfiguration): Promise<string> {
@@ -37,9 +42,12 @@ export class BilinearWipeConfigHandler implements TransitionConfigHandler<Biline
   }
 
   public createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): BilinearWipeConfiguration {
+    //const file = $(html).find("form #file").val() as string ?? "";
+    const backgroundImage = $(html).find("form #backgroundImage").val() as string ?? "";
     return {
       ...this.defaultSettings,
-      ...parseConfigurationFormElements($(html).find("form"), "duration", "background", "direction", "radial", "easing", "id"),
+      backgroundImage,
+      ...parseConfigurationFormElements($(html).find("form"), "duration", "direction", "radial", "easing", "id", "backgroundType", "backgroundColor"),
     };
   }
 }

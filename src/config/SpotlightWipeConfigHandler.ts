@@ -1,5 +1,6 @@
 import { TransitionConfigHandler, SpotlightWipeConfiguration } from '../interfaces';
-import { generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
+import { BackgroundType } from '../types';
+import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
 
 
 
@@ -9,9 +10,11 @@ export class SpotlightWipeConfigHandler implements TransitionConfigHandler<Spotl
 
   public readonly defaultSettings: SpotlightWipeConfiguration = {
     duration: 1000,
-    background: "#00000000",
     direction: "top",
-    radial: "outside"
+    radial: "outside",
+    backgroundType: "color" as BackgroundType,
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   }
 
   generateSummary(flag?: SpotlightWipeConfiguration): string {
@@ -23,14 +26,16 @@ export class SpotlightWipeConfigHandler implements TransitionConfigHandler<Spotl
       localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: settings.duration }),
       settings.direction,
       settings.radial,
-      settings.background
+      formatBackgroundSummary(settings)
     ].join("; ")
   }
 
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): SpotlightWipeConfiguration {
+    const backgroundImage = $(html).find("form #backgroundImage").val() as string ?? "";
     return {
       ...this.defaultSettings,
-      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "direction", "radial", "background", "easing"),
+      backgroundImage,
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "direction", "radial", "easing", "backgroundType", "backgroundColor"),
     }
   }
 

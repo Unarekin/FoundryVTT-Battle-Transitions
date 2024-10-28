@@ -174,10 +174,29 @@ export class ConfigurationHandler {
     })
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  private addConfigureStepEventListeners(html: JQuery<HTMLElement>, flag: object = {}) {
+
+
+  private addConfigureStepEventListeners(html: JQuery<HTMLElement>, flag: any) {
     html.find("input[type='text'],input[type='number']").on("focus", e => {
       (e.currentTarget as HTMLInputElement).select();
+    });
+
+    // Handle background picker selection
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (flag.useImage) html.find("#backgroundColor").css("display", "none");
+    else html.find("#backgroundImage").css("display", "none");
+
+    html.find("#backgroundType").on("input", e => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      const inputType = (e.currentTarget as any).value;
+      if (inputType === "image") {
+        html.find("#backgroundColor").css("display", "none");
+        html.find("#backgroundImage").css("display", "");
+      } else {
+        html.find("#backgroundColor").css("display", "");
+        html.find("#backgroundImage").css("display", "none");
+      }
+
     })
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access

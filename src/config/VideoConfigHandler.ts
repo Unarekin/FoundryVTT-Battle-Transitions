@@ -1,5 +1,6 @@
 import { TransitionConfigHandler, VideoConfiguration } from "../interfaces";
-import { localize, parseConfigurationFormElements } from "../utils";
+import { BackgroundType } from "../types";
+import { formatBackgroundSummary, localize, parseConfigurationFormElements } from "../utils";
 
 
 
@@ -9,8 +10,10 @@ export class VideoConfigHandler implements TransitionConfigHandler<VideoConfigur
 
   public readonly defaultSettings = {
     file: "",
-    background: "#00000000",
-    volume: 1
+    volume: 1,
+    backgroundType: "color" as BackgroundType,
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   };
 
   generateSummary(flag?: VideoConfiguration): string {
@@ -21,7 +24,7 @@ export class VideoConfigHandler implements TransitionConfigHandler<VideoConfigur
     return [
       settings.file.split("/").splice(-1),
       localize("BATTLETRANSITIONS.FORMATTERS.PERCENT", { value: settings.volume * 100 }),
-      settings.background
+      formatBackgroundSummary(settings)
     ].join("; ")
   }
 
@@ -36,12 +39,13 @@ export class VideoConfigHandler implements TransitionConfigHandler<VideoConfigur
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): VideoConfiguration {
     const file = $(html).find("form #file").val() as string ?? "";
     const volume = $(html).find("form #volume input[type='number']").val() as number;
-
+    const backgroundImage = $(html).find("form #backgroundImage").val() as string ?? "";
     return {
       ...this.defaultSettings,
       ...(file ? { file } : {}),
       ...(volume ? { volume: volume / 100 } : {}),
-      ...parseConfigurationFormElements($(html).find("form"), "id", "background")
+      backgroundImage,
+      ...parseConfigurationFormElements($(html).find("form"), "id", "backgroundType", "backgroundColor")
     }
 
   }

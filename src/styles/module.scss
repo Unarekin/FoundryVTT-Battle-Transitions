@@ -1,5 +1,9 @@
 @import "./icons.scss";
 
+.center {
+  text-align: center;
+}
+
 [data-tab="battle-transitions"] {
   button[data-action="add-step"] {
     position: relative;

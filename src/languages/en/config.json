@@ -32,8 +32,10 @@
       },
       "COMMON": {
         "BACKGROUND": {
-          "HINT": "Background color to show behind this step",
-          "LABEL": "Background Color"
+          "HINT": "Background color or image to show behind this step",
+          "LABEL": "Background",
+          "COLOR": "Color",
+          "IMAGE": "Image"
         },
         "DIRECTION": {
           "HINT": "Direction from which to start",

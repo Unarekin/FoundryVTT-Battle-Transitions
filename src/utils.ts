@@ -1,11 +1,12 @@
 import { coerceTexture } from "./coercion";
 import { LOG_ICON } from "./constants";
 import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidSceneError, InvalidTextureError } from "./errors";
-import { DataURLBuffer, TextureBuffer, TransitionStep } from "./interfaces";
+import { DataURLBuffer, TextureBuffer, TransitionStep, TransitionWithBackground } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 import SocketHandler from "./SocketHandler";
 import { TransitionChain } from "./TransitionChain";
+import { bytesToBase64 } from "./lib/base64Utils"
 
 /**
  * Linearly interpolates between two values
@@ -294,7 +295,7 @@ export function serializeTexture(texture: any): string | TextureBuffer | DataURL
 }
 
 function deserializeDataURL(data: DataURLBuffer): PIXI.Texture {
-  const base64 = btoa(String.fromCharCode.apply(null, data.buffer as unknown as number[]));
+  const base64 = bytesToBase64((data.buffer instanceof ArrayBuffer) ? new Uint8Array(data.buffer) : data.buffer);
   return PIXI.Texture.from(`data:${data.mimeType};base64,${base64}`);
 }
 
@@ -303,13 +304,11 @@ function deserializeTextureBuffer(data: TextureBuffer): PIXI.Texture {
 }
 
 export function deserializeTexture(data: string | DataURLBuffer | TextureBuffer): PIXI.Texture {
-  if (typeof data === "string") {
-    const texture = coerceTexture(data);
-    if (texture) return texture;
-  }
+  if (typeof data === "string") return coerceTexture(data) ?? createColorTexture("transparent");
 
   const urlBuffer = data as DataURLBuffer;
   if (urlBuffer.buffer && urlBuffer.mimeType) return deserializeDataURL(urlBuffer);
+
   const textureBuffer = data as TextureBuffer;
   if (textureBuffer.buffer && textureBuffer.width && textureBuffer.height) return deserializeTextureBuffer(textureBuffer);
 
@@ -397,15 +396,32 @@ export function generateEasingSelectOptions(): { [x: string]: string } {
 }
 
 
+function findFormValue(serialized: { name: string, value: unknown }[], key: string): unknown {
+  const elem = serialized.find(({ name }) => name === key);
+
+  if (key === "background") {
+    const bgType = serialized.find(({ name }) => name === "backgroundType");
+    if (!bgType) return null;
+    if (bgType.value === "image") return findFormValue(serialized, "backgroundImage");
+    else return findFormValue(serialized, "backgroundColor");
+  }
+
+  if (!elem) return null;
+  if (key === "id" && !elem.value) return foundry.utils.randomID();
+
+  return elem.value;
+}
+
 export function parseConfigurationFormElements(form: JQuery<HTMLFormElement>, ...elements: string[]): { [x: string]: unknown } {
   const serialized = form.serializeArray();
 
-  const elem = elements.reduce((prev, curr) => {
-    return {
-      ...prev,
-      [curr]: serialized.reduce((prev2, curr2) => curr2.name === curr ? curr === "id" && !curr2.value ? foundry.utils.randomID() : curr2.value : prev2, "")
-    }
-  }, {});
-  console.log("Parsed:", elem);
+  const elem = Object.fromEntries(
+    elements.map(key => [key, findFormValue(serialized, key)])
+  );
+  console.log(elem);
   return elem;
+}
+
+export function formatBackgroundSummary(flag: TransitionWithBackground): string {
+  return (flag.backgroundType === "image" ? flag.backgroundImage?.split("/").splice(-1)[0] : flag.backgroundColor) ?? "";
 }

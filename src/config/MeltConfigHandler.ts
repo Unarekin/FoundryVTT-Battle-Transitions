@@ -1,12 +1,15 @@
 import { MeltConfiguration, TransitionConfigHandler } from '../interfaces';
-import { generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
+import { BackgroundType } from '../types';
+import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
 
 export class MeltConfigHandler implements TransitionConfigHandler<MeltConfiguration> {
   public readonly key = "melt";
   public readonly name = "BATTLETRANSITIONS.TRANSITIONTYPES.MELT";
 
   public readonly defaultSettings = {
-    background: "#00000000",
+    backgroundType: "color" as BackgroundType,
+    backgroundImage: "",
+    backgroundColor: "#00000000",
     duration: 1000
   };
 
@@ -19,15 +22,19 @@ export class MeltConfigHandler implements TransitionConfigHandler<MeltConfigurat
   }
 
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): MeltConfiguration {
+    const backgroundImage = $(html).find("form #backgroundImage").val() as string ?? "";
     return {
       ...this.defaultSettings,
-      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "background", "easing")
+      backgroundImage,
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "easing", "backgroundType", "backgroundColor")
     }
   }
 
   generateSummary(flag: MeltConfiguration): string {
-    if (flag) return [localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: flag.duration }), flag.background].join("; ");
-    else return ""
+    return [
+      localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: flag.duration }),
+      formatBackgroundSummary(flag)
+    ].filter(val => !!val).join("; ")
   }
 
 }

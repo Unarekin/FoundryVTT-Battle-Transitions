@@ -1,5 +1,6 @@
 import { TransitionConfigHandler, ClockWipeConfiguration } from "../interfaces";
-import { generateEasingSelectOptions, localize, parseConfigurationFormElements } from "../utils";
+import { BackgroundType } from "../types";
+import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from "../utils";
 
 
 export class ClockWipeConfigHandler implements TransitionConfigHandler<ClockWipeConfiguration> {
@@ -10,16 +11,17 @@ export class ClockWipeConfigHandler implements TransitionConfigHandler<ClockWipe
     direction: "top",
     clockdirection: "clockwise",
     duration: 1000,
-    background: "#00000000"
+    backgroundType: "color" as BackgroundType,
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   }
 
-  public generateSummary(flag?: ClockWipeConfiguration): string {
-    const settings = {
-      ...this.defaultSettings,
-      ...flag
-    };
-
-    return [settings.clockdirection, settings.direction, localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: settings.duration }), settings.background].join("; ")
+  public generateSummary(flag: ClockWipeConfiguration): string {
+    return [
+      flag.clockdirection, flag.direction,
+      localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: flag.duration }),
+      formatBackgroundSummary(flag)
+    ].filter(val => !!val).join("; ");
   }
 
   async renderTemplate(flag?: ClockWipeConfiguration): Promise<string> {
@@ -41,9 +43,11 @@ export class ClockWipeConfigHandler implements TransitionConfigHandler<ClockWipe
   }
 
   public createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): ClockWipeConfiguration {
+    const backgroundImage = $(html).find("form #backgroundImage").val() as string ?? "";
     return {
       ...this.defaultSettings,
-      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "direction", "background", "clockdirection", "easing")
+      backgroundImage,
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "direction", "use", "clockdirection", "easing", "backgroundType", "backgroundColor")
     }
   }
 

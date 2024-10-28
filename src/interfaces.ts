@@ -1,4 +1,4 @@
-import { BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from "./types";
+import { BackgroundType, BilinearDirection, ClockDirection, RadialDirection, WipeDirection } from "./types";
 
 export interface TransitionConfigHandler<t extends object> {
   key: string;
@@ -34,35 +34,38 @@ interface TransitionConfiguration {
   easing?: string;
 }
 
-export interface BilinearWipeConfiguration extends TransitionConfiguration {
+export interface TransitionWithBackground extends TransitionConfiguration {
+  backgroundImage?: string;
+  backgroundColor?: string;
+  backgroundType?: BackgroundType;
+  background?: string | DataURLBuffer | TextureBuffer;
+  deserializedBackground?: PIXI.Texture;
+}
+
+export interface BilinearWipeConfiguration extends TransitionWithBackground {
   duration: number;
   direction: BilinearDirection;
   radial: RadialDirection;
-  background: string;
 }
 
-export interface ChromaKeyConfiguration extends TransitionConfiguration {
+export interface ChromaKeyConfiguration extends TransitionWithBackground {
   keyColor: string;
-  background: string;
 }
 
 
-export interface ClockWipeConfiguration extends TransitionConfiguration {
+export interface ClockWipeConfiguration extends TransitionWithBackground {
   clockdirection: ClockDirection;
   direction: WipeDirection,
   duration: number;
-  background: string;
 }
 
-export interface DiamondTransitionConfiguration extends TransitionConfiguration {
+export interface DiamondTransitionConfiguration extends TransitionWithBackground {
   size: number;
-  background: string;
   duration: number;
 }
 
-export interface FadeConfiguration extends TransitionConfiguration {
+export interface FadeConfiguration extends TransitionWithBackground {
   duration: number;
-  background: string;
 }
 
 
@@ -72,15 +75,13 @@ export interface FireDissolveConfiguration extends TransitionConfiguration {
 }
 
 
-export interface LinearWipeConfiguration extends TransitionConfiguration {
+export interface LinearWipeConfiguration extends TransitionWithBackground {
   direction: WipeDirection;
   duration: number;
-  background: string;
 }
 
-export interface RadialWipeConfiguration extends TransitionConfiguration {
+export interface RadialWipeConfiguration extends TransitionWithBackground {
   duration: number;
-  background: string;
   radial: RadialDirection;
 }
 
@@ -90,20 +91,18 @@ export interface SoundConfiguration extends TransitionConfiguration {
 }
 
 
-export interface SpotlightWipeConfiguration extends TransitionConfiguration {
+export interface SpotlightWipeConfiguration extends TransitionWithBackground {
   duration: number;
   direction: WipeDirection;
   radial: RadialDirection;
-  background: string;
 }
 
 export interface TextureSwapConfiguration extends TransitionConfiguration {
   texture: string;
 }
 
-export interface VideoConfiguration extends TransitionConfiguration {
+export interface VideoConfiguration extends TransitionWithBackground {
   file: string;
-  background: string;
   volume: number;
   clear?: boolean;
 }
@@ -116,30 +115,25 @@ export interface ParallelConfiguration extends TransitionConfiguration {
   sequences: TransitionStep[][];
 }
 
-export interface MeltConfiguration extends TransitionConfiguration {
-  background: string;
+export interface MeltConfiguration extends TransitionWithBackground {
   duration: number;
 }
 
-export interface GlitchConfiguration extends TransitionConfiguration {
-  background: string;
+export interface GlitchConfiguration extends TransitionWithBackground {
   duration: number;
 }
 
-export interface AngularWipeConfiguration extends TransitionConfiguration {
+export interface AngularWipeConfiguration extends TransitionWithBackground {
   duration: number;
-  background: string;
 }
 
-export interface WaveWipeConfiguration extends TransitionConfiguration {
+export interface WaveWipeConfiguration extends TransitionWithBackground {
   duration: number;
-  background: string;
   direction: RadialDirection;
 }
 
-export interface SpiralWipeConfiguration extends TransitionConfiguration {
+export interface SpiralWipeConfiguration extends TransitionWithBackground {
   duration: number;
-  background: string;
   direction: ClockDirection;
   radial: RadialDirection;
 }

@@ -8,7 +8,7 @@ export class FireDissolveConfigHandler implements TransitionConfigHandler<FireDi
 
   public readonly defaultSettings = {
     duration: 1000,
-    background: "#00000000",
+    useImage: false,
     burnSize: 1.3
   }
 
@@ -18,8 +18,7 @@ export class FireDissolveConfigHandler implements TransitionConfigHandler<FireDi
       ...flag
     };
     return [
-      localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: settings.duration }),
-      settings.background
+      localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: settings.duration })
     ].join("; ");
   }
 
@@ -34,7 +33,7 @@ export class FireDissolveConfigHandler implements TransitionConfigHandler<FireDi
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): FireDissolveConfiguration {
     return {
       ...this.defaultSettings,
-      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "background", "burnsize", "easing")
+      ...parseConfigurationFormElements($(html).find("form"), "id", "duration", "burnsize", "easing")
     }
   }
 }

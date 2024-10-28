@@ -1,4 +1,4 @@
-import { coerceMacro, coerceScene } from "./coercion";
+import { coerceMacro, coerceScene, coerceTexture } from "./coercion";
 import { ConfigurationHandler } from "./config/ConfigurationHandler";
 import { FileNotFoundError, InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, TransitionToSelfError } from "./errors";
 import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter, MeltFilter, GlitchFilter, AngularWipeFilter, WaveWipeFilter, SpiralWipeFilter, InvertFilter } from "./filters";
@@ -134,11 +134,10 @@ export class TransitionChain {
     return this;
   }
 
-  public burn(duration: number = 1000, background: PIXI.ColorSource | PIXI.TextureSource = "transparent", burnSize: number = 1.3, easing: Easing = this.#defaultEasing): this {
-    new FireDissolveFilter(background, burnSize);
+  public burn(duration: number = 1000, burnSize: number = 1.3, easing: Easing = this.#defaultEasing): this {
+    new FireDissolveFilter(burnSize);
     this.#sequence.push({
       type: "firedissolve",
-      background: serializeTexture(background),
       duration,
       burnSize,
       easing
@@ -213,7 +212,13 @@ export class TransitionChain {
 
   async #prepareSequence(sequence: TransitionStep[]) {
     this.#preloadedVideos = [];
+
     for (const step of sequence) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      if (step.background) step.deserializedBackground = deserializeTexture(step.background as any);
+      else step.deserializedBackground = coerceTexture(step.backgroundImage || step.backgroundColor || "transparent");
+
+
       if (typeof this.#preparationHandlers[step.type] === "function") {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         await (this.#preparationHandlers[step.type] as Function)(step);
@@ -380,7 +385,7 @@ export class TransitionChain {
   // #region Private Methods (17)
 
   async #executeBilinearWipe(config: BilinearWipeConfiguration, container: PIXI.Container) {
-    const background = deserializeTexture(config.background);
+    const background = config.deserializedBackground ?? createColorTexture("transparent");
     const filter = new BilinearWipeFilter(config.direction, config.radial, background.baseTexture);
     if (Array.isArray(container.filters)) container.filters.push(filter);
     else container.filters = [filter];
@@ -419,7 +424,7 @@ export class TransitionChain {
   }
 
   async #executeClockWipe(config: ClockWipeConfiguration, container: PIXI.Container) {
-    const background = deserializeTexture(config.background);
+    const background = config.deserializedBackground ?? createColorTexture("transparent");
     const filter = new ClockWipeFilter(config.clockdirection, config.direction, background.baseTexture);
 
     if (Array.isArray(container.filters)) container.filters.push(filter);
@@ -430,7 +435,7 @@ export class TransitionChain {
   }
 
   async #executeDiamondWipe(config: DiamondTransitionConfiguration, container: PIXI.Container) {
-    const background = deserializeTexture(config.background);
+    const background = config.deserializedBackground ?? createColorTexture("transparent");
     const filter = new DiamondTransitionFilter(config.size, background.baseTexture);
     if (Array.isArray(container.filters)) container.filters.push(filter);
     else container.filters = [filter];
@@ -440,7 +445,7 @@ export class TransitionChain {
   }
 
   async #executeFade(config: FadeConfiguration, container: PIXI.Container) {
-    const bg = deserializeTexture(config.background);
+    const bg = config.deserializedBackground ?? createColorTexture("transparent");
     const filter = new FadeTransitionFilter(bg.baseTexture);
     if (Array.isArray(container.filters)) container.filters.push(filter);
     else container.filters = [filter];
@@ -450,7 +455,7 @@ export class TransitionChain {
   }
 
   async #executeLinearWipe(config: LinearWipeConfiguration, container: PIXI.Container) {
-    const background = deserializeTexture(config.background ?? createColorTexture("transparent"));
+    const background = config.deserializedBackground ?? createColorTexture("transparent");
 
     const wipe = new LinearWipeFilter(config.direction, background.baseTexture);
 
@@ -471,7 +476,7 @@ export class TransitionChain {
   }
 
   async #executeMelt(config: MeltConfiguration, container: PIXI.Container) {
-    const background = deserializeTexture(config.background);
+    const background = config.deserializedBackground ?? createColorTexture("transparent");
     const filter = new MeltFilter(background.baseTexture);
     if (Array.isArray(container.filters)) container.filters.push(filter);
     else container.filters = [filter];
@@ -485,7 +490,7 @@ export class TransitionChain {
   }
 
   async #executeRadialWipe(config: RadialWipeConfiguration, container: PIXI.Container) {
-    const background = deserializeTexture(config.background);
+    const background = config.deserializedBackground ?? createColorTexture("transparent");
     const filter = new RadialWipeFilter(config.radial, background.baseTexture);
     if (Array.isArray(container.filters)) container.filters.push(filter);
     else container.filters = [filter];
@@ -521,7 +526,7 @@ export class TransitionChain {
   }
 
   async #executeSpotlightWipe(config: SpotlightWipeConfiguration, container: PIXI.Container) {
-    const background = deserializeTexture(config.background);
+    const background = config.deserializedBackground ?? createColorTexture("transparent");
     const filter = new SpotlightWipeFilter(config.direction, config.radial, background.baseTexture);
     if (Array.isArray(container.filters)) container.filters.push(filter);
     else container.filters = [filter];
@@ -543,7 +548,7 @@ export class TransitionChain {
     if (!texture) throw new FileNotFoundError(config.file);
     log("Texture:", texture);
 
-    const background = deserializeTexture(config.background);
+    const background = config.deserializedBackground ?? createColorTexture("transparent");
     const resource: PIXI.VideoResource = texture.baseTexture.resource as PIXI.VideoResource;
     const source = resource.source;
 
@@ -600,7 +605,7 @@ export class TransitionChain {
   // #endregion Private Methods (17)
 
   async #executeAngularWipe(config: AngularWipeConfiguration, container: PIXI.Container) {
-    const background = deserializeTexture(config.background ?? createColorTexture("transparent"));
+    const background = config.deserializedBackground ?? createColorTexture("transparent");
     const filter = new AngularWipeFilter(background.baseTexture);
 
     if (Array.isArray(container.filters)) container.filters.push(filter);
@@ -624,7 +629,7 @@ export class TransitionChain {
   }
 
   async #executeWaveWipe(config: WaveWipeConfiguration, container: PIXI.Container) {
-    const background = deserializeTexture(config.background ?? createColorTexture("transparent"));
+    const background = config.deserializedBackground ?? createColorTexture("transparent");
     const filter = new WaveWipeFilter(config.direction, background.baseTexture);
 
     if (Array.isArray(container.filters)) container.filters.push(filter);
@@ -649,7 +654,7 @@ export class TransitionChain {
 
   async #executeSpiralWipe(config: SpiralWipeConfiguration, container: PIXI.Container) {
 
-    const background = deserializeTexture(config.background ?? createColorTexture("transparent"));
+    const background = config.deserializedBackground ?? createColorTexture("transparent");
     const filter = new SpiralWipeFilter(config.direction, config.radial, background.baseTexture);
 
     if (Array.isArray(container.filters)) container.filters.push(filter);
