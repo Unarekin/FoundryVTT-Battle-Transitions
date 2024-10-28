@@ -1,3 +1,4 @@
+import { NoImageProvidedError } from "../errors";
 import { TransitionConfigHandler, TextureSwapConfiguration } from "../interfaces";
 
 
@@ -16,6 +17,11 @@ export class TextureSwapConfigHandler implements TransitionConfigHandler<Texture
       ...flag
     }
     return [settings.texture.split("/").slice(-1)].join("; ");
+  }
+
+  public validate(flag: TextureSwapConfiguration) {
+    if (!flag.texture) throw new NoImageProvidedError();
+    return true;
   }
 
   renderTemplate(flag?: TextureSwapConfiguration): Promise<string> {

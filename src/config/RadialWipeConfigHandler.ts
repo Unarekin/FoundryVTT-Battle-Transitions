@@ -1,6 +1,7 @@
 import { TransitionConfigHandler, RadialWipeConfiguration } from '../interfaces';
 import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
 import { BackgroundType, RadialDirection } from '../types';
+import { NoBackgroundProvidedError } from '../errors';
 
 
 
@@ -14,6 +15,12 @@ export class RadialWipeConfigHandler implements TransitionConfigHandler<RadialWi
     backgroundType: "color" as BackgroundType,
     backgroundImage: "",
     backgroundColor: "#00000000"
+  }
+
+  public validate(flag: RadialWipeConfiguration): boolean {
+    if (flag.backgroundType === "color" && !flag.backgroundColor) throw new NoBackgroundProvidedError();
+    if (flag.backgroundType === "image" && !flag.backgroundImage) throw new NoBackgroundProvidedError();
+    return true;
   }
 
   generateSummary(flag?: RadialWipeConfiguration): string {

@@ -17,6 +17,7 @@ export class InvertConfigurationHandler implements TransitionConfigHandler<Inver
     return "";
   }
 
+  public validate() { return true; }
 }
 
 //TransitionConfigHandler

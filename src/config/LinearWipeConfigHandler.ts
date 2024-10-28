@@ -1,3 +1,4 @@
+import { NoBackgroundProvidedError } from "../errors";
 import { TransitionConfigHandler, LinearWipeConfiguration } from "../interfaces";
 import { BackgroundType } from "../types";
 import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from "../utils";
@@ -12,6 +13,12 @@ export class LinearWipeConfigHandler implements TransitionConfigHandler<LinearWi
     backgroundImage: "",
     backgroundColor: "#00000000"
   };
+
+  public validate(flag: LinearWipeConfiguration) {
+    if (flag.backgroundType === "color" && !flag.backgroundColor) throw new NoBackgroundProvidedError();
+    if (flag.backgroundType === "image" && !flag.backgroundImage) throw new NoBackgroundProvidedError();
+    return true;
+  }
 
   generateSummary(flag: LinearWipeConfiguration): string {
     return [

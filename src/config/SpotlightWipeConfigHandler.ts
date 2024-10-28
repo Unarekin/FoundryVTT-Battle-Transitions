@@ -1,3 +1,4 @@
+import { NoBackgroundProvidedError } from '../errors';
 import { TransitionConfigHandler, SpotlightWipeConfiguration } from '../interfaces';
 import { BackgroundType } from '../types';
 import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
@@ -15,6 +16,12 @@ export class SpotlightWipeConfigHandler implements TransitionConfigHandler<Spotl
     backgroundType: "color" as BackgroundType,
     backgroundImage: "",
     backgroundColor: "#00000000"
+  }
+
+  public validate(flag: SpotlightWipeConfiguration): boolean {
+        if (flag.backgroundType === "color" && !flag.backgroundColor) throw new NoBackgroundProvidedError();
+    if (flag.backgroundType === "image" && !flag.backgroundImage) throw new NoBackgroundProvidedError();
+    return true;
   }
 
   generateSummary(flag?: SpotlightWipeConfiguration): string {

@@ -271,6 +271,8 @@ export class ConfigurationHandler {
     const handler = CONFIG_HANDLERS.find(item => item.key === key);
     if (!handler) throw new InvalidTransitionError(key);
 
+    handler.validate(config);
+
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (!(config as any).id) (config as any).id = foundry.utils.randomID();
