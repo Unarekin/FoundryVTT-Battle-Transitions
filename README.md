@@ -3,7 +3,7 @@
 ![Supported Foundry Version](https://img.shields.io/endpoint?url=https%3A%2F%2Ffoundryshields.com%2Fversion%3Fstyle%3Dflat%26url%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2FUnarekin%2FFoundryVTT-Battle-Transitions%2Frefs%2Fheads%2Fmaster%2Fmodule.json)
 ![Supported Game Systems](https://img.shields.io/endpoint?url=https%3A%2F%2Ffoundryshields.com%2Fsystem%3FnameType%3Dfull%26showVersion%3D1%26style%3Dflat%26url%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2FUnarekin%2FFoundryVTT-Battle-Transitions%2Frefs%2Fheads%2Fmaster%2Fmodule.json)
 
-![BattleTransitionsLogo](https://github.com/user-attachments/assets/66dab803-764d-4558-b9c7-05ed403752a2)
+![BattleTransitionsLogo](https://github.com/user-attachments/assets/089b3b1c-8fed-48ed-b388-0fa743808a7e)
 
 - [Battle Transitions](#battle-transitions)
   - [Installation](#installation)
@@ -57,5 +57,14 @@ There *is* a framework in place to allow for automated E2E and component testing
 
 For a list of known bugs and feature requests, please see the project's [issues page](https://github.com/Unarekin/FoundryVTT-Battle-Transitions/issues)
 
+# Attributions & Acknowledgements
+- The [crossed swords icon](https://game-icons.net/1x1/lorc/crossed-swords.html) is from [Game-Icons.net](https://game-icons.net/), by [Lorc](https://lorcblog.blogspot.com/) and is released under the [CC-BY-3.0](http://creativecommons.org/licenses/by/3.0/) license
+- The [character](https://opengameart.org/content/js-actors-aeon-warriors-field-battle-sprites) and [wolf](https://opengameart.org/content/js-monsters-aeon-monsters-i) sprites used in the logo animation are by [JosephSeraph](https://opengameart.org/users/josephseraph) on [OpenGameArt](https://opengameart.org/) and are both released under under the [CC-BY-3.0](http://creativecommons.org/licenses/by/3.0/) license
+- The [Hazy Hills](https://opengameart.org/content/battle-background-hazy-hills-0) background used in the logo animation is by [ansimuz](https://opengameart.org/users/ansimuz) also from [OpenGameArt](https://opengameart.org/) and released under the [CC-BY-3.0](http://creativecommons.org/licenses/by/3.0/) license
+- The cloud background used in the logo animation is from [Pixel Clouds Parallax](https://garzettdev.itch.io/pixel-clouds) by [garzetdev](https://garzettdev.itch.io/) on [itch.io](https://itch.io) and is released under no specific license, but free to use in commercial projects
+
+
 # Support
 Do please consider throwing me a few bucks over on [Ko-Fi](https://ko-fi.com/unarekin) if you like what you see and are feeling generous.
+
+
