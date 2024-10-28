@@ -36,20 +36,6 @@
     <p class="notes">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.VIDEO.VOLUME.HINT"
       }}</p>
-    <div class="form-group">
-      <label for="background">{{localize
-          "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.LABEL"
-        }}</label>
-      <input
-        type="text"
-        data-color-picker="{alphaChannel: true}"
-        id="background"
-        name="background"
-        value="{{background}}"
-      />
-    </div>
-    <p class="notes">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.HINT"
-      }}</p>
+{{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
   </form>
 </div>
