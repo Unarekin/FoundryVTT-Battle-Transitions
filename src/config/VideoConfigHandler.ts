@@ -20,7 +20,8 @@ export class VideoConfigHandler implements TransitionConfigHandler<VideoConfigur
     }
     return [
       settings.file.split("/").splice(-1),
-      localize("BATTLETRANSITIONS.FORMATTERS.PERCENT", { value: settings.volume * 100 })
+      localize("BATTLETRANSITIONS.FORMATTERS.PERCENT", { value: settings.volume * 100 }),
+      settings.background
     ].join("; ")
   }
 
