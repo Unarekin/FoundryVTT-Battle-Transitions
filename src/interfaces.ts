@@ -143,3 +143,8 @@ export interface SpiralWipeConfiguration extends TransitionConfiguration {
   direction: ClockDirection;
   radial: RadialDirection;
 }
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface InvertConfiguration extends TransitionConfiguration {
+  duration: number;
+}
