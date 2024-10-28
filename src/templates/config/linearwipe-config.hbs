@@ -17,23 +17,8 @@
     <p class="notes">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.LINEARWIPE.DIRECTION.HINT"
       }}</p>
-    <div class="form-group">
-      <label for="duration">{{localize
-          "BATTLETRANSITIONS.SCENECONFIG.LINEARWIPE.DURATION.LABEL"
-        }}</label>
-      <input
-        type="number"
-        name="duration"
-        id="duration"
-        value="{{duration}}"
-        step="1"
-        min="0"
-      />
-    </div>
-    <p class="notes">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.LINEARWIPE.DURATION.HINT"
-      }}</p>
-{{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
+      {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
+      {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
     <div class="form-group">
       <label for="easing">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL"
