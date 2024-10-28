@@ -6,21 +6,6 @@
   <form>
     <input type="hidden" name="id" id="id" value="{{id}}" />
     <p>{{localize "BATTLETRANSITIONS.SCENECONFIG.WAIT.DESCRIPTION"}}</p>
-    <div class="form-group">
-      <label for="duration">{{localize
-          "BATTLETRANSITIONS.SCENECONFIG.COMMON.DURATION.LABEL"
-        }}</label>
-      <input
-        type="number"
-        min="0"
-        step="1"
-        value="{{duration}}"
-        name="duration"
-        id="duration"
-      />
-    </div>
-    <p class="notes">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.COMMON.DURATION.HINT"
-      }}</p>
+    {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
   </form>
 </div>
