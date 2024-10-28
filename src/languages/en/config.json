@@ -56,7 +56,7 @@
         }
       },
       "EASING": {
-        "DESCRIPTION": "The easing function to use when animating this transition.",
+        "HINT": "The easing function to use when animating this transition.",
         "LABEL": "Easing"
       },
       "EDITSTEPDIALOG": {
