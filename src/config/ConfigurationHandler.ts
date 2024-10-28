@@ -15,6 +15,7 @@ import { WaitConfigHandler } from './WaitConfigHandler';
 import { SoundConfigHandler } from './SoundConfigHandler';
 import { VideoConfigHandler } from './VideoConfigHandler';
 import { InvertConfigurationHandler } from './InvertConfigurationHandler';
+import { MeltConfigHandler } from "./MeltConfigHandler"
 
 new ChromaKeyConfigHandler();
 
@@ -27,6 +28,7 @@ const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
   new DiamondTransitionConfigHandler(),
   new FireDissolveConfigHandler(),
   new InvertConfigurationHandler(),
+  new MeltConfigHandler(),
   new RadialWipeConfigHandler(),
   new SpotlightWipeConfigHandler(),
   new TextureSwapConfigHandler(),

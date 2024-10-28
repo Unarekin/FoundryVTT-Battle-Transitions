@@ -143,6 +143,9 @@
       },
       "WAIT": {
         "DESCRIPTION": "Wait a specified amount of time before continuing."
+      },
+      "MELT": {
+        "DESCRIPTION": "Melt the screen like you may have seen in a certain demon-killing FPS."
       }
     }
   }
