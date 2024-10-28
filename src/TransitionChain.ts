@@ -1,8 +1,8 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { ConfigurationHandler } from "./config/ConfigurationHandler";
 import { FileNotFoundError, InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, TransitionToSelfError } from "./errors";
-import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter, MeltFilter, GlitchFilter, AngularWipeFilter, WaveWipeFilter, SpiralWipeFilter } from "./filters";
-import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration, MeltConfiguration, GlitchConfiguration, AngularWipeConfiguration, SpiralWipeConfiguration, WaveWipeConfiguration } from "./interfaces";
+import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter, MeltFilter, GlitchFilter, AngularWipeFilter, WaveWipeFilter, SpiralWipeFilter, InvertFilter } from "./filters";
+import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration, MeltConfiguration, GlitchConfiguration, AngularWipeConfiguration, SpiralWipeConfiguration, WaveWipeConfiguration, InvertConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, WipeDirection } from './types';
@@ -25,6 +25,7 @@ export class TransitionChain {
     fade: this.#executeFade.bind(this),
     firedissolve: this.#executeBurn.bind(this),
     glitch: this.#executeGlitch.bind(this),
+    invert: this.#executeInvert.bind(this),
     linearwipe: this.#executeLinearWipe.bind(this),
     macro: this.#executeMacro.bind(this),
     melt: this.#executeMelt.bind(this),
@@ -756,6 +757,21 @@ export class TransitionChain {
       });
       dialog.render(true, { resizable: true });
     }
+  }
+
+
+  async #executeInvert(_config: InvertConfiguration, container: PIXI.Container) {
+    const filter = new InvertFilter();
+
+    if (Array.isArray(container.filters)) container.filters.push(filter);
+    else container.filters = [filter];
+
+    await Promise.resolve();
+  }
+
+  public invert(): this {
+    this.#sequence.push({ type: "invert" });
+    return this;
   }
 
 }
