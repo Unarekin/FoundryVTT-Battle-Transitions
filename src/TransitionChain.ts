@@ -409,7 +409,8 @@ export class TransitionChain {
   }
 
   async #executeBurn(config: FireDissolveConfiguration, container: PIXI.Container) {
-    const filter = new FireDissolveFilter(config.background, config.burnSize);
+    const filter = new FireDissolveFilter(config.burnSize);
+
     if (Array.isArray(container.filters)) container.filters.push(filter);
     else container.filters = [filter];
 

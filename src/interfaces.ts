@@ -68,7 +68,6 @@ export interface FadeConfiguration extends TransitionConfiguration {
 
 export interface FireDissolveConfiguration extends TransitionConfiguration {
   duration: number;
-  background: string;
   burnSize: number;
 }
 

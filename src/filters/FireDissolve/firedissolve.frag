@@ -1,3 +1,5 @@
+#version 300 es
+
 precision highp float;
 
 in vec2 vTextureCoord;
@@ -19,7 +21,6 @@ void main() {
     vec4 base_color = texture(uSampler, vTextureCoord) * step(noise, integrity);
     vec2 burn_uv = vec2(inverse_lerp(integrity, integrity * burn_size, noise), 0.0);
     vec4 burn_color = texture(burn_texture, burn_uv) * step(noise, integrity * burn_size);
-    
+
     color = mix(burn_color, base_color, base_color.a);
-    // color = texture(uSampler, vTextureCoord);
 }
