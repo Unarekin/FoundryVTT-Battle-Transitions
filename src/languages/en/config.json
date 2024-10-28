@@ -121,7 +121,7 @@
       "SPOTLIGHTWIPE": {
         "DESCRIPTION": "Bilinear wipe centered on a point along the edge of, and starting from either the inside or outside of the screen."
       },
-      "TAB": "Battle Transition",
+      "TAB": "Transition",
       "TEXTURESWAP": {
         "DESCRIPTION": "Set the current transition background to a given image.",
         "TEXTURE": {
