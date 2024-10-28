@@ -26,6 +26,7 @@ export async function registerTemplates() {
       "fade-config",
       "linearwipe-config",
       "step-item",
+      "background-selector"
     ].map(name => `/modules/${__MODULE_ID__}/templates/config/${name}.hbs`),
     `/modules/${__MODULE_ID__}/templates/scene-selector.hbs`
   ]);
