@@ -11,7 +11,6 @@ import { RadialWipeFilter } from './RadialWipe/RadialWipeFilter';
 import { ChromaKeyFilter } from './ChromaKey/ChromaKeyFilter';
 import { TextureSwapFilter } from './TextureSwap/TextureSwapFilter';
 import { MeltFilter } from "./Melt/MeltFilter";
-import { GlitchFilter } from './Glitch/GlitchFilter';
 import { AngularWipeFilter } from './AngularWipe/AngularWipeFilter';
 import { WaveWipeFilter } from './WaveWipe/WaveWipeFilter';
 import { SpiralWipeFilter } from './SpiralWipe/SpiralWipeFilter';
@@ -31,7 +30,6 @@ export {
   ChromaKeyFilter,
   TextureSwapFilter,
   MeltFilter,
-  GlitchFilter,
   AngularWipeFilter,
   WaveWipeFilter,
   SpiralWipeFilter,
@@ -53,7 +51,6 @@ export const filters = {
   ChromaKeyFilter,
   TextureSwapFilter,
   MeltFilter,
-  GlitchFilter,
   AngularWipeFilter,
   WaveWipeFilter,
   SpiralWipeFilter,

@@ -120,10 +120,6 @@ export interface MeltConfiguration extends TransitionWithBackground {
   duration: number;
 }
 
-export interface GlitchConfiguration extends TransitionWithBackground {
-  duration: number;
-}
-
 export interface AngularWipeConfiguration extends TransitionWithBackground {
   duration: number;
 }
