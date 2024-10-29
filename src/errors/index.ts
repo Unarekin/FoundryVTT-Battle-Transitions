@@ -16,5 +16,6 @@ export * from './NoVideoProvidedError';
 export * from './NotInitializedError';
 export * from './ParallelExecuteError';
 export * from './PermissionDeniedError';
+export * from './RepeatExecuteError';
 export * from './TransitionHasToStepError';
 export * from './TransitionToSelfError';

@@ -146,3 +146,8 @@ export interface AngularWipeConfiguration extends TransitionWithBackground {
 export interface FlashConfiguration extends TransitionWithBackground {
   duration: number;
 }
+
+export interface RepeatConfiguration extends TransitionConfiguration {
+  iterations: number;
+  sequence: TransitionStep[]
+}

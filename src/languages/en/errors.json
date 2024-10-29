@@ -14,6 +14,7 @@
       "INVALIDELEMENT": "Unable to locate HTML element",
       "PERMISSIONDENIED": "Permision denied.",
       "EXECUTECALLEDPARALLEL": "Do not call execute function when creating parallel transition chains.",
+      "EXECUTECALLEDREPEAT": "Do not call execute function when creating repeated transition sequences",
       "TRANSITIONTOSELF": "Attempting to transition to the current scene.",
       "FILENOTFOUND": "File not found: {file}",
       "NOBACKGROUNDPROVIDED": "No background image or color provided.",

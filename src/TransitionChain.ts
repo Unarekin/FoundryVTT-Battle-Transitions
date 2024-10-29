@@ -1,8 +1,8 @@
 import { coerceMacro, coerceScene, coerceTexture } from "./coercion";
 import { ConfigurationHandler } from "./config/ConfigurationHandler";
-import { FileNotFoundError, InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, TransitionToSelfError } from "./errors";
+import { FileNotFoundError, InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter, MeltFilter, AngularWipeFilter, WaveWipeFilter, SpiralWipeFilter, InvertFilter } from "./filters";
-import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration, MeltConfiguration, AngularWipeConfiguration, SpiralWipeConfiguration, WaveWipeConfiguration, InvertConfiguration, FlashConfiguration } from "./interfaces";
+import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration, MeltConfiguration, AngularWipeConfiguration, SpiralWipeConfiguration, WaveWipeConfiguration, InvertConfiguration, FlashConfiguration, RepeatConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, WipeDirection } from './types';
@@ -32,6 +32,7 @@ export class TransitionChain {
     parallel: this.#executeParallel.bind(this),
     radialwipe: this.#executeRadialWipe.bind(this),
     removeoverlay: this.#executeRemoveOverlay.bind(this),
+    repeat: this.#executeRepeat.bind(this),
     wavewipe: this.#executeWaveWipe.bind(this),
     spiralwipe: this.#executeSpiralWipe.bind(this),
     spotlightwipe: this.#executeSpotlightWipe.bind(this),
@@ -760,14 +761,6 @@ export class TransitionChain {
     return this;
   }
 
-  /*
-      const texture = deserializeTexture(config.texture);
-    const filter = new TextureSwapFilter(texture.baseTexture);
-    if (Array.isArray(container.filters)) container.filters.push(filter);
-    else container.filters = [filter];
-    return Promise.resolve();
-  */
-
   async #executeFlash(config: FlashConfiguration, container: PIXI.Container) {
     const background = config.deserializedBackground ?? createColorTexture("transparent");
 
@@ -790,4 +783,30 @@ export class TransitionChain {
     return this;
   }
 
+  async #executeRepeat(config: RepeatConfiguration, container: PIXI.Container) {
+    for (let i = 0; i < config.iterations; i++)
+      await this.#executeSequence(config.sequence, container);
+  }
+
+  /**
+   * Executes a sequence a given number of times
+   * @param {number} iterations - Number of times to execute the sequence
+   * @param {Function} [callback] - A callback that returns a set of {@link TransitionStep}s to execute.  If not specified, will repeat the previous {@link TransitionStep} in the current sequence.}
+   * @returns 
+   */
+  public repeat(iterations: number, callback?: (chain: TransitionChain) => TransitionStep[]): this {
+    if (callback) {
+      const chain = new TransitionChain();
+      const res = callback(chain);
+      if (res instanceof Promise) throw new RepeatExecuteError();
+      for (let i = 0; i < iterations; i++)
+        this.#sequence.push(...chain.sequence);
+    } else {
+      this.#sequence.push(
+        ...(new Array(iterations).fill(this.#sequence[this.#sequence.length - 1]) as TransitionStep[])
+      );
+    }
+
+    return this;
+  }
 }
