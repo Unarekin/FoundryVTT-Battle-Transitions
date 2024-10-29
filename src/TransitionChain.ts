@@ -2,11 +2,11 @@ import { coerceMacro, coerceScene, coerceTexture } from "./coercion";
 import { ConfigurationHandler } from "./config/ConfigurationHandler";
 import { FileNotFoundError, InvalidMacroError, InvalidSceneError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, TransitionToSelfError } from "./errors";
 import { BilinearWipeFilter, DiamondTransitionFilter, FadeTransitionFilter, LinearWipeFilter, RadialWipeFilter, FireDissolveFilter, ClockWipeFilter, SpotlightWipeFilter, TextureSwapFilter, MeltFilter, AngularWipeFilter, WaveWipeFilter, SpiralWipeFilter, InvertFilter } from "./filters";
-import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration, MeltConfiguration, AngularWipeConfiguration, SpiralWipeConfiguration, WaveWipeConfiguration, InvertConfiguration } from "./interfaces";
+import { TransitionStep, LinearWipeConfiguration, BilinearWipeConfiguration, RadialWipeConfiguration, DiamondTransitionConfiguration, FadeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, SoundConfiguration, VideoConfiguration, ParallelConfiguration, MeltConfiguration, AngularWipeConfiguration, SpiralWipeConfiguration, WaveWipeConfiguration, InvertConfiguration, FlashConfiguration } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { activateScene, cleanupTransition, hideLoadingBar, hideTransitionCover, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, WipeDirection } from './types';
-import { awaitHook, createColorTexture, deserializeTexture, localize, log, serializeTexture, shouldUseAppV2 } from "./utils";
+import { awaitHook, createColorTexture, deserializeTexture, localize, log, serializeTexture, shouldUseAppV2, wait } from "./utils";
 
 export class TransitionChain {
   // #region Properties (6)
@@ -24,6 +24,7 @@ export class TransitionChain {
     diamondwipe: this.#executeDiamondWipe.bind(this),
     fade: this.#executeFade.bind(this),
     firedissolve: this.#executeBurn.bind(this),
+    flash: this.#executeFlash.bind(this),
     invert: this.#executeInvert.bind(this),
     linearwipe: this.#executeLinearWipe.bind(this),
     macro: this.#executeMacro.bind(this),
@@ -756,6 +757,36 @@ export class TransitionChain {
 
   public invert(): this {
     this.#sequence.push({ type: "invert" });
+    return this;
+  }
+
+  /*
+      const texture = deserializeTexture(config.texture);
+    const filter = new TextureSwapFilter(texture.baseTexture);
+    if (Array.isArray(container.filters)) container.filters.push(filter);
+    else container.filters = [filter];
+    return Promise.resolve();
+  */
+
+  async #executeFlash(config: FlashConfiguration, container: PIXI.Container) {
+    const background = config.deserializedBackground ?? createColorTexture("transparent");
+
+    const filter = new TextureSwapFilter(background.baseTexture);
+    if (Array.isArray(container.filters)) container.filters.push(filter);
+    else container.filters = [filter];
+
+    await wait(config.duration);
+    const index = container.filters.indexOf(filter);
+    if (index !== -1) container.filters.splice(index, 1);
+    filter.destroy();
+  }
+
+  public flash(texture: PIXI.TextureSource | PIXI.ColorSource, duration: number): this {
+    this.#sequence.push({
+      type: "flash",
+      duration,
+      background: texture
+    });
     return this;
   }
 

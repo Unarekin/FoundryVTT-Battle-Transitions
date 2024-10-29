@@ -19,6 +19,7 @@ import { VideoConfigHandler } from './VideoConfigHandler';
 import { InvertConfigurationHandler } from './InvertConfigurationHandler';
 import { MeltConfigHandler } from "./MeltConfigHandler";
 import { AngularWipeConfigHandler } from "./AngularWipeConfigHandler";
+import { FlashConfigHandler } from "./FlashConfigHandler";
 
 new ChromaKeyConfigHandler();
 
@@ -31,6 +32,7 @@ const CONFIG_HANDLERS: TransitionConfigHandler<any>[] = [
   new ClockWipeConfigHandler(),
   new DiamondTransitionConfigHandler(),
   new FireDissolveConfigHandler(),
+  new FlashConfigHandler(),
   new InvertConfigurationHandler(),
   new MeltConfigHandler(),
   new RadialWipeConfigHandler(),

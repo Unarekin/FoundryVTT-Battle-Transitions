@@ -4,6 +4,9 @@
       "ADDSTEPDIALOG": {
         "TITLE": "Add Transition Step"
       },
+      "ANGULARWIPE": {
+        "DESCRIPTION": "A wipe that clears angled sections of the screen progressively closer to the center."
+      },
       "AUTOTRIGGER": {
         "HINT": "Automatically trigger this transition any time this scene is activated.",
         "LABEL": "Automatically Trigger"
@@ -32,10 +35,10 @@
       },
       "COMMON": {
         "BACKGROUND": {
-          "HINT": "Background color or image to show behind this step",
-          "LABEL": "Background",
           "COLOR": "Color",
-          "IMAGE": "Image"
+          "HINT": "Background color or image to show behind this step",
+          "IMAGE": "Image",
+          "LABEL": "Background"
         },
         "DIRECTION": {
           "HINT": "Direction from which to start",
@@ -87,6 +90,9 @@
         },
         "DESCRIPTION": "Apply a 'burning' effect to the screen, exposing the underlying background."
       },
+      "FLASH": {
+        "DESCRIPTION": "Flashes the screen a given color or texture."
+      },
       "LINEARWIPE": {
         "BACKGROUND": {
           "HINT": "Background color to which to wipe",
@@ -102,6 +108,9 @@
           "LABEL": "Duration"
         },
         "NAME": "Linear Wipe"
+      },
+      "MELT": {
+        "DESCRIPTION": "Melt the screen like you may have seen in a certain demon-killing FPS."
       },
       "RADIALWIPE": {
         "DESCRIPTION": "Circular wipe, starting either from the inside or outside of the screen."
@@ -145,12 +154,6 @@
       },
       "WAIT": {
         "DESCRIPTION": "Wait a specified amount of time before continuing."
-      },
-      "MELT": {
-        "DESCRIPTION": "Melt the screen like you may have seen in a certain demon-killing FPS."
-      },
-      "ANGULARWIPE": {
-        "DESCRIPTION": "A wipe that clears angled sections of the screen progressively closer to the center."
       }
     }
   }

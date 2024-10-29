@@ -169,6 +169,10 @@ export function rotateTexture(texture: PIXI.Texture, rotation: number): PIXI.Tex
   return rotated;
 }
 
+export async function wait(duration: number) {
+  return new Promise(resolve => { setTimeout(resolve, duration); });
+}
+
 /**
  * Quick wrapper to wait for a hook to get called
  * @param {string} hook The hook to await

@@ -142,3 +142,7 @@ export interface InvertConfiguration extends TransitionConfiguration {
 export interface AngularWipeConfiguration extends TransitionWithBackground {
   duration: number;
 }
+
+export interface FlashConfiguration extends TransitionWithBackground {
+  duration: number;
+}
