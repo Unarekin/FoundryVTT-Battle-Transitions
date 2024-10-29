@@ -798,7 +798,6 @@ export class TransitionChain {
     const delay = typeof args[0] === "number" ? args[0] : 0;
     const callback = (typeof args[0] === "number" ? args[1] : args[1]) as ((chain: TransitionChain) => TransitionStep[]) | undefined;
 
-    log("Repeat:", iterations, delay, callback, args);
     if (callback) {
       const chain = new TransitionChain();
       const res = callback(chain);
