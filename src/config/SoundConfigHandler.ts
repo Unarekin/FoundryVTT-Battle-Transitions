@@ -22,6 +22,10 @@ export class SoundConfigHandler implements TransitionConfigHandler<SoundConfigur
     ].join("; ")
   }
 
+  public validate(flag: SoundConfiguration) {
+    return !!flag.file;
+  }
+
   renderTemplate(flag?: SoundConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/sound-config.hbs`, {
       ...this.defaultSettings,

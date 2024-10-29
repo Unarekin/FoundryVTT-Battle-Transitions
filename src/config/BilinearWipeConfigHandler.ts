@@ -1,5 +1,6 @@
 import { BilinearWipeConfiguration, TransitionConfigHandler } from "../interfaces";
 import { BackgroundType } from "../types";
+import { NoBackgroundProvidedError } from "../errors";
 import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from "../utils";
 
 
@@ -13,6 +14,12 @@ export class BilinearWipeConfigHandler implements TransitionConfigHandler<Biline
     backgroundType: "color" as BackgroundType,
     backgroundImage: "",
     backgroundColor: "#00000000"
+  }
+
+  public validate(flag: BilinearWipeConfiguration): boolean {
+    if (flag.backgroundType === "color" && !flag.backgroundColor) throw new NoBackgroundProvidedError();
+    if (flag.backgroundType === "image" && !flag.backgroundImage) throw new NoBackgroundProvidedError();
+    else return true;
   }
 
   public generateSummary(flag: BilinearWipeConfiguration): string {

@@ -1,3 +1,4 @@
+import { NoBackgroundProvidedError } from "../errors";
 import { TransitionConfigHandler, VideoConfiguration } from "../interfaces";
 import { BackgroundType } from "../types";
 import { formatBackgroundSummary, localize, parseConfigurationFormElements } from "../utils";
@@ -15,6 +16,13 @@ export class VideoConfigHandler implements TransitionConfigHandler<VideoConfigur
     backgroundImage: "",
     backgroundColor: "#00000000"
   };
+
+  public validate(flag: VideoConfiguration): boolean {
+    if (!flag.file) return false;
+    if (flag.backgroundType === "color" && !flag.backgroundColor) throw new NoBackgroundProvidedError();
+    if (flag.backgroundType === "image" && !flag.backgroundImage) throw new NoBackgroundProvidedError();
+    return true;
+  }
 
   generateSummary(flag?: VideoConfiguration): string {
     const settings = {

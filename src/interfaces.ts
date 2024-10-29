@@ -6,9 +6,10 @@ export interface TransitionConfigHandler<t extends object> {
 
   skipConfig?: boolean;
   defaultSettings: t;
-  renderTemplate(flag?: t): Promise<string>;
+  validate(flag: t): boolean;
+  renderTemplate(flag: t): Promise<string>;
   createFlagFromHTML(html?: HTMLElement | JQuery<HTMLElement>): t;
-  generateSummary(flag?: t): string;
+  generateSummary(flag: t): string;
 }
 
 export interface TextureBuffer {
@@ -29,7 +30,7 @@ export interface TransitionStep {
   [x: string]: unknown;
 }
 
-interface TransitionConfiguration {
+export interface TransitionConfiguration {
   id?: string;
   easing?: string;
 }

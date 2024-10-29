@@ -1,3 +1,4 @@
+import { NoBackgroundProvidedError } from "../errors";
 import { TransitionConfigHandler, ClockWipeConfiguration } from "../interfaces";
 import { BackgroundType } from "../types";
 import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from "../utils";
@@ -14,6 +15,12 @@ export class ClockWipeConfigHandler implements TransitionConfigHandler<ClockWipe
     backgroundType: "color" as BackgroundType,
     backgroundImage: "",
     backgroundColor: "#00000000"
+  }
+
+  public validate(flag: ClockWipeConfiguration): boolean {
+    if (flag.backgroundType === "color" && !flag.backgroundColor) throw new NoBackgroundProvidedError();
+    if (flag.backgroundType === "image" && !flag.backgroundImage) throw new NoBackgroundProvidedError();
+    return true;
   }
 
   public generateSummary(flag: ClockWipeConfiguration): string {

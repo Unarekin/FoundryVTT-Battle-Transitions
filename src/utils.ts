@@ -418,7 +418,6 @@ export function parseConfigurationFormElements(form: JQuery<HTMLFormElement>, ..
   const elem = Object.fromEntries(
     elements.map(key => [key, findFormValue(serialized, key)])
   );
-  console.log(elem);
   return elem;
 }
 

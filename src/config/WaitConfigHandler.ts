@@ -16,6 +16,8 @@ export class WaitConfigHandler implements TransitionConfigHandler<WaitConfigurat
     return localize("BATTLETRANSITIONS.FORMATTERS.MILLISECONDS", { value: settings.duration });
   }
 
+  public validate() { return true; }
+
   renderTemplate(flag?: WaitConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/wait-config.hbs`, {
       ...this.defaultSettings,

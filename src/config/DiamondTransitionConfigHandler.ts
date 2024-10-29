@@ -1,3 +1,4 @@
+import { NoBackgroundProvidedError } from '../errors';
 import { TransitionConfigHandler, DiamondTransitionConfiguration } from '../interfaces';
 import { BackgroundType } from '../types';
 import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
@@ -26,6 +27,12 @@ export class DiamondTransitionConfigHandler implements TransitionConfigHandler<D
       localize("BATTLETRANSITIONS.FORMATTERS.PIXELS", { value: settings.size }),
       formatBackgroundSummary(flag)
     ].join("; ")
+  }
+
+  public validate(flag: DiamondTransitionConfiguration): boolean {
+    if (flag.backgroundType === "color" && !flag.backgroundColor) throw new NoBackgroundProvidedError();
+    if (flag.backgroundType === "image" && !flag.backgroundImage) throw new NoBackgroundProvidedError();
+    return true;
   }
 
 

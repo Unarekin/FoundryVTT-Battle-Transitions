@@ -30,6 +30,8 @@ export class FireDissolveConfigHandler implements TransitionConfigHandler<FireDi
     });
   }
 
+  public validate() { return true; }
+
   createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): FireDissolveConfiguration {
     return {
       ...this.defaultSettings,

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { InvalidElementError, InvalidTransitionError } from "../errors";
 import { TransitionConfigHandler, TransitionStep } from "../interfaces";
 import { localize, shouldUseAppV2 } from "../utils";
@@ -15,11 +17,11 @@ import { WaitConfigHandler } from './WaitConfigHandler';
 import { SoundConfigHandler } from './SoundConfigHandler';
 import { VideoConfigHandler } from './VideoConfigHandler';
 import { InvertConfigurationHandler } from './InvertConfigurationHandler';
-import { MeltConfigHandler } from "./MeltConfigHandler"
+import { MeltConfigHandler } from "./MeltConfigHandler";
 
 new ChromaKeyConfigHandler();
 
-const CONFIG_HANDLERS: TransitionConfigHandler<object>[] = [
+const CONFIG_HANDLERS: TransitionConfigHandler<any>[] = [
   new FadeConfigHandler(),
   new LinearWipeConfigHandler(),
   new BilinearWipeConfigHandler(),
@@ -94,11 +96,8 @@ export class ConfigurationHandler {
   }
 
   private addEventListeners() {
-
-    console.log("Root element:", this.rootElement);
     // Add step button handler
     this.rootElement.find("button[data-action='add-step']").on("click", e => {
-      console.log("Beep boop");
       e.preventDefault();
       if ($(e.currentTarget).is(":focus")) return this.onAddStep(e);
     });
@@ -167,7 +166,7 @@ export class ConfigurationHandler {
       const key = element.data("transition-type") as string ?? "";
       const handler = CONFIG_HANDLERS.find(elem => elem.key === key);
       if (!handler) throw new InvalidTransitionError(key);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       const flag = element.data("flag") ?? handler.defaultSettings;
 
       void this.configureStep(key, flag as object);
@@ -187,7 +186,7 @@ export class ConfigurationHandler {
     else html.find("#backgroundImage").css("display", "none");
 
     html.find("#backgroundType").on("input", e => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       const inputType = (e.currentTarget as any).value;
       if (inputType === "image") {
         html.find("#backgroundColor").css("display", "none");
@@ -203,23 +202,64 @@ export class ConfigurationHandler {
     ColorPicker.install();
   }
 
+  private isFormValid(form: JQuery<HTMLFormElement>, flag: object, key: string) {
+    const handler = CONFIG_HANDLERS.find(handler => handler.key === key);
+    if (!handler) throw new InvalidTransitionError(key);
+    if (typeof handler.validate === "function") return handler.validate(handler.createFlagFromHTML(form));
+    else return true;
+  }
+
+
+  private addConfigureStepValidation(html: JQuery<HTMLElement>, flag: object, key: string) {
+
+    const form = html.find(".step-config-item").parents("form");
+
+    try {
+      if (this.isFormValid($(form).parent(), flag, key)) {
+        html.find("button[data-action='ok']").prop("disabled", false);
+      } else {
+        html.find("button[data-action='ok']").prop("disabled", true);
+      }
+    } catch {
+      html.find("button[data-action='ok']").prop("disabled", true);
+    }
+
+
+
+    form.on("change", e => {
+      try {
+        if (this.isFormValid(($(e.currentTarget) as JQuery<HTMLFormElement>).parent(), flag, key)) {
+          // Enable ok button
+          html.find("button[data-action='ok']").prop("disabled", false);
+        } else {
+          // Disable ok button
+          html.find("button[data-action='ok']").prop("disabled", true);
+        }
+      } catch {
+        html.find("button[data-action='ok']").prop("disabled", true);
+      }
+    });
+  }
+
+
   private async configureStep(key: string, flag: object = {}) {
     const handler = CONFIG_HANDLERS.find(item => item.key === key);
     if (!handler) throw new InvalidTransitionError(key);
 
     if (handler.skipConfig) {
-      const flag = handler.createFlagFromHTML();
-      void this.addUpdateTransitionStep(key, flag);
+      const config = handler.createFlagFromHTML();
+      void this.addUpdateTransitionStep(key, config);
     } else {
       const content = await handler.renderTemplate(flag);
 
       if (shouldUseAppV2() && foundry.applications.api.DialogV2) {
         void foundry.applications.api.DialogV2.wait({
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
           window: ({ title: localize("BATTLETRANSITIONS.SCENECONFIG.EDITSTEPDIALOG.TITLE", { name: localize(handler.name) }) } as any),
           content,
           render: (e, dialog) => {
             this.addConfigureStepEventListeners($(dialog), flag);
+            this.addConfigureStepValidation($(dialog), flag, key);
           },
           buttons: [
             {
@@ -243,7 +283,10 @@ export class ConfigurationHandler {
         await Dialog.wait({
           title: localize("BATTLETRANSITIONS.SCENECONFIG.EDITSTEPDIALOG.TITLE", { name: localize(handler.name) }),
           content,
-          render: html => { this.addConfigureStepEventListeners(html, flag); },
+          render: html => {
+            this.addConfigureStepEventListeners($(html), flag);
+            this.addConfigureStepValidation($(html), flag, key);
+          },
           default: 'ok',
           buttons: {
             cancel: {
@@ -268,34 +311,42 @@ export class ConfigurationHandler {
 
 
   private async addUpdateTransitionStep(key: string, config: object = {}) {
-    const handler = CONFIG_HANDLERS.find(item => item.key === key);
-    if (!handler) throw new InvalidTransitionError(key);
+    try {
+      const handler = CONFIG_HANDLERS.find(item => item.key === key);
+      if (!handler) throw new InvalidTransitionError(key);
 
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (!(config as any).id) (config as any).id = foundry.utils.randomID();
+
+      handler.validate(config);
 
 
-    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
-      ...(config ?? {}),
-      name: localize(handler?.name),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (!(config as any).id) (config as any).id = foundry.utils.randomID();
 
-      summary: handler.generateSummary(config),
-      type: key,
-      flag: JSON.stringify(config)
-    });
 
-    const appended = $(content);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const extant = this.rootElement.find(`[data-id="${(config as any).id}"]`);
-    if (extant.length) extant.replaceWith(appended);
-    else this.rootElement.find("#transition-step-list").append(appended);
+      const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
+        ...(config ?? {}),
+        name: localize(handler?.name),
 
-    this.addStepEventListeners(appended, config);
+        summary: handler.generateSummary(config),
+        type: key,
+        flag: JSON.stringify(config)
+      });
 
-    this.resizeDialog();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    ColorPicker.install();
+      const appended = $(content);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const extant = this.rootElement.find(`[data-id="${(config as any).id}"]`);
+      if (extant.length) extant.replaceWith(appended);
+      else this.rootElement.find("#transition-step-list").append(appended);
+
+      this.addStepEventListeners(appended, config);
+
+      this.resizeDialog();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      ColorPicker.install();
+    } catch (err) {
+      ui.notifications?.error((err as Error).message);
+    }
 
   }
 
@@ -350,7 +401,7 @@ export class ConfigurationHandler {
 
 
     void foundry.applications.api.DialogV2.wait({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       window: ({ title: "BATTLETRANSITIONS.SCENECONFIG.ADDSTEPDIALOG.TITLE" } as any),
       rejectClose: false,
       render: (e: Event) => {

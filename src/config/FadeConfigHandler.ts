@@ -1,3 +1,4 @@
+import { NoBackgroundProvidedError } from '../errors';
 import { TransitionConfigHandler, FadeConfiguration } from '../interfaces';
 import { BackgroundType } from '../types';
 import { formatBackgroundSummary, generateEasingSelectOptions, localize, parseConfigurationFormElements } from '../utils';
@@ -16,6 +17,12 @@ export class FadeConfigHandler implements TransitionConfigHandler<FadeConfigurat
     backgroundColor: "#00000000"
   }
 
+
+  public validate(flag: FadeConfiguration) {
+    if (flag.backgroundType === "color" && !flag.backgroundColor) throw new NoBackgroundProvidedError();
+    if (flag.backgroundType === "image" && !flag.backgroundImage) throw new NoBackgroundProvidedError();
+    return true;
+  }
 
   generateSummary(flag: FadeConfiguration): string {
     return [
