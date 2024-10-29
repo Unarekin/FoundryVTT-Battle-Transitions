@@ -693,7 +693,6 @@ export class TransitionChain {
       scenes: game.scenes?.contents.reduce((prev, curr) => curr.id === canvas?.scene?.id ? prev : [...prev, { id: curr.id, name: curr.name }], [] as { id: string, name: string }[])
     });
 
-    console.log(content);
     let configHandler: ConfigurationHandler | null = null;
 
     if (shouldUseAppV2()) {

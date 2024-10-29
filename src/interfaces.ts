@@ -8,7 +8,7 @@ export interface TransitionConfigHandler<t extends object> {
   defaultSettings: t;
   validate(flag: t): boolean;
   renderTemplate(flag: t): Promise<string>;
-  createFlagFromHTML(html: HTMLElement | JQuery<HTMLElement>): t;
+  createFlagFromHTML(html?: HTMLElement | JQuery<HTMLElement>): t;
   generateSummary(flag: t): string;
 }
 
@@ -30,7 +30,7 @@ export interface TransitionStep {
   [x: string]: unknown;
 }
 
-interface TransitionConfiguration {
+export interface TransitionConfiguration {
   id?: string;
   easing?: string;
 }
