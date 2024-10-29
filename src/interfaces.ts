@@ -69,7 +69,6 @@ export interface FadeConfiguration extends TransitionWithBackground {
   duration: number;
 }
 
-
 export interface FireDissolveConfiguration extends TransitionConfiguration {
   duration: number;
   burnSize: number;
@@ -137,4 +136,9 @@ export interface SpiralWipeConfiguration extends TransitionWithBackground {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface InvertConfiguration extends TransitionConfiguration {
+}
+
+
+export interface AngularWipeConfiguration extends TransitionWithBackground {
+  duration: number;
 }

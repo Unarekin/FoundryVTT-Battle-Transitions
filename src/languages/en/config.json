@@ -148,6 +148,9 @@
       },
       "MELT": {
         "DESCRIPTION": "Melt the screen like you may have seen in a certain demon-killing FPS."
+      },
+      "ANGULARWIPE": {
+        "DESCRIPTION": "A wipe that clears angled sections of the screen progressively closer to the center."
       }
     }
   }

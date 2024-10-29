@@ -18,10 +18,12 @@ import { SoundConfigHandler } from './SoundConfigHandler';
 import { VideoConfigHandler } from './VideoConfigHandler';
 import { InvertConfigurationHandler } from './InvertConfigurationHandler';
 import { MeltConfigHandler } from "./MeltConfigHandler";
+import { AngularWipeConfigHandler } from "./AngularWipeConfigHandler";
 
 new ChromaKeyConfigHandler();
 
 const CONFIG_HANDLERS: TransitionConfigHandler<any>[] = [
+  new AngularWipeConfigHandler(),
   new FadeConfigHandler(),
   new LinearWipeConfigHandler(),
   new BilinearWipeConfigHandler(),

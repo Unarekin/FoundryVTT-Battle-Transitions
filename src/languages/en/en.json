@@ -69,6 +69,7 @@
       "DESCRIPTION": "Please select a scene below:"
     },
     "TRANSITIONTYPES": {
+      "ANGULARWIPE": "Angular Wipe",
       "BILINEARWIPE": "Bilinear Wipe",
       "CHROMAKEY": "Chroma Key",
       "CLOCKWIPE": "Clock Wipe",
