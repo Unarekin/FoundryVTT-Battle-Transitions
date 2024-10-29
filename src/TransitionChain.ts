@@ -788,23 +788,35 @@ export class TransitionChain {
       await this.#executeSequence(config.sequence, container);
   }
 
-  /**
-   * Executes a sequence a given number of times
-   * @param {number} iterations - Number of times to execute the sequence
-   * @param {Function} [callback] - A callback that returns a set of {@link TransitionStep}s to execute.  If not specified, will repeat the previous {@link TransitionStep} in the current sequence.}
-   * @returns 
-   */
-  public repeat(iterations: number, callback?: (chain: TransitionChain) => TransitionStep[]): this {
+
+  public repeat(iterations: number): this
+  public repeat(iterations: number, delay: number): this
+  public repeat(iterations: number, callback: (chain: TransitionChain) => TransitionStep[]): this
+  public repeat(iterations: number, delay: number, callback: (chain: TransitionChain) => TransitionStep[]): this
+  public repeat(iterations: number, ...args: unknown[]): this {
+
+    const delay = typeof args[0] === "number" ? args[0] : 0;
+    const callback = (typeof args[0] === "number" ? args[1] : args[1]) as ((chain: TransitionChain) => TransitionStep[]) | undefined;
+
+    log("Repeat:", iterations, delay, callback, args);
     if (callback) {
       const chain = new TransitionChain();
       const res = callback(chain);
       if (res instanceof Promise) throw new RepeatExecuteError();
-      for (let i = 0; i < iterations; i++)
+
+      if (delay) this.wait(delay);
+      for (let i = 0; i < iterations; i++) {
         this.#sequence.push(...chain.sequence);
+        if (delay) this.wait(delay);
+      }
     } else {
-      this.#sequence.push(
-        ...(new Array(iterations).fill(this.#sequence[this.#sequence.length - 1]) as TransitionStep[])
-      );
+      const step = this.#sequence[this.#sequence.length - 1];
+      if (delay) this.wait(delay);
+
+      for (let i = 0; i < iterations; i++) {
+        this.#sequence.push(step);
+        if (delay) this.wait(delay);
+      }
     }
 
     return this;
