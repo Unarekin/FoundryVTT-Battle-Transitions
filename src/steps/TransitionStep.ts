@@ -6,6 +6,8 @@ import { AnimatedTransition, TransitionConfiguration } from "./types";
 export abstract class TransitionStep<t extends TransitionConfiguration = TransitionConfiguration> {
   // #region Properties (3)
 
+  static name: string = "UNNAMED";
+
   public readonly skipConfig: boolean = false;
 
   public abstract defaultSettings: Partial<t>;

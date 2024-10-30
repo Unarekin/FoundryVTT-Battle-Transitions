@@ -7,6 +7,7 @@ import { VideoConfiguration } from "./types";
 
 export class VideoStep extends TransitionStep<VideoConfiguration> {
   #preloadedVideo: PIXI.Texture | null = null;
+  static name = "VIDEO";
 
   public readonly template = "video-config";
   public readonly defaultSettings: Partial<VideoConfiguration> = {

@@ -5,7 +5,7 @@ import SocketHandler from "./SocketHandler";
 import { AngularWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SceneChangeStep, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TransitionStep, WaitConfiguration, WaitStep, WaveWipeConfiguration, VideoConfiguration, BackgroundTransition, ParallelSequence, AngularWipeStep, BilinearWipeStep, ClockWipeStep, DiamondWipeStep, FadeStep, FireDissolveStep, SpiralRadialWipeStep, FlashStep, InvertStep, LinearWipeStep, MacroStep, MeltStep, ParallelStep, RadialWipeStep, SoundStep, SpotlightWipeStep, TextureSwapStep, WaveWipeStep, VideoStep } from "./steps";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { deserializeTexture } from "./utils";
+import { deserializeTexture, log } from "./utils";
 
 // #region Type aliases (1)
 
@@ -210,10 +210,18 @@ export class BattleTransition {
    * Begins executing a given transition sequence, notifying other connected clients to do the same.
    * @param {TransitionConfiguration[]} [sequence] - {@link TransitionConfiguration}[] to execute.  Defaults to sequence pre-configured on this {@link BattleTransition}.
    */
-  public async execute(sequence: TransitionSequence): Promise<void> {
+  public async execute(sequence?: TransitionSequence): Promise<void> {
     try {
+      log("Executing sequence:", sequence);
+      if (!sequence) {
+        return this.execute({
+          caller: game.user?.id ?? "",
+          remote: false,
+          sequence: this.#sequence
+        });
+      }
       // Notify other clients to execute, if necessary
-      if (!sequence.remote) {
+      if (!sequence?.remote) {
         // Last minute validation of our sequence
         const valid = await this.#validateSequence(sequence.sequence);
         if (valid instanceof Error) throw valid;

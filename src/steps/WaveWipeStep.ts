@@ -5,6 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { WaveWipeConfiguration } from "./types";
 
 export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
+  static name: string = "WAVEWIPE";
   public readonly template = "wave-wipe-config";
   public readonly defaultSettings: Partial<WaveWipeConfiguration> = {
     duration: 1000

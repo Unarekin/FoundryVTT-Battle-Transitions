@@ -6,6 +6,7 @@ import { TransitionStep } from "./TransitionStep";
 import { RadialWipeConfiguration } from "./types";
 
 export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
+  static name = "RADIALWIPE";
   public readonly template = "radial-wipe-config";
   public readonly defaultSettings: Partial<RadialWipeConfiguration> = {
     duration: 1000,

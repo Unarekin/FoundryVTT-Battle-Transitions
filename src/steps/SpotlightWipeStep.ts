@@ -5,6 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { SpotlightWipeConfiguration } from "./types";
 
 export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration> {
+  static name = "SPOTLIGHTWIPE";
   public readonly template = "spotlight-wipe-config";
   public readonly defaultSettings: Partial<SpotlightWipeConfiguration> = {
     duration: 1000,
@@ -17,6 +18,6 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
     const filter = new SpotlightWipeFilter(this.config.direction, this.config.radial, background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);
-    
+
   }
 }

@@ -5,6 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { TextureSwapConfiguration } from "./types";
 
 export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
+  static name = "TEXTURESWAP";
   public readonly template = "textureswap-config";
   public readonly defaultSettings: Partial<TextureSwapConfiguration> = {};
 

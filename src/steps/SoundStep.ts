@@ -3,6 +3,7 @@ import { SoundConfiguration } from "./types";
 import { TransitionSequence } from "../interfaces";
 
 export class SoundStep extends TransitionStep<SoundConfiguration> {
+  static name = "SOUND";
   #sound: Sound | null = null;
   public readonly template = "sound-config";
   public readonly defaultSettings: Partial<SoundConfiguration> = {

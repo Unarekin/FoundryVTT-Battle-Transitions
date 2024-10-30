@@ -4,6 +4,7 @@ import { TransitionStep } from "./TransitionStep";
 import { DiamondWipeConfiguration } from "./types";
 
 export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
+  static name = "DIAMONDWIPE";
   public readonly template = "diamond-wipe-config";
   public readonly defaultSettings: Partial<DiamondWipeConfiguration> = {
     type: "diamodnwipe",

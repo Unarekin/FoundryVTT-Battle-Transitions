@@ -6,6 +6,7 @@ import { FlashConfiguration } from "./types";
 
 
 export class FlashStep extends TransitionStep<FlashConfiguration> {
+  static name = "FLASH";
   public readonly template = "flash-config";
   public readonly defaultSettings: Partial<FlashConfiguration> = {}
 

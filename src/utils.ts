@@ -319,7 +319,7 @@ export function deserializeTexture(data: string | DataURLBuffer | TextureBuffer)
 }
 
 export function log(...args: unknown[]) {
-  console.log(LOG_ICON, __MODULE_TITLE__, ...args);
+  console.log(LOG_ICON, __MODULE_TITLE__, "|", ...args);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -5,6 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { LinearWipeConfiguration } from "./types";
 
 export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
+  static name = "LINEARWIPE";
   public readonly template = "linear-wipe-config";
   public readonly defaultSettings: Partial<LinearWipeConfiguration> = {
     duration: 1000

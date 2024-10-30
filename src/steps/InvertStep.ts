@@ -4,6 +4,7 @@ import { TransitionStep } from "./TransitionStep";
 import { InvertConfiguration, TransitionConfiguration } from "./types";
 
 export class InvertStep extends TransitionStep<InvertConfiguration> {
+  static name = "INVERT";
   public readonly template = "";
   public readonly defaultSettings: Partial<TransitionConfiguration> = {};
   public readonly skipConfig = true;

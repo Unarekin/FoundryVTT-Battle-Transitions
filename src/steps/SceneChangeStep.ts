@@ -7,6 +7,7 @@ import { SceneChangeConfiguration } from "./types";
 
 export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
   // #region Properties (2)
+  static name = "SCENECHANGE";
 
   public readonly defaultSettings = {
     type: "scenechange",

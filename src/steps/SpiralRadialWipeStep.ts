@@ -5,6 +5,7 @@ import { SpiralRadialWipeConfiguration } from "./types";
 import { SpiralRadialWipeFilter } from "../filters";
 
 export class SpiralRadialWipeStep extends TransitionStep<SpiralRadialWipeConfiguration> {
+  static name = "SPIRALRADIALWIPE";
   public readonly template = "spiral-wipe-config";
   public readonly defaultSettings: Partial<SpiralRadialWipeConfiguration> = {
     duration: 1000,

@@ -5,6 +5,7 @@ import { createColorTexture } from '../utils';
 import { AngularWipeFilter } from '../filters';
 
 export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
+  static name = "ANGULARWIPE";
   public readonly template = "angular-wipe-config";
 
   public readonly defaultSettings = {

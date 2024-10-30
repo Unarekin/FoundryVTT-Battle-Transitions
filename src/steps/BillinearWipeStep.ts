@@ -5,6 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { BilinearWipeConfiguration } from "./types";
 
 export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> {
+  static name = "BILINEARWIPE";
   public readonly template = "bilinear-wipe-config";
 
   public readonly defaultSettings: Partial<BilinearWipeConfiguration> = {

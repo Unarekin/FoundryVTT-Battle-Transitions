@@ -5,6 +5,7 @@ import { FireDissolveConfiguration } from "./types";
 
 
 export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> {
+  static name = "FIREDISSOLVE";
   public readonly template = "fire-dissolve-config";
   public readonly defaultSettings: Partial<FireDissolveConfiguration> = {
     burnSize: 1.3,

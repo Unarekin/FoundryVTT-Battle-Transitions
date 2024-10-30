@@ -5,6 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { ClockWipeConfiguration } from "./types";
 
 export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
+  static name = "CLOCKWIPE";
 
   public readonly template = "clock-wipe-config";
   public readonly defaultSettings: Partial<ClockWipeConfiguration> = {

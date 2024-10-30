@@ -2,7 +2,7 @@
 import { initializeCanvas } from './transitionUtils';
 import { CUSTOM_HOOKS } from "./constants";
 import { registerHelpers, registerTemplates } from "./templates";
-import { ConfigurationHandler } from './config/ConfigurationHandler';
+import { ConfigurationHandler } from './ConfigurationHandler';
 
 import SocketHandler from "./SocketHandler";
 import { addNavigationButton } from './utils';
@@ -18,7 +18,8 @@ Hooks.once("canvasReady", () => {
 })
 
 Hooks.on("renderSceneConfig", (app: Application) => {
-  new ConfigurationHandler(app, (app as any).object as Scene);
+  ConfigurationHandler.inject(app);
+  // new ConfigurationHandler(app, (app as any).object as Scene);
 });
 
 

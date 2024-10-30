@@ -4,6 +4,8 @@ import { TransitionStep } from "./TransitionStep";
 export class WaitStep extends TransitionStep<WaitConfiguration> {
   // #region Properties (2)
 
+  static name = "WAIT";
+
   public readonly defaultSettings = {
     type: "wait",
     duration: 0

@@ -5,6 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { FadeConfiguration } from "./types";
 
 export class FadeStep extends TransitionStep<FadeConfiguration> {
+  static name = "FADE";
   public readonly template = "fade-config";
   public readonly defaultSettings: Partial<FadeConfiguration> = {
     duration: 1000

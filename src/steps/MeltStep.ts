@@ -5,6 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { MeltConfiguration } from "./types";
 
 export class MeltStep extends TransitionStep<MeltConfiguration> {
+  static name = "MELT";
   public readonly template = "melt-config";
   public readonly defaultSettings: Partial<MeltConfiguration> = {
     duration: 1000

@@ -5,6 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { MacroConfiguration } from "./types";
 
 export class MacroStep extends TransitionStep<MacroConfiguration> {
+  static name = "MACRO";
   public readonly template = "macro-config";
   public readonly defaultSettings: Partial<MacroConfiguration> = {};
 

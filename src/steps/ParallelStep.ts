@@ -4,6 +4,7 @@ import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration } from "./types";
 
 export class ParallelStep extends TransitionStep<ParallelConfiguration> {
+  static name = "PARALLEL";
   public readonly template = "";
   public readonly defaultSettings: Partial<ParallelConfiguration> = {
     sequences: []
