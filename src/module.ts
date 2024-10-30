@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { initializeCanvas } from './transitionUtils';
 import { CUSTOM_HOOKS } from "./constants";
-import { TransitionChain } from "./TransitionChain";
 import { registerHelpers, registerTemplates } from "./templates";
 import { ConfigurationHandler } from './config/ConfigurationHandler';
 
 import SocketHandler from "./SocketHandler";
 import { addNavigationButton } from './utils';
-import { TransitionStep } from './interfaces';
+import { BattleTransition } from "./BattleTransition";
+import { TransitionStep } from './steps';
 
-(window as any).BattleTransition = TransitionChain;
+(window as any).BattleTransition = BattleTransition;
 
 
 Hooks.once("canvasReady", () => {

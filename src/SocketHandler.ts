@@ -1,30 +1,36 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
-import { TransitionChain } from "./TransitionChain";
-import { TransitionStep } from "./interfaces";
+import { BattleTransition } from "./BattleTransition";
+import { TransitionSequence } from "./interfaces";
 import { log } from "./utils";
 
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 class SocketHandler {
+  // eslint-disable-next-line no-unused-private-class-members
   #socket: any;
 
-  public transition(scene: string, config: TransitionStep[]) {
-    this.#socket.executeForEveryone("transition.exec", scene, config, game.users?.current?.id ?? "");
+  #execute(sequence: TransitionSequence) {
+    void new BattleTransition().execute({
+      ...sequence,
+      remote: true
+    });
   }
 
-  private _execute(scene: string, config: TransitionStep[], caller: string) {
-    log("Executing transition chain:", config);
-    void new TransitionChain(scene).execute(true, config, caller);
+  public execute(sequence: TransitionSequence) {
+    this.#socket.executeForEveryone("transition.exec", {
+      ...sequence,
+      caller: game.user?.id ?? ""
+    });
   }
+
 
   public register(socket: any) {
-    log("Registering socket:", socket);
+    log("Registering socket.");
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.#socket = socket;
-    socket.register("transition.exec", this._execute.bind(this));
 
+    socket.register("transition.exec", this.#execute.bind(this))
   }
 }
-
 
 export default new SocketHandler();

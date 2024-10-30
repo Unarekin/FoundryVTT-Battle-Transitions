@@ -19,7 +19,8 @@
       "FILENOTFOUND": "File not found: {file}",
       "NOBACKGROUNDPROVIDED": "No background image or color provided.",
       "NOVIDEOPROVIDED": "No video provided.",
-      "NOIMAGEPROVIDED": "No image provided."
+      "NOIMAGEPROVIDED": "No image provided.",
+      "NOTIMPLEMENTED": "Not implemented."
     }
   }
 }

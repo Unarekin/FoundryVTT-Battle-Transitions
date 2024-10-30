@@ -13,6 +13,7 @@ export * from './NoBackgroundProvidedError';
 export * from './NoCoverElementError';
 export * from './NoImageProvidedError';
 export * from './NoVideoProvidedError';
+export * from './NotImplementedError';
 export * from './NotInitializedError';
 export * from './ParallelExecuteError';
 export * from './PermissionDeniedError';
