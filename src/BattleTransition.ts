@@ -2,26 +2,27 @@ import { coerceScene } from "./coercion";
 import { InvalidSceneError, InvalidTransitionError } from "./errors";
 import { TransitionSequence } from "./interfaces";
 import SocketHandler from "./SocketHandler";
-import { TransitionConfiguration, TransitionStep, WaitConfiguration, WaitStep } from "./steps";
+import { SceneChangeConfiguration, SceneChangeStep, TransitionConfiguration, TransitionStep, WaitConfiguration, WaitStep } from "./steps";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 
 /**
  * Primary class that handles queueing, synchronizing, and executing transition sequences.
  */
 export class BattleTransition {
-  // #region Properties (4)
+  // #region Properties (3)
 
-  #scene: Scene | undefined = undefined;
   #sequence: TransitionConfiguration[] = [];
   #stepTypes: { [x: string]: typeof TransitionStep } = {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    wait: (WaitStep as any)
+    wait: (WaitStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    scenechange: (SceneChangeStep as any)
   }
 
   // eslint-disable-next-line no-unused-private-class-members
   #transitionOverlay: PIXI.DisplayObject[] = [];
 
-  // #endregion Properties (4)
+  // #endregion Properties (3)
 
   // #region Constructors (6)
 
@@ -33,8 +34,9 @@ export class BattleTransition {
   constructor(arg?: unknown) {
     try {
       if (arg) {
-        this.#scene = coerceScene(arg);
-        if (!this.#scene) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
+        const scene = coerceScene(arg);
+        if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
+        this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
       }
     } catch (err) {
       ui.notifications?.error((err as Error).message);
@@ -44,34 +46,7 @@ export class BattleTransition {
 
   // #endregion Constructors (6)
 
-  // #region Public Methods (7)
-
-  /**
-   * Adds a step to change scenes
-   * @param {string} id - ID of the {@link Scene} to which to transition
-   */
-  public changeScene(id: string): this
-  /**
-   * Adds a step to change scenes
-   * @param {string} name - Name of the {@link Scene} to which to transition
-   */
-  public changeScene(name: string): this
-  /**
-   * Adds a step to change scenes
-   * @param {string} uuid - UUID of the {@link Scene} to which to transition
-   */
-  public changeScene(uuid: string): this
-  /**
-   * Adds a step to change scenes
-   * @param {Scene} scene - The {@link Scene} to which to transition
-   */
-  public changeScene(scene: Scene): this
-  public changeScene(arg: unknown): this {
-    const scene = coerceScene(arg);
-    if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
-
-    return this;
-  }
+  // #region Public Methods (2)
 
   /**
    * Begins executing a given transition sequence, notifying other connected clients to do the same.
@@ -81,7 +56,15 @@ export class BattleTransition {
     try {
       // Notify other clients to execute, if necessary
       if (!sequence.remote) {
-        SocketHandler.execute(sequence);
+        // Last minute validation of our sequence
+        const valid = await this.#validateSequence(sequence.sequence);
+        if (valid instanceof Error) throw valid;
+
+        const serialized = await this.#serializeSequence(sequence.sequence);
+        await SocketHandler.execute({
+          ...sequence,
+          sequence: serialized
+        });
       } else {
         await this.#executeSequence(sequence);
       }
@@ -99,17 +82,13 @@ export class BattleTransition {
     return this;
   }
 
-  // #endregion Public Methods (7)
+  // #endregion Public Methods (2)
 
-  // #region Private Methods (4)
+  // #region Private Methods (5)
 
   async #executeSequence(sequence: TransitionSequence) {
     let container: PIXI.Container | null = null;
     try {
-      // Last minute validation of our sequence
-      const valid = await this.#validateSequence(sequence.sequence);
-      if (valid instanceof Error) throw valid;
-
       // Prepare overlay
       container = await setupTransition();
       this.#transitionOverlay = [...container.children];
@@ -119,7 +98,7 @@ export class BattleTransition {
       const preparedSequence = await this.#prepareSequence(sequence.sequence);
 
       for (const step of preparedSequence) {
-        await step.execute();
+        await step.execute(sequence);
       }
 
     } catch (err) {
@@ -151,6 +130,15 @@ export class BattleTransition {
     }
   }
 
+  async #serializeSequence(sequence: TransitionConfiguration[] = this.#sequence): Promise<TransitionConfiguration[]> {
+    const serializedSequence: TransitionConfiguration[] = [];
+    for (const step of sequence) {
+      const instance = this.#getStepInstance(step);
+      serializedSequence.push(await instance.serialize());
+    }
+    return serializedSequence;
+  }
+
   async #validateSequence(sequence: TransitionConfiguration[] = this.#sequence): Promise<boolean | Error> {
     try {
       for (const step of sequence) {
@@ -165,5 +153,5 @@ export class BattleTransition {
     }
   }
 
-  // #endregion Private Methods (4)
+  // #endregion Private Methods (5)
 }

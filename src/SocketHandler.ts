@@ -6,7 +6,6 @@ import { log } from "./utils";
 
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 class SocketHandler {
-  // eslint-disable-next-line no-unused-private-class-members
   #socket: any;
 
   #execute(sequence: TransitionSequence) {
@@ -16,11 +15,11 @@ class SocketHandler {
     });
   }
 
-  public execute(sequence: TransitionSequence) {
-    this.#socket.executeForEveryone("transition.exec", {
+  public execute(sequence: TransitionSequence): Promise<void> {
+    return this.#socket.executeForEveryone("transition.exec", {
       ...sequence,
       caller: game.user?.id ?? ""
-    });
+    }) as Promise<void>;
   }
 
 

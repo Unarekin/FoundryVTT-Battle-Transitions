@@ -20,7 +20,8 @@
       "NOBACKGROUNDPROVIDED": "No background image or color provided.",
       "NOVIDEOPROVIDED": "No video provided.",
       "NOIMAGEPROVIDED": "No image provided.",
-      "NOTIMPLEMENTED": "Not implemented."
+      "NOTIMPLEMENTED": "Not implemented.",
+      "SEQUENCETIMEDOUT": "Transition sequence timed out."
     }
   }
 }

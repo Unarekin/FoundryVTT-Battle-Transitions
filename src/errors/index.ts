@@ -18,5 +18,6 @@ export * from './NotInitializedError';
 export * from './ParallelExecuteError';
 export * from './PermissionDeniedError';
 export * from './RepeatExecuteError';
+export * from './SequenceTimedOutError';
 export * from './TransitionHasToStepError';
 export * from './TransitionToSelfError';
