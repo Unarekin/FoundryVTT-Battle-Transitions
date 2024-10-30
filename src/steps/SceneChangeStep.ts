@@ -19,7 +19,7 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
 
   // #region Public Methods (2)
 
-  public async execute(sequence: TransitionSequence): Promise<void> {
+  public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
     // If we'rea lready on this scene, then really we've missed the chance to properly execute this transition.
     // Likely our preparation steps took too long.
     if (this.config.scene === canvas?.scene?.id) {

@@ -21,7 +21,8 @@
       "NOVIDEOPROVIDED": "No video provided.",
       "NOIMAGEPROVIDED": "No image provided.",
       "NOTIMPLEMENTED": "Not implemented.",
-      "SEQUENCETIMEDOUT": "Transition sequence timed out."
+      "SEQUENCETIMEDOUT": "Transition sequence timed out.",
+      "INVALIDSOUND": "Invalid sound: {sound}"
     }
   }
 }

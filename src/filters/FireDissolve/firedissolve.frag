@@ -9,7 +9,7 @@ uniform sampler2D uSampler;
 uniform sampler2D noise_texture;
 uniform sampler2D burn_texture;
 
-uniform float integrity;
+uniform float progress;
 uniform float burn_size;
 
 float inverse_lerp(float a, float b, float v) {
@@ -17,6 +17,7 @@ float inverse_lerp(float a, float b, float v) {
 }
 
 void main() {
+    float integrity = 1.0 - progress;
     float noise = texture(noise_texture, vTextureCoord).r * vTextureCoord.y;
     vec4 base_color = texture(uSampler, vTextureCoord) * step(noise, integrity);
     vec2 burn_uv = vec2(inverse_lerp(integrity, integrity * burn_size, noise), 0.0);

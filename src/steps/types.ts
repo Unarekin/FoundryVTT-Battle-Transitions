@@ -1,4 +1,4 @@
-import { SerializedAsset } from "../interfaces";
+import { PreparedTransitionSequence, SerializedAsset, TransitionSequence } from "../interfaces";
 import { Easing, BilinearDirection, RadialDirection, ClockDirection, WipeDirection } from "../types";
 
 export interface TransitionConfiguration {
@@ -6,28 +6,33 @@ export interface TransitionConfiguration {
   id?: string;
 }
 
-interface BGImageTransition {
-  backgroundType: "image";
-  backgroundImage: string;
-  backgroundColor?: never;
-}
-
-interface BGColorTransition {
-  backgroundType: "color";
-  backgroundImage?: never;
-  backgroundColor: string;
-}
-
-export type BackgroundTransition = BGImageTransition | BGColorTransition & ({
+export interface BackgroundTransition {
   deserializedTexture?: PIXI.Texture;
   serializedTexture?: SerializedAsset
-})
+}
+
+// interface BGImageTransition {
+//   backgroundType: "image";
+//   backgroundImage: string;
+//   backgroundColor?: never;
+// }
+
+// interface BGColorTransition {
+//   backgroundType: "color";
+//   backgroundImage?: never;
+//   backgroundColor: string;
+// }
+
+// export type BackgroundTransition = BGImageTransition | BGColorTransition & ({
+//   deserializedTexture?: PIXI.Texture;
+//   serializedTexture?: SerializedAsset
+// })
 
 type DurationTransition = {
   duration: number;
 }
 
-type AnimatedTransition = DurationTransition & ({
+export type AnimatedTransition = DurationTransition & ({
   easing: Easing;
 })
 
@@ -51,7 +56,7 @@ export type DiamondWipeConfiguration = WipeTransition & ({
 
 export type FadeConfiguration = BackgroundTransition & DurationTransition & TransitionConfiguration;
 
-export type FireDissolveConfiguration = DurationTransition & TransitionConfiguration & ({
+export type FireDissolveConfiguration = DurationTransition & TransitionConfiguration & AnimatedTransition & ({
   burnSize: number;
 });
 
@@ -75,9 +80,11 @@ export type SpotlightWipeConfiguration = WipeTransition & ({
 
 export interface TextureSwapConfiguration extends TransitionConfiguration {
   texture: string;
+  deserializedTexture: PIXI.Texture;
+  serializedTexture: SerializedAsset;
 }
 
-export type VideoTransition = BackgroundTransition & ({
+export type VideoConfiguration = BackgroundTransition & TransitionConfiguration & ({
   file: string;
   volume: number;
   clear?: boolean;
@@ -86,18 +93,23 @@ export type VideoTransition = BackgroundTransition & ({
 
 export type WaitConfiguration = TransitionConfiguration & DurationTransition;
 
-export interface ParallelConfiguration extends TransitionConfiguration {
-  sequences: TransitionConfiguration[][];
+export interface ParallelSequence {
+  sequence: TransitionSequence;
+  prepared: PreparedTransitionSequence;
 }
 
-export type MeltConfiguration = BackgroundTransition & DurationTransition;
+export interface ParallelConfiguration extends TransitionConfiguration {
+  sequences: ParallelSequence[];
+}
+
+export type MeltConfiguration = TransitionConfiguration & BackgroundTransition & DurationTransition;
 
 
 export type WaveWipeConfiguration = WipeTransition & ({
   direction: RadialDirection;
 });
 
-export type SpiralWipeConfiguration = WipeTransition & ({
+export type SpiralRadialWipeConfiguration = WipeTransition & ({
   direction: ClockDirection;
   radial: RadialDirection;
 });
@@ -106,7 +118,7 @@ export type InvertConfiguration = TransitionConfiguration
 
 export type AngularWipeConfiguration = WipeTransition;
 
-export type FlashConfiguration = BackgroundTransition & DurationTransition;
+export type FlashConfiguration = TransitionConfiguration & BackgroundTransition & DurationTransition;
 
 export type RepeatConfiguration = TransitionConfiguration & ({
   iterations: number;
@@ -116,6 +128,10 @@ export type RepeatConfiguration = TransitionConfiguration & ({
 export type SceneChangeConfiguration = TransitionConfiguration & ({
   scene: string;
 })
+
+export interface MacroConfiguration extends TransitionConfiguration {
+  macro: string;
+}
 
 // // export interface ChromaKeyConfiguration extends TransitionWithBackground {
 // //   keyColor: string;

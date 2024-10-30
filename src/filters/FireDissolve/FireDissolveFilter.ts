@@ -6,7 +6,7 @@ import fragment from "./firedissolve.frag";
 type FireDissolveUniforms = {
   noise_texture: PIXI.Texture;
   burn_texture: PIXI.Texture;
-  integrity: number;
+  progress: number;
   burn_size: number;
 }
 
@@ -19,7 +19,7 @@ export class FireDissolveFilter extends CustomFilter<FireDissolveUniforms> {
     const noise_texture = createNoiseTexture();
     const uniforms = {
       noise_texture,
-      integrity: 1,
+      progress: 0,
       burn_size: burnSize,
       burn_texture: defaultBurnTexture
     };

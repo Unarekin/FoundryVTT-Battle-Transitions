@@ -1,4 +1,4 @@
-import { TransitionConfiguration } from './steps';
+import { TransitionConfiguration, TransitionStep } from './steps';
 
 export interface TextureBuffer {
   width: number;
@@ -18,4 +18,10 @@ export interface TransitionSequence {
   caller: string;
   remote?: boolean;
   sequence: TransitionConfiguration[];
+}
+
+export interface PreparedTransitionSequence {
+  caller: string;
+  remote?: boolean;
+  sequence: TransitionStep<any>[];
 }

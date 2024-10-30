@@ -14,7 +14,7 @@ const textures = {
   }
 }
 
-export class SpiralWipeFilter extends TextureWipeFilter {
+export class SpiralRadialWipeFilter extends TextureWipeFilter {
   constructor(direction: ClockDirection, radial: RadialDirection, background: PIXI.TextureSource | PIXI.ColorSource) {
     const bg = coerceTexture(background);
 

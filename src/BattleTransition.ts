@@ -1,9 +1,19 @@
-import { coerceScene } from "./coercion";
-import { InvalidSceneError, InvalidTransitionError } from "./errors";
-import { TransitionSequence } from "./interfaces";
+import { coerceMacro, coerceScene, coerceTexture } from "./coercion";
+import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, RepeatExecuteError } from "./errors";
+import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
 import SocketHandler from "./SocketHandler";
-import { SceneChangeConfiguration, SceneChangeStep, TransitionConfiguration, TransitionStep, WaitConfiguration, WaitStep } from "./steps";
+import { AngularWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SceneChangeStep, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TransitionStep, WaitConfiguration, WaitStep, WaveWipeConfiguration, VideoConfiguration, BackgroundTransition, ParallelSequence, AngularWipeStep, BilinearWipeStep, ClockWipeStep, DiamondWipeStep, FadeStep, FireDissolveStep, SpiralRadialWipeStep, FlashStep, InvertStep, LinearWipeStep, MacroStep, MeltStep, ParallelStep, RadialWipeStep, SoundStep, SpotlightWipeStep, TextureSwapStep, WaveWipeStep, VideoStep } from "./steps";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
+import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
+import { deserializeTexture } from "./utils";
+
+// #region Type aliases (1)
+
+type TransitionSequenceCallback = (transition: BattleTransition) => TransitionConfiguration[];
+
+// #endregion Type aliases (1)
+
+// #region Classes (1)
 
 /**
  * Primary class that handles queueing, synchronizing, and executing transition sequences.
@@ -14,9 +24,48 @@ export class BattleTransition {
   #sequence: TransitionConfiguration[] = [];
   #stepTypes: { [x: string]: typeof TransitionStep } = {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    angularwipe: (AngularWipeStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    bilinearwipe: (BilinearWipeStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    clockwipe: (ClockWipeStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    diamondwipe: (DiamondWipeStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    fade: (FadeStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    firedissolve: (FireDissolveStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    flash: (FlashStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    invert: (InvertStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    linearwipe: (LinearWipeStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    macro: (MacroStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    melt: (MeltStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    parallel: (ParallelStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    radialwipe: (RadialWipeStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    scenechange: (SceneChangeStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    sound: (SoundStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    spiralradialwipe: (SpiralRadialWipeStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    spotlightwipe: (SpotlightWipeStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    textureswap: (TextureSwapStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    video: (VideoStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     wait: (WaitStep as any),
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    scenechange: (SceneChangeStep as any)
+    wavewipe: (WaveWipeStep as any)
+
   }
 
   // eslint-disable-next-line no-unused-private-class-members
@@ -46,7 +95,116 @@ export class BattleTransition {
 
   // #endregion Constructors (6)
 
-  // #region Public Methods (2)
+  // #region Public Getters And Setters (1)
+
+  public get sequence(): TransitionConfiguration[] { return this.#sequence; }
+
+  // #endregion Public Getters And Setters (1)
+
+  // #region Public Methods (36)
+
+  /**
+   * Adds an angular wipe, mimicking the battle with Brock in Pokemon Fire Red
+   * @param {number} [duration=1000] - Duration that the wipe should last
+   * @param {TextureLike} [background="transparent"] - {@link TextureLike} representing the background
+   * @param {Easing} [easing="none"] - {@link Easing} to use when animating this transition
+   * @returns 
+   */
+  public angularWipe(duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const bg = coerceTexture(background);
+    this.#sequence.push({
+      type: "angularwipe",
+      duration,
+      deserializedTexture: bg,
+      easing
+    } as AngularWipeConfiguration);
+
+    return this;
+  }
+
+  /**
+   * Adds a bilinear wipe
+   * @param {BilinearDirection} direction - {@link BilinearDirection}
+   * @param {RadialDirection} radial - {@link RadialDirection}
+   * @param {number} [duration=1000] - Duration in milliseconds that the wipe should last
+   * @param {TextureLike} [background="transparent"] - {@link TextureLike} representing the background
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns 
+   */
+  public bilinearWipe(direction: BilinearDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const bg = coerceTexture(background);
+    this.#sequence.push({
+      type: "bilinearwipe",
+      deserializedTexture: bg,
+      duration,
+      direction,
+      radial,
+      easing
+    } as BilinearWipeConfiguration);
+
+    return this;
+  }
+
+  /**
+   * Dissolves the screen with a fire sort of effect
+   * @param {number} [duration=1000] - Duration, in milliseconds, the dissolve should take to complete
+   * @param {number} [burnSize=1.3] - Relative size of the burn effect
+   * @param {Easing} [easing="none"] - {@link Easing}
+   */
+  public burn(duration: number = 1000, burnSize: number = 1.3, easing: Easing = "none"): this {
+    this.#sequence.push({
+      type: "firedissolve",
+      duration,
+      burnSize,
+      easing
+    } as FireDissolveConfiguration)
+    return this;
+  }
+
+  /**
+   * Adds a clock wipe to the queue
+   * @param {ClockDirection} clockDirection - {@link ClockDirection}
+   * @param {WipeDirection} direction - {@link WipeDirection}
+   * @param {number} [duration=1000] - Duration, in milliseconds, that the wipe should last
+   * @param {TextureLike} [background="transparent"] - {@link TextureLike}
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns 
+   */
+  public clocKWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const deserializedTexture = coerceTexture(background);
+    this.#sequence.push({
+      type: "clockwipe",
+      deserializedTexture,
+      duration,
+      clockDirection: clockDirection,
+      direction,
+      easing
+    } as ClockWipeConfiguration)
+
+    return this;
+  }
+
+  /**
+   * Adds a wipe that causes diamond-shapes to disappear over time from left to right
+   * @param {number} [size=40] - Relative size of the diamonds
+   * @param {number} [duration=1000] - Duration, in milliseconds, that the wipe should last
+   * @param {TextureLike} [background="transparent"] - {@link TextureLike}
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns 
+   */
+  public diamondWipe(size: number = 40, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const deserializedTexture = coerceTexture(background);
+
+    this.#sequence.push({
+      type: "diamondwipe",
+      deserializedTexture,
+      size,
+      duration,
+      easing
+    } as DiamondWipeConfiguration)
+
+    return this;
+  }
 
   /**
    * Begins executing a given transition sequence, notifying other connected clients to do the same.
@@ -74,6 +232,326 @@ export class BattleTransition {
   }
 
   /**
+   * Fades the screen
+   * @param {number} [duration=1000] - Duration, in milliseconds, the fade should take to complete
+   * @param {TextureLike} [background="transparent"] - {@link TextureLike}
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns 
+   */
+  public fade(duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const deserializedTexture = coerceTexture(background);
+
+    this.#sequence.push({
+      type: "fade",
+      deserializedTexture,
+      duration,
+      easing
+    } as FadeConfiguration)
+    return this;
+  }
+
+  /**
+   * Changes the current overlay texture to another for a specified amount of time
+   * @param {TextureLike} texture - {@link TextureLike}
+   * @param {number} [duration] - Duration, in milliseconds, for this effect to last
+   * @returns 
+   */
+  public flash(texture: TextureLike, duration: number): this {
+    const deserializedTexture = coerceTexture(texture);
+    this.#sequence.push({
+      type: "flash",
+      duration,
+      deserializedTexture
+    } as FlashConfiguration);
+    return this;
+  }
+
+  /**
+   * Inverts the current overlay texture
+   * @returns 
+   */
+  public invert(): this {
+    this.#sequence.push({ type: "invert" } as InvertConfiguration);
+    return this;
+  }
+
+  /**
+   * Adds a linear wipe to the queue
+   * @param {WipeDirection} direction - The side of the screen from which the wipe should start
+   * @param {number} [duration=1000] - Duration, in milliseconds, for this wipe to take to complete
+   * @param {TextureLike} [background="transparent"] - {@link TextureLike}
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns 
+   */
+  public linearWipe(direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const deserializedTexture = coerceTexture(background);
+
+    this.#sequence.push({
+      type: "linearwipe",
+      deserializedTexture,
+      direction,
+      duration,
+      easing
+    } as LinearWipeConfiguration)
+    return this;
+  }
+
+  /**
+   * Queues up a macro execution
+   * @param {string | Macro} macro - The {@link Macro} to execute
+   * @returns 
+   */
+  public macro(macro: string | Macro): this {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const actualMacro = coerceMacro(macro as any);
+    if (!actualMacro) throw new InvalidMacroError(typeof macro === "string" ? macro : typeof macro);
+    this.#sequence.push({
+      type: "macro",
+      macro: actualMacro.id
+    } as MacroConfiguration);
+    return this;
+  }
+
+  /**
+   * Queues up a Doom-style screen melt
+   * @param {number} [duration=1000] - Duration, in milliseconds the melt should take to complete
+   * @param {TextureLike} [background="transparent"] - {@link TextureLike}
+   * @param {Easing} [easing="none"] - {@link Easing}
+   */
+  public melt(duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const deserializedTexture = coerceTexture(background);
+
+    this.#sequence.push({
+      type: "melt",
+      deserializedTexture,
+      duration,
+      easing
+    } as MeltConfiguration)
+
+    return this;
+  }
+
+  /**
+   * Queues up a set of sequences to run in parallel
+   * @param callbacks 
+   * @returns 
+   */
+  public parallel(...callbacks: TransitionSequenceCallback[]): this {
+    const sequences: TransitionSequence[] = [];
+    for (const callback of callbacks) {
+      const transition = new BattleTransition();
+      const res = callback(transition);
+      if (res instanceof Promise) throw new ParallelExecuteError();
+      sequences.push({
+        caller: game.user?.id ?? "",
+        remote: false,
+        sequence: transition.sequence
+      });
+    }
+
+    this.#sequence.push({
+      type: "parallel",
+      sequences: sequences.map(sequence => ({
+        sequence,
+        prepared: {
+          ...sequence,
+          sequence: []
+        }
+      } as ParallelSequence))
+    } as ParallelConfiguration);
+
+    return this;
+  }
+
+  /**
+   * Queues up a radial wipe
+   * @param {RadialDirection} direction - {@link RadialDirection}
+   * @param {number} [duration=1000] - Duration, in milliseconds, that the wipe should take to complete
+   * @param {TextureLike} [background="transparent"] - {@link TextureLike}
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns 
+   */
+  public radialWipe(direction: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const deserializedTexture = coerceTexture(background);
+    this.#sequence.push({
+      type: "radialwipe",
+      deserializedTexture,
+      radial: direction,
+      duration,
+      easing
+    } as RadialWipeConfiguration);
+
+    return this;
+  }
+
+  /**
+   * Will remove the current transition overlay, exposing the new scene
+   */
+  public removeOverlay(): this {
+    this.#sequence.push({ type: "removeoverlay" });
+    return this;
+  }
+
+  /**
+   * Repeats the previous transition step a specified number of times
+   * @param {number} iterations - Number of times to repeat
+   */
+  public repeat(iterations: number): this
+  /**
+   * Repeats the previous transition step a specified number of times, with a delay between each iteration
+   * 
+   * This WILL delay the specified amount before the first iteration
+   * @param {number} iterations - Number of times to repeat
+   * @param {number} delay - Delay in milliseconds between each iteration
+   */
+  public repeat(iterations: number, delay: number): this
+  /**
+   * Builds a transition sequence to be repeated a specified number of times
+   * @param {number} iterations - Number of times to repeat
+   * @param {TransitionSequenceCallback} callback - {@link TransitionSequenceCallback}
+   */
+  public repeat(iterations: number, callback: TransitionSequenceCallback): this
+  /**
+   * Builds a transition sequence to be repeated a specified number of times, with a specified delay between them
+   * @param {number} iterations - Number of times to repeat
+   * @param {number} delay - Number of milliseconds to wait between each iteration
+   * @param {TransitionSequenceCallback} callback - {@link TransitionSequenceCallback}
+   */
+  public repeat(iterations: number, delay: number, callback: TransitionSequenceCallback): this
+  public repeat(iterations: number, ...args: unknown[]): this {
+    const delay = typeof args[0] === "number" ? args[0] : 0;
+    const callback = (typeof args[0] === "number" ? args[1] : args[0]) as TransitionSequenceCallback;
+
+    if (callback) {
+      const transition = new BattleTransition();
+      const res = callback(transition);
+      if (res instanceof Promise) throw new RepeatExecuteError();
+      for (let i = 0; i < iterations; i++) {
+        this.#sequence.push(...transition.sequence);
+        if (delay) this.wait(delay);
+      }
+    } else {
+      // Repeat the last step
+      const step = this.#sequence[this.#sequence.length - 1];
+      if (delay) this.wait(delay);
+      for (let i = 0; i < iterations; i++) {
+        this.#sequence.push(step);
+        if (delay) this.wait(delay);
+      }
+    }
+
+    return this;
+  }
+
+  /**
+   * Plays a sound.  Will NOT wait for the sound to complete before continuing.
+   * @param {string} sound - Path to the sound
+   * @param {number} [volume=100] - Volume at which to play the sound
+   */
+  public sound(sound: string, volume?: number): this
+  /**
+   * Plays a sound.  Will NOT wait for the sound to complete before continuing.
+   * @param {Sound} sound - {@link Sound} to be played
+   * @param {number} [volume=100] - Volume at which to play the sound
+   */
+  public sound(sound: Sound, volume?: number): this
+  public sound(arg: unknown, volume: number = 100): this {
+    const sound = typeof arg === "string" ? arg : (arg instanceof Sound) ? arg.id : null;
+    if (!sound) throw new InvalidSoundError(typeof arg === "string" ? arg : typeof arg);
+    this.#sequence.push({
+      type: "sound",
+      volume,
+      file: sound
+    } as SoundConfiguration);
+    return this;
+  }
+
+  /**
+   * Queues up a wipe that operates much like a radial wipe, but in a spiral pattern rather than circular
+   * @param {ClockDirection} direction - {@link ClockDirection}
+   * @param {RadialDirection} radial - {@link RadialDirection}
+   * @param {number} [duration=1000] - Duration, in milliseconds, the wipe should last
+   * @param {TextureLike} [background="transparent"] {@link TextureLike}
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns 
+   */
+  public spiralRadialWipe(direction: ClockDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const deserializedTexture = coerceTexture(background);
+    this.#sequence.push({
+      type: "spiralradialwipe",
+      deserializedTexture,
+      duration,
+      easing,
+      direction,
+      radial
+    } as SpiralRadialWipeConfiguration)
+
+    return this;
+  }
+
+  /**
+   * Queues up a spotlight-shaped wipe
+   * @param {WipeDirection} direction - {@link WipeDirection}
+   * @param {RadialDirection} radial - {@link RadialDirection}
+   * @param {number} [duration=1000] - Duration, in miliseconds, for the wipe to last
+   * @param {TextureLike} [background="transparent"] - {@link TextureLike}
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns 
+   */
+  public spotlightWipe(direction: WipeDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const deserializedTexture = coerceTexture(background);
+    this.#sequence.push({
+      type: "spotlightwipe",
+      direction,
+      radial,
+      duration,
+      deserializedTexture,
+      easing
+    } as SpotlightWipeConfiguration)
+
+    return this;
+  }
+
+  /**
+   * Swaps the current overlay texture
+   * @param {TextureLike} texture - {@link TextureLike}
+   * @returns 
+   */
+  public textureSwap(texture: TextureLike): this {
+    const deserializedTexture = coerceTexture(texture);
+    this.#sequence.push({
+      type: "textureswap",
+      deserializedTexture
+    } as TextureSwapConfiguration);
+
+    return this;
+  }
+
+  public video(file: string): this
+  public video(file: string, volume: number): this
+  public video(file: string, background: TextureLike): this
+  public video(file: string, clear: boolean): this
+  public video(file: string, volume: number, clear: boolean): this
+  public video(file: string, background: TextureLike, clear: boolean): this
+  public video(file: string, volume: number, background: TextureLike, clear: boolean): this
+  public video(file: string, ...args: unknown[]): this {
+    const volume = args.find(arg => typeof arg === "number") ?? 100;
+    const clear = args.find(arg => typeof arg === "boolean") ?? false;
+    const background = args.find(arg => !(typeof arg === "boolean" || typeof arg === "number")) ?? "transparent";
+
+    const deserializedTexture = coerceTexture(background);
+
+    this.#sequence.push({
+      type: "video",
+      volume,
+      file,
+      deserializedTexture,
+      clear
+    } as VideoConfiguration);
+    return this;
+  }
+
+  /**
    * Adds a step to simply wait a given amount of time before continuing.
    * @param {number} duration - Amount of time, in milliseconds, to wait.
    */
@@ -82,9 +560,49 @@ export class BattleTransition {
     return this;
   }
 
-  // #endregion Public Methods (2)
+  /**
+   * Triggers a wavey saw-like wipe
+   * @param {RadialDirection} direction - {@link RadialDirection}
+   * @param {number} [duration=1000] - Duration, in milliseconds, for the wipe to last
+   * @param {TextureLike} [background=1000] - {@link TextureLike}
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns 
+   */
+  public waveWipe(direction: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const deserializedTexture = coerceTexture(background);
+    this.#sequence.push({
+      type: "wavewipe",
+      deserializedTexture,
+      direction,
+      duration,
+      easing
+    } as WaveWipeConfiguration)
+
+    return this;
+  }
+
+  // #endregion Public Methods (36)
 
   // #region Private Methods (5)
+
+  public async executeParallelSequence(container: PIXI.Container, config: ParallelConfiguration) {
+    await Promise.all(
+      config.sequences.map(({ sequence, prepared }) => this.#doExecuteSequence(container, sequence, prepared))
+    );
+  }
+
+  async #doExecuteSequence(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionSequence) {
+    for (const step of prepared.sequence) {
+      const exec = step.execute(container, sequence);
+      if (exec instanceof Promise) await exec;
+    }
+  }
+
+  async #teardownSequence(container: PIXI.Container, sequence: PreparedTransitionSequence) {
+    for (const step of sequence.sequence) {
+      await step.teardown(container);
+    }
+  }
 
   async #executeSequence(sequence: TransitionSequence) {
     let container: PIXI.Container | null = null;
@@ -94,12 +612,9 @@ export class BattleTransition {
       this.#transitionOverlay = [...container.children];
       hideLoadingBar();
 
-      // Prepare sequence
-      const preparedSequence = await this.#prepareSequence(sequence.sequence);
-
-      for (const step of preparedSequence) {
-        await step.execute(sequence);
-      }
+      const preparedSequence = await this.prepareSequence(sequence);
+      await this.#doExecuteSequence(container, sequence, preparedSequence);
+      await this.#teardownSequence(container, preparedSequence);
 
     } catch (err) {
       throw err as Error;
@@ -115,16 +630,26 @@ export class BattleTransition {
     return handler.from(step);
   }
 
-  async #prepareSequence(sequence: TransitionConfiguration[] = this.#sequence): Promise<TransitionStep[]> {
+  async prepareSequence(sequence: TransitionSequence): Promise<PreparedTransitionSequence> {
     try {
       const steps: TransitionStep[] = [];
 
-      for (const step of sequence) {
+      for (const step of sequence.sequence) {
         const instance = this.#getStepInstance(step);
-        await instance.prepare();
+
+        if (typeof (step as BackgroundTransition).serializedTexture !== "undefined") {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          (step as BackgroundTransition).deserializedTexture = deserializeTexture((step as BackgroundTransition).serializedTexture as any);
+        }
+        const prep = instance.prepare();
+        if (prep instanceof Promise) await prep;
+
         steps.push(instance);
       }
-      return steps;
+      return {
+        ...sequence,
+        sequence: steps
+      };
     } catch (err) {
       throw err as Error;
     }
@@ -155,3 +680,5 @@ export class BattleTransition {
 
   // #endregion Private Methods (5)
 }
+
+// #endregion Classes (1)
