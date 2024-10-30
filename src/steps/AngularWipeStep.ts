@@ -1,7 +1,6 @@
 import { AngularWipeConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
 import { Easing } from '../types';
-import { TransitionSequence } from '../interfaces';
 import { createColorTexture } from '../utils';
 import { AngularWipeFilter } from '../filters';
 

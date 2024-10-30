@@ -7,7 +7,7 @@ import { ConfigurationHandler } from './config/ConfigurationHandler';
 import SocketHandler from "./SocketHandler";
 import { addNavigationButton } from './utils';
 import { BattleTransition } from "./BattleTransition";
-import { TransitionStep } from './steps';
+import { TransitionConfiguration } from './steps';
 
 (window as any).BattleTransition = BattleTransition;
 
@@ -40,12 +40,15 @@ Hooks.on("getSceneNavigationContext", (html: JQuery<HTMLElement>, buttons: any[]
 Hooks.on("preUpdateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
   if (delta.active && !(scene.getFlag(__MODULE_ID__, "autoTriggered") as boolean ?? false)) {
     const config: any = scene.getFlag(__MODULE_ID__, "config");
-    const steps: TransitionStep[] = scene.getFlag(__MODULE_ID__, "steps");
+    const steps: TransitionConfiguration[] = scene.getFlag(__MODULE_ID__, "steps");
 
     if (config?.autoTrigger && steps?.length) {
       // SocketHandler.autoTrigger(steps);
       delta.active = false;
-      SocketHandler.transition(scene.id as string, steps);
+      void SocketHandler.execute({
+        caller: game.user?.id ?? "",
+        sequence: steps
+      });
     }
   }
 });
