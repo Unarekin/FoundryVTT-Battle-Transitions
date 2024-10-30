@@ -15,11 +15,12 @@ class SocketHandler {
     });
   }
 
-  public execute(sequence: TransitionSequence): Promise<void> {
-    return this.#socket.executeForEveryone("transition.exec", {
+  public async execute(sequence: TransitionSequence): Promise<void> {
+    await this.#socket.executeForEveryone("transition.exec", {
       ...sequence,
-      caller: game.user?.id ?? ""
-    }) as Promise<void>;
+      caller: game.user?.id ?? "",
+      remote: true
+    });
   }
 
 

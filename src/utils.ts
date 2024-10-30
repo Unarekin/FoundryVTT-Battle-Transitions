@@ -416,7 +416,7 @@ function findFormValue(serialized: { name: string, value: unknown }[], key: stri
   return elem.value;
 }
 
-export function parseConfigurationFormElements(form: JQuery<HTMLFormElement>, ...elements: string[]): { [x: string]: unknown } {
+export function parseConfigurationFormElements<t = any>(form: JQuery<HTMLFormElement>, ...elements: string[]): Partial<t> {
   const serialized = form.serializeArray();
 
   const elem = Object.fromEntries(

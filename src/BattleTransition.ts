@@ -5,7 +5,7 @@ import SocketHandler from "./SocketHandler";
 import { AngularWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SceneChangeStep, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TransitionStep, WaitConfiguration, WaitStep, WaveWipeConfiguration, VideoConfiguration, BackgroundTransition, ParallelSequence, AngularWipeStep, BilinearWipeStep, ClockWipeStep, DiamondWipeStep, FadeStep, FireDissolveStep, SpiralRadialWipeStep, FlashStep, InvertStep, LinearWipeStep, MacroStep, MeltStep, ParallelStep, RadialWipeStep, SoundStep, SpotlightWipeStep, TextureSwapStep, WaveWipeStep, VideoStep } from "./steps";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { deserializeTexture, log } from "./utils";
+import { deserializeTexture, log, serializeTexture } from "./utils";
 
 // #region Type aliases (1)
 
@@ -65,7 +65,6 @@ export class BattleTransition {
     wait: (WaitStep as any),
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     wavewipe: (WaveWipeStep as any)
-
   }
 
   // eslint-disable-next-line no-unused-private-class-members
@@ -101,7 +100,7 @@ export class BattleTransition {
 
   // #endregion Public Getters And Setters (1)
 
-  // #region Public Methods (36)
+  // #region Public Methods (38)
 
   /**
    * Adds an angular wipe, mimicking the battle with Brock in Pokemon Fire Red
@@ -212,16 +211,16 @@ export class BattleTransition {
    */
   public async execute(sequence?: TransitionSequence): Promise<void> {
     try {
-      log("Executing sequence:", sequence);
       if (!sequence) {
-        return this.execute({
+        sequence = {
           caller: game.user?.id ?? "",
           remote: false,
           sequence: this.#sequence
-        });
+        };
       }
+
       // Notify other clients to execute, if necessary
-      if (!sequence?.remote) {
+      if (!sequence.remote) {
         // Last minute validation of our sequence
         const valid = await this.#validateSequence(sequence.sequence);
         if (valid instanceof Error) throw valid;
@@ -235,8 +234,15 @@ export class BattleTransition {
         await this.#executeSequence(sequence);
       }
     } catch (err) {
-      ui.notifications?.error((err as Error).message);
+      ui.notifications?.error((err as Error).message, { console: false });
+      throw err;
     }
+  }
+
+  public async executeParallelSequence(container: PIXI.Container, config: ParallelConfiguration) {
+    await Promise.all(
+      config.sequences.map(({ sequence, prepared }) => this.#doExecuteSequence(container, sequence, prepared))
+    );
   }
 
   /**
@@ -369,6 +375,31 @@ export class BattleTransition {
     } as ParallelConfiguration);
 
     return this;
+  }
+
+  public async prepareSequence(sequence: TransitionSequence): Promise<PreparedTransitionSequence> {
+    try {
+      const steps: TransitionStep[] = [];
+
+      for (const step of sequence.sequence) {
+        const instance = this.#getStepInstance(step);
+
+        if (typeof (step as BackgroundTransition).serializedTexture !== "undefined") {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          (step as BackgroundTransition).deserializedTexture = deserializeTexture((step as BackgroundTransition).serializedTexture as any);
+        }
+        const prep = instance.prepare();
+        if (prep instanceof Promise) await prep;
+
+        steps.push(instance);
+      }
+      return {
+        ...sequence,
+        sequence: steps
+      };
+    } catch (err) {
+      throw err as Error;
+    }
   }
 
   /**
@@ -589,15 +620,9 @@ export class BattleTransition {
     return this;
   }
 
-  // #endregion Public Methods (36)
+  // #endregion Public Methods (38)
 
-  // #region Private Methods (5)
-
-  public async executeParallelSequence(container: PIXI.Container, config: ParallelConfiguration) {
-    await Promise.all(
-      config.sequences.map(({ sequence, prepared }) => this.#doExecuteSequence(container, sequence, prepared))
-    );
-  }
+  // #region Private Methods (6)
 
   async #doExecuteSequence(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionSequence) {
     for (const step of prepared.sequence) {
@@ -606,13 +631,8 @@ export class BattleTransition {
     }
   }
 
-  async #teardownSequence(container: PIXI.Container, sequence: PreparedTransitionSequence) {
-    for (const step of sequence.sequence) {
-      await step.teardown(container);
-    }
-  }
-
   async #executeSequence(sequence: TransitionSequence) {
+    log("Executing sequence:", sequence);
     let container: PIXI.Container | null = null;
     try {
       // Prepare overlay
@@ -638,38 +658,26 @@ export class BattleTransition {
     return handler.from(step);
   }
 
-  async prepareSequence(sequence: TransitionSequence): Promise<PreparedTransitionSequence> {
-    try {
-      const steps: TransitionStep[] = [];
-
-      for (const step of sequence.sequence) {
-        const instance = this.#getStepInstance(step);
-
-        if (typeof (step as BackgroundTransition).serializedTexture !== "undefined") {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          (step as BackgroundTransition).deserializedTexture = deserializeTexture((step as BackgroundTransition).serializedTexture as any);
-        }
-        const prep = instance.prepare();
-        if (prep instanceof Promise) await prep;
-
-        steps.push(instance);
-      }
-      return {
-        ...sequence,
-        sequence: steps
-      };
-    } catch (err) {
-      throw err as Error;
-    }
-  }
-
   async #serializeSequence(sequence: TransitionConfiguration[] = this.#sequence): Promise<TransitionConfiguration[]> {
     const serializedSequence: TransitionConfiguration[] = [];
     for (const step of sequence) {
       const instance = this.#getStepInstance(step);
-      serializedSequence.push(await instance.serialize());
+      const res = instance.serialize();
+      const serialized = (res instanceof Promise) ? await res : res;
+      const bg = serialized as BackgroundTransition;
+      if (typeof bg.deserializedTexture !== "undefined" && typeof bg.serializedTexture === "undefined")
+        bg.serializedTexture = serializeTexture(bg.deserializedTexture);
+      delete bg.deserializedTexture;
+
+      serializedSequence.push(serialized);
     }
     return serializedSequence;
+  }
+
+  async #teardownSequence(container: PIXI.Container, sequence: PreparedTransitionSequence) {
+    for (const step of sequence.sequence) {
+      await step.teardown(container);
+    }
   }
 
   async #validateSequence(sequence: TransitionConfiguration[] = this.#sequence): Promise<boolean | Error> {
@@ -686,7 +694,7 @@ export class BattleTransition {
     }
   }
 
-  // #endregion Private Methods (5)
+  // #endregion Private Methods (6)
 }
 
 // #endregion Classes (1)

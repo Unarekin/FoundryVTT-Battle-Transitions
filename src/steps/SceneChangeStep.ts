@@ -1,7 +1,7 @@
 import { InvalidSceneError, SequenceTimedOutError } from "../errors";
 import { TransitionSequence } from "../interfaces";
-import { activateScene } from "../transitionUtils";
-import { awaitHook } from "../utils";
+import { activateScene, hideTransitionCover } from "../transitionUtils";
+import { awaitHook, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SceneChangeConfiguration } from "./types";
 
@@ -9,7 +9,7 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
   // #region Properties (2)
   static name = "SCENECHANGE";
 
-  public readonly defaultSettings = {
+  static DefaultSettings = {
     type: "scenechange",
     scene: ""
   }
@@ -28,6 +28,8 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
     }
     if (sequence.caller === (game.user as User).id) await activateScene(this.config.scene);
     else await awaitHook("sceneActivated")
+
+    hideTransitionCover();
   }
 
   public override async validate(): Promise<boolean | Error> {
@@ -35,6 +37,23 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
     const scene = (game.scenes as any).get(this.config.scene);
     if (!(scene instanceof Scene)) return Promise.resolve(new InvalidSceneError(this.config.scene));
     else return Promise.resolve(true);
+  }
+
+  static from(config: SceneChangeConfiguration): SceneChangeStep
+  static from(form: HTMLFormElement): SceneChangeStep
+  static from(form: JQuery<HTMLFormElement>): SceneChangeStep
+  static from(arg: unknown): SceneChangeStep {
+    if (arg instanceof HTMLFormElement) return SceneChangeStep.fromFormElement(arg);
+    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return SceneChangeStep.fromFormElement(arg[0]);
+    else return new SceneChangeStep(arg as SceneChangeConfiguration);
+  }
+
+  static fromFormElement(form: HTMLFormElement): SceneChangeStep {
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "scene");
+    return new SceneChangeStep({
+      ...SceneChangeStep.DefaultSettings,
+      ...elem
+    })
   }
 
   // #endregion Public Methods (2)
