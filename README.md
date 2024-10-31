@@ -12,8 +12,6 @@
   - [Examples](#examples)
   - [How does this Work?](#how-does-this-work)
   - [What About \[Some Effect Here\]?](#what-about-some-effect-here)
-  - [Contributing](#contributing)
-      - [On Automated Testing](#on-automated-testing)
   - [Known Issues / Compatibility With Other Modules](#known-issues--compatibility-with-other-modules)
 - [Attributions \& Acknowledgements](#attributions--acknowledgements)
 - [Support](#support)
@@ -42,13 +40,6 @@ Longer version that actually explains anything:  When triggering a transition, e
 I do have a short list of effects from some classic JRPG titles (mostly Final Fantasy, honestly) that I'm looking at incorporating, but am very open to implementing requests from the module's users.
 
 If you'd like to request some particular effect, please [open a github issue](https://github.com/Unarekin/FoundryVTT-Battle-Transitions/issues/new) and describe the effect you would like to see.  If you're looking to reproduce an effect from an existing game, please provide a sample video of the effect in action to better illustrate just how it ought to look.
-
-## Contributing
-If you'd like to contribute fixes or new effects to the project, feel free to [open a pull request](https://github.com/Unarekin/FoundryVTT-Battle-Transitions/compare).
-
-#### On Automated Testing
-There *is* a framework in place to allow for automated E2E and component testing via [Cypress](https://www.cypress.io/), but there are some issues in integrating with Foundry that need to be addressed before automated testing can be fully embraced.
-
 
 ## Known Issues / Compatibility With Other Modules
 - This is an early release, and uses some unorthodox methods to accomplish its goals.  As such, there is a non-zero chance that things will break, leaving things in an unusable state.  In general, running the Cleanup macro should resolve many of these, but if all else fails, reloading the browser window will reset things back to normal.
