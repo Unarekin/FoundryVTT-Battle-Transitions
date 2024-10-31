@@ -3,6 +3,8 @@
 ![Supported Foundry Version](https://img.shields.io/endpoint?url=https%3A%2F%2Ffoundryshields.com%2Fversion%3Fstyle%3Dflat%26url%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2FUnarekin%2FFoundryVTT-Battle-Transitions%2Frefs%2Fheads%2Fmaster%2Fmodule.json)
 ![Supported Game Systems](https://img.shields.io/endpoint?url=https%3A%2F%2Ffoundryshields.com%2Fsystem%3FnameType%3Dfull%26showVersion%3D1%26style%3Dflat%26url%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2FUnarekin%2FFoundryVTT-Battle-Transitions%2Frefs%2Fheads%2Fmaster%2Fmodule.json)
 
+![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/Unarekin/FoundryVTT-Battle-Transitions/latest%2Fmodule.zip)
+[![Forge Installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fbattle-transitions)](https://forge-vtt.com/bazaar#package=battle-transitions) 
 ![BattleTransitionsLogo](https://github.com/user-attachments/assets/089b3b1c-8fed-48ed-b388-0fa743808a7e)
 
 - [Battle Transitions](#battle-transitions)
