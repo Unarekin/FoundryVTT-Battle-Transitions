@@ -3,7 +3,7 @@ import { CUSTOM_HOOKS } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
 import SocketHandler from "./SocketHandler";
-import { AngularWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SceneChangeStep, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TransitionStep, WaitConfiguration, WaitStep, WaveWipeConfiguration, VideoConfiguration, BackgroundTransition, ParallelSequence, AngularWipeStep, BilinearWipeStep, ClockWipeStep, DiamondWipeStep, FadeStep, FireDissolveStep, SpiralRadialWipeStep, FlashStep, InvertStep, LinearWipeStep, MacroStep, MeltStep, ParallelStep, RadialWipeStep, SoundStep, SpotlightWipeStep, TextureSwapStep, WaveWipeStep, VideoStep, RemoveOverlayStep } from "./steps";
+import { AngularWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SceneChangeStep, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TransitionStep, WaitConfiguration, WaitStep, WaveWipeConfiguration, VideoConfiguration, BackgroundTransition, ParallelSequence, AngularWipeStep, BilinearWipeStep, ClockWipeStep, DiamondWipeStep, FadeStep, FireDissolveStep, SpiralRadialWipeStep, FlashStep, InvertStep, LinearWipeStep, MacroStep, MeltStep, ParallelStep, RadialWipeStep, SoundStep, SpotlightWipeStep, TextureSwapStep, WaveWipeStep, VideoStep, RemoveOverlayStep, RestoreOverlayStep } from "./steps";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
 import { deserializeTexture, log, serializeTexture } from "./utils";
@@ -52,6 +52,8 @@ export class BattleTransition {
     radialwipe: (RadialWipeStep as any),
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     removeoverlay: (RemoveOverlayStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    restoreoverlay: (RestoreOverlayStep as any),
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     scenechange: (SceneChangeStep as any),
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -104,7 +106,7 @@ export class BattleTransition {
 
   // #endregion Public Getters And Setters (1)
 
-  // #region Public Methods (38)
+  // #region Public Methods (39)
 
   /**
    * Adds an angular wipe, mimicking the battle with Brock in Pokemon Fire Red
@@ -485,6 +487,11 @@ export class BattleTransition {
     return this;
   }
 
+  public restoreOverlay(): this {
+    this.#sequence.push({ type: "restoreoverlay" });
+    return this;
+  }
+
   /**
    * Plays a sound.  Will NOT wait for the sound to complete before continuing.
    * @param {string} sound - Path to the sound
@@ -623,7 +630,7 @@ export class BattleTransition {
     return this;
   }
 
-  // #endregion Public Methods (38)
+  // #endregion Public Methods (39)
 
   // #region Private Methods (6)
 
@@ -651,7 +658,7 @@ export class BattleTransition {
     } catch (err) {
       throw err as Error;
     } finally {
-      showLoadingBar();
+      setTimeout(() => { showLoadingBar() }, 250);
       if (container) cleanupTransition(container);
       Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END, sequence);
     }

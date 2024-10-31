@@ -1,4 +1,3 @@
-import { TextureSwapFilter } from '../filters';
 import { TransitionSequence } from '../interfaces';
 import { parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
@@ -29,8 +28,7 @@ export class RemoveOverlayStep extends TransitionStep<RemoveOverlayConfiguration
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public execute(container: PIXI.Container, sequence: TransitionSequence): void {
-    const filter = new TextureSwapFilter("transparent");
-    this.addFilter(container, filter);
+    container.alpha = 0;
   }
 
 }

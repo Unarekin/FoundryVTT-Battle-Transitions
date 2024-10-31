@@ -77,7 +77,12 @@ export async function setupTransition(): Promise<PIXI.Container> {
   container.addChild(sprite);
   container.addChild(snapshot);
 
-  canvasGroup.addChild(container);
+  const outerContainer = new PIXI.Container();
+  outerContainer.width = window.innerWidth;
+  outerContainer.height = window.innerHeight;
+
+  outerContainer.addChild(container);
+  canvasGroup.addChild(outerContainer);
 
   return container;
 }

@@ -1,7 +1,7 @@
 import { FileNotFoundError } from "../errors";
 import { TextureSwapFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { log, createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { VideoConfiguration } from "./types";
 
@@ -26,39 +26,92 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public teardown(container: PIXI.Container): void {
+    if (!this.#videoContainer) return;
+    const children = [...this.#videoContainer.children];
+    for (const child of children) child.destroy();
+    this.#videoContainer.destroy();
+  }
+
+
+  #videoContainer: PIXI.Container | null = null;
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
-    if (!this.#preloadedVideo) throw new FileNotFoundError(this.config.file);
+    log("executeVideo:", [...container.children]);
+    const texture = this.#preloadedVideo;
+    if (!texture) throw new FileNotFoundError(this.config.file);
+
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const resource: PIXI.VideoResource = this.#preloadedVideo.baseTexture.resource as PIXI.VideoResource;
+    const resource = texture?.baseTexture.resource as PIXI.VideoResource;
     const source = resource.source;
 
     return new Promise<void>((resolve, reject) => {
-      if (!this.#preloadedVideo) throw new FileNotFoundError(this.config.file);
-      const swapFilter = new TextureSwapFilter(this.#preloadedVideo.baseTexture);
-      const sprite = PIXI.Sprite.from(this.#preloadedVideo);
+      const swapFilter = new TextureSwapFilter(texture.baseTexture);
+      const sprite = PIXI.Sprite.from(texture);
       const bgSprite = PIXI.Sprite.from(background);
 
       const videoContainer = new PIXI.Container();
-      videoContainer.addChild(bgSprite, sprite);
+      videoContainer.addChild(bgSprite);
       bgSprite.width = window.innerWidth;
       bgSprite.height = window.innerHeight;
-      sprite.width = window.innerWidth;
-      sprite.height = window.innerHeight;
-
-      source.currentTime = 0;
+      videoContainer.addChild(sprite);
       sprite.filters = [swapFilter];
+      source.currentTime = 0;
 
-      container.addChild(videoContainer);
+      this.#videoContainer = videoContainer;
+      container.parent.addChild(videoContainer);
 
       source.addEventListener("ended", () => {
         if (this.config.clear) setTimeout(() => { sprite.destroy(); }, 500);
         resolve();
       });
+
       source.addEventListener("error", e => { reject(e.error as Error); });
 
       void source.play();
     })
   }
+
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
+  //   if (!this.#preloadedVideo) throw new FileNotFoundError(this.config.file);
+  //   // const background = this.config.deserializedTexture ?? createColorTexture("transparent");
+  //   const background = this.config.deserializedTexture ?? createColorTexture("transparent");
+  //   const resource: PIXI.VideoResource = this.#preloadedVideo.baseTexture.resource as PIXI.VideoResource;
+  //   const source = resource.source;
+
+  //   return new Promise<void>((resolve, reject) => {
+  //     if (!this.#preloadedVideo) throw new FileNotFoundError(this.config.file);
+  //     const swapFilter = new TextureSwapFilter(this.#preloadedVideo.baseTexture);
+  //     const sprite = PIXI.Sprite.from(this.#preloadedVideo);
+  //     const bgSprite = PIXI.Sprite.from(background);
+
+  //     const videoContainer = new PIXI.Container();
+  //     videoContainer.addChild(bgSprite, sprite);
+  //     bgSprite.width = window.innerWidth;
+  //     bgSprite.height = window.innerHeight;
+  //     sprite.width = window.innerWidth;
+  //     sprite.height = window.innerHeight;
+
+  //     source.currentTime = 0;
+  //     sprite.filters = [swapFilter];
+
+  //     container.addChild(videoContainer);
+  //     videoContainer.width = window.innerWidth;
+  //     videoContainer.height = window.innerHeight;
+
+  //     source.addEventListener("ended", () => {
+  //       if (this.config.clear) setTimeout(() => { sprite.destroy(); }, 500);
+  //       resolve();
+  //     });
+  //     source.addEventListener("error", e => { reject(e.error as Error); });
+
+  //     void source.play();
+  //   })
+  // }
+
+
   static from(config: VideoConfiguration): VideoStep
   static from(form: JQuery<HTMLFormElement>): VideoStep
   static from(form: HTMLFormElement): VideoStep

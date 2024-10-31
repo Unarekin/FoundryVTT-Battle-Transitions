@@ -137,3 +137,4 @@ export interface MacroConfiguration extends TransitionConfiguration {
 // // }
 
 export type RemoveOverlayConfiguration = TransitionConfiguration;
+export type RestoreOverlayConfiguration = TransitionConfiguration;

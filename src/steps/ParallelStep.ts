@@ -28,10 +28,15 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
     await new BattleTransition().executeParallelSequence(container, this.config);
   }
 
-  static from(config: ParallelConfiguration): ParallelStep {
-    if (config instanceof HTMLFormElement) throw new NotImplementedError()
-    else if (Array.isArray(config) && config[0] instanceof HTMLFormElement) throw new NotImplementedError();
-    else return new ParallelStep(config);
+  static from(form: HTMLFormElement): ParallelStep
+  static from(form: JQuery<HTMLFormElement>): ParallelStep
+  static from(config: ParallelConfiguration): ParallelStep
+  static from(arg: unknown): ParallelStep {
+    if (arg instanceof HTMLFormElement) throw new NotImplementedError()
+    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) throw new NotImplementedError();
+    else return new ParallelStep(arg as ParallelConfiguration);
   }
+
+
 
 }
