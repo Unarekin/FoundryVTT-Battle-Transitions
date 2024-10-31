@@ -1,3 +1,4 @@
+import { CUSTOM_HOOKS } from "../constants";
 import { InvalidSceneError, SequenceTimedOutError } from "../errors";
 import { TransitionSequence } from "../interfaces";
 import { activateScene, hideTransitionCover } from "../transitionUtils";
@@ -27,7 +28,7 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
       throw new SequenceTimedOutError();
     }
     if (sequence.caller === (game.user as User).id) await activateScene(this.config.scene);
-    else await awaitHook("sceneActivated")
+    else await awaitHook(CUSTOM_HOOKS.SCENE_ACTIVATED);
 
     hideTransitionCover();
   }

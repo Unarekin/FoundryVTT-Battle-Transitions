@@ -6,10 +6,6 @@ export interface TransitionConfiguration {
   id?: string;
 }
 
-export interface BackgroundTransition {
-  deserializedTexture?: PIXI.Texture;
-  serializedTexture?: SerializedAsset
-}
 
 // interface BGImageTransition {
 //   backgroundType: "image";
@@ -23,10 +19,16 @@ export interface BackgroundTransition {
 //   backgroundColor: string;
 // }
 
+export interface BackgroundTransition {
+  deserializedTexture?: PIXI.Texture;
+  serializedTexture?: SerializedAsset
+}
+
 // export type BackgroundTransition = BGImageTransition | BGColorTransition & ({
 //   deserializedTexture?: PIXI.Texture;
 //   serializedTexture?: SerializedAsset
 // })
+
 
 type DurationTransition = {
   duration: number;

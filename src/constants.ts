@@ -5,6 +5,7 @@ export const LOG_ICON = "⚔️";
 export const CUSTOM_HOOKS = {
   INITIALIZE: `${__MODULE_ID__}.init`,
   TRANSITION_START: `${__MODULE_ID__}.transitionStart`,
-  TRANSITION_END: `${__MODULE_ID__}.transitionEnd`
+  TRANSITION_END: `${__MODULE_ID__}.transitionEnd`,
+  SCENE_ACTIVATED: `${__MODULE_ID__}.sceneActivated`
 }
 

@@ -36,8 +36,11 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new AngularWipeFilter(background.baseTexture);
     this.addFilter(container, filter);
+
     await this.simpleTween(filter);
 
   }
+
+
 
 }

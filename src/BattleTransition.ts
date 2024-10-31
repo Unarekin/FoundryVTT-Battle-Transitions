@@ -1,5 +1,6 @@
-import { coerceMacro, coerceScene, coerceTexture } from "./coercion";
-import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, RepeatExecuteError } from "./errors";
+import { coerceMacro, coerceScene } from "./coercion";
+import { CUSTOM_HOOKS } from "./constants";
+import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
 import SocketHandler from "./SocketHandler";
 import { AngularWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SceneChangeStep, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TransitionStep, WaitConfiguration, WaitStep, WaveWipeConfiguration, VideoConfiguration, BackgroundTransition, ParallelSequence, AngularWipeStep, BilinearWipeStep, ClockWipeStep, DiamondWipeStep, FadeStep, FireDissolveStep, SpiralRadialWipeStep, FlashStep, InvertStep, LinearWipeStep, MacroStep, MeltStep, ParallelStep, RadialWipeStep, SoundStep, SpotlightWipeStep, TextureSwapStep, WaveWipeStep, VideoStep } from "./steps";
@@ -84,6 +85,7 @@ export class BattleTransition {
       if (arg) {
         const scene = coerceScene(arg);
         if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
+        if (scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
         this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
       }
     } catch (err) {
@@ -110,11 +112,11 @@ export class BattleTransition {
    * @returns 
    */
   public angularWipe(duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const bg = coerceTexture(background);
+    const serializedTexture = serializeTexture(background);
     this.#sequence.push({
       type: "angularwipe",
       duration,
-      deserializedTexture: bg,
+      serializedTexture,
       easing
     } as AngularWipeConfiguration);
 
@@ -131,10 +133,10 @@ export class BattleTransition {
    * @returns 
    */
   public bilinearWipe(direction: BilinearDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const bg = coerceTexture(background);
+    const serializedTexture = serializeTexture(background);
     this.#sequence.push({
       type: "bilinearwipe",
-      deserializedTexture: bg,
+      serializedTexture,
       duration,
       direction,
       radial,
@@ -169,11 +171,11 @@ export class BattleTransition {
    * @param {Easing} [easing="none"] - {@link Easing}
    * @returns 
    */
-  public clocKWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const deserializedTexture = coerceTexture(background);
+  public clockWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const serializedTexture = serializeTexture(background);
     this.#sequence.push({
       type: "clockwipe",
-      deserializedTexture,
+      serializedTexture,
       duration,
       clockDirection: clockDirection,
       direction,
@@ -192,11 +194,11 @@ export class BattleTransition {
    * @returns 
    */
   public diamondWipe(size: number = 40, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const deserializedTexture = coerceTexture(background);
+    const serializedTexture = serializeTexture(background);
 
     this.#sequence.push({
       type: "diamondwipe",
-      deserializedTexture,
+      serializedTexture,
       size,
       duration,
       easing
@@ -253,11 +255,10 @@ export class BattleTransition {
    * @returns 
    */
   public fade(duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const deserializedTexture = coerceTexture(background);
-
+    const serializedTexture = serializeTexture(background);
     this.#sequence.push({
       type: "fade",
-      deserializedTexture,
+      serializedTexture,
       duration,
       easing
     } as FadeConfiguration)
@@ -271,11 +272,11 @@ export class BattleTransition {
    * @returns 
    */
   public flash(texture: TextureLike, duration: number): this {
-    const deserializedTexture = coerceTexture(texture);
+    const serializedTexture = serializeTexture(texture);
     this.#sequence.push({
       type: "flash",
       duration,
-      deserializedTexture
+      serializedTexture
     } as FlashConfiguration);
     return this;
   }
@@ -298,11 +299,11 @@ export class BattleTransition {
    * @returns 
    */
   public linearWipe(direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const deserializedTexture = coerceTexture(background);
+    const serializedTexture = serializeTexture(background);
 
     this.#sequence.push({
       type: "linearwipe",
-      deserializedTexture,
+      serializedTexture,
       direction,
       duration,
       easing
@@ -333,11 +334,11 @@ export class BattleTransition {
    * @param {Easing} [easing="none"] - {@link Easing}
    */
   public melt(duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const deserializedTexture = coerceTexture(background);
+    const serializedTexture = serializeTexture(background);
 
     this.#sequence.push({
       type: "melt",
-      deserializedTexture,
+      serializedTexture,
       duration,
       easing
     } as MeltConfiguration)
@@ -411,10 +412,10 @@ export class BattleTransition {
    * @returns 
    */
   public radialWipe(direction: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const deserializedTexture = coerceTexture(background);
+    const serializedTexture = serializeTexture(background);
     this.#sequence.push({
       type: "radialwipe",
-      deserializedTexture,
+      serializedTexture,
       radial: direction,
       duration,
       easing
@@ -515,10 +516,10 @@ export class BattleTransition {
    * @returns 
    */
   public spiralRadialWipe(direction: ClockDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const deserializedTexture = coerceTexture(background);
+    const serializedTexture = serializeTexture(background);
     this.#sequence.push({
       type: "spiralradialwipe",
-      deserializedTexture,
+      serializedTexture,
       duration,
       easing,
       direction,
@@ -538,13 +539,13 @@ export class BattleTransition {
    * @returns 
    */
   public spotlightWipe(direction: WipeDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const deserializedTexture = coerceTexture(background);
+    const serializedTexture = serializeTexture(background);
     this.#sequence.push({
       type: "spotlightwipe",
       direction,
       radial,
       duration,
-      deserializedTexture,
+      serializedTexture,
       easing
     } as SpotlightWipeConfiguration)
 
@@ -557,10 +558,10 @@ export class BattleTransition {
    * @returns 
    */
   public textureSwap(texture: TextureLike): this {
-    const deserializedTexture = coerceTexture(texture);
+    const serializedTexture = serializeTexture(texture);
     this.#sequence.push({
       type: "textureswap",
-      deserializedTexture
+      serializedTexture
     } as TextureSwapConfiguration);
 
     return this;
@@ -578,13 +579,13 @@ export class BattleTransition {
     const clear = args.find(arg => typeof arg === "boolean") ?? false;
     const background = args.find(arg => !(typeof arg === "boolean" || typeof arg === "number")) ?? "transparent";
 
-    const deserializedTexture = coerceTexture(background);
+    const serializedTexture = serializeTexture(background);
 
     this.#sequence.push({
       type: "video",
       volume,
       file,
-      deserializedTexture,
+      serializedTexture,
       clear
     } as VideoConfiguration);
     return this;
@@ -608,10 +609,10 @@ export class BattleTransition {
    * @returns 
    */
   public waveWipe(direction: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const deserializedTexture = coerceTexture(background);
+    const serializedTexture = serializeTexture(background);
     this.#sequence.push({
       type: "wavewipe",
-      deserializedTexture,
+      serializedTexture,
       direction,
       duration,
       easing
@@ -632,6 +633,7 @@ export class BattleTransition {
   }
 
   async #executeSequence(sequence: TransitionSequence) {
+    Hooks.callAll(CUSTOM_HOOKS.TRANSITION_START, sequence);
     log("Executing sequence:", sequence);
     let container: PIXI.Container | null = null;
     try {
@@ -649,6 +651,7 @@ export class BattleTransition {
     } finally {
       showLoadingBar();
       if (container) cleanupTransition(container);
+      Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END, sequence);
     }
   }
 

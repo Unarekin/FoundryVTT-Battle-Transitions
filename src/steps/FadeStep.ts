@@ -15,8 +15,8 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
-    // const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new FadeTransitionFilter(createColorTexture("transparent").baseTexture);
+    const background = this.config.deserializedTexture ?? createColorTexture("transparent");
+    const filter = new FadeTransitionFilter(background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
