@@ -7,9 +7,7 @@ import { TransitionStep } from "./TransitionStep";
 import { SceneChangeConfiguration } from "./types";
 
 export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
-  // #region Properties (3)
-
-  public readonly template = "scenechange-config";
+  // #region Properties (5)
 
   public static DefaultSettings = {
     type: "scenechange",
@@ -17,11 +15,22 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
     version: "1.1.0"
   }
 
+  public static hidden: boolean = true;
+  public static key = "scenechange";
   public static name = "SCENECHANGE";
+  public static template = "scenechange-config";
 
-  // #endregion Properties (3)
+  // #endregion Properties (5)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  public static RenderTemplate(config?: SceneChangeConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SceneChangeStep.template}.hbs`, {
+      id: foundry.utils.randomID(),
+      ...SceneChangeStep.DefaultSettings,
+      ...(config ? config : {})
+    });
+  }
 
   public static from(config: SceneChangeConfiguration): SceneChangeStep
   public static from(form: HTMLFormElement): SceneChangeStep
@@ -40,7 +49,7 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
     })
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (2)
 

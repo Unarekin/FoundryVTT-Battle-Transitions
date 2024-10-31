@@ -5,21 +5,34 @@ import { TransitionStep } from "./TransitionStep";
 import { TextureSwapConfiguration } from "./types";
 
 export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
-  // #region Properties (4)
+  // #region Properties (6)
 
   public readonly defaultSettings: Partial<TextureSwapConfiguration> = {};
-  public readonly template = "textureswap-config";
 
   public static DefaultSettings: TextureSwapConfiguration = {
     type: "textureswap",
     version: "1.1.0",
-    bgSizingMode: "stretch"
+    bgSizingMode: "stretch",
+    backgroundType: "color",
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   };
+  public static hidden: boolean = false;
+  public static key: string = "textureswap";
   public static name = "TEXTURESWAP";
+  public static template = "textureswap-config";
 
-  // #endregion Properties (4)
+  // #endregion Properties (6)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  public static async RenderTemplate(config?: TextureSwapConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${TextureSwapStep.template}.hbs`, {
+      id: foundry.utils.randomID(),
+      ...TextureSwapStep.DefaultSettings,
+      ...(config ? config : {})
+    })
+  }
 
   public static from(config: TextureSwapConfiguration): TextureSwapStep
   public static from(form: HTMLFormElement): TextureSwapStep
@@ -41,7 +54,7 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
     });
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (1)
 

@@ -3,9 +3,7 @@ import { TransitionStep } from "./TransitionStep";
 import { parseConfigurationFormElements } from "../utils";
 
 export class WaitStep extends TransitionStep<WaitConfiguration> {
-  // #region Properties (3)
-
-  public readonly template = "wait-config";
+  // #region Properties (5)
 
   public static DefaultSettings: WaitConfiguration = {
     type: "wait",
@@ -13,11 +11,22 @@ export class WaitStep extends TransitionStep<WaitConfiguration> {
     version: "1.1.0"
   }
 
+  public static hidden: boolean = false;
+  public static key = "wait";
   public static name = "WAIT";
+  public static template = "wait-config";
 
-  // #endregion Properties (3)
+  // #endregion Properties (5)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  public static async RenderTemplate(config?: WaitConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${WaitStep.template}.hbs`, {
+      id: foundry.utils.randomID(),
+      ...WaitStep.DefaultSettings,
+      ...(config ? config : {})
+    });
+  }
 
   public static from(config: WaitConfiguration): WaitStep
   public static from(form: HTMLFormElement): WaitStep
@@ -36,7 +45,7 @@ export class WaitStep extends TransitionStep<WaitConfiguration> {
     });
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (1)
 

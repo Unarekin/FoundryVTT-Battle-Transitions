@@ -1,5 +1,5 @@
 import { PreparedTransitionSequence, SerializedAsset, TransitionSequence } from "../interfaces";
-import { Easing, BilinearDirection, RadialDirection, ClockDirection, WipeDirection, SizingMode } from "../types";
+import { Easing, BilinearDirection, RadialDirection, ClockDirection, WipeDirection, SizingMode, BackgroundType } from "../types";
 
 export interface TransitionConfiguration {
   type: string;
@@ -8,28 +8,14 @@ export interface TransitionConfiguration {
 }
 
 
-// interface BGImageTransition {
-//   backgroundType: "image";
-//   backgroundImage: string;
-//   backgroundColor?: never;
-// }
-
-// interface BGColorTransition {
-//   backgroundType: "color";
-//   backgroundImage?: never;
-//   backgroundColor: string;
-// }
-
 export interface BackgroundTransition {
   deserializedTexture?: PIXI.Texture;
   serializedTexture?: SerializedAsset;
   bgSizingMode: SizingMode;
+  backgroundType: BackgroundType;
+  backgroundImage?: string;
+  backgroundColor?: string;
 }
-
-// export type BackgroundTransition = BGImageTransition | BGColorTransition & ({
-//   deserializedTexture?: PIXI.Texture;
-//   serializedTexture?: SerializedAsset
-// })
 
 
 type DurationTransition = {

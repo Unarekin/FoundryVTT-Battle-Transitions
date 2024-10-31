@@ -1,26 +1,38 @@
 import { FadeTransitionFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { FadeConfiguration } from "./types";
 
 export class FadeStep extends TransitionStep<FadeConfiguration> {
-  // #region Properties (3)
-
-  public readonly template = "fade-config";
+  // #region Properties (5)
 
   public static DefaultSettings: FadeConfiguration = {
     type: "fade",
     duration: 1000,
     version: "1.1.0",
-    bgSizingMode: "stretch"
+    bgSizingMode: "stretch",
+    backgroundType: "color",
+    backgroundColor: "#00000000"
   }
 
+  public static hidden: boolean = false;
+  public static key = "fade";
   public static name = "FADE";
+  public static template = "fade-config";
 
-  // #endregion Properties (3)
+  // #endregion Properties (5)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  public static RenderTemplate(config?: FadeConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${FadeStep.template}.hbs`, {
+      id: foundry.utils.randomID(),
+      ...FadeStep.DefaultSettings,
+      ...(config ? config : {}),
+      easingSelect: generateEasingSelectOptions()
+    });
+  }
 
   public static from(config: FadeConfiguration): FadeStep
   public static from(form: HTMLFormElement): FadeStep
@@ -41,7 +53,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
     })
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (1)
 

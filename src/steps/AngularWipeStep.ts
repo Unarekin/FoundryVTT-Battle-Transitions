@@ -1,26 +1,40 @@
 import { AngularWipeConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
-import { createColorTexture, parseConfigurationFormElements } from '../utils';
+import { createColorTexture, generateEasingSelectOptions, parseConfigurationFormElements } from '../utils';
 import { AngularWipeFilter } from '../filters';
 
-export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
-  // #region Properties (3)
 
-  public readonly template = "angular-wipe-config";
+export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
+  // #region Properties (5)
 
   public static DefaultSettings: AngularWipeConfiguration = {
     type: "angularwipe",
     duration: 1000,
     easing: "none",
     version: "1.1.0",
-    bgSizingMode: "stretch"
+    bgSizingMode: "stretch",
+    backgroundType: "color",
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   }
 
+  public static hidden: boolean = false;
+  public static key = "angularwipe";
   public static name = "ANGULARWIPE";
+  public static template = "angularwipe-config";
 
-  // #endregion Properties (3)
+  // #endregion Properties (5)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  public static RenderTemplate(config?: AngularWipeConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${AngularWipeStep.template}.hbs`, {
+      id: foundry.utils.randomID(),
+      ...AngularWipeStep.DefaultSettings,
+      ...(config ? config : {}),
+      easingSelect: generateEasingSelectOptions()
+    });
+  }
 
   public static from(config: AngularWipeConfiguration): AngularWipeStep
   public static from(form: HTMLFormElement): AngularWipeStep
@@ -41,7 +55,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     });
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (1)
 

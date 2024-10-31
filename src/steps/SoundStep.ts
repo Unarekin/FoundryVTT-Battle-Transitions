@@ -4,11 +4,9 @@ import { TransitionSequence } from "../interfaces";
 import { parseConfigurationFormElements } from "../utils";
 
 export class SoundStep extends TransitionStep<SoundConfiguration> {
-  // #region Properties (4)
+  // #region Properties (6)
 
   #sound: Sound | null = null;
-
-  public readonly template = "sound-config";
 
   public static DefaultSettings: SoundConfiguration = {
     type: "sound",
@@ -17,11 +15,21 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
     version: "1.1.0"
   }
 
+  public static hidden: boolean = false;
+  public static key = "sound";
   public static name = "SOUND";
+  public static template = "sound-config";
 
-  // #endregion Properties (4)
+  // #endregion Properties (6)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  public static async RenderTemplate(config?: SoundConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SoundStep.template}.hbs`, {
+      ...SoundStep.DefaultSettings,
+      ...(config ? config : {})
+    });
+  }
 
   public static from(config: SoundConfiguration): SoundStep
   public static from(form: HTMLFormElement): SoundStep
@@ -42,7 +50,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
     })
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (3)
 

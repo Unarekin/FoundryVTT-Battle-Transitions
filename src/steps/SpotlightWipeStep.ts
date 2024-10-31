@@ -1,18 +1,16 @@
 import { SpotlightWipeFilter } from "../filters";
 import { TransitionSequence } from '../interfaces';
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, generateEasingSelectOptions, generateRadialDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SpotlightWipeConfiguration } from "./types";
 
 export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration> {
-  // #region Properties (4)
+  // #region Properties (6)
 
   public readonly defaultSettings: Partial<SpotlightWipeConfiguration> = {
     duration: 1000,
     easing: "none"
   }
-
-  public readonly template = "spotlight-wipe-config";
 
   public static DefaultSettings: SpotlightWipeConfiguration = {
     type: "spotlightwipe",
@@ -21,14 +19,36 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
     direction: "top",
     radial: "outside",
     bgSizingMode: "stretch",
-    version: "1.1.0"
+    version: "1.1.0",
+    backgroundType: "color",
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   }
 
+  public static hidden: boolean = false;
+  public static key = "spotlightwipe";
   public static name = "SPOTLIGHTWIPE";
+  public static template = "spotlightwipe-config";
 
-  // #endregion Properties (4)
+  // #endregion Properties (6)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  public static RenderTemplate(config?: SpotlightWipeConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpotlightWipeStep.template}.hbs`, {
+      id: foundry.utils.randomID(),
+      ...SpotlightWipeStep.DefaultSettings,
+      ...(config ? config : {}),
+      easingSelect: generateEasingSelectOptions(),
+      directionSelect: {
+        top: "BATTLETRANSITIONS.DIRECTIONS.TOP",
+        left: "BATTLETRANSITIONS.DIRECTIONS.LEFT",
+        right: "BATTLETRANSITIONS.DIRECTIONS.RIGHT",
+        bottom: "BATTLETRANSITIONS.DIRECTIONS.BOTTOM"
+      },
+      radialSelect: generateRadialDirectionSelectOptions()
+    });
+  }
 
   public static from(config: SpotlightWipeConfiguration): SpotlightWipeStep
   public static from(form: HTMLFormElement): SpotlightWipeStep
@@ -50,7 +70,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
     });
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (1)
 

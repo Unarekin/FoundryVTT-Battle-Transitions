@@ -1,23 +1,30 @@
+import { NotImplementedError } from '../errors';
 import { TransitionSequence } from '../interfaces';
 import { parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { RemoveOverlayConfiguration } from './types';
 
 export class RemoveOverlayStep extends TransitionStep<RemoveOverlayConfiguration> {
-  // #region Properties (4)
-
-  public readonly skipConfig = true;
-  public readonly template = "";
+  // #region Properties (6)
 
   public static DefaultSettings: RemoveOverlayConfiguration = {
     type: "removeoverlay",
     version: "1.1.0"
   };
+  public static hidden: boolean = false;
+  public static key = "removeoverlay";
   public static name = "REMOVEOVERLAY";
+  public static skipConfig = true;
+  public static template = "";
 
-  // #endregion Properties (4)
+  // #endregion Properties (6)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static RenderTemplate(config?: RemoveOverlayConfiguration): Promise<string> {
+    throw new NotImplementedError();
+  }
 
   public static from(config: RemoveOverlayConfiguration): RemoveOverlayStep
   public static from(form: JQuery<HTMLFormElement>): RemoveOverlayStep
@@ -35,7 +42,7 @@ export class RemoveOverlayStep extends TransitionStep<RemoveOverlayConfiguration
     });
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (1)
 

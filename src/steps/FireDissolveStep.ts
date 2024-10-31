@@ -1,13 +1,11 @@
 import { FireDissolveFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { parseConfigurationFormElements } from "../utils";
+import { generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { FireDissolveConfiguration } from "./types";
 
 export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> {
-  // #region Properties (3)
-
-  public readonly template = "fire-dissolve-config";
+  // #region Properties (5)
 
   public static DefaultSettings: FireDissolveConfiguration = {
     type: "firedissolve",
@@ -17,11 +15,23 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
     version: "1.1.0"
   }
 
+  public static hidden: boolean = false;
+  public static key = "firedissolve";
   public static name = "FIREDISSOLVE";
+  public static template = "firedissolve-config";
 
-  // #endregion Properties (3)
+  // #endregion Properties (5)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  public static RenderTemplate(config?: FireDissolveConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${FireDissolveStep.template}.hbs`, {
+      id: foundry.utils.randomID(),
+      ...FireDissolveStep.DefaultSettings,
+      ...(config ? config : {}),
+      easingSelect: generateEasingSelectOptions()
+    });
+  }
 
   public static from(config: FireDissolveConfiguration): FireDissolveStep
   public static from(form: JQuery<HTMLFormElement>): FireDissolveStep
@@ -40,7 +50,7 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
     });
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (1)
 

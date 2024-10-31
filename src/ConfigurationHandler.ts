@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { InvalidSceneError } from "./errors";
-import { SceneConfiguration } from "./interfaces";
 import * as tempSteps from "./steps";
-import { TransitionConfiguration, TransitionStep } from "./steps";
+import { TransitionStep } from "./steps";
 import { localize } from "./utils";
-import semver from "semver";
+import { AddTransitionStepDialog } from "./dialogs";
 
 const STEPS: (typeof TransitionStep<any>)[] = Object.values(tempSteps).sort((a, b) => localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${a.name}`).localeCompare(localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${b.name}`)));
-
-
 
 export class ConfigurationHandler {
   static AddToNavigationBar(buttons: any[]) {
@@ -56,8 +53,9 @@ export class ConfigurationHandler {
   //   // await (scene as any).setFlag(__MODULE_ID__, "steps", transition);
   // }
 
-  static InjectSceneConfig(app: Application, html: JQuery<HTMLElement>, options: any) {
-
+  static async InjectSceneConfig(app: Application, html: JQuery<HTMLElement>, options: any) {
+    if (game.release?.isNewer("12")) await injectV12(app, html, options);
+    else await injectV11(app, html, options);
   }
 }
 
@@ -72,11 +70,45 @@ function getScene(li: JQuery<HTMLLIElement>): Scene | undefined {
   return scene;
 }
 
-function getConfigurationVersion(config: any): string | null {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  if (typeof config.version === "undefined") return "1.0";
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  else if (config.version === "#{VERSION}#") return __MODULE_VERSION__;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
-  else return semver.valid(semver.coerce(config.version)) ?? null;
+
+async function injectV11(app: Application, html: JQuery<HTMLElement>, options: any) {
+  const navElement = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/scene-nav-bar.hbs`, {});
+  const navBar = html.find("nav.sheet-tabs.tabs");
+  navBar.append(navElement);
+
+  const navContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, {});
+  html.find(`button[type="submit"]`).before(`<div class="tab" data-tab="battle-transitions">${navContent}</div>`);
+  addMainDialogEventListeners(app, html);
+}
+
+async function injectV12(app: Application, html: JQuery<HTMLElement>, options: any) {
+  const navElement = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/scene-nav-bar.hbs`, {});
+  const navBar = html.find("nav.sheet-tabs.tabs");
+  navBar.append(navElement);
+
+  const navContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, {});
+  html.find("footer.sheet-footer").before(`<div class="tab" data-group="main" data-tab="battle-transitions">${navContent}</div>`);
+  addMainDialogEventListeners(app, html);
+}
+
+function addMainDialogEventListeners(app: Application, html: JQuery<HTMLElement>) {
+  // Add step dialog
+  html.find(`button[data-action="add-step"]`).on("click", e => {
+    e.preventDefault();
+    void AddTransitionStepDialog.add();
+  });
+
+  // Drag-and-drop sorting
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  (html.find("#transition-step-list") as any).sortable({
+    handle: ".drag-handle",
+    containment: "parent",
+    axis: "y"
+  });
+
+
+  // Save button
+  html.find(`button[type="submit"]`).on("click", () => {
+    // Update
+  });
 }

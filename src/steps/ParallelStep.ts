@@ -5,20 +5,29 @@ import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration } from "./types";
 
 export class ParallelStep extends TransitionStep<ParallelConfiguration> {
-  // #region Properties (3)
-
-  public readonly template = "";
+  // #region Properties (5)
 
   public static DefaultSettings: ParallelConfiguration = {
     type: "parallel",
     version: "1.1.0",
     sequences: []
   };
+  public static hidden: boolean = true;
+  public static key = "parallel";
   public static name = "PARALLEL";
+  public static template = "";
 
-  // #endregion Properties (3)
+  // #endregion Properties (5)
 
-  // #region Public Static Methods (4)
+  // #region Public Static Methods (5)
+
+  public static RenderTemplate(config?: ParallelConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ParallelStep.template}.hbs`, {
+      id: foundry.utils.randomID(),
+      ...ParallelStep.DefaultSettings,
+      ...(config ? config : {})
+    });
+  }
 
   public static from(form: HTMLFormElement): ParallelStep
   public static from(form: JQuery<HTMLFormElement>): ParallelStep
@@ -29,7 +38,7 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
     else return new ParallelStep(arg as ParallelConfiguration);
   }
 
-  // #endregion Public Static Methods (4)
+  // #endregion Public Static Methods (5)
 
   // #region Public Methods (2)
 

@@ -1,17 +1,15 @@
 import { LinearWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, generateEasingSelectOptions, generateLinearDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { LinearWipeConfiguration } from "./types";
 
 export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
-  // #region Properties (4)
+  // #region Properties (6)
 
   public readonly defaultSettings: Partial<LinearWipeConfiguration> = {
     duration: 1000
   }
-
-  public readonly template = "linear-wipe-config";
 
   public static DefaultSettings: LinearWipeConfiguration = {
     type: "linearwipe",
@@ -19,14 +17,30 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
     easing: "none",
     direction: "left",
     version: "1.1.0",
-    bgSizingMode: "stretch"
+    bgSizingMode: "stretch",
+    backgroundType: "color",
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   }
 
+  public static hidden: boolean = false;
+  public static key = "linearwipe";
   public static name = "LINEARWIPE";
+  public static template = "linearwipe-config";
 
-  // #endregion Properties (4)
+  // #endregion Properties (6)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  public static async RenderTemplate(config?: LinearWipeConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${LinearWipeStep.template}.hbs`, {
+      id: foundry.utils.randomID(),
+      ...LinearWipeStep.DefaultSettings,
+      ...(config ? config : {}),
+      easingSelect: generateEasingSelectOptions(),
+      directionSelect: generateLinearDirectionSelectOptions()
+    });
+  }
 
   public static from(config: LinearWipeConfiguration): LinearWipeStep
   public static from(form: JQuery<HTMLFormElement>): LinearWipeStep
@@ -47,7 +61,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
     });
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (1)
 

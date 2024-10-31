@@ -21,7 +21,8 @@ const STYLE_PATH = path.join(SRC_PATH, "styles");
 const TEMPLATE_PATH = path.join(SRC_PATH, "templates");
 
 // Import module.json for some config options
-import moduleConfig from "./module.json" with { type: "json" };
+// import moduleConfig from "./module.json" with { type: "json" };
+const moduleConfig = JSON.parse((await fs.readFile("./module.json")).toString());
 
 // Constants to be inserted into process.env during build
 const __DEV__ = process.env.NODE_ENV !== "production";

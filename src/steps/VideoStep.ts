@@ -6,12 +6,10 @@ import { TransitionStep } from "./TransitionStep";
 import { VideoConfiguration } from "./types";
 
 export class VideoStep extends TransitionStep<VideoConfiguration> {
-  // #region Properties (5)
+  // #region Properties (7)
 
   #preloadedVideo: PIXI.Texture | null = null;
   #videoContainer: PIXI.Container | null = null;
-
-  public readonly template = "video-config";
 
   public static DefaultSettings: VideoConfiguration = {
     type: "video",
@@ -19,15 +17,29 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
     clear: false,
     file: "",
     bgSizingMode: "stretch",
+    backgroundType: "color",
+    backgroundImage: "",
+    backgroundColor: "#00000000",
     videoSizingMode: "stretch",
     version: "1.1.0"
   }
 
+  public static hidden: boolean = false;
+  public static key = "video";
   public static name = "VIDEO";
+  public static template = "video-config";
 
-  // #endregion Properties (5)
+  // #endregion Properties (7)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  public static async RenderTemplate(config?: VideoConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${VideoStep.template}.hbs`, {
+      id: foundry.utils.randomID(),
+      ...VideoStep.DefaultSettings,
+      ...(config ? config : {})
+    });
+  }
 
   public static from(config: VideoConfiguration): VideoStep
   public static from(form: JQuery<HTMLFormElement>): VideoStep
@@ -51,7 +63,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
     })
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (3)
 

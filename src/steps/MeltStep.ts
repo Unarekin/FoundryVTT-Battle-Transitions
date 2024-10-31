@@ -1,27 +1,40 @@
 import { MeltFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { MeltConfiguration } from "./types";
 
 export class MeltStep extends TransitionStep<MeltConfiguration> {
-  // #region Properties (3)
-
-  public readonly template = "melt-config";
+  // #region Properties (5)
 
   public static DefaultSettings: MeltConfiguration = {
     type: "melt",
     duration: 1000,
     version: "1.1.0",
     easing: "none",
-    bgSizingMode: "stretch"
+    bgSizingMode: "stretch",
+    backgroundType: "color",
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   }
 
+  public static hidden: boolean = false;
+  public static key = "melt";
   public static name = "MELT";
+  public static template = "melt-config";
 
-  // #endregion Properties (3)
+  // #endregion Properties (5)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  public static RenderTemplate(config?: MeltConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${MeltStep.template}.hbs`, {
+      id: foundry.utils.randomID(),
+      ...MeltStep.DefaultSettings,
+      ...(config ? config : {}),
+      easingSelect: generateEasingSelectOptions()
+    });
+  }
 
   public static from(config: MeltConfiguration): MeltStep
   public static from(form: JQuery<HTMLFormElement>): MeltStep
@@ -42,7 +55,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
     });
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (1)
 

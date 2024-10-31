@@ -1,13 +1,11 @@
 import { BilinearWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, generateBilinearDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { BilinearWipeConfiguration } from "./types";
 
 export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> {
-  // #region Properties (3)
-
-  public readonly template = "bilinear-wipe-config";
+  // #region Properties (5)
 
   public static DefaultSettings: BilinearWipeConfiguration = {
     type: "bilinearwipe",
@@ -16,14 +14,31 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     radial: "inside",
     direction: "vertical",
     version: "1.1.0",
-    bgSizingMode: "stretch"
+    bgSizingMode: "stretch",
+    backgroundType: "color",
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   }
 
+  public static hidden: boolean = false;
+  public static key = "bilinearwipe";
   public static name = "BILINEARWIPE";
+  public static template = "bilinearwipe-config";
 
-  // #endregion Properties (3)
+  // #endregion Properties (5)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  public static RenderTemplate(config?: BilinearWipeConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${BilinearWipeStep.template}.hbs`, {
+      id: foundry.utils.randomID(),
+      ...BilinearWipeStep.DefaultSettings,
+      ...(config ? config : {}),
+      easingSelect: generateEasingSelectOptions(),
+      directionSelect: generateBilinearDirectionSelectOptions(),
+      radialSelect: generateRadialDirectionSelectOptions()
+    });
+  }
 
   public static from(config: BilinearWipeConfiguration): BilinearWipeStep
   public static from(form: JQuery<HTMLFormElement>): BilinearWipeStep
@@ -44,7 +59,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     });
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (1)
 

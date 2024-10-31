@@ -9,9 +9,9 @@ import { BattleTransition } from "./BattleTransition";
 import { TransitionConfiguration } from './steps';
 
 import semver from "semver";
+import { log } from './utils';
 
 (window as any).semver = semver;
-
 (window as any).BattleTransition = BattleTransition;
 
 
@@ -20,14 +20,16 @@ Hooks.once("canvasReady", () => {
   Hooks.callAll(CUSTOM_HOOKS.INITIALIZE)
 })
 
-Hooks.on("renderSceneConfig", (app: Application, html: JQuery<HTMLElement>, options: any) => {
-  ConfigurationHandler.InjectSceneConfig(app, html, options);
-});
 
 
 Hooks.once("init", async () => {
   registerHelpers();
   await registerTemplates();
+});
+
+Hooks.on("renderSceneConfig", (app: Application, html: JQuery<HTMLElement>, options: any) => {
+  log("renderSceneConfig");
+  void ConfigurationHandler.InjectSceneConfig(app, html, options);
 });
 
 Hooks.once("socketlib.ready", () => {

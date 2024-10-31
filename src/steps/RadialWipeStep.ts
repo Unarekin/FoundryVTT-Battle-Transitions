@@ -1,19 +1,17 @@
 import { RadialWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
 import { Easing } from "../types";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, generateEasingSelectOptions, generateRadialDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { RadialWipeConfiguration } from "./types";
 
 export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
-  // #region Properties (4)
+  // #region Properties (6)
 
   public readonly defaultSettings: Partial<RadialWipeConfiguration> = {
     duration: 1000,
     easing: "none" as Easing
   }
-
-  public readonly template = "radial-wipe-config";
 
   public static DefaultSettings: RadialWipeConfiguration = {
     type: "radialwipe",
@@ -21,14 +19,30 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     radial: "inside",
     duration: 1000,
     bgSizingMode: "stretch",
-    version: "1.1.0"
+    version: "1.1.0",
+    backgroundType: "color",
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   }
 
+  public static hidden: boolean = false;
+  public static key = "radialwipe";
   public static name = "RADIALWIPE";
+  public static template = "radialwipe-config";
 
-  // #endregion Properties (4)
+  // #endregion Properties (6)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  public static RenderTemplate(config?: RadialWipeConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${RadialWipeStep.template}.hbs`, {
+      id: foundry.utils.randomID(),
+      ...RadialWipeStep.DefaultSettings,
+      ...(config ? config : {}),
+      easingSelect: generateEasingSelectOptions(),
+      radialSelect: generateRadialDirectionSelectOptions()
+    });
+  }
 
   public static from(config: RadialWipeConfiguration): RadialWipeStep
   public static from(form: HTMLFormElement): RadialWipeStep
@@ -49,7 +63,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     });
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (1)
 

@@ -1,23 +1,31 @@
+import { NotImplementedError } from '../errors';
 import { TransitionSequence } from '../interfaces';
 import { parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { RestoreOverlayConfiguration } from './types';
 
 export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfiguration> {
-  // #region Properties (4)
+  // #region Properties (6)
 
-  public readonly skipConfig = true;
-  public readonly template = "";
+  public static readonly template = "";
 
   public static DefaultSettings: RestoreOverlayConfiguration = {
     type: "restoreoverlay",
     version: "1.1.0"
   };
+  public static hidden: boolean = false;
+  public static key = "restoreoverlay";
   public static name = "RESTOREOVERLAY";
+  public static skipConfig = true;
 
-  // #endregion Properties (4)
+  // #endregion Properties (6)
 
-  // #region Public Static Methods (5)
+  // #region Public Static Methods (6)
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static RenderTemplate(config?: RestoreOverlayConfiguration): Promise<string> {
+    throw new NotImplementedError();
+  }
 
   public static from(config: RestoreOverlayConfiguration): RestoreOverlayStep
   public static from(form: JQuery<HTMLFormElement>): RestoreOverlayStep
@@ -35,7 +43,7 @@ export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfigurati
     });
   }
 
-  // #endregion Public Static Methods (5)
+  // #endregion Public Static Methods (6)
 
   // #region Public Methods (1)
 

@@ -6,9 +6,9 @@ import { TransitionStep } from "./TransitionStep";
 import { WaveWipeConfiguration } from "./types";
 
 export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
-  // #region Properties (3)
+  // #region Properties (5)
 
-  public readonly template = "wave-wipe-config";
+  public readonly template = "wavewipe-config";
 
   public static DefaultSettings: WaveWipeConfiguration = {
     type: "wavewipe",
@@ -16,14 +16,24 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     easing: "none",
     direction: "inside",
     version: "1.1.0",
-    bgSizingMode: "stretch"
+    bgSizingMode: "stretch",
+    backgroundType: "color",
+    backgroundImage: "",
+    backgroundColor: "#00000000"
   }
 
+  public static hidden: boolean = false;
+  public static key = "wavewipe";
   public static name: string = "WAVEWIPE";
 
-  // #endregion Properties (3)
+  // #endregion Properties (5)
 
-  // #region Public Static Methods (4)
+  // #region Public Static Methods (5)
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/require-await
+  public static async RenderTemplate(config?: WaveWipeConfiguration): Promise<string> {
+    throw new NotImplementedError();
+  }
 
   // @TODO: Implement fromFormElement
   public static from(config: WaveWipeConfiguration): WaveWipeStep
@@ -35,7 +45,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     else return new WaveWipeStep(arg as WaveWipeConfiguration);
   }
 
-  // #endregion Public Static Methods (4)
+  // #endregion Public Static Methods (5)
 
   // #region Public Methods (1)
 
