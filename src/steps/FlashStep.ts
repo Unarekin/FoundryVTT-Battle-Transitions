@@ -4,25 +4,34 @@ import { createColorTexture, parseConfigurationFormElements, wait } from '../uti
 import { TransitionStep } from "./TransitionStep";
 import { FlashConfiguration } from "./types";
 
-
 export class FlashStep extends TransitionStep<FlashConfiguration> {
-  static name = "FLASH";
+  // #region Properties (3)
+
   public readonly template = "flash-config";
-  static DefaultSettings: FlashConfiguration = {
+
+  public static DefaultSettings: FlashConfiguration = {
     type: "flash",
-    duration: 250
+    duration: 250,
+    version: "1.1.0",
+    bgSizingMode: "stretch"
   }
 
-  static from(config: FlashConfiguration): FlashStep
-  static from(form: JQuery<HTMLFormElement>): FlashStep
-  static from(form: HTMLFormElement): FlashStep
-  static from(arg: unknown): FlashStep {
+  public static name = "FLASH";
+
+  // #endregion Properties (3)
+
+  // #region Public Static Methods (5)
+
+  public static from(config: FlashConfiguration): FlashStep
+  public static from(form: JQuery<HTMLFormElement>): FlashStep
+  public static from(form: HTMLFormElement): FlashStep
+  public static from(arg: unknown): FlashStep {
     if (arg instanceof HTMLFormElement) return FlashStep.fromFormElement(arg);
     else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return FlashStep.fromFormElement(arg[0]);
     return new FlashStep(arg as FlashConfiguration);
   }
 
-  static fromFormElement(form: HTMLFormElement): FlashStep {
+  public static fromFormElement(form: HTMLFormElement): FlashStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
     const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "backgroundType", "backgroundColor");
     return new FlashStep({
@@ -31,6 +40,10 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
       serializedTexture: backgroundImage
     })
   }
+
+  // #endregion Public Static Methods (5)
+
+  // #region Public Methods (1)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
@@ -43,4 +56,5 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
     filter.destroy();
   }
 
+  // #endregion Public Methods (1)
 }

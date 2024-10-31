@@ -6,15 +6,38 @@ import { TransitionStep } from "./TransitionStep";
 import { WaveWipeConfiguration } from "./types";
 
 export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
-  static name: string = "WAVEWIPE";
+  // #region Properties (3)
+
   public readonly template = "wave-wipe-config";
 
-  static DefaultSettings: WaveWipeConfiguration = {
+  public static DefaultSettings: WaveWipeConfiguration = {
     type: "wavewipe",
     duration: 1000,
     easing: "none",
-    direction: "inside"
+    direction: "inside",
+    version: "1.1.0",
+    bgSizingMode: "stretch"
   }
+
+  public static name: string = "WAVEWIPE";
+
+  // #endregion Properties (3)
+
+  // #region Public Static Methods (4)
+
+  // @TODO: Implement fromFormElement
+  public static from(config: WaveWipeConfiguration): WaveWipeStep
+  public static from(form: HTMLFormElement): WaveWipeStep
+  public static from(form: JQuery<HTMLFormElement>): WaveWipeStep
+  public static from(arg: unknown): WaveWipeStep {
+    if (arg instanceof HTMLFormElement) throw new NotImplementedError();
+    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) throw new NotImplementedError();
+    else return new WaveWipeStep(arg as WaveWipeConfiguration);
+  }
+
+  // #endregion Public Static Methods (4)
+
+  // #region Public Methods (1)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
@@ -24,15 +47,5 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     await this.simpleTween(filter);
   }
 
-  // @TODO: Implement fromFormElement
-  static from(config: WaveWipeConfiguration): WaveWipeStep
-  static from(form: HTMLFormElement): WaveWipeStep
-  static from(form: JQuery<HTMLFormElement>): WaveWipeStep
-  static from(arg: unknown): WaveWipeStep {
-    if (arg instanceof HTMLFormElement) throw new NotImplementedError();
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) throw new NotImplementedError();
-    else return new WaveWipeStep(arg);
-  }
-
-
+  // #endregion Public Methods (1)
 }

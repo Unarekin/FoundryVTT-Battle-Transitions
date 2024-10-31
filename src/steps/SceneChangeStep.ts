@@ -7,17 +7,40 @@ import { TransitionStep } from "./TransitionStep";
 import { SceneChangeConfiguration } from "./types";
 
 export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
-  // #region Properties (2)
-  static name = "SCENECHANGE";
-
-  static DefaultSettings = {
-    type: "scenechange",
-    scene: ""
-  }
+  // #region Properties (3)
 
   public readonly template = "scenechange-config";
 
-  // #endregion Properties (2)
+  public static DefaultSettings = {
+    type: "scenechange",
+    scene: "",
+    version: "1.1.0"
+  }
+
+  public static name = "SCENECHANGE";
+
+  // #endregion Properties (3)
+
+  // #region Public Static Methods (5)
+
+  public static from(config: SceneChangeConfiguration): SceneChangeStep
+  public static from(form: HTMLFormElement): SceneChangeStep
+  public static from(form: JQuery<HTMLFormElement>): SceneChangeStep
+  public static from(arg: unknown): SceneChangeStep {
+    if (arg instanceof HTMLFormElement) return SceneChangeStep.fromFormElement(arg);
+    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return SceneChangeStep.fromFormElement(arg[0]);
+    else return new SceneChangeStep(arg as SceneChangeConfiguration);
+  }
+
+  public static fromFormElement(form: HTMLFormElement): SceneChangeStep {
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "scene");
+    return new SceneChangeStep({
+      ...SceneChangeStep.DefaultSettings,
+      ...elem
+    })
+  }
+
+  // #endregion Public Static Methods (5)
 
   // #region Public Methods (2)
 
@@ -38,23 +61,6 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
     const scene = (game.scenes as any).get(this.config.scene);
     if (!(scene instanceof Scene)) return Promise.resolve(new InvalidSceneError(this.config.scene));
     else return Promise.resolve(true);
-  }
-
-  static from(config: SceneChangeConfiguration): SceneChangeStep
-  static from(form: HTMLFormElement): SceneChangeStep
-  static from(form: JQuery<HTMLFormElement>): SceneChangeStep
-  static from(arg: unknown): SceneChangeStep {
-    if (arg instanceof HTMLFormElement) return SceneChangeStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return SceneChangeStep.fromFormElement(arg[0]);
-    else return new SceneChangeStep(arg as SceneChangeConfiguration);
-  }
-
-  static fromFormElement(form: HTMLFormElement): SceneChangeStep {
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "scene");
-    return new SceneChangeStep({
-      ...SceneChangeStep.DefaultSettings,
-      ...elem
-    })
   }
 
   // #endregion Public Methods (2)

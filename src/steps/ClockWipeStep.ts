@@ -14,7 +14,9 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     duration: 1000,
     easing: "none" as Easing,
     clockDirection: "clockwise",
-    direction: "top"
+    direction: "top",
+    version: "1.1.0",
+    bgSizingMode: "stretch"
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

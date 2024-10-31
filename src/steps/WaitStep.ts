@@ -9,7 +9,8 @@ export class WaitStep extends TransitionStep<WaitConfiguration> {
 
   public static DefaultSettings: WaitConfiguration = {
     type: "wait",
-    duration: 0
+    duration: 0,
+    version: "1.1.0"
   }
 
   public static name = "WAIT";

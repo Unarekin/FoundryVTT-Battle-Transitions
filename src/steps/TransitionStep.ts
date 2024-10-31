@@ -13,7 +13,8 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   public static name: string = "UNNAMED";
 
   static DefaultSettings: TransitionConfiguration = {
-    type: "UNKNOWN"
+    type: "UNKNOWN",
+    version: "1.1.0"
   };
   public abstract template: string;
 

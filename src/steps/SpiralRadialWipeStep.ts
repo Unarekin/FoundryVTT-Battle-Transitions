@@ -6,17 +6,43 @@ import { SpiralRadialWipeFilter } from "../filters";
 import { NotImplementedError } from "../errors";
 
 export class SpiralRadialWipeStep extends TransitionStep<SpiralRadialWipeConfiguration> {
-  static name = "SPIRALRADIALWIPE";
+  // #region Properties (3)
+
   public readonly template = "spiral-wipe-config";
 
-  static DefaultSettings: SpiralRadialWipeConfiguration = {
+  public static DefaultSettings: SpiralRadialWipeConfiguration = {
     type: "spiralradialwipe",
     duration: 1000,
     direction: "clockwise",
     radial: "inside",
-    easing: "none"
+    easing: "none",
+    bgSizingMode: "stretch",
+    version: "1.1.0"
   }
 
+  public static name = "SPIRALRADIALWIPE";
+
+  // #endregion Properties (3)
+
+  // #region Public Static Methods (5)
+
+  public static from(config: SpiralRadialWipeConfiguration): SpiralRadialWipeStep
+  public static from(form: HTMLFormElement): SpiralRadialWipeStep
+  public static from(form: JQuery<HTMLFormElement>): SpiralRadialWipeStep
+  public static from(arg: unknown): SpiralRadialWipeStep {
+    if (arg instanceof HTMLFormElement) return SpiralRadialWipeStep.fromFormElement(arg);
+    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return SpiralRadialWipeStep.fromFormElement(arg[0])
+    else return new SpiralRadialWipeStep(arg as SpiralRadialWipeConfiguration);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static fromFormElement(form: HTMLFormElement): SpiralRadialWipeStep {
+    throw new NotImplementedError();
+  }
+
+  // #endregion Public Static Methods (5)
+
+  // #region Public Methods (1)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
@@ -26,17 +52,5 @@ export class SpiralRadialWipeStep extends TransitionStep<SpiralRadialWipeConfigu
     await this.simpleTween(filter);
   }
 
-  static from(config: SpiralRadialWipeConfiguration): SpiralRadialWipeStep
-  static from(form: HTMLFormElement): SpiralRadialWipeStep
-  static from(form: JQuery<HTMLFormElement>): SpiralRadialWipeStep
-  static from(arg: unknown): SpiralRadialWipeStep {
-    if (arg instanceof HTMLFormElement) return SpiralRadialWipeStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return SpiralRadialWipeStep.fromFormElement(arg[0])
-    else return new SpiralRadialWipeStep(arg as SpiralRadialWipeConfiguration);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  static fromFormElement(form: HTMLFormElement): SpiralRadialWipeStep {
-    throw new NotImplementedError();
-  }
+  // #endregion Public Methods (1)
 }

@@ -10,7 +10,9 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
     type: "diamondwipe",
     size: 40,
     duration: 1000,
-    easing: "none"
+    easing: "none",
+    version: "1.1.0",
+    bgSizingMode: "stretch"
   }
 
   static from(config: DiamondWipeConfiguration): DiamondWipeStep

@@ -6,35 +6,54 @@ import { TransitionStep } from "./TransitionStep";
 import { VideoConfiguration } from "./types";
 
 export class VideoStep extends TransitionStep<VideoConfiguration> {
+  // #region Properties (5)
+
   #preloadedVideo: PIXI.Texture | null = null;
-  static name = "VIDEO";
+  #videoContainer: PIXI.Container | null = null;
 
   public readonly template = "video-config";
 
-  static DefaultSettings: VideoConfiguration = {
+  public static DefaultSettings: VideoConfiguration = {
     type: "video",
     volume: 100,
     clear: false,
-    file: ""
+    file: "",
+    bgSizingMode: "stretch",
+    videoSizingMode: "stretch",
+    version: "1.1.0"
   }
 
+  public static name = "VIDEO";
 
-  public async prepare(): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    const texture: PIXI.Texture = await (PIXI.loadVideo as any).load(this.config.file) as PIXI.Texture;
-    this.#preloadedVideo = texture;
+  // #endregion Properties (5)
+
+  // #region Public Static Methods (5)
+
+  public static from(config: VideoConfiguration): VideoStep
+  public static from(form: JQuery<HTMLFormElement>): VideoStep
+  public static from(form: HTMLFormElement): VideoStep
+  public static from(arg: unknown): VideoStep {
+    if (arg instanceof HTMLFormElement) return VideoStep.fromFormElement(arg);
+    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return VideoStep.fromFormElement(arg[0]);
+    else return new VideoStep(arg as VideoConfiguration);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public teardown(container: PIXI.Container): void {
-    if (!this.#videoContainer) return;
-    const children = [...this.#videoContainer.children];
-    for (const child of children) child.destroy();
-    this.#videoContainer.destroy();
+  public static fromFormElement(form: HTMLFormElement): VideoStep {
+    const file = $(form).find("#file").val() as string ?? "";
+    const volume = $(form).find("#volume input[type='number']").val() as number;
+    const backgroundImage = $(form).find("#backgroundImage").val() as string ?? ""
+    return new VideoStep({
+      ...VideoStep.DefaultSettings,
+      ...(file ? { file } : {}),
+      ...(volume ? { volume: volume / 100 } : {}),
+      serializedTexture: backgroundImage,
+      ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor")
+    })
   }
 
+  // #endregion Public Static Methods (5)
 
-  #videoContainer: PIXI.Container | null = null;
+  // #region Public Methods (3)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
@@ -56,6 +75,8 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
       bgSprite.width = window.innerWidth;
       bgSprite.height = window.innerHeight;
       videoContainer.addChild(sprite);
+      sprite.width = window.innerWidth;
+      sprite.height = window.innerHeight;
       sprite.filters = [swapFilter];
       source.currentTime = 0;
 
@@ -73,64 +94,19 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
     })
   }
 
-  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
-  //   if (!this.#preloadedVideo) throw new FileNotFoundError(this.config.file);
-  //   // const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-  //   const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-  //   const resource: PIXI.VideoResource = this.#preloadedVideo.baseTexture.resource as PIXI.VideoResource;
-  //   const source = resource.source;
-
-  //   return new Promise<void>((resolve, reject) => {
-  //     if (!this.#preloadedVideo) throw new FileNotFoundError(this.config.file);
-  //     const swapFilter = new TextureSwapFilter(this.#preloadedVideo.baseTexture);
-  //     const sprite = PIXI.Sprite.from(this.#preloadedVideo);
-  //     const bgSprite = PIXI.Sprite.from(background);
-
-  //     const videoContainer = new PIXI.Container();
-  //     videoContainer.addChild(bgSprite, sprite);
-  //     bgSprite.width = window.innerWidth;
-  //     bgSprite.height = window.innerHeight;
-  //     sprite.width = window.innerWidth;
-  //     sprite.height = window.innerHeight;
-
-  //     source.currentTime = 0;
-  //     sprite.filters = [swapFilter];
-
-  //     container.addChild(videoContainer);
-  //     videoContainer.width = window.innerWidth;
-  //     videoContainer.height = window.innerHeight;
-
-  //     source.addEventListener("ended", () => {
-  //       if (this.config.clear) setTimeout(() => { sprite.destroy(); }, 500);
-  //       resolve();
-  //     });
-  //     source.addEventListener("error", e => { reject(e.error as Error); });
-
-  //     void source.play();
-  //   })
-  // }
-
-
-  static from(config: VideoConfiguration): VideoStep
-  static from(form: JQuery<HTMLFormElement>): VideoStep
-  static from(form: HTMLFormElement): VideoStep
-  static from(arg: unknown): VideoStep {
-    if (arg instanceof HTMLFormElement) return VideoStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return VideoStep.fromFormElement(arg[0]);
-    else return new VideoStep(arg as VideoConfiguration);
+  public async prepare(): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    const texture: PIXI.Texture = await (PIXI.loadVideo as any).load(this.config.file) as PIXI.Texture;
+    this.#preloadedVideo = texture;
   }
 
-  static fromFormElement(form: HTMLFormElement): VideoStep {
-    const file = $(form).find("#file").val() as string ?? "";
-    const volume = $(form).find("#volume input[type='number']").val() as number;
-    const backgroundImage = $(form).find("#backgroundImage").val() as string ?? ""
-    return new VideoStep({
-      ...VideoStep.DefaultSettings,
-      ...(file ? { file } : {}),
-      ...(volume ? { volume: volume / 100 } : {}),
-      serializedTexture: backgroundImage,
-      ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor")
-    })
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public teardown(container: PIXI.Container): void {
+    if (!this.#videoContainer) return;
+    const children = [...this.#videoContainer.children];
+    for (const child of children) child.destroy();
+    this.#videoContainer.destroy();
   }
+
+  // #endregion Public Methods (3)
 }
