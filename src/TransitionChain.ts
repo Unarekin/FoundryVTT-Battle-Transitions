@@ -547,6 +547,8 @@ export class TransitionChain {
       bgSprite.height = window.innerHeight;
 
       videoContainer.addChild(sprite);
+      sprite.width = window.innerWidth;
+      sprite.height = window.innerHeight;
       sprite.filters = [swapFilter];
 
       source.currentTime = 0;
