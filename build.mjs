@@ -11,6 +11,7 @@ import { promises as fs } from "fs";
 import { deepmerge } from "deepmerge-ts";
 import yoctoSpinner from "yocto-spinner";
 import { ESLint } from "eslint";
+import externalizeAllPackagesExcept from "esbuild-plugin-noexternal";
 
 /** Paths */
 const SRC_PATH = "./src";
@@ -138,7 +139,9 @@ const buildResults = await build({
     cleanPlugin({ patterns: "./dist/**" }),
     sassPlugin(),
     ...copyPlugins,
-    ...jsonMergers
+    ...jsonMergers,
+    externalizeAllPackagesExcept(["semver", "fastest-validator"])
+    // externalizeAllPackagesExcept(["rxjs", "mini-rx-store", "tslib", "mime", "@pixi/gif"])
   ],
 });
 

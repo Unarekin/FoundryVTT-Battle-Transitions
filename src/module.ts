@@ -5,9 +5,12 @@ import { registerHelpers, registerTemplates } from "./templates";
 import { ConfigurationHandler } from './ConfigurationHandler';
 
 import SocketHandler from "./SocketHandler";
-import { addNavigationButton } from './utils';
 import { BattleTransition } from "./BattleTransition";
 import { TransitionConfiguration } from './steps';
+
+import semver from "semver";
+
+(window as any).semver = semver;
 
 (window as any).BattleTransition = BattleTransition;
 
@@ -17,9 +20,8 @@ Hooks.once("canvasReady", () => {
   Hooks.callAll(CUSTOM_HOOKS.INITIALIZE)
 })
 
-Hooks.on("renderSceneConfig", (app: Application) => {
-  ConfigurationHandler.inject(app);
-  // new ConfigurationHandler(app, (app as any).object as Scene);
+Hooks.on("renderSceneConfig", (app: Application, html: JQuery<HTMLElement>, options: any) => {
+  ConfigurationHandler.InjectSceneConfig(app, html, options);
 });
 
 
@@ -34,7 +36,7 @@ Hooks.once("socketlib.ready", () => {
 });
 
 Hooks.on("getSceneNavigationContext", (html: JQuery<HTMLElement>, buttons: any[]) => {
-  addNavigationButton(buttons);
+  ConfigurationHandler.AddToNavigationBar(buttons);
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

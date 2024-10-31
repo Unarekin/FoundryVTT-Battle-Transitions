@@ -25,3 +25,11 @@ export interface PreparedTransitionSequence {
   remote?: boolean;
   sequence: TransitionStep<any>[];
 }
+
+export interface SceneConfiguration {
+  autoTrigger: boolean;
+  sequence: TransitionConfiguration[];
+  version: string;
+  isTriggered?: boolean;
+  overrideSequence?: TransitionConfiguration[];
+}

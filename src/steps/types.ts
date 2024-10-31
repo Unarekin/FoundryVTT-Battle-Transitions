@@ -4,6 +4,7 @@ import { Easing, BilinearDirection, RadialDirection, ClockDirection, WipeDirecti
 export interface TransitionConfiguration {
   type: string;
   id?: string;
+  version: string;
 }
 
 
@@ -21,7 +22,7 @@ export interface TransitionConfiguration {
 
 export interface BackgroundTransition {
   deserializedTexture?: PIXI.Texture;
-  serializedTexture?: SerializedAsset
+  serializedTexture?: SerializedAsset;
 }
 
 // export type BackgroundTransition = BGImageTransition | BGColorTransition & ({

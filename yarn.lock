@@ -1863,6 +1863,11 @@
   resolved "https://registry.yarnpkg.com/@types/path-browserify/-/path-browserify-1.0.3.tgz#25de712d4def94b3901f033c30d3d3bd16eba8d3"
   integrity sha512-ZmHivEbNCBtAfcrFeBCiTjdIc2dey0l7oCGNGpSuRTy8jP6UVND7oUowlvDujBy8r2Hoa8bfFUOCiPWfmtkfxw==
 
+"@types/semver@^7.5.8":
+  version "7.5.8"
+  resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.5.8.tgz#8268a8c57a3e4abd25c165ecd36237db7948a55e"
+  integrity sha512-I8EUhyrgfLrcTkzV3TSsGyl1tSuPrEDzr0yd5m90UgNxQkyDXULk3b6MlQqTCpZpNtWe1K0hzclnZkTcLBe2UQ==
+
 "@types/showdown@~2.0.6":
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/@types/showdown/-/showdown-2.0.6.tgz#3d7affd5f971b4a17783ec2b23b4ad3b97477b7e"
