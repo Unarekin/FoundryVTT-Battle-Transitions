@@ -32,9 +32,8 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
 
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
+  public execute(container: PIXI.Container, sequence: TransitionSequence): void {
     const filter = new InvertFilter();
     this.addFilter(container, filter);
-    await Promise.resolve();
   }
 }

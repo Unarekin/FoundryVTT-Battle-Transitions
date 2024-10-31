@@ -29,6 +29,15 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     await this.simpleTween(filter);
   }
 
+  static from(config: RadialWipeConfiguration): RadialWipeStep
+  static from(form: HTMLFormElement): RadialWipeStep
+  static from(form: JQuery<HTMLFormElement>): RadialWipeStep
+  static from(arg: unknown): RadialWipeStep {
+    if (arg instanceof HTMLFormElement) return RadialWipeStep.fromFormElement(arg);
+    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return RadialWipeStep.fromFormElement(arg[0]);
+    else return new RadialWipeStep(arg as RadialWipeConfiguration);
+  }
+
   static fromFormElement(form: HTMLFormElement): RadialWipeStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
     const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";

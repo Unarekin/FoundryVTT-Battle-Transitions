@@ -19,7 +19,17 @@ export function lerp(a: number, b: number, progress: number) {
 }
 
 
-export function logImage(url: string, size = 256) {
+export function logTexture(texture: PIXI.Texture, size: number = 256) {
+  const renderTexture = PIXI.RenderTexture.create({ width: texture.width, height: texture.height });
+  const sprite = PIXI.Sprite.from(texture);
+  canvas?.app?.renderer.render(sprite, { renderTexture });
+  canvas?.app?.renderer.extract.base64(renderTexture)
+    .then(base64 => {
+      logImage(base64, size);
+    }).catch(console.error);
+}
+
+export function logImage(url: string, size: number = 256) {
   const image = new Image();
 
   image.onload = function () {
@@ -422,7 +432,7 @@ export function parseConfigurationFormElements<t = any>(form: JQuery<HTMLFormEle
   const elem = Object.fromEntries(
     elements.map(key => [key, findFormValue(serialized, key)])
   );
-  return elem;
+  return elem as Partial<t>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

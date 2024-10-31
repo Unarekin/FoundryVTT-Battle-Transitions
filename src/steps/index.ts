@@ -11,6 +11,7 @@ export * from './MacroStep';
 export * from './MeltStep';
 export * from './ParallelStep';
 export * from './RadialWipeStep';
+export * from './RemoveOverlayStep';
 export * from './SceneChangeStep';
 export * from './SoundStep';
 export * from './SpiralRadialWipeStep';

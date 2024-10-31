@@ -135,3 +135,5 @@ export interface MacroConfiguration extends TransitionConfiguration {
 // // export interface ChromaKeyConfiguration extends TransitionWithBackground {
 // //   keyColor: string;
 // // }
+
+export type RemoveOverlayConfiguration = TransitionConfiguration;
