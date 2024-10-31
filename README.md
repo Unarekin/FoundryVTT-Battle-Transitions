@@ -15,6 +15,7 @@
   - [Contributing](#contributing)
       - [On Automated Testing](#on-automated-testing)
   - [Known Issues / Compatibility With Other Modules](#known-issues--compatibility-with-other-modules)
+- [Attributions \& Acknowledgements](#attributions--acknowledgements)
 - [Support](#support)
 
 
