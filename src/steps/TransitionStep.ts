@@ -1,8 +1,9 @@
 import { NotImplementedError } from "../errors";
 import { CustomFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { log } from "../utils";
 import { AnimatedTransition, TransitionConfiguration } from "./types";
+
+
 
 export abstract class TransitionStep<t extends TransitionConfiguration = TransitionConfiguration> {
   // #region Properties (4)
@@ -31,7 +32,6 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   public static from(form: JQuery<HTMLFormElement>): TransitionStep
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static from(arg: unknown): TransitionStep {
-    log("Hrm hrm");
     throw new NotImplementedError();
   }
 

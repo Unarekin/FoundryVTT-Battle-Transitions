@@ -1,7 +1,7 @@
 import { FileNotFoundError } from "../errors";
 import { TextureSwapFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { VideoConfiguration } from "./types";
 
@@ -10,10 +10,14 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
   static name = "VIDEO";
 
   public readonly template = "video-config";
-  public readonly defaultSettings: Partial<VideoConfiguration> = {
+
+  static DefaultSettings: VideoConfiguration = {
+    type: "video",
     volume: 100,
-    clear: false
-  };
+    clear: false,
+    file: ""
+  }
+
 
   public async prepare(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
@@ -53,6 +57,27 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
       source.addEventListener("error", e => { reject(e.error as Error); });
 
       void source.play();
+    })
+  }
+  static from(config: VideoConfiguration): VideoStep
+  static from(form: JQuery<HTMLFormElement>): VideoStep
+  static from(form: HTMLFormElement): VideoStep
+  static from(arg: unknown): VideoStep {
+    if (arg instanceof HTMLFormElement) return VideoStep.fromFormElement(arg);
+    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return VideoStep.fromFormElement(arg[0]);
+    else return new VideoStep(arg as VideoConfiguration);
+  }
+
+  static fromFormElement(form: HTMLFormElement): VideoStep {
+    const file = $(form).find("#file").val() as string ?? "";
+    const volume = $(form).find("#volume input[type='number']").val() as number;
+    const backgroundImage = $(form).find("#backgroundImage").val() as string ?? ""
+    return new VideoStep({
+      ...VideoStep.DefaultSettings,
+      ...(file ? { file } : {}),
+      ...(volume ? { volume: volume / 100 } : {}),
+      serializedTexture: backgroundImage,
+      ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor")
     })
   }
 }

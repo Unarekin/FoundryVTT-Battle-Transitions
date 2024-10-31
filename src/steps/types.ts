@@ -80,11 +80,8 @@ export type SpotlightWipeConfiguration = WipeTransition & ({
   radial: RadialDirection;
 });
 
-export interface TextureSwapConfiguration extends TransitionConfiguration {
-  texture: string;
-  deserializedTexture: PIXI.Texture;
-  serializedTexture: SerializedAsset;
-}
+export type TextureSwapConfiguration = TransitionConfiguration & BackgroundTransition;
+
 
 export type VideoConfiguration = BackgroundTransition & TransitionConfiguration & ({
   file: string;
@@ -104,7 +101,7 @@ export interface ParallelConfiguration extends TransitionConfiguration {
   sequences: ParallelSequence[];
 }
 
-export type MeltConfiguration = TransitionConfiguration & BackgroundTransition & DurationTransition;
+export type MeltConfiguration = TransitionConfiguration & BackgroundTransition & DurationTransition & AnimatedTransition;
 
 
 export type WaveWipeConfiguration = WipeTransition & ({

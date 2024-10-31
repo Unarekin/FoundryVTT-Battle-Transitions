@@ -18,7 +18,8 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
   static from(form: HTMLFormElement): FlashStep
   static from(arg: unknown): FlashStep {
     if (arg instanceof HTMLFormElement) return FlashStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return FlashStep.fromFormElement(arg);
+    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return FlashStep.fromFormElement(arg[0]);
+    return new FlashStep(arg as FlashConfiguration);
   }
 
   static fromFormElement(form: HTMLFormElement): FlashStep {

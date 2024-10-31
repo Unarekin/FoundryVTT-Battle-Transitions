@@ -26,7 +26,7 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
   static from(config: MacroConfiguration): MacroStep
   static from(form: JQuery<HTMLFormElement>): MacroStep
   static from(form: HTMLFormElement): MacroStep
-  static from(arg: unkown): MacroStep {
+  static from(arg: unknown): MacroStep {
     if (arg instanceof HTMLFormElement) return MacroStep.fromFormElement(arg);
     else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return MacroStep.fromFormElement(arg[0]);
 

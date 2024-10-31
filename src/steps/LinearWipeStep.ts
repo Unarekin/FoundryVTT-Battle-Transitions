@@ -30,7 +30,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   static from(form: HTMLFormElement): LinearWipeStep
   static from(arg: unknown): LinearWipeStep {
     if (arg instanceof HTMLFormElement) return LinearWipeStep.fromFormElement(arg);
-    if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return LinearWipeStep.fromFormElement(arg);
+    if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return LinearWipeStep.fromFormElement(arg[0]);
     else return new LinearWipeStep(arg as LinearWipeConfiguration);
   }
 

@@ -1,13 +1,21 @@
 import { RadialWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
 import { Easing } from "../types";
-import { createColorTexture } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { RadialWipeConfiguration } from "./types";
 
 export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   static name = "RADIALWIPE";
   public readonly template = "radial-wipe-config";
+
+  static DefaultSettings: RadialWipeConfiguration = {
+    type: "radialwipe",
+    easing: "none",
+    radial: "inside",
+    duration: 1000
+  }
+
   public readonly defaultSettings: Partial<RadialWipeConfiguration> = {
     duration: 1000,
     easing: "none" as Easing
@@ -19,6 +27,16 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     const filter = new RadialWipeFilter(this.config.radial, background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);
+  }
+
+  static fromFormElement(form: HTMLFormElement): RadialWipeStep {
+    const elem = $(form) as JQuery<HTMLFormElement>;
+    const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";
+    return new RadialWipeStep({
+      ...RadialWipeStep.DefaultSettings,
+      serializedTexture,
+      ...parseConfigurationFormElements(elem, "id", "duration", "radial", "backgroundType", "backgroundColor", "easing")
+    });
   }
 
 }
