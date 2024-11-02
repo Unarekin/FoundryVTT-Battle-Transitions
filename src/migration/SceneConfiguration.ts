@@ -39,7 +39,6 @@ function v10X(old: V10Config): SceneConfiguration {
     autoTrigger: old.config?.autoTrigger ?? false,
     version: "1.1.0",
     isTriggered: false,
-    overrideSequence: [],
     sequence: []
   };
 

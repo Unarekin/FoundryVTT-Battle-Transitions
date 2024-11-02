@@ -6,9 +6,9 @@ import { ConfigurationHandler } from './ConfigurationHandler';
 
 import SocketHandler from "./SocketHandler";
 import { BattleTransition } from "./BattleTransition";
-import { TransitionConfiguration } from './steps';
 
 import semver from "semver";
+import { SceneChangeConfiguration } from './steps';
 
 (window as any).semver = semver;
 (window as any).BattleTransition = BattleTransition;
@@ -41,28 +41,29 @@ Hooks.on("getSceneNavigationContext", (html: JQuery<HTMLElement>, buttons: any[]
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 Hooks.on("preUpdateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
-  if (delta.active && !(scene.getFlag(__MODULE_ID__, "autoTriggered") as boolean ?? false)) {
-    const config: any = scene.getFlag(__MODULE_ID__, "config");
-    const steps: TransitionConfiguration[] = scene.getFlag(__MODULE_ID__, "steps");
-
-    if (config?.autoTrigger && steps?.length) {
-      // SocketHandler.autoTrigger(steps);
+  if (delta.active) {
+    const config = ConfigurationHandler.GetSceneConfiguration(scene);
+    if (!config.isTriggered && config.autoTrigger) {
       delta.active = false;
-      void SocketHandler.execute({
+      void new BattleTransition(scene).execute({
         caller: game.user?.id ?? "",
-        sequence: steps
-      });
+        remote: false,
+        sequence: [
+          { type: "scenechange", scene: scene.id, version: "1.1.0" } as SceneChangeConfiguration,
+          ...config.sequence
+        ]
+      })
+
     }
+
   }
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-Hooks.on("updateScene", async (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
-  if (delta.active) Hooks.callAll(CUSTOM_HOOKS.SCENE_ACTIVATED, scene);
-  if (delta.active && (scene.getFlag(__MODULE_ID__, "autoTriggered") as boolean ?? false)) {
-    if (scene.canUserModify(game.users?.current as User, "update")) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      await (scene as any).setFlag(__MODULE_ID__, "autoTriggered", false);
-    }
+Hooks.on("updateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
+  if (delta.active) {
+    Hooks.callAll(CUSTOM_HOOKS.SCENE_ACTIVATED, scene);
+    if (scene.canUserModify(game.user as User, "update")) void scene.unsetFlag(__MODULE_ID__, "isTriggered");
   }
+
 })

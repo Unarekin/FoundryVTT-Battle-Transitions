@@ -128,7 +128,7 @@ export async function activateScene(arg: unknown): Promise<Scene> {
   // void scene.activate();
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-  await (scene as any).setFlag(__MODULE_ID__, "autoTriggered", true);
+  await (scene as any).setFlag(__MODULE_ID__, "isTriggered", true);
   void scene.activate();
   // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   // void (scene as any).update({
