@@ -1,15 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { initializeCanvas } from './transitionUtils';
 import { CUSTOM_HOOKS } from "./constants";
-import { TransitionChain } from "./TransitionChain";
 import { registerHelpers, registerTemplates } from "./templates";
-import { ConfigurationHandler } from './config/ConfigurationHandler';
+import { ConfigurationHandler } from './ConfigurationHandler';
 
 import SocketHandler from "./SocketHandler";
-import { addNavigationButton } from './utils';
-import { TransitionStep } from './interfaces';
+import { BattleTransition } from "./BattleTransition";
+import { TransitionConfiguration } from './steps';
 
-(window as any).BattleTransition = TransitionChain;
+import semver from "semver";
+import { log } from './utils';
+
+(window as any).semver = semver;
+(window as any).BattleTransition = BattleTransition;
 
 
 Hooks.once("canvasReady", () => {
@@ -17,14 +20,15 @@ Hooks.once("canvasReady", () => {
   Hooks.callAll(CUSTOM_HOOKS.INITIALIZE)
 })
 
-Hooks.on("renderSceneConfig", (app: Application) => {
-  new ConfigurationHandler(app, (app as any).object as Scene);
-});
 
 
 Hooks.once("init", async () => {
   registerHelpers();
   await registerTemplates();
+});
+
+Hooks.on("renderSceneConfig", (app: Application, html: JQuery<HTMLElement>, options: any) => {
+  void ConfigurationHandler.InjectSceneConfig(app, html, options);
 });
 
 Hooks.once("socketlib.ready", () => {
@@ -33,25 +37,29 @@ Hooks.once("socketlib.ready", () => {
 });
 
 Hooks.on("getSceneNavigationContext", (html: JQuery<HTMLElement>, buttons: any[]) => {
-  addNavigationButton(buttons);
+  ConfigurationHandler.AddToNavigationBar(buttons);
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 Hooks.on("preUpdateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
   if (delta.active && !(scene.getFlag(__MODULE_ID__, "autoTriggered") as boolean ?? false)) {
     const config: any = scene.getFlag(__MODULE_ID__, "config");
-    const steps: TransitionStep[] = scene.getFlag(__MODULE_ID__, "steps");
+    const steps: TransitionConfiguration[] = scene.getFlag(__MODULE_ID__, "steps");
 
     if (config?.autoTrigger && steps?.length) {
       // SocketHandler.autoTrigger(steps);
       delta.active = false;
-      SocketHandler.transition(scene.id as string, steps);
+      void SocketHandler.execute({
+        caller: game.user?.id ?? "",
+        sequence: steps
+      });
     }
   }
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 Hooks.on("updateScene", async (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
+  if (delta.active) Hooks.callAll(CUSTOM_HOOKS.SCENE_ACTIVATED, scene);
   if (delta.active && (scene.getFlag(__MODULE_ID__, "autoTriggered") as boolean ?? false)) {
     if (scene.canUserModify(game.users?.current as User, "update")) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call

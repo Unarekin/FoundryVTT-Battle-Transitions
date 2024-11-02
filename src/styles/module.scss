@@ -46,4 +46,8 @@
   &.dialog-buttons {
     max-height: 36px;
   }
+
+  &.two-columns {
+    columns: 2;
+  }
 }

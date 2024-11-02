@@ -1,0 +1,34 @@
+<div
+  class="flexcol step-config-item"
+  data-transition-type="radialwipe"
+  data-id="{{id}}"
+>
+  <form>
+    <input type="hidden" name="id" id="id" value="{{id}}" />
+    <p>{{localize "BATTLETRANSITIONS.SCENECONFIG.RADIALWIPE.DESCRIPTION"}}</p>
+    <div class="form-group">
+      <label for="radial">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.RADIAL.LABEL"
+        }}</label>
+      <select name="radial" id="radial">
+        {{selectOptions radialSelect selected=radial localize=true}}
+      </select>
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.RADIAL.HINT"
+      }}</p>
+      {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
+      {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
+    <div class="form-group">
+      <label for="easing">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL"
+        }}</label>
+      <select name="easing" id="easing">
+        {{selectOptions easingSelect selected=easing localize=true}}
+      </select>
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.EASING.HINT"
+      }}</p>
+  </form>
+</div>

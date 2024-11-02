@@ -11,6 +11,7 @@ import { promises as fs } from "fs";
 import { deepmerge } from "deepmerge-ts";
 import yoctoSpinner from "yocto-spinner";
 import { ESLint } from "eslint";
+import externalizeAllPackagesExcept from "esbuild-plugin-noexternal";
 
 /** Paths */
 const SRC_PATH = "./src";
@@ -20,7 +21,8 @@ const STYLE_PATH = path.join(SRC_PATH, "styles");
 const TEMPLATE_PATH = path.join(SRC_PATH, "templates");
 
 // Import module.json for some config options
-import moduleConfig from "./module.json" with { type: "json" };
+// import moduleConfig from "./module.json" with { type: "json" };
+const moduleConfig = JSON.parse((await fs.readFile("./module.json")).toString());
 
 // Constants to be inserted into process.env during build
 const __DEV__ = process.env.NODE_ENV !== "production";
@@ -138,7 +140,9 @@ const buildResults = await build({
     cleanPlugin({ patterns: "./dist/**" }),
     sassPlugin(),
     ...copyPlugins,
-    ...jsonMergers
+    ...jsonMergers,
+    externalizeAllPackagesExcept(["semver", "fastest-validator"])
+    // externalizeAllPackagesExcept(["rxjs", "mini-rx-store", "tslib", "mime", "@pixi/gif"])
   ],
 });
 

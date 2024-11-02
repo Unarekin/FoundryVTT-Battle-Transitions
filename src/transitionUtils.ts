@@ -67,6 +67,8 @@ export async function setupTransition(): Promise<PIXI.Container> {
   if (!canvasGroup) throw new CannotInitializeCanvasError();
   const snapshot = await createSnapshot();
   const container = new PIXI.Container();
+  container.width = window.innerWidth;
+  container.height = window.innerHeight;
 
   const bgTexture = createColorTexture(canvas?.app?.renderer.background.backgroundColor ?? "white");
   const sprite = new PIXI.Sprite(bgTexture);
@@ -74,7 +76,13 @@ export async function setupTransition(): Promise<PIXI.Container> {
   sprite.height = window.innerHeight;
   container.addChild(sprite);
   container.addChild(snapshot);
-  canvasGroup.addChild(container);
+
+  const outerContainer = new PIXI.Container();
+  outerContainer.width = window.innerWidth;
+  outerContainer.height = window.innerHeight;
+
+  outerContainer.addChild(container);
+  canvasGroup.addChild(outerContainer);
 
   return container;
 }

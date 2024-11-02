@@ -76,19 +76,28 @@
       "BILINEARWIPE": "Bilinear Wipe",
       "CHROMAKEY": "Chroma Key",
       "CLOCKWIPE": "Clock Wipe",
-      "DIAMOND": "Diamond",
+      "DIAMONDWIPE": "Diamond Wipe",
       "FADE": "Fade",
       "FIREDISSOLVE": "Fire Dissolve",
       "FLASH": "Flash",
       "INVERT": "Invert",
       "LINEARWIPE": "Linear Wipe",
+      "MACRO": "Macro",
       "MELT": "Melt",
+      "PARALLEL": "Parallel Sequence",
       "RADIALWIPE": "Radial Wipe",
+      "REMOVEOVERLAY": "Remove Overlay",
+      "REPEAT": "Repeat",
+      "RESTOREOVERLAY": "Restore Overlay",
+      "SCENECHANGE": "Scene Change",
       "SOUND": "Sound",
+      "SPIRALLINEARWIPE": "Spiral Wipe (Lienar)",
+      "SPIRALRADIALWIPE": "Spiral Wipe (Radial)",
       "SPOTLIGHTWIPE": "Spotlight Wipe",
       "TEXTURESWAP": "Texture Swap",
       "VIDEO": "Video",
-      "WAIT": "Wait"
+      "WAIT": "Wait",
+      "WAVEWIPE": "Wave Wipe"
     }
   }
 }
