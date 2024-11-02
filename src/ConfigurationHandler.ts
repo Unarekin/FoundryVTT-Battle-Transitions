@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { InvalidSceneError, InvalidTransitionError } from "./errors";
-import { TransitionConfiguration } from "./steps";
+import { SceneChangeConfiguration, TransitionConfiguration } from "./steps";
 import { confirmDialog, getStepClassByKey, localize, log } from "./utils";
-import { AddTransitionStepDialog, EditTransitionStepDialog } from "./dialogs";
+import { AddTransitionStepDialog, EditTransitionStepDialog, TransitionBuilderApplicationV1 } from "./dialogs";
 import { SceneConfiguration } from "./interfaces";
 import { DataMigration } from "./DataMigration";
+import { BattleTransition } from "./BattleTransition";
 
 // #region Classes (1)
-
-const CURRENT_VERSION = "1.1.0";
 
 export class ConfigurationHandler {
   // #region Public Static Methods (4)
@@ -24,15 +23,28 @@ export class ConfigurationHandler {
             if (!scene) return false;
 
             if (scene.id === canvas?.scene?.id) return false;
-
-            const steps = (scene.getFlag(__MODULE_ID__, "steps") ?? []) as unknown[];
-            if (Array.isArray(steps) && steps.length) return true;
+            const steps = this.GetSceneTransition(scene) ?? [];
+            return Array.isArray(steps) && steps.length;
           } catch (err) {
             ui.notifications?.error((err as Error).message, { console: false });
             console.error(err as Error)
           }
         },
-        callback: () => { }
+        callback: (li: JQuery<HTMLLIElement>) => {
+          const scene = getScene(li);
+          if (!scene) throw new InvalidSceneError(typeof li.data("sceneId") === "string" ? li.data("sceneId") as string : typeof li.data("sceneId"));
+          const sequence = this.GetSceneTransition(scene) ?? [];
+          if (!(Array.isArray(sequence) && sequence.length)) return;
+
+          void new BattleTransition(scene).execute({
+            caller: game.user?.id ?? "",
+            remote: false,
+            sequence: [
+              { type: "scenechange", scene: scene.id } as SceneChangeConfiguration,
+              ...sequence
+            ]
+          });
+        }
       },
       {
         name: "BATTLETRANSITIONS.NAVIGATION.CUSTOM",
@@ -42,7 +54,14 @@ export class ConfigurationHandler {
           if (!scene) return false;
           return scene.id !== canvas?.scene?.id;
         },
-        callback: () => { }
+        callback: (li: JQuery<HTMLLIElement>) => {
+          const sceneId = li.data("sceneId") as string;
+          const scene = game.scenes?.get(sceneId);
+          if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId)
+          if (scene.canUserModify(game.user as User, "update"))
+            void ConfigurationHandler.BuildTransition(scene);
+
+        }
       }
     )
   }
@@ -65,12 +84,17 @@ export class ConfigurationHandler {
     else await injectV11(app, html, options);
   }
 
+
+  static async BuildTransition(scene?: Scene): Promise<void> {
+    return buildTransitionV1(scene);
+  }
+
   // #endregion Public Static Methods (4)
 }
 
 // #endregion Classes (1)
 
-// #region Functions (9)
+// #region Functions (10)
 
 function addMainDialogEventListeners(app: SceneConfig, html: JQuery<HTMLElement>) {
   // Add step dialog
@@ -187,8 +211,6 @@ async function injectV12(app: SceneConfig, html: JQuery<HTMLElement>, options: a
   addMainDialogEventListeners(app, html);
 }
 
-
-
 async function removeStepHandler(button: JQuery<HTMLElement>, config: TransitionConfiguration, app: Application) {
   const stepClass = getStepClassByKey(config.type);
   if (!stepClass) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
@@ -204,27 +226,26 @@ function resizeDialog(app: Application) {
   app.setPosition();
 }
 
-// #endregion Functions (9)
+function buildTransitionFromForm(html: JQuery<HTMLElement>) {
+  const sequence: TransitionConfiguration[] = [];
+  html.find("#transition-step-list [data-transition-type]").each((index, element) => {
+    const flag = element.dataset.flag ?? "";
+    const step = JSON.parse(flag) as TransitionConfiguration;
+    sequence.push(step);
+  });
+  return sequence;
+}
 
-// eslint-disable-next-line @typescript-eslint/require-await
 async function saveHandler(html: JQuery<HTMLElement>, app: SceneConfig) {
   // Build our configuration
   const tab = html.find(".tab[data-tab='battle-transitions']");
   const autoTrigger = tab.find(("#auto-trigger")).val() === "on";
 
 
-  const sequence: TransitionConfiguration[] = [];
-
-  tab.find("#transition-step-list [data-transition-type]").each((index, element) => {
-    const flag = element.dataset.flag ?? "";
-    const step = JSON.parse(flag) as TransitionConfiguration;
-    sequence.push(step);
-  });
-
   const config: { [x: string]: unknown } = {
     autoTrigger,
     version: CURRENT_VERSION,
-    sequence
+    sequence: buildTransitionFromForm(tab)
   }
 
   const oldConfigKeys = Object.keys(app.document.flags[__MODULE_ID__]);
@@ -233,7 +254,6 @@ async function saveHandler(html: JQuery<HTMLElement>, app: SceneConfig) {
       config[`-=${key}`] = null
   }
 
-
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   await app.document.update({
     flags: {
@@ -241,3 +261,66 @@ async function saveHandler(html: JQuery<HTMLElement>, app: SceneConfig) {
     }
   } as any);
 }
+
+// #endregion Functions (10)
+
+// #region Variables (1)
+
+const CURRENT_VERSION = "1.1.0";
+
+// #endregion Variables (1)
+
+
+async function buildTransitionV1(scene?: Scene): Promise<void> {
+  const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/transition-builder.hbs`, {
+    scene: scene?.id,
+    scenes: game.scenes?.contents.reduce((prev, curr) => {
+      if (curr.id === game.scenes?.current?.id) return prev;
+      return [
+        ...prev,
+        { id: curr.id, name: curr.name }
+      ]
+    }, [] as { id: string, name: string }[]) ?? []
+  });
+
+  const dialog = new Dialog({
+    title: localize("BATTLETRANSITIONS.TRANSITIONBUILDER.TITLE"),
+    content,
+    render: (html: HTMLElement | JQuery<HTMLElement>) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      addMainDialogEventListeners(dialog as any, $(html));
+    },
+    buttons: {
+      cancel: {
+        icon: "<i class='fas fa-times'></i>",
+        label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")
+      },
+      ok: {
+        icon: "<i class='fas fa-check'></i>",
+        label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+        callback: (html: HTMLElement | JQuery<HTMLElement>) => {
+          const sceneId = scene ? scene.id : $(html).find("#scene").val() as string;
+          if (!sceneId) return;
+
+          const sequence = buildTransitionFromForm($(html));
+          if (Array.isArray(sequence) && sequence.length) {
+            void new BattleTransition(sceneId).execute({
+              caller: game.user?.id ?? "",
+              remote: false,
+              sequence: [
+                { type: "scenechange", scene: sceneId, version: "1.1.0" } as SceneChangeConfiguration,
+                ...sequence
+              ]
+            })
+          }
+        }
+      }
+    }
+  });
+
+  dialog.render(true, { resizable: true, classes: ["dialog", "transition-builder"] });
+}
+
+// async function buildTransitioNV2(scene?: Scene): Promise<void> {
+
+// }

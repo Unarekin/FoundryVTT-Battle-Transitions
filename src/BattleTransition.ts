@@ -1,4 +1,5 @@
 import { coerceMacro, coerceScene } from "./coercion";
+import { ConfigurationHandler } from "./ConfigurationHandler";
 import { CUSTOM_HOOKS } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
@@ -105,6 +106,14 @@ export class BattleTransition {
   public get sequence(): TransitionConfiguration[] { return this.#sequence; }
 
   // #endregion Public Getters And Setters (1)
+
+  // #region Public Static Methods (1)
+
+  public static BuildTransition(scene?: Scene): Promise<void> {
+    return ConfigurationHandler.BuildTransition(scene);
+  }
+
+  // #endregion Public Static Methods (1)
 
   // #region Public Methods (39)
 
@@ -389,10 +398,23 @@ export class BattleTransition {
       for (const step of sequence.sequence) {
         const instance = this.#getStepInstance(step);
 
-        if (typeof (step as BackgroundTransition).serializedTexture !== "undefined") {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          (step as BackgroundTransition).deserializedTexture = deserializeTexture((step as BackgroundTransition).serializedTexture as any);
+        if (Object.prototype.hasOwnProperty.call(step, "backgroundType")) {
+          const bgStep = step as unknown as BackgroundTransition;
+
+          switch (bgStep.backgroundType) {
+            case "color":
+              bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundColor ?? "transparent");
+              break;
+            case "image":
+              bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundImage ?? "transparent");
+              break;
+          }
         }
+
+        // if (typeof (step as unknown as BackgroundTransition).serializedTexture !== "undefined") {
+        //   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        //   (step as BackgroundTransition).deserializedTexture = deserializeTexture((step as BackgroundTransition).serializedTexture as any);
+        // }
         const prep = instance.prepare();
         if (prep instanceof Promise) await prep;
 
@@ -432,7 +454,7 @@ export class BattleTransition {
    * Will remove the current transition overlay, exposing the new scene
    */
   public removeOverlay(): this {
-    this.#sequence.push({ type: "removeoverlay" });
+    this.#sequence.push({ type: "removeoverlay", version: "1.1.0" });
     return this;
   }
 
@@ -488,7 +510,7 @@ export class BattleTransition {
   }
 
   public restoreOverlay(): this {
-    this.#sequence.push({ type: "restoreoverlay" });
+    this.#sequence.push({ type: "restoreoverlay", version: "1.1.0" });
     return this;
   }
 
@@ -676,7 +698,7 @@ export class BattleTransition {
       const instance = this.#getStepInstance(step);
       const res = instance.serialize();
       const serialized = (res instanceof Promise) ? await res : res;
-      const bg = serialized as BackgroundTransition;
+      const bg = serialized as unknown as BackgroundTransition;
       if (typeof bg.deserializedTexture !== "undefined" && typeof bg.serializedTexture === "undefined")
         bg.serializedTexture = serializeTexture(bg.deserializedTexture);
       delete bg.deserializedTexture;

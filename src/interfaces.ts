@@ -33,3 +33,8 @@ export interface SceneConfiguration {
   isTriggered?: boolean;
   overrideSequence?: TransitionConfiguration[];
 }
+
+
+export interface TransitionBuilderOptions extends ApplicationOptions {
+  scene?: string;
+}

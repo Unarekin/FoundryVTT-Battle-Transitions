@@ -4,6 +4,17 @@
   text-align: center;
 }
 
+#transition-step-list {
+  i[data-action="configure"],
+  i[data-action="remove"] {
+    cursor: pointer;
+  }
+}
+
+.transition-builder .dialog-buttons {
+  max-height: 36px;
+}
+
 [data-tab="battle-transitions"] {
   button[data-action="add-step"] {
     position: relative;
