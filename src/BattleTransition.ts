@@ -389,10 +389,23 @@ export class BattleTransition {
       for (const step of sequence.sequence) {
         const instance = this.#getStepInstance(step);
 
-        if (typeof (step as BackgroundTransition).serializedTexture !== "undefined") {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          (step as BackgroundTransition).deserializedTexture = deserializeTexture((step as BackgroundTransition).serializedTexture as any);
+        if (Object.prototype.hasOwnProperty.call(step, "backgroundType")) {
+          const bgStep = step as unknown as BackgroundTransition;
+
+          switch (bgStep.backgroundType) {
+            case "color":
+              bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundColor ?? "transparent");
+              break;
+            case "image":
+              bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundImage ?? "transparent");
+              break;
+          }
         }
+
+        // if (typeof (step as unknown as BackgroundTransition).serializedTexture !== "undefined") {
+        //   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        //   (step as BackgroundTransition).deserializedTexture = deserializeTexture((step as BackgroundTransition).serializedTexture as any);
+        // }
         const prep = instance.prepare();
         if (prep instanceof Promise) await prep;
 
@@ -676,7 +689,7 @@ export class BattleTransition {
       const instance = this.#getStepInstance(step);
       const res = instance.serialize();
       const serialized = (res instanceof Promise) ? await res : res;
-      const bg = serialized as BackgroundTransition;
+      const bg = serialized as unknown as BackgroundTransition;
       if (typeof bg.deserializedTexture !== "undefined" && typeof bg.serializedTexture === "undefined")
         bg.serializedTexture = serializeTexture(bg.deserializedTexture);
       delete bg.deserializedTexture;
