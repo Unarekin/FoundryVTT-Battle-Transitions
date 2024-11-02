@@ -9,7 +9,6 @@ import { BattleTransition } from "./BattleTransition";
 import { TransitionConfiguration } from './steps';
 
 import semver from "semver";
-import { log } from './utils';
 
 (window as any).semver = semver;
 (window as any).BattleTransition = BattleTransition;
@@ -27,7 +26,7 @@ Hooks.once("init", async () => {
   await registerTemplates();
 });
 
-Hooks.on("renderSceneConfig", (app: Application, html: JQuery<HTMLElement>, options: any) => {
+Hooks.on("renderSceneConfig", (app: SceneConfig, html: JQuery<HTMLElement>, options: any) => {
   void ConfigurationHandler.InjectSceneConfig(app, html, options);
 });
 

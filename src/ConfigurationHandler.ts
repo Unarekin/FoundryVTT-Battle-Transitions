@@ -8,6 +8,8 @@ import { DataMigration } from "./DataMigration";
 
 // #region Classes (1)
 
+const CURRENT_VERSION = "1.1.0";
+
 export class ConfigurationHandler {
   // #region Public Static Methods (4)
 
@@ -70,7 +72,7 @@ export class ConfigurationHandler {
 
 // #region Functions (9)
 
-function addMainDialogEventListeners(app: Application, html: JQuery<HTMLElement>) {
+function addMainDialogEventListeners(app: SceneConfig, html: JQuery<HTMLElement>) {
   // Add step dialog
   html.find(`button[data-action="add-step"]`).on("click", e => {
     e.preventDefault();
@@ -97,6 +99,7 @@ function addMainDialogEventListeners(app: Application, html: JQuery<HTMLElement>
   // Save button
   html.find(`button[type="submit"]`).on("click", () => {
     // Update
+    void saveHandler(html, app);
   });
 }
 
@@ -127,8 +130,6 @@ async function addTransitionStep(config: TransitionConfiguration, html: JQuery<H
 async function configureStepHandler(button: JQuery<HTMLElement>, config: TransitionConfiguration, app: Application) {
   const newConfig = await EditTransitionStepDialog.EditStep(config);
   if (!newConfig) return;
-
-  log("New config:", newConfig);
 
   const stepClass = getStepClassByKey(config.type);
   if (!stepClass) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
@@ -176,6 +177,13 @@ async function injectV12(app: SceneConfig, html: JQuery<HTMLElement>, options: a
   const navContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, config);
   html.find("footer.sheet-footer").before(`<div class="tab" data-group="main" data-tab="battle-transitions">${navContent}</div>`);
 
+  // Add step handlers
+  if (Array.isArray(config.sequence) && config.sequence.length) {
+    for (const step of config.sequence) {
+      await addTransitionStep(step, html, app)
+    }
+  }
+
   addMainDialogEventListeners(app, html);
 }
 
@@ -197,3 +205,39 @@ function resizeDialog(app: Application) {
 }
 
 // #endregion Functions (9)
+
+// eslint-disable-next-line @typescript-eslint/require-await
+async function saveHandler(html: JQuery<HTMLElement>, app: SceneConfig) {
+  // Build our configuration
+  const tab = html.find(".tab[data-tab='battle-transitions']");
+  const autoTrigger = tab.find(("#auto-trigger")).val() === "on";
+
+
+  const sequence: TransitionConfiguration[] = [];
+
+  tab.find("#transition-step-list [data-transition-type]").each((index, element) => {
+    const flag = element.dataset.flag ?? "";
+    const step = JSON.parse(flag) as TransitionConfiguration;
+    sequence.push(step);
+  });
+
+  const config: { [x: string]: unknown } = {
+    autoTrigger,
+    version: CURRENT_VERSION,
+    sequence
+  }
+
+  const oldConfigKeys = Object.keys(app.document.flags[__MODULE_ID__]);
+  for (const key of oldConfigKeys) {
+    if (!Object.prototype.hasOwnProperty.call(config, key))
+      config[`-=${key}`] = null
+  }
+
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  await app.document.update({
+    flags: {
+      "battle-transitions": config
+    }
+  } as any);
+}
