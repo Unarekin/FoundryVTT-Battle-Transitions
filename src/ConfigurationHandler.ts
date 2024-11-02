@@ -159,23 +159,27 @@ async function injectV11(app: SceneConfig, html: JQuery<HTMLElement>, options: a
   const navBar = html.find("nav.sheet-tabs.tabs");
   navBar.append(navElement);
 
-  const config = app.document.getFlag(__MODULE_ID__, "config");
+  const config = ConfigurationHandler.GetSceneConfiguration(app.document);
 
-  const navContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, {});
+  const navContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, config);
   html.find(`button[type="submit"]`).before(`<div class="tab" data-tab="battle-transitions">${navContent}</div>`);
   addMainDialogEventListeners(app, html);
 }
 
-async function injectV12(app: Application, html: JQuery<HTMLElement>, options: any) {
-  log("Injecting:", app, html, options)
+async function injectV12(app: SceneConfig, html: JQuery<HTMLElement>, options: any) {
   const navElement = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/scene-nav-bar.hbs`, {});
   const navBar = html.find("nav.sheet-tabs.tabs[data-group='main']");
   navBar.append(navElement);
 
-  const navContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, {});
+  const config = ConfigurationHandler.GetSceneConfiguration(app.document);
+
+  const navContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, config);
   html.find("footer.sheet-footer").before(`<div class="tab" data-group="main" data-tab="battle-transitions">${navContent}</div>`);
+
   addMainDialogEventListeners(app, html);
 }
+
+
 
 async function removeStepHandler(button: JQuery<HTMLElement>, config: TransitionConfiguration, app: Application) {
   const stepClass = getStepClassByKey(config.type);

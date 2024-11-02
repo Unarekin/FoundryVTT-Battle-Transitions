@@ -11,7 +11,7 @@ export class LinearWipeMigrator extends Migrator<LinearWipeConfiguration> {
   public NewestVersion: string = "1.1.0";
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  public Version(data: unknown): string { return (data as any).version as string; }
+  public Version(data: unknown): string { return ((data as any).version as string) ?? "1.0.5"; }
 }
 
 

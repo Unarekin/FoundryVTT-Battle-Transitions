@@ -28,7 +28,6 @@ Hooks.once("init", async () => {
 });
 
 Hooks.on("renderSceneConfig", (app: Application, html: JQuery<HTMLElement>, options: any) => {
-  log("renderSceneConfig");
   void ConfigurationHandler.InjectSceneConfig(app, html, options);
 });
 
