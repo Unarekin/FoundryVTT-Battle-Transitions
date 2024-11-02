@@ -1,4 +1,5 @@
 import { coerceMacro, coerceScene } from "./coercion";
+import { ConfigurationHandler } from "./ConfigurationHandler";
 import { CUSTOM_HOOKS } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
@@ -105,6 +106,14 @@ export class BattleTransition {
   public get sequence(): TransitionConfiguration[] { return this.#sequence; }
 
   // #endregion Public Getters And Setters (1)
+
+  // #region Public Static Methods (1)
+
+  public static BuildTransition(scene?: Scene): Promise<void> {
+    return ConfigurationHandler.BuildTransition(scene);
+  }
+
+  // #endregion Public Static Methods (1)
 
   // #region Public Methods (39)
 
@@ -445,7 +454,7 @@ export class BattleTransition {
    * Will remove the current transition overlay, exposing the new scene
    */
   public removeOverlay(): this {
-    this.#sequence.push({ type: "removeoverlay" });
+    this.#sequence.push({ type: "removeoverlay", version: "1.1.0" });
     return this;
   }
 
@@ -501,7 +510,7 @@ export class BattleTransition {
   }
 
   public restoreOverlay(): this {
-    this.#sequence.push({ type: "restoreoverlay" });
+    this.#sequence.push({ type: "restoreoverlay", version: "1.1.0" });
     return this;
   }
 
