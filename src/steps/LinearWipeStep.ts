@@ -47,7 +47,8 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   public static from(form: HTMLFormElement): LinearWipeStep
   public static from(arg: unknown): LinearWipeStep {
     if (arg instanceof HTMLFormElement) return LinearWipeStep.fromFormElement(arg);
-    if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return LinearWipeStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return LinearWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new LinearWipeStep(arg as LinearWipeConfiguration);
   }
 

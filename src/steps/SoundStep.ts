@@ -36,7 +36,8 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   public static from(form: JQuery<HTMLFormElement>): SoundStep
   public static from(arg: unknown): SoundStep {
     if (arg instanceof HTMLFormElement) return SoundStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return SoundStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return SoundStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new SoundStep(arg as SoundConfiguration);
   }
 

@@ -45,7 +45,8 @@ export class SpiralRadialWipeStep extends TransitionStep<SpiralRadialWipeConfigu
   public static from(form: JQuery<HTMLFormElement>): SpiralRadialWipeStep
   public static from(arg: unknown): SpiralRadialWipeStep {
     if (arg instanceof HTMLFormElement) return SpiralRadialWipeStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return SpiralRadialWipeStep.fromFormElement(arg[0])
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return SpiralRadialWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new SpiralRadialWipeStep(arg as SpiralRadialWipeConfiguration);
   }
 

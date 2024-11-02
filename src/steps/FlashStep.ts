@@ -39,7 +39,8 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
   public static from(form: HTMLFormElement): FlashStep
   public static from(arg: unknown): FlashStep {
     if (arg instanceof HTMLFormElement) return FlashStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return FlashStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return FlashStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     return new FlashStep(arg as FlashConfiguration);
   }
 

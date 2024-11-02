@@ -51,7 +51,8 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
   public static from(form: JQuery<HTMLFormElement>): ClockWipeStep
   public static from(arg: unknown): ClockWipeStep {
     if (arg instanceof HTMLFormElement) return ClockWipeStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return ClockWipeStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return ClockWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new ClockWipeStep(arg as ClockWipeConfiguration);
   }
 

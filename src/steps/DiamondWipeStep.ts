@@ -41,7 +41,8 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
   public static from(form: HTMLFormElement): DiamondWipeStep
   public static from(arg: unknown): DiamondWipeStep {
     if (arg instanceof HTMLFormElement) return DiamondWipeStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return DiamondWipeStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return DiamondWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new DiamondWipeStep(arg as DiamondWipeConfiguration);
   }
 

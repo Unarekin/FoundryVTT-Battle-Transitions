@@ -49,7 +49,8 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   public static from(form: JQuery<HTMLFormElement>): RadialWipeStep
   public static from(arg: unknown): RadialWipeStep {
     if (arg instanceof HTMLFormElement) return RadialWipeStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return RadialWipeStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return RadialWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new RadialWipeStep(arg as RadialWipeConfiguration);
   }
 

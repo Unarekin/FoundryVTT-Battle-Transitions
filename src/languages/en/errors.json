@@ -22,7 +22,10 @@
       "NOIMAGEPROVIDED": "No image provided.",
       "NOTIMPLEMENTED": "Not implemented.",
       "SEQUENCETIMEDOUT": "Transition sequence timed out.",
-      "INVALIDSOUND": "Invalid sound: {sound}"
+      "INVALIDSOUND": "Invalid sound: {sound}",
+      "NEWERVERSION": "Data appears to be from a newer version: {version}",
+      "INVALIDVERSION": "Invalid data version: {version}",
+      "UNABLETOMIGRATE": "Unable to migrate data from {old} to {current}"
     }
   }
 }

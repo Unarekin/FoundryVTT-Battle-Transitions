@@ -38,7 +38,8 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
   public static from(form: HTMLFormElement): FireDissolveStep
   public static from(arg: unknown): FireDissolveStep {
     if (arg instanceof HTMLFormElement) return FireDissolveStep.fromFormElement(arg);
-    if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return FireDissolveStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return FireDissolveStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new FireDissolveStep(arg as FireDissolveConfiguration);
   }
 

@@ -46,7 +46,8 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
   public static from(form: HTMLFormElement): VideoStep
   public static from(arg: unknown): VideoStep {
     if (arg instanceof HTMLFormElement) return VideoStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return VideoStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return VideoStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new VideoStep(arg as VideoConfiguration);
   }
 

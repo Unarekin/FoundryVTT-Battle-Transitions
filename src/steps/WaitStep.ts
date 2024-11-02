@@ -2,13 +2,15 @@ import { WaitConfiguration } from "./types";
 import { TransitionStep } from "./TransitionStep";
 import { parseConfigurationFormElements } from "../utils";
 
+const CURRENT_VERSION = "1.1.0";
+
 export class WaitStep extends TransitionStep<WaitConfiguration> {
   // #region Properties (5)
 
   public static DefaultSettings: WaitConfiguration = {
     type: "wait",
     duration: 0,
-    version: "1.1.0"
+    version: CURRENT_VERSION
   }
 
   public static hidden: boolean = false;
@@ -33,7 +35,8 @@ export class WaitStep extends TransitionStep<WaitConfiguration> {
   public static from(form: JQuery<HTMLFormElement>): WaitStep
   public static from(arg: unknown): WaitStep {
     if (arg instanceof HTMLFormElement) return WaitStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return WaitStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return WaitStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new WaitStep(arg as WaitConfiguration);
   }
 

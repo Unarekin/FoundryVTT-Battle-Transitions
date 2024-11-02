@@ -1,14 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { InvalidSceneError } from "./errors";
-import * as tempSteps from "./steps";
-import { TransitionStep } from "./steps";
-import { localize } from "./utils";
-import { AddTransitionStepDialog } from "./dialogs";
+import { InvalidSceneError, InvalidTransitionError } from "./errors";
+import { TransitionConfiguration } from "./steps";
+import { confirmDialog, getStepClassByKey, localize, log } from "./utils";
+import { AddTransitionStepDialog, EditTransitionStepDialog } from "./dialogs";
+import { SceneConfiguration } from "./interfaces";
+import { DataMigration } from "./DataMigration";
 
-const STEPS: (typeof TransitionStep<any>)[] = Object.values(tempSteps).sort((a, b) => localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${a.name}`).localeCompare(localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${b.name}`)));
+// #region Classes (1)
 
 export class ConfigurationHandler {
-  static AddToNavigationBar(buttons: any[]) {
+  // #region Public Static Methods (4)
+
+  public static AddToNavigationBar(buttons: any[]) {
     buttons.push(
       {
         name: "BATTLETRANSITIONS.NAVIGATION.TRIGGER",
@@ -42,60 +45,45 @@ export class ConfigurationHandler {
     )
   }
 
-  // static GetSceneTransition(scene: Scene): TransitionStep[] {
-  //   const steps = scene.getFlag(__MODULE_ID__, "steps");
-  //   return []
+  public static GetSceneConfiguration(scene: Scene): SceneConfiguration {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const flags = scene.flags[__MODULE_ID__] as any;
+    // Check for data migration
+    if (DataMigration.SceneConfiguration.NeedsMigration(flags)) return DataMigration.SceneConfiguration.Migrate(flags);
+    else return flags as SceneConfiguration;
+  }
 
+  public static GetSceneTransition(scene: Scene): TransitionConfiguration[] {
+    const config = ConfigurationHandler.GetSceneConfiguration(scene);
+    return config.sequence;
+  }
 
-  // }
-
-  // static async SetSceneTransition(scene: Scene, transition: TransitionStep[]) {
-  //   // await (scene as any).setFlag(__MODULE_ID__, "steps", transition);
-  // }
-
-  static async InjectSceneConfig(app: Application, html: JQuery<HTMLElement>, options: any) {
+  public static async InjectSceneConfig(app: SceneConfig, html: JQuery<HTMLElement>, options: any) {
     if (game.release?.isNewer("12")) await injectV12(app, html, options);
     else await injectV11(app, html, options);
   }
+
+  // #endregion Public Static Methods (4)
 }
 
+// #endregion Classes (1)
 
-
-function getScene(li: JQuery<HTMLLIElement>): Scene | undefined {
-  const sceneId = li.data("sceneId") as string | undefined;
-  if (!sceneId) return undefined;
-  if (!sceneId) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
-  const scene = game.scenes?.get(sceneId);
-  if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
-  return scene;
-}
-
-
-async function injectV11(app: Application, html: JQuery<HTMLElement>, options: any) {
-  const navElement = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/scene-nav-bar.hbs`, {});
-  const navBar = html.find("nav.sheet-tabs.tabs");
-  navBar.append(navElement);
-
-  const navContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, {});
-  html.find(`button[type="submit"]`).before(`<div class="tab" data-tab="battle-transitions">${navContent}</div>`);
-  addMainDialogEventListeners(app, html);
-}
-
-async function injectV12(app: Application, html: JQuery<HTMLElement>, options: any) {
-  const navElement = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/scene-nav-bar.hbs`, {});
-  const navBar = html.find("nav.sheet-tabs.tabs");
-  navBar.append(navElement);
-
-  const navContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, {});
-  html.find("footer.sheet-footer").before(`<div class="tab" data-group="main" data-tab="battle-transitions">${navContent}</div>`);
-  addMainDialogEventListeners(app, html);
-}
+// #region Functions (9)
 
 function addMainDialogEventListeners(app: Application, html: JQuery<HTMLElement>) {
   // Add step dialog
   html.find(`button[data-action="add-step"]`).on("click", e => {
     e.preventDefault();
-    void AddTransitionStepDialog.add();
+    AddTransitionStepDialog.add()
+      .then(config => {
+        if (config) {
+          addTransitionStep(config, html, app).then(() => { resizeDialog(app); }).catch(console.error);
+        }
+      })
+      .catch((err: Error) => {
+        ui.notifications?.error(err.message, { console: false });
+        throw err;
+      })
   });
 
   // Drag-and-drop sorting
@@ -106,9 +94,102 @@ function addMainDialogEventListeners(app: Application, html: JQuery<HTMLElement>
     axis: "y"
   });
 
-
   // Save button
   html.find(`button[type="submit"]`).on("click", () => {
     // Update
   });
 }
+
+function addStepEventListeners(button: JQuery<HTMLElement>, config: TransitionConfiguration, app: Application) {
+  // Remove button
+  button.find(`[data-action="remove"]`).on("click", () => { void removeStepHandler(button, config, app); });
+
+  // Configure button
+  button.find(`[data-action="configure"]`).on("click", () => { void configureStepHandler(button, config, app); })
+}
+
+async function addTransitionStep(config: TransitionConfiguration, html: JQuery<HTMLElement>, app: Application) {
+  const stepClass = getStepClassByKey(config.type);
+  if (!stepClass) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
+
+  const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
+    ...config,
+    name: localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${stepClass.name}`),
+    type: config.type,
+    flag: JSON.stringify(config)
+  });
+
+  const button = $(content);
+  html.find("#transition-step-list").append(button);
+  addStepEventListeners(button, config, app);
+}
+
+async function configureStepHandler(button: JQuery<HTMLElement>, config: TransitionConfiguration, app: Application) {
+  const newConfig = await EditTransitionStepDialog.EditStep(config);
+  if (!newConfig) return;
+
+  log("New config:", newConfig);
+
+  const stepClass = getStepClassByKey(config.type);
+  if (!stepClass) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
+
+  const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
+    ...config,
+    name: localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${stepClass.name}`),
+    type: config.type,
+    flag: JSON.stringify(newConfig)
+  });
+
+  const appended = $(content);
+  button.replaceWith(appended);
+  addStepEventListeners(appended, newConfig, app);
+}
+
+function getScene(li: JQuery<HTMLLIElement>): Scene | undefined {
+  const sceneId = li.data("sceneId") as string | undefined;
+  if (!sceneId) return undefined;
+  if (!sceneId) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+  const scene = game.scenes?.get(sceneId);
+  if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+  return scene;
+}
+
+async function injectV11(app: SceneConfig, html: JQuery<HTMLElement>, options: any) {
+  const navElement = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/scene-nav-bar.hbs`, {});
+  const navBar = html.find("nav.sheet-tabs.tabs");
+  navBar.append(navElement);
+
+  const config = app.document.getFlag(__MODULE_ID__, "config");
+
+  const navContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, {});
+  html.find(`button[type="submit"]`).before(`<div class="tab" data-tab="battle-transitions">${navContent}</div>`);
+  addMainDialogEventListeners(app, html);
+}
+
+async function injectV12(app: Application, html: JQuery<HTMLElement>, options: any) {
+  log("Injecting:", app, html, options)
+  const navElement = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/scene-nav-bar.hbs`, {});
+  const navBar = html.find("nav.sheet-tabs.tabs[data-group='main']");
+  navBar.append(navElement);
+
+  const navContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, {});
+  html.find("footer.sheet-footer").before(`<div class="tab" data-group="main" data-tab="battle-transitions">${navContent}</div>`);
+  addMainDialogEventListeners(app, html);
+}
+
+async function removeStepHandler(button: JQuery<HTMLElement>, config: TransitionConfiguration, app: Application) {
+  const stepClass = getStepClassByKey(config.type);
+  if (!stepClass) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
+  const localizedName = localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${stepClass.name}`);
+  const confirm = await confirmDialog(localize("BATTLETRANSITIONS.SCENECONFIG.REMOVECONFIRM.TITLE", { name: localizedName }), localize("BATTLETRANSITIONS.SCENECONFIG.REMOVECONFIRM.CONTENT", { name: localizedName }));
+  if (confirm) {
+    button.remove();
+    resizeDialog(app);
+  }
+}
+
+function resizeDialog(app: Application) {
+  app.setPosition();
+}
+
+// #endregion Functions (9)

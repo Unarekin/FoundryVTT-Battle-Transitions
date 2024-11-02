@@ -44,7 +44,7 @@ export type DiamondWipeConfiguration = WipeTransition & ({
   size: number;
 });
 
-export type FadeConfiguration = BackgroundTransition & DurationTransition & TransitionConfiguration;
+export type FadeConfiguration = BackgroundTransition & DurationTransition & TransitionConfiguration & AnimatedTransition;
 
 export type FireDissolveConfiguration = DurationTransition & TransitionConfiguration & AnimatedTransition & ({
   burnSize: number;

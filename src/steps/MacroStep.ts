@@ -36,7 +36,8 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
   public static from(form: HTMLFormElement): MacroStep
   public static from(arg: unknown): MacroStep {
     if (arg instanceof HTMLFormElement) return MacroStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return MacroStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return MacroStep.fromFormElement((arg as any)[0] as HTMLFormElement);
 
     return new MacroStep(arg as MacroConfiguration);
   }

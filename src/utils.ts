@@ -5,7 +5,7 @@ import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 import { bytesToBase64 } from "./lib/base64Utils";
-import { TransitionStep } from "./steps";
+import { TransitionStep, BackgroundTransition } from "./steps";
 import * as steps from "./steps"
 
 // #region Functions (33)
@@ -475,3 +475,40 @@ export async function wait(duration: number) {
 }
 
 // #endregion Functions (33)
+
+
+export async function confirmDialog(title: string, content: string): Promise<boolean> {
+  if (shouldUseAppV2() && foundry.applications.api.DialogV2) return confirmV2(title, content);
+  else return confirmV1(title, content);
+
+}
+
+async function confirmV1(title: string, content: string): Promise<boolean> {
+  return Dialog.confirm({
+    title: localize(title),
+    content: localize(content),
+    rejectClose: false
+  }).then(val => !!val)
+}
+
+async function confirmV2(title: string, content: string): Promise<boolean> {
+  return foundry.applications.api.DialogV2.confirm({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    window: { title: localize(title) } as any,
+    content: localize(content),
+    rejectClose: false
+  }).then(val => !!val);
+}
+
+export function isColor(data: string): boolean {
+  return CSS.supports("color", data);
+}
+
+export function migratev10XBackground(old: { background: string }): BackgroundTransition {
+  return {
+    backgroundType: old.background && !isColor(old.background) ? "image" : "color",
+    backgroundColor: isColor(old.background) ? old.background : "",
+    backgroundImage: !isColor(old.background) && old.background ? old.background : "",
+    bgSizingMode: "stretch"
+  }
+}

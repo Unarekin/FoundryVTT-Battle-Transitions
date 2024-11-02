@@ -37,7 +37,8 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
   public static from(form: JQuery<HTMLFormElement>): SceneChangeStep
   public static from(arg: unknown): SceneChangeStep {
     if (arg instanceof HTMLFormElement) return SceneChangeStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return SceneChangeStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return SceneChangeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new SceneChangeStep(arg as SceneChangeConfiguration);
   }
 

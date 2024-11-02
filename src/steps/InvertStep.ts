@@ -33,7 +33,8 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
   public static from(form: HTMLFormElement): InvertStep
   public static from(arg: unknown): InvertStep {
     if (arg instanceof HTMLFormElement) return InvertStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return InvertStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return InvertStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new InvertStep(arg as InvertConfiguration);
   }
 

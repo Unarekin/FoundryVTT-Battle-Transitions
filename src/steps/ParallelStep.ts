@@ -34,7 +34,8 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
   public static from(config: ParallelConfiguration): ParallelStep
   public static from(arg: unknown): ParallelStep {
     if (arg instanceof HTMLFormElement) throw new NotImplementedError()
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) throw new NotImplementedError();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) throw new NotImplementedError();
     else return new ParallelStep(arg as ParallelConfiguration);
   }
 

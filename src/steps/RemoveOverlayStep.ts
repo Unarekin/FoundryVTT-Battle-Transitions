@@ -31,7 +31,8 @@ export class RemoveOverlayStep extends TransitionStep<RemoveOverlayConfiguration
   public static from(form: HTMLFormElement): RemoveOverlayStep
   public static from(arg: unknown): RemoveOverlayStep {
     if (arg instanceof HTMLFormElement) return RemoveOverlayStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return RemoveOverlayStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return RemoveOverlayStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new RemoveOverlayStep(arg as RemoveOverlayConfiguration);
   }
 

@@ -55,7 +55,8 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
   public static from(form: JQuery<HTMLFormElement>): SpotlightWipeStep
   public static from(arg: unknown): SpotlightWipeStep {
     if (arg instanceof HTMLFormElement) return SpotlightWipeStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return SpotlightWipeStep.from(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return SpotlightWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new SpotlightWipeStep(arg as SpotlightWipeConfiguration);
   }
 

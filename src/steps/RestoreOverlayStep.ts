@@ -32,7 +32,8 @@ export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfigurati
   public static from(form: HTMLFormElement): RestoreOverlayStep
   public static from(arg: unknown): RestoreOverlayStep {
     if (arg instanceof HTMLFormElement) return RestoreOverlayStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return RestoreOverlayStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return RestoreOverlayStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new RestoreOverlayStep(arg as RestoreOverlayConfiguration);
   }
 

@@ -39,7 +39,8 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
   public static from(form: JQuery<HTMLFormElement>): TextureSwapStep
   public static from(arg: unknown): TextureSwapStep {
     if (arg instanceof HTMLFormElement) return TextureSwapStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return TextureSwapStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return TextureSwapStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new TextureSwapStep(arg as TextureSwapConfiguration);
   }
 

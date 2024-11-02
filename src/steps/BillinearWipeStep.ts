@@ -45,7 +45,8 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
   public static from(form: HTMLFormElement): BilinearWipeStep
   public static from(arg: unknown): BilinearWipeStep {
     if (arg instanceof HTMLFormElement) return BilinearWipeStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return BilinearWipeStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return BilinearWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new BilinearWipeStep(arg as BilinearWipeConfiguration);
   }
 

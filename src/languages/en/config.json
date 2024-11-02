@@ -115,7 +115,10 @@
       "RADIALWIPE": {
         "DESCRIPTION": "Circular wipe, starting either from the inside or outside of the screen."
       },
-      "REMOVECONFIRM": "Are you sure you wish to remove {name}?",
+      "REMOVECONFIRM": {
+        "TITLE": "Remove {name}",
+        "CONTENT": "Are you sure you wish to remove {name}?"
+      },
       "SOUND": {
         "DESCRIPTION": "Play a sound during the transition.  Unlike most transition steps, this one will NOT wait until the sound is finished to continue to the next.",
         "FILE": {

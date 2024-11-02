@@ -20,17 +20,11 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   // #region Constructors (1)
 
-  constructor(protected config: t) { }
+  constructor(public readonly config: t) { }
 
   // #endregion Constructors (1)
 
-  // #region Public Static Methods (8)
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public static MigrateConfiguration(config: any): TransitionConfiguration { throw new NotImplementedError(); }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public static NeedsMigration(config: TransitionConfiguration): boolean { throw new NotImplementedError(); }
+  // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: TransitionConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${TransitionStep.template}.hbs`, {
@@ -38,6 +32,9 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
       ...(config ? config : {})
     });
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static Upgrade(config: unknown): TransitionConfiguration { throw new NotImplementedError(); }
 
   public static from(config: TransitionConfiguration): TransitionStep
   public static from(form: HTMLFormElement): TransitionStep
@@ -52,7 +49,7 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
     return true;
   }
 
-  // #endregion Public Static Methods (8)
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (5)
 

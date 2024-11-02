@@ -41,7 +41,8 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
   public static from(form: JQuery<HTMLFormElement>): AngularWipeStep
   public static from(arg: unknown): AngularWipeStep {
     if (arg instanceof HTMLFormElement) return AngularWipeStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return AngularWipeStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return AngularWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     return new AngularWipeStep(arg as AngularWipeConfiguration);
   }
 

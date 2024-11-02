@@ -39,7 +39,8 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
   public static from(form: JQuery<HTMLFormElement>): FadeStep
   public static from(arg: unknown): FadeStep {
     if (arg instanceof HTMLFormElement) return FadeStep.fromFormElement(arg);
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) return FadeStep.fromFormElement(arg[0]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return FadeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new FadeStep(arg as FadeConfiguration);
   }
 
