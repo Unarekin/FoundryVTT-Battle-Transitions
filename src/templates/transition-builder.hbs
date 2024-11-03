@@ -1,6 +1,8 @@
-{{#unless scene}}
+{{#if scene}}
+<input type="hidden" name="scene" id="scene" value="{{scene}}">
+{{else}}
 {{> "/modules/battle-transitions/templates/scene-selector.hbs"}}
-{{/unless}}
+{{/if}}
 <fieldset>
   <legend>{{localize
       "BATTLETRANSITIONS.SCENECONFIG.TRANSITIONCONFIG.LABEL"

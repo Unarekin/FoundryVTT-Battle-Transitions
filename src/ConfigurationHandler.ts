@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { InvalidSceneError, InvalidTransitionError } from "./errors";
 import { SceneChangeConfiguration, TransitionConfiguration } from "./steps";
-import { confirmDialog, getStepClassByKey, localize, log } from "./utils";
-import { AddTransitionStepDialog, EditTransitionStepDialog, TransitionBuilderApplicationV1 } from "./dialogs";
+import { confirmDialog, getStepClassByKey, localize, log, shouldUseAppV2 } from "./utils";
+import { AddTransitionStepDialog, EditTransitionStepDialog } from "./dialogs";
 import { SceneConfiguration } from "./interfaces";
 import { DataMigration } from "./DataMigration";
 import { BattleTransition } from "./BattleTransition";
@@ -86,7 +86,8 @@ export class ConfigurationHandler {
 
 
   static async BuildTransition(scene?: Scene): Promise<void> {
-    return buildTransitionV1(scene);
+    if (shouldUseAppV2() && foundry.applications.api.DialogV2) return buildTransitionV2(scene);
+    else return buildTransitionV1(scene);
   }
 
   // #endregion Public Static Methods (4)
@@ -120,11 +121,12 @@ function addMainDialogEventListeners(app: SceneConfig, html: JQuery<HTMLElement>
     axis: "y"
   });
 
-  // Save button
-  html.find(`button[type="submit"]`).on("click", () => {
+  // Scene config save button
+  html.find(`.sheet-footer button[type="submit"]`).on("click", () => {
     // Update
     void saveHandler(html, app);
   });
+
 }
 
 function addStepEventListeners(button: JQuery<HTMLElement>, config: TransitionConfiguration, app: Application) {
@@ -269,6 +271,52 @@ async function saveHandler(html: JQuery<HTMLElement>, app: SceneConfig) {
 const CURRENT_VERSION = "1.1.0";
 
 // #endregion Variables (1)
+
+async function buildTransitionV2(scene?: Scene): Promise<void> {
+  const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/transition-builder.hbs`, {
+    scene: scene?.id,
+    scenes: game.scenes?.contents.reduce((prev, curr) => {
+      if (curr.id === game.scenes?.current?.id) return prev;
+      return [
+        ...prev,
+        { id: curr.id, name: curr.name }
+      ]
+    }, [] as { id: string, name: string }[]) ?? []
+  });
+
+  const dialog = new foundry.applications.api.DialogV2({
+    window: { title: localize("BATTLETRANSITIONS.TRANSITIONBUILDER.TITLE") },
+    content,
+    buttons: [
+      {
+        action: "cancel",
+        label: `<i class="fas fa-times"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")}`
+      },
+      {
+        action: "ok",
+        label: `<i class="fas fa-check"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK")}`,
+        default: true,
+        // eslint-disable-next-line @typescript-eslint/require-await
+        callback: async (e, button, dialog) => {
+          e.preventDefault();
+          const sceneId = $(dialog).find("#scene").val() as string;
+          if (!sceneId) return;
+          const sequence = buildTransitionFromForm($(dialog));
+          void new BattleTransition(sceneId).execute({
+            caller: game.user?.id ?? "",
+            remote: false,
+            sequence: [
+              { type: "scenechange", version: "1.1.0", scene: sceneId } as SceneChangeConfiguration,
+              ...sequence
+            ]
+          })
+        }
+      }
+    ]
+  });
+  await dialog.render(true);
+  addMainDialogEventListeners(dialog as unknown as SceneConfig, $(dialog.element));
+}
 
 
 async function buildTransitionV1(scene?: Scene): Promise<void> {
