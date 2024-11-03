@@ -1,0 +1,27 @@
+{
+  "name": "Parallel Sequences",
+  "type": "script",
+  "_id": "gF4WkQiA0QGRqDXU",
+  "author": "EWXMWWsbLjRVVnzu",
+  "img": "icons/svg/dice-target.svg",
+  "scope": "global",
+  "command": "const scene = await BattleTransition.SelectScene();\nif (!scene) return;\n\nnew BattleTransition(scene)\n  .parallel(\n    (sequence) => sequence.linearWipe(\"left\", 1000, \"black\"),\n    (sequence) => sequence.linearWipe(\"right\", 1000, \"black\"),\n    (sequence) => sequence.linearWipe(\"top\", 1000, \"black\"),\n    (sequence) => sequence.linearWipe(\"bottom\", 1000, \"black\")\n  )\n  .diamondWipe(40)\n  .execute();",
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0,
+    "EWXMWWsbLjRVVnzu": 3
+  },
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.331",
+    "systemId": "worldbuilding",
+    "systemVersion": "0.8.2",
+    "createdTime": 1729782420442,
+    "modifiedTime": 1729783164050,
+    "lastModifiedBy": "EWXMWWsbLjRVVnzu"
+  },
+  "_key": "!macros!gF4WkQiA0QGRqDXU"
+}

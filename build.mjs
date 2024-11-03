@@ -12,6 +12,7 @@ import { deepmerge } from "deepmerge-ts";
 import yoctoSpinner from "yocto-spinner";
 import { ESLint } from "eslint";
 import externalizeAllPackagesExcept from "esbuild-plugin-noexternal";
+import { compilePack } from "@foundryvtt/foundryvtt-cli";
 
 /** Paths */
 const SRC_PATH = "./src";
@@ -22,7 +23,9 @@ const TEMPLATE_PATH = path.join(SRC_PATH, "templates");
 
 // Import module.json for some config options
 // import moduleConfig from "./module.json" with { type: "json" };
-const moduleConfig = JSON.parse((await fs.readFile("./module.json")).toString());
+const moduleConfig = JSON.parse(
+  (await fs.readFile("./module.json")).toString()
+);
 
 // Constants to be inserted into process.env during build
 const __DEV__ = process.env.NODE_ENV !== "production";
@@ -80,15 +83,11 @@ const jsonMergers = (
 // Create our copy plugins, ensuring that the paths we're copying from exist
 const STATIC_FILES = [
   { src: "./module.json", dest: "module.json" },
-  // { src: "./system.json", dest: "system.json" },
   { src: "./LICENSE", dest: "LICENSE" },
   { src: "./README.md", dest: "README.md" },
-  // { src: path.join(SRC_PATH, "fonts"), dest: "fonts" },
   { src: TEMPLATE_PATH, dest: "templates" },
-  // { src: STYLE_PATH, dest: "styles" },
-  { src: path.join(SRC_PATH, "packs"), dest: "packs" },
   { src: path.join(SRC_PATH, "assets"), dest: "assets" },
-  { src: path.join(SRC_PATH, "vendor"), dest: "vendor"}
+  { src: path.join(SRC_PATH, "vendor"), dest: "vendor" },
 ];
 
 const copyPlugins = [];
@@ -130,10 +129,19 @@ const buildResults = await build({
     __MODULE_ID__: `"${__MODULE_ID__}"`,
     __MODULE_VERSION__: `"${__MODULE_VERSION__}"`,
   },
-  external: ["*.woff", "*.woff2", "*.otf", "*.ttf", "*.webp", "*.svg", "*.jpg", "*.png"],
+  external: [
+    "*.woff",
+    "*.woff2",
+    "*.otf",
+    "*.ttf",
+    "*.webp",
+    "*.svg",
+    "*.jpg",
+    "*.png",
+  ],
   loader: {
     ".frag": "text",
-    ".vert": "text"
+    ".vert": "text",
   },
   plugins: [
     nodeExternalsPlugin(),
@@ -141,7 +149,7 @@ const buildResults = await build({
     sassPlugin(),
     ...copyPlugins,
     ...jsonMergers,
-    externalizeAllPackagesExcept(["semver", "fastest-validator"])
+    externalizeAllPackagesExcept(["semver", "fastest-validator"]),
     // externalizeAllPackagesExcept(["rxjs", "mini-rx-store", "tslib", "mime", "@pixi/gif"])
   ],
 });
@@ -154,4 +162,25 @@ if (buildResults.errors.length) {
     `Build completed in ${((Date.now() - buildStart) / 1000).toFixed(2)}s`
   );
   if (buildResults.warnings.length) console.warn(buildResults.warnings);
+
+  const packStart = Date.now();
+  spinner = yoctoSpinner({ text: "Packing compendia..." }).start();
+  try {
+    // Build compendia
+    const packs = await fs.readdir(path.join(SRC_PATH, "packs"));
+    for (const pack of packs) {
+      if (pack === ".gitattributes") continue;
+      await compilePack(
+        path.join(SRC_PATH, `packs`, pack),
+        path.join(OUT_PATH, "packs", pack),
+        { yaml: false }
+      );
+    }
+    spinner.success(
+      `Compendia packed in ${((Date.now() - packStart) / 1000).toFixed(2)}s`
+    );
+  } catch (err) {
+    spinner.error("Build failed!");
+    console.error(err);
+  }
 }
