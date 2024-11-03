@@ -1,6 +1,6 @@
 <div class="flexcol step-config-item" data-transition-type="melt" data-id="{{id}}">
   <form>
-    <input type="hidden" value="{{id}}">
+    <input type="hidden" value="{{id}}" name="id" id="id">
     <p>{{localize "BATTLETRANSITIONS.SCENECONFIG.MELT.DESCRIPTION"}}</p>
     {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
     {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}

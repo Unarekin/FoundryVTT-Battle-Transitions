@@ -1,7 +1,6 @@
-import { coerceMacro } from "../coercion";
 import { InvalidMacroError } from "../errors";
 import { TransitionSequence } from "../interfaces";
-import { parseConfigurationFormElements } from "../utils";
+import { getCompendiumFromUUID, getMacros, log, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { MacroConfiguration } from "./types";
 
@@ -24,10 +23,12 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
   // #region Public Static Methods (6)
 
   public static RenderTemplate(config?: MacroConfiguration): Promise<string> {
+    log("Macros:", getMacros().sort(sortMacro).map(formatMacro))
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${MacroStep.template}.hbs`, {
       id: foundry.utils.randomID(),
       ...MacroStep.DefaultSettings,
-      ...(config ? config : {})
+      ...(config ? config : {}),
+      macros: getMacros().sort(sortMacro).map(formatMacro)
     });
   }
 
@@ -58,10 +59,41 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> | void {
-    const macro = coerceMacro(this.config.macro);
-    if (!(macro instanceof Macro)) throw new InvalidMacroError(typeof this.config.macro === "string" ? this.config.macro : typeof this.config.macro);
-    return macro.execute() as void | Promise<void>;
+    const macro = fromUuidSync(this.config.macro);
+    if (!(macro instanceof Macro)) throw new InvalidMacroError(this.config.macro);
+    return macro.execute() as void | Promise<void>
+    // const macro = coerceMacro(this.config.macro);
+    // if (!(macro instanceof Macro)) throw new InvalidMacroError(typeof this.config.macro === "string" ? this.config.macro : typeof this.config.macro);
+    // return macro.execute() as void | Promise<void>;
   }
 
   // #endregion Public Methods (1)
+}
+
+type MacroLike = { name: string, uuid: string };
+
+function sortMacro(first: MacroLike, second: MacroLike): number {
+  const firstPack = getCompendiumFromUUID(first.uuid);
+  const secondPack = getCompendiumFromUUID(second.uuid);
+
+  if (firstPack !== secondPack) return firstPack.localeCompare(secondPack);
+  return first.name.localeCompare(second.name);
+}
+
+function formatMacro(macro: MacroLike): { name: string, uuid: string, pack: string } {
+  const retVal = {
+    name: macro.name,
+    uuid: macro.uuid,
+    pack: ""
+  }
+  if (game.packs) {
+    const parsed = macro.uuid.split(".");
+    if (parsed[0] === "Compendium") {
+      const packId = parsed.slice(1, 3).join(".");
+      const pack = game.packs.get(packId);
+      if (pack?.documentName === "Macro")
+        retVal.pack = pack.title
+    }
+  }
+  return retVal;
 }

@@ -119,6 +119,9 @@
         "TITLE": "Remove {name}",
         "CONTENT": "Are you sure you wish to remove {name}?"
       },
+      "MACRO": {
+        "DESCRIPTION": "Execute a macro.  This will execute for each user with their own permissions, so please be sure they have permission at all."
+      },
       "SOUND": {
         "DESCRIPTION": "Play a sound during the transition.  Unlike most transition steps, this one will NOT wait until the sound is finished to continue to the next.",
         "FILE": {

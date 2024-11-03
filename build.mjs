@@ -149,7 +149,7 @@ const buildResults = await build({
     sassPlugin(),
     ...copyPlugins,
     ...jsonMergers,
-    externalizeAllPackagesExcept(["semver", "fastest-validator"]),
+    externalizeAllPackagesExcept(["semver", "handlebars-group-by"]),
     // externalizeAllPackagesExcept(["rxjs", "mini-rx-store", "tslib", "mime", "@pixi/gif"])
   ],
 });

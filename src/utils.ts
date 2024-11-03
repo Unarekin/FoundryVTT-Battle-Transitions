@@ -512,3 +512,22 @@ export function migratev10XBackground(old: { background: string }): BackgroundTr
     bgSizingMode: "stretch"
   }
 }
+
+export function getMacros(): Macro[] {
+  return [
+    ...((game.macros?.contents.slice() as Macro[]) ?? []),
+    ...(game.packs?.contents.reduce((prev, curr) => {
+      if (curr.documentName !== "Macro") return prev;
+      return [
+        ...prev,
+        ...curr.index.contents
+      ] as Macro[];
+    }, [] as Macro[]) ?? [])
+  ]
+}
+
+export function getCompendiumFromUUID(uuid: string): string {
+  const split = uuid.split(".");
+  if (split[0] !== "Compendium") return "";
+  return split[2];
+}

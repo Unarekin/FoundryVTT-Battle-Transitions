@@ -335,7 +335,7 @@ export class BattleTransition {
     if (!actualMacro) throw new InvalidMacroError(typeof macro === "string" ? macro : typeof macro);
     this.#sequence.push({
       type: "macro",
-      macro: actualMacro.id
+      macro: actualMacro.uuid
     } as MacroConfiguration);
     return this;
   }

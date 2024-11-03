@@ -3,6 +3,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
+import groupBy from "./lib/groupBy";
+
 export function registerHelpers() {
   Handlebars.registerHelper("switch", function (this: any, value, options) {
     this._switch_value_ = value;
@@ -14,7 +16,9 @@ export function registerHelpers() {
   Handlebars.registerHelper("case", function (this: any, value, options) {
     if (value == this._switch_value_)
       return options.fn(this);
-  })
+  });
+
+  groupBy.register(Handlebars)
 }
 
 export async function registerTemplates() {
