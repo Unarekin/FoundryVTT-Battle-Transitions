@@ -19,7 +19,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
   }
 
   public static hidden: boolean = false;
-  public static key = "template";
+  public static key = "diamondwipe";
   public static name = "DIAMONDWIPE";
   public static template = "diamondwipe-config";
 
