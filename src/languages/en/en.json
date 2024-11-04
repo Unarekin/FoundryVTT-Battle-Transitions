@@ -97,7 +97,8 @@
       "TEXTURESWAP": "Texture Swap",
       "VIDEO": "Video",
       "WAIT": "Wait",
-      "WAVEWIPE": "Wave Wipe"
+      "WAVEWIPE": "Wave Wipe",
+      "STARTPLAYLIST": "Start Ambient Playlist"
     }
   }
 }

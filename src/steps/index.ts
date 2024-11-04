@@ -17,6 +17,7 @@ export * from './SceneChangeStep';
 export * from './SoundStep';
 export * from './SpiralRadialWipeStep';
 export * from './SpotlightWipeStep';
+export * from './StartPlaylistStep';
 export * from './TextureSwapStep';
 export * from './TransitionStep';
 export * from './VideoStep';

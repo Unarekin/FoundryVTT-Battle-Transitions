@@ -39,10 +39,11 @@ export class ConfigurationHandler {
           void new BattleTransition(scene).execute({
             caller: game.user?.id ?? "",
             remote: false,
-            sequence: [
-              { type: "scenechange", scene: scene.id } as SceneChangeConfiguration,
-              ...sequence
-            ]
+            sequence
+            // sequence: [
+            //   { type: "scenechange", scene: scene.id } as SceneChangeConfiguration,
+            //   ...sequence
+            // ]
           });
         }
       },
@@ -305,10 +306,11 @@ async function buildTransitionV2(scene?: Scene): Promise<void> {
           void new BattleTransition(sceneId).execute({
             caller: game.user?.id ?? "",
             remote: false,
-            sequence: [
-              { type: "scenechange", version: "1.1.0", scene: sceneId } as SceneChangeConfiguration,
-              ...sequence
-            ]
+            sequence
+            // sequence: [
+            //   { type: "scenechange", version: "1.1.0", scene: sceneId } as SceneChangeConfiguration,
+            //   ...sequence
+            // ]
           })
         }
       }
@@ -355,10 +357,11 @@ async function buildTransitionV1(scene?: Scene): Promise<void> {
             void new BattleTransition(sceneId).execute({
               caller: game.user?.id ?? "",
               remote: false,
-              sequence: [
-                { type: "scenechange", scene: sceneId, version: "1.1.0" } as SceneChangeConfiguration,
-                ...sequence
-              ]
+              sequence
+              // sequence: [
+              //   { type: "scenechange", scene: sceneId, version: "1.1.0" } as SceneChangeConfiguration,
+              //   ...sequence
+              // ]
             })
           }
         }

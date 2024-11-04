@@ -6,9 +6,7 @@ import { ConfigurationHandler } from './ConfigurationHandler';
 
 import SocketHandler from "./SocketHandler";
 import { BattleTransition } from "./BattleTransition";
-
 import semver from "semver";
-import { SceneChangeConfiguration } from './steps';
 import { log } from './utils';
 
 (window as any).semver = semver;
@@ -19,7 +17,6 @@ Hooks.once("canvasReady", () => {
   initializeCanvas();
   Hooks.callAll(CUSTOM_HOOKS.INITIALIZE)
 })
-
 
 
 Hooks.once("init", async () => {
@@ -54,10 +51,7 @@ Hooks.on("preUpdateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, u
       void new BattleTransition(scene).execute({
         caller: game.user?.id ?? "",
         remote: false,
-        sequence: [
-          { type: "scenechange", scene: scene.id, version: "1.1.0" } as SceneChangeConfiguration,
-          ...config.sequence
-        ]
+        sequence: config.sequence
       })
 
     }
@@ -65,21 +59,13 @@ Hooks.on("preUpdateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, u
   }
 });
 
-let IN_TRANSITION: boolean = false;
 
 Hooks.on("preUpdatePlaylist", (playlist: Playlist, delta: Partial<Playlist>) => {
+
+  log("preUpdatePlaylist:", BattleTransition.SuppressSoundUpdates);
   if (delta.playing) {
-    if (IN_TRANSITION) {
-      // Trigger after the transition has ended
-      Hooks.once(CUSTOM_HOOKS.TRANSITION_END, () => {
-        log("Sounds:", delta.sounds);
-        if ((delta.sounds as any)?.length) {
-          for (const soundDelta of (delta.sounds ?? [])) {
-            const sound = playlist.sounds.get(soundDelta._id as string);
-            if (sound instanceof PlaylistSound) void sound.parent?.playSound(sound);
-          }
-        }
-      });
+
+    if (BattleTransition.SuppressSoundUpdates) {
       return false;
     } else if (typeof (delta as any).delayed === "undefined") {
       // Delay
@@ -97,20 +83,14 @@ Hooks.on("preUpdatePlaylist", (playlist: Playlist, delta: Partial<Playlist>) => 
 });
 
 Hooks.on("preUpdatePlaylistSound", (sound: PlaylistSound, delta: Partial<PlaylistSound>) => {
+
+  log("preUpdatePlaylistSound:", BattleTransition.SuppressSoundUpdates);
   if (delta.playing) {
 
-    if (IN_TRANSITION) {
-      Hooks.once(CUSTOM_HOOKS.TRANSITION_END, () => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        void (sound as any).update({
-          ...delta,
-          delayed: true
-        });
-        void sound.parent?.playSound(sound);
-      })
+    if (BattleTransition.SuppressSoundUpdates) {
       return false;
     } else if (!(delta as any).delayed) {
-      log("Delaying");
+      // log("Delaying");
       setTimeout(() => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         void (sound as any).update({
@@ -126,12 +106,10 @@ Hooks.on("preUpdatePlaylistSound", (sound: PlaylistSound, delta: Partial<Playlis
 
 Hooks.on(CUSTOM_HOOKS.TRANSITION_START, (...args: unknown[]) => {
   log("Transition start:", args);
-  IN_TRANSITION = true;
 })
 
 Hooks.on(CUSTOM_HOOKS.TRANSITION_END, (...args: unknown[]) => {
   log("Transition end:", args);
-  IN_TRANSITION = false;
 })
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

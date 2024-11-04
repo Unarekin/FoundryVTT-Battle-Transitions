@@ -4,7 +4,7 @@ import { CUSTOM_HOOKS } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
 import SocketHandler from "./SocketHandler";
-import { AngularWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SceneChangeStep, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TransitionStep, WaitConfiguration, WaitStep, WaveWipeConfiguration, VideoConfiguration, BackgroundTransition, ParallelSequence, AngularWipeStep, BilinearWipeStep, ClockWipeStep, DiamondWipeStep, FadeStep, FireDissolveStep, SpiralRadialWipeStep, FlashStep, InvertStep, LinearWipeStep, MacroStep, MeltStep, ParallelStep, RadialWipeStep, SoundStep, SpotlightWipeStep, TextureSwapStep, WaveWipeStep, VideoStep, RemoveOverlayStep, RestoreOverlayStep } from "./steps";
+import { AngularWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SceneChangeStep, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TransitionStep, WaitConfiguration, WaitStep, WaveWipeConfiguration, VideoConfiguration, BackgroundTransition, ParallelSequence, AngularWipeStep, BilinearWipeStep, ClockWipeStep, DiamondWipeStep, FadeStep, FireDissolveStep, SpiralRadialWipeStep, FlashStep, InvertStep, LinearWipeStep, MacroStep, MeltStep, ParallelStep, RadialWipeStep, SoundStep, SpotlightWipeStep, TextureSwapStep, WaveWipeStep, VideoStep, RemoveOverlayStep, RestoreOverlayStep, StartPlaylistStep } from "./steps";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
 import { deserializeTexture, log, serializeTexture } from "./utils";
@@ -64,6 +64,8 @@ export class BattleTransition {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     spotlightwipe: (SpotlightWipeStep as any),
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    startplaylist: (StartPlaylistStep as any),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     textureswap: (TextureSwapStep as any),
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     video: (VideoStep as any),
@@ -80,6 +82,10 @@ export class BattleTransition {
 
   // #region Constructors (6)
 
+  #scene: Scene | null = null;
+
+  static SuppressSoundUpdates: boolean = false;
+
   constructor()
   constructor(scene: Scene)
   constructor(id: string)
@@ -91,6 +97,7 @@ export class BattleTransition {
         const scene = coerceScene(arg);
         if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
         if (scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
+        this.#scene = scene;
         this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
       }
     } catch (err) {
@@ -236,6 +243,29 @@ export class BattleTransition {
 
       // Notify other clients to execute, if necessary
       if (!sequence.remote) {
+
+        // Ensure we start with a scene change
+        if (sequence.sequence[0].type !== "scenechange") {
+          if (this.#scene instanceof Scene) {
+            sequence.sequence.unshift({
+              ...SceneChangeStep.DefaultSettings,
+              id: foundry.utils.randomID(),
+              scene: this.#scene.id
+            } as SceneChangeConfiguration);
+          } else {
+            throw new InvalidSceneError(typeof this.#scene);
+          }
+        }
+
+
+        // Ensure we have a start playlist step
+        if (!sequence.sequence.some(step => step.type === "startplaylist")) {
+          sequence.sequence.push({
+            ...StartPlaylistStep.DefaultSettings,
+            id: foundry.utils.randomID()
+          })
+        }
+
         // Last minute validation of our sequence
         const valid = await this.#validateSequence(sequence.sequence);
         if (valid instanceof Error) throw valid;
@@ -246,11 +276,17 @@ export class BattleTransition {
           sequence: serialized
         });
       } else {
+
+        BattleTransition.SuppressSoundUpdates = true;
         await this.#executeSequence(sequence);
+        BattleTransition.SuppressSoundUpdates = false;
       }
     } catch (err) {
       ui.notifications?.error((err as Error).message, { console: false });
       throw err;
+    } finally {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await (game.settings as any)?.set(__MODULE_ID__, "suppressSoundUpdates", false);
     }
   }
 
