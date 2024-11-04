@@ -9,6 +9,7 @@ import { BattleTransition } from "./BattleTransition";
 
 import semver from "semver";
 import { SceneChangeConfiguration } from './steps';
+import { log } from './utils';
 
 (window as any).semver = semver;
 (window as any).BattleTransition = BattleTransition;
@@ -44,6 +45,11 @@ Hooks.on("preUpdateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, u
   if (delta.active) {
     const config = ConfigurationHandler.GetSceneConfiguration(scene);
     if (!config.isTriggered && config.autoTrigger) {
+      // Check for ambience sound
+      if (scene.playlist?.playing) void scene.playlist.stopAll();
+      if (scene.playlistSound && ((scene.playlistSound as any) instanceof PlaylistSound) && (scene.playlistSound as unknown as PlaylistSound).playing)
+        void (scene.playlistSound as unknown as PlaylistSound).parent?.stopSound(scene.playlistSound as unknown as PlaylistSound);
+
       delta.active = false;
       void new BattleTransition(scene).execute({
         caller: game.user?.id ?? "",
@@ -58,6 +64,75 @@ Hooks.on("preUpdateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, u
 
   }
 });
+
+let IN_TRANSITION: boolean = false;
+
+Hooks.on("preUpdatePlaylist", (playlist: Playlist, delta: Partial<Playlist>) => {
+  if (delta.playing) {
+    if (IN_TRANSITION) {
+      // Trigger after the transition has ended
+      Hooks.once(CUSTOM_HOOKS.TRANSITION_END, () => {
+        log("Sounds:", delta.sounds);
+        if ((delta.sounds as any)?.length) {
+          for (const soundDelta of (delta.sounds ?? [])) {
+            const sound = playlist.sounds.get(soundDelta._id as string);
+            if (sound instanceof PlaylistSound) void sound.parent?.playSound(sound);
+          }
+        }
+      });
+      return false;
+    } else if (typeof (delta as any).delayed === "undefined") {
+      // Delay
+      setTimeout(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        void (playlist as any).update({
+          ...delta,
+          delayed: true
+        })
+      }, 100);
+
+      return false;
+    }
+  }
+});
+
+Hooks.on("preUpdatePlaylistSound", (sound: PlaylistSound, delta: Partial<PlaylistSound>) => {
+  if (delta.playing) {
+
+    if (IN_TRANSITION) {
+      Hooks.once(CUSTOM_HOOKS.TRANSITION_END, () => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        void (sound as any).update({
+          ...delta,
+          delayed: true
+        });
+        void sound.parent?.playSound(sound);
+      })
+      return false;
+    } else if (!(delta as any).delayed) {
+      log("Delaying");
+      setTimeout(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        void (sound as any).update({
+          ...delta,
+          delayed: true
+        })
+      }, 100);
+      return false;
+    }
+
+  }
+})
+
+Hooks.on(CUSTOM_HOOKS.TRANSITION_START, (...args: unknown[]) => {
+  log("Transition start:", args);
+  IN_TRANSITION = true;
+})
+
+Hooks.on(CUSTOM_HOOKS.TRANSITION_END, (...args: unknown[]) => {
+  log("Transition end:", args);
+  IN_TRANSITION = false;
+})
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 Hooks.on("updateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
