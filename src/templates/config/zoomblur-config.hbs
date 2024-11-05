@@ -1,0 +1,20 @@
+<div class="flexcol step-config-item" data-transition-type="zoomblur" data-it="{{id}}">
+  <form>
+    <input type="hidden" name="id" id="id" value="{{id}}">
+    <p>{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.DESCRIPTION"}}</p>
+
+    <div class="form-group">
+      <label for="maxStrength">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.MAXSTRENGTH.LABEL"}}</label>
+      <range-picker value="{{maxStrength}}" min="0" max="1" id="maxStrength" name="maxStrength"></range-picker>
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.MAXSTRENGTH.HINT"}}</p>
+
+    <div class="form-group">
+      <label for="innerRadius">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.INNERRADIUS.LABEL"}}</label>
+      <range-picker value="{{innerRadius}}" min="0" max="1" id="innerRadius" name="innerRadius"></range-picker>
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.INNERRADIUS.HINT"}}</p>
+
+    {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
+  </form>
+</div>

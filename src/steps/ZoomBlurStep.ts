@@ -1,4 +1,4 @@
-import { NotImplementedError } from '../errors';
+import { parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { ZoomBlurConfiguration } from './types';
 
@@ -35,16 +35,25 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     else return new ZoomBlurStep(arg as ZoomBlurConfiguration);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static fromFormElement(form: HTMLFormElement): ZoomBlurStep {
-    throw new NotImplementedError();
+    const elem = $(form) as JQuery<HTMLFormElement>;
+
+    const maxStrength = elem.find("#maxStrength input[type='number']").val() as number ?? 1;
+    const innerRadius = elem.find("#innerRadius input[type='number']").val() as number ?? 0;
+
+    return new ZoomBlurStep({
+      ...ZoomBlurStep.DefaultSettings,
+      ...parseConfigurationFormElements(elem, "id", "duration"),
+      maxStrength,
+      innerRadius
+    });
   }
 
   public async execute(container: PIXI.Container): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const filter = new (PIXI.filters as any).ZoomBlurFilter({
       strength: 0,
-      innerRadius: this.config.innerRadius,
+      innerRadius: this.config.innerRadius * window.innerWidth,
       radius: -1,
       center: [window.innerWidth / 2, window.innerHeight / 2]
 

@@ -160,6 +160,17 @@
       },
       "WAIT": {
         "DESCRIPTION": "Wait a specified amount of time before continuing."
+      },
+      "ZOOMBLUR": {
+        "DESCRIPTION": "Zoom in and blur the screen at the same time.",
+        "MAXSTRENGTH": {
+          "LABEL": "Maximum Strength",
+          "HINt": "Maximum strength of the effect."
+        },
+        "INNERRADIUS": {
+          "LABEL": "Inner Radius",
+          "HINT": "Radius of a circle in the center of the screen that is not blurred."
+        }
       }
     }
   }

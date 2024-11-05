@@ -98,7 +98,8 @@
       "VIDEO": "Video",
       "WAIT": "Wait",
       "WAVEWIPE": "Wave Wipe",
-      "STARTPLAYLIST": "Start Ambient Playlist"
+      "STARTPLAYLIST": "Start Ambient Playlist",
+      "ZOOMBLUR": "Zoom & Blur"
     }
   }
 }
