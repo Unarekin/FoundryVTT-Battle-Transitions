@@ -704,23 +704,17 @@ export class BattleTransition {
   async #executeSequence(sequence: TransitionSequence) {
     BattleTransition.SuppressSoundUpdates = true;
     Hooks.callAll(CUSTOM_HOOKS.TRANSITION_START, sequence);
-    log("Executing sequence:", sequence);
     let container: PIXI.Container | null = null;
     try {
       // Prepare overlay
       container = await setupTransition();
       this.#transitionOverlay = [...container.children];
-      log("Hiding loading bar");
       hideLoadingBar();
 
-      log("Preparing sequence");
       const preparedSequence = await this.prepareSequence(sequence);
-      log("Executing sequence");
       await this.#doExecuteSequence(container, sequence, preparedSequence);
-      log("Tearing down sequence");
       await this.#teardownSequence(container, preparedSequence);
 
-      log("Sequence finished");
       BattleTransition.SuppressSoundUpdates = false;
     } catch (err) {
       throw err as Error;
