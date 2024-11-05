@@ -161,7 +161,7 @@ if (buildResults.errors.length) {
   spinner.success(
     `Build completed in ${((Date.now() - buildStart) / 1000).toFixed(2)}s`
   );
-  if (buildResults.warnings.length) console.warn(buildResults.warnings);
+  // if (buildResults.warnings.length) console.warn(buildResults.warnings);
 
   const packStart = Date.now();
   spinner = yoctoSpinner({ text: "Packing compendia..." }).start();

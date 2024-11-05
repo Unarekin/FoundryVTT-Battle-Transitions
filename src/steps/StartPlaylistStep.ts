@@ -65,7 +65,6 @@ export class StartPlaylistStep extends TransitionStep<StartPlaylistConfiguration
   }
 
   public execute(container: PIXI.Container, sequence: TransitionSequence): void {
-    log("Executing StartPlaylistStep")
     BattleTransition.SuppressSoundUpdates = false;
 
     const sceneChange = sequence.sequence.reduce((prev, curr) => curr instanceof SceneChangeStep ? curr : prev) as SceneChangeConfiguration;

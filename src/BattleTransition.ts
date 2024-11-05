@@ -9,7 +9,7 @@ import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } fr
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
 import { deserializeTexture, log, serializeTexture } from "./utils";
 
-let suppressSoundUpdates: boolean = false;
+// let suppressSoundUpdates: boolean = false;
 
 // #region Type aliases (1)
 
@@ -86,11 +86,13 @@ export class BattleTransition {
 
   #scene: Scene | null = null;
 
-  static get SuppressSoundUpdates(): boolean { return suppressSoundUpdates; }
-  static set SuppressSoundUpdates(val: boolean) {
-    log("Setting SuppressSoundUpdates:", val);
-    suppressSoundUpdates = val;
-  }
+  static SuppressSoundUpdates: boolean = false;
+
+  // static get SuppressSoundUpdates(): boolean { return suppressSoundUpdates; }
+  // static set SuppressSoundUpdates(val: boolean) {
+  //   log("Setting SuppressSoundUpdates:", val);
+  //   suppressSoundUpdates = val;
+  // }
 
   constructor()
   constructor(scene: Scene)
@@ -708,12 +710,17 @@ export class BattleTransition {
       // Prepare overlay
       container = await setupTransition();
       this.#transitionOverlay = [...container.children];
+      log("Hiding loading bar");
       hideLoadingBar();
 
+      log("Preparing sequence");
       const preparedSequence = await this.prepareSequence(sequence);
+      log("Executing sequence");
       await this.#doExecuteSequence(container, sequence, preparedSequence);
+      log("Tearing down sequence");
       await this.#teardownSequence(container, preparedSequence);
 
+      log("Sequence finished");
       BattleTransition.SuppressSoundUpdates = false;
     } catch (err) {
       throw err as Error;

@@ -531,3 +531,7 @@ export function getCompendiumFromUUID(uuid: string): string {
   if (split[0] !== "Compendium") return "";
   return split[2];
 }
+
+export async function nextFrame() {
+  return new Promise(resolve => { requestAnimationFrame(resolve); });
+}

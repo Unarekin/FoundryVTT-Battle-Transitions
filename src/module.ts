@@ -7,7 +7,7 @@ import { ConfigurationHandler } from './ConfigurationHandler';
 import SocketHandler from "./SocketHandler";
 import { BattleTransition } from "./BattleTransition";
 import semver from "semver";
-import { log } from './utils';
+import { awaitHook, log } from './utils';
 import { libWrapper } from "./vendor/libwrapper.shim";
 
 (window as any).semver = semver;
@@ -138,8 +138,8 @@ Hooks.on(CUSTOM_HOOKS.TRANSITION_END, (...args: unknown[]) => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 Hooks.on("updateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
   if (delta.active) {
-    Hooks.callAll(CUSTOM_HOOKS.SCENE_ACTIVATED, scene);
     if (scene.canUserModify(game.user as User, "update")) void scene.unsetFlag(__MODULE_ID__, "isTriggered");
-  }
 
-})
+    awaitHook("canvasReady").then(() => { Hooks.callAll(CUSTOM_HOOKS.SCENE_ACTIVATED, scene); }).catch(console.error);
+  }
+});

@@ -1,7 +1,7 @@
 import { COVER_ID } from "./constants";
 import { ScreenSpaceCanvasGroup } from './ScreenSpaceCanvasGroup';
 import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError } from './errors';
-import { awaitHook, createColorTexture, log } from "./utils";
+import { awaitHook, createColorTexture, log, logImage } from "./utils";
 import { coerceScene } from "./coercion";
 
 
@@ -23,6 +23,7 @@ export function initializeCanvas() {
 }
 
 export async function createSnapshot() {
+  log("Starting createSnapShot");
   if (!canvas) throw new CanvasNotFoundError();
   if (!(canvas.app && canvas.hidden && canvas.primary && canvas.tiles && canvas.drawings && canvas.scene && canvas.stage)) throw new NotInitializedError();
 
@@ -31,6 +32,7 @@ export async function createSnapshot() {
   const renderer = canvas.app.renderer;
 
   const rt = PIXI.RenderTexture.create({ width: sceneWidth, height: sceneHeight });
+  log("Rendering to RenderTexture");
   renderer.render(canvas.stage, { renderTexture: rt, skipUpdateTransform: true, clear: true });
 
   const transitionCover = document.getElementById(COVER_ID) as HTMLImageElement | null;
@@ -38,6 +40,7 @@ export async function createSnapshot() {
 
   transitionCover.style.backgroundImage = "";
   const start = Date.now();
+  log("Extracting image");
   const img = await renderer.extract.image(rt);
 
   const tempCanvas = document.createElement("canvas");
@@ -58,8 +61,11 @@ export async function createSnapshot() {
   transitionCover.style.backgroundImage = `url(${src})`;
   transitionCover.style.backgroundColor = renderer.background.backgroundColor.toHex()
   transitionCover.style.display = "block";
+  log("Overlay stand-in:", transitionCover)
+  logImage(src);
 
-  const sprite = PIXI.Sprite.from(rt);
+  log("Creating sprite");
+  const sprite = new PIXI.Sprite(rt);
   return sprite;
 }
 
@@ -70,6 +76,7 @@ export async function setupTransition(): Promise<PIXI.Container> {
   container.width = window.innerWidth;
   container.height = window.innerHeight;
 
+  log("Creating bgTexture");
   const bgTexture = createColorTexture(canvas?.app?.renderer.background.backgroundColor ?? "white");
   const sprite = new PIXI.Sprite(bgTexture);
   sprite.width = window.innerWidth;
