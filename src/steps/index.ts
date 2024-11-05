@@ -20,6 +20,7 @@ export * from './SpotlightWipeStep';
 export * from './StartPlaylistStep';
 export * from './TextureSwapStep';
 export * from './TransitionStep';
+export * from './TwistStep';
 export * from './VideoStep';
 export * from './WaitStep';
 export * from './WaveWipeStep';

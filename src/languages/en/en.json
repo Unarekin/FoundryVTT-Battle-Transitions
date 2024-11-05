@@ -94,11 +94,12 @@
       "SPIRALLINEARWIPE": "Spiral Wipe (Lienar)",
       "SPIRALRADIALWIPE": "Spiral Wipe (Radial)",
       "SPOTLIGHTWIPE": "Spotlight Wipe",
+      "STARTPLAYLIST": "Start Ambient Playlist",
       "TEXTURESWAP": "Texture Swap",
+      "TWIST": "Twist",
       "VIDEO": "Video",
       "WAIT": "Wait",
       "WAVEWIPE": "Wave Wipe",
-      "STARTPLAYLIST": "Start Ambient Playlist",
       "ZOOMBLUR": "Zoom & Blur"
     }
   }

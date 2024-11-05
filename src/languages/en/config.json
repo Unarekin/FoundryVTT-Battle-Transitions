@@ -51,6 +51,10 @@
         "RADIAL": {
           "HINT": "Start from inside or outside",
           "LABEL": "Radial Direction"
+        },
+        "CLOCKDIRECTION": {
+          "LABEL": "Direction",
+          "HINT": "Clockwise or counterclockwise"
         }
       },
       "DIAMOND": {
@@ -171,6 +175,9 @@
           "LABEL": "Inner Radius",
           "HINT": "Radius of a circle in the center of the screen that is not blurred."
         }
+      },
+      "TWIST": {
+        "DESCRIPTION": "Twist the screen"
       }
     }
   }

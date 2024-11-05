@@ -134,3 +134,8 @@ export type ZoomBlurConfiguration = TransitionConfiguration & DurationTransition
   innerRadius: number;
 
 });
+
+export type TwistConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
+  maxAngle: number;
+  direction: ClockDirection;
+})

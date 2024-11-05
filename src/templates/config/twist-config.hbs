@@ -1,0 +1,24 @@
+<div class="flexcol step-config-item" data-transition-type="twist" data-id="{{id}}">
+  <form>
+    <input type="hidden" name="id" id="id" value="{{id}}">
+    <p>{{localize "BATTLETRANSITIONS.SCENECONFIG.TWIST.DESCRIPTION"}}</p>
+    <div class="form-group">
+      <label for="clockdirection">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.CLOCKDIRECTION.LABEL"
+        }}</label>
+      <select name="direction" id="direction">
+        {{selectOptions
+          directionSelect
+          selected=direction
+          localize=true
+        }}
+      </select>
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.CLOCKDIRECTION.HINT"
+      }}</p>
+
+    {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
+  </form>
+
+</div>
