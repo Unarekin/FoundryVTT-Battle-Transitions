@@ -9,6 +9,8 @@ import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } fr
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
 import { deserializeTexture, log, serializeTexture } from "./utils";
 
+let suppressSoundUpdates: boolean = false;
+
 // #region Type aliases (1)
 
 type TransitionSequenceCallback = (transition: BattleTransition) => TransitionConfiguration[];
@@ -84,7 +86,11 @@ export class BattleTransition {
 
   #scene: Scene | null = null;
 
-  static SuppressSoundUpdates: boolean = false;
+  static get SuppressSoundUpdates(): boolean { return suppressSoundUpdates; }
+  static set SuppressSoundUpdates(val: boolean) {
+    log("Setting SuppressSoundUpdates:", val);
+    suppressSoundUpdates = val;
+  }
 
   constructor()
   constructor(scene: Scene)
@@ -276,17 +282,11 @@ export class BattleTransition {
           sequence: serialized
         });
       } else {
-
-        BattleTransition.SuppressSoundUpdates = true;
         await this.#executeSequence(sequence);
-        BattleTransition.SuppressSoundUpdates = false;
       }
     } catch (err) {
       ui.notifications?.error((err as Error).message, { console: false });
       throw err;
-    } finally {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      await (game.settings as any)?.set(__MODULE_ID__, "suppressSoundUpdates", false);
     }
   }
 
@@ -451,7 +451,7 @@ export class BattleTransition {
         //   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         //   (step as BackgroundTransition).deserializedTexture = deserializeTexture((step as BackgroundTransition).serializedTexture as any);
         // }
-        const prep = instance.prepare();
+        const prep = instance.prepare(sequence);
         if (prep instanceof Promise) await prep;
 
         steps.push(instance);
@@ -700,6 +700,7 @@ export class BattleTransition {
   }
 
   async #executeSequence(sequence: TransitionSequence) {
+    BattleTransition.SuppressSoundUpdates = true;
     Hooks.callAll(CUSTOM_HOOKS.TRANSITION_START, sequence);
     log("Executing sequence:", sequence);
     let container: PIXI.Container | null = null;
@@ -713,6 +714,7 @@ export class BattleTransition {
       await this.#doExecuteSequence(container, sequence, preparedSequence);
       await this.#teardownSequence(container, preparedSequence);
 
+      BattleTransition.SuppressSoundUpdates = false;
     } catch (err) {
       throw err as Error;
     } finally {

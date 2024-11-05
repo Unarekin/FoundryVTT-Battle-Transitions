@@ -1,6 +1,6 @@
 import { NotImplementedError } from "../errors";
 import { CustomFilter } from "../filters";
-import { TransitionSequence } from "../interfaces";
+import { TransitionSequence } from '../interfaces';
 import { AnimatedTransition, TransitionConfiguration } from "./types";
 
 export abstract class TransitionStep<t extends TransitionConfiguration = TransitionConfiguration> {
@@ -56,7 +56,8 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public addEventListeners(element: HTMLElement | JQuery<HTMLElement>): void { }
 
-  public prepare(): Promise<void> | void { }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public prepare(sequence?: TransitionSequence): Promise<void> | void { }
 
   public serialize(): Promise<t> | t {
     return {

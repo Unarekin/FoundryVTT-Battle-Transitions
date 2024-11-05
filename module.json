@@ -18,6 +18,16 @@
   ],
   "relationships": {
     "systems": [],
+    "recommends": [
+      {
+        "id": "lib-wrapper",
+        "type": "module",
+        "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/download/v1.13.2.0/module.json",
+        "compatibility": {
+          "verified": "1.13.2.0"
+        }
+      }
+    ],
     "requires": [
       {
         "id": "color-picker",

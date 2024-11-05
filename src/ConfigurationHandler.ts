@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { InvalidSceneError, InvalidTransitionError } from "./errors";
-import { SceneChangeConfiguration, TransitionConfiguration } from "./steps";
 import { confirmDialog, getStepClassByKey, localize, log, shouldUseAppV2 } from "./utils";
 import { AddTransitionStepDialog, EditTransitionStepDialog } from "./dialogs";
 import { SceneConfiguration } from "./interfaces";
 import { DataMigration } from "./DataMigration";
 import { BattleTransition } from "./BattleTransition";
+import { TransitionConfiguration } from "./steps";
 
 // #region Classes (1)
 
