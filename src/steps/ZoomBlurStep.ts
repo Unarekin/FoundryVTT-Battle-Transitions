@@ -44,13 +44,17 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const filter = new (PIXI.filters as any).ZoomBlurFilter({
       strength: 0,
-      innerRadius: this.config.innerRadius
+      innerRadius: this.config.innerRadius,
+      radius: -1,
+      center: [window.innerWidth / 2, window.innerHeight / 2]
+
+
     }) as PIXI.Filter;
 
     this.addFilter(container, filter);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { strength: this.config.maxStrength, duration: this.config.duration / 1000, ease: this.config.easing || "none" });
+    await TweenMax.to(filter.uniforms, { uStrength: this.config.maxStrength, duration: this.config.duration / 1000, ease: this.config.easing || "none" });
 
   }
 }

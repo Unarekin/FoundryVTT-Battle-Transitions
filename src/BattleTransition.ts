@@ -7,7 +7,7 @@ import SocketHandler from "./SocketHandler";
 import { AngularWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SceneChangeStep, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TransitionStep, WaitConfiguration, WaitStep, WaveWipeConfiguration, VideoConfiguration, BackgroundTransition, ParallelSequence, AngularWipeStep, BilinearWipeStep, ClockWipeStep, DiamondWipeStep, FadeStep, FireDissolveStep, SpiralRadialWipeStep, FlashStep, InvertStep, LinearWipeStep, MacroStep, MeltStep, ParallelStep, RadialWipeStep, SoundStep, SpotlightWipeStep, TextureSwapStep, WaveWipeStep, VideoStep, RemoveOverlayStep, RestoreOverlayStep, StartPlaylistStep, ZoomBlurStep, ZoomBlurConfiguration } from "./steps";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { deserializeTexture, log, serializeTexture } from "./utils";
+import { deserializeTexture, serializeTexture } from "./utils";
 
 // let suppressSoundUpdates: boolean = false;
 
