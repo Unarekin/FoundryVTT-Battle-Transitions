@@ -80,7 +80,7 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   // #region Protected Methods (4)
 
-  protected addFilter(container: PIXI.Container, filter: CustomFilter<any>) {
+  protected addFilter(container: PIXI.Container, filter: CustomFilter<any> | PIXI.Filter) {
     if (Array.isArray(container.filters)) container.filters.push(filter);
     else container.filters = [filter];
   }

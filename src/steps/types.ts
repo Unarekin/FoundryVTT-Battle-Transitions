@@ -129,3 +129,8 @@ export type RemoveOverlayConfiguration = TransitionConfiguration;
 export type RestoreOverlayConfiguration = TransitionConfiguration;
 
 export type StartPlaylistConfiguration = TransitionConfiguration;
+export type ZoomBlurConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
+  maxStrength: number;
+  innerRadius: number;
+
+});
