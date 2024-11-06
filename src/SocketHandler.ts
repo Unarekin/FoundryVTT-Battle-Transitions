@@ -3,7 +3,7 @@
 import { BattleTransition } from "./BattleTransition";
 import { PrepareTimedOutError, SequenceTimedOutError } from "./errors";
 import { TransitionSequence } from "./interfaces";
-import { TransitionConfiguration } from "./steps";
+import { StartPlaylistConfiguration, StartPlaylistStep, TransitionConfiguration } from "./steps";
 import { log, timeout } from "./utils";
 
 const TIMEOUT_PERIOD = 3000;
@@ -29,6 +29,15 @@ class SocketHandler {
         sequence
       };
 
+      // Ensure we have a StartPlaylist step in our sequence
+      if (!sequence.some(step => step.type === "startplaylist")) {
+        const step: StartPlaylistConfiguration = {
+          ...StartPlaylistStep.DefaultSettings,
+          ...(new StartPlaylistStep({}).config)
+        }
+        actual.sequence.push(step);
+      }
+
       const expectedDuration = sequence.reduce((prev, curr) => {
 
         switch (typeof (curr as any).duration) {
@@ -44,20 +53,17 @@ class SocketHandler {
         return prev;
       }, 0);
 
-      log("Executing:", actual)
-      log("Expected duration:", expectedDuration);
-
       const users = (game.users?.contents.filter(user => user.active) as User[]) ?? []
       // Prepare
       await Promise.race([
         Promise.all(users.map(user => this.#socket.executeAsUser("transition.prep", user.id, actual) as Promise<void>)),
-        timeout(TIMEOUT_PERIOD + expectedDuration).catch(() => { throw new PrepareTimedOutError(); })
+        timeout(TIMEOUT_PERIOD, new PrepareTimedOutError())
       ])
 
       // Execute
       await Promise.race([
         Promise.all(users.map(user => this.#socket.executeAsUser("transition.exec", user.id, actual.id) as Promise<void>)),
-        timeout(expectedDuration + TIMEOUT_PERIOD).catch(() => { throw new SequenceTimedOutError(); })
+        timeout(expectedDuration + TIMEOUT_PERIOD, new SequenceTimedOutError())
       ]);
 
     } catch (err) {

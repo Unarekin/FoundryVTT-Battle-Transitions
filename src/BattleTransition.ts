@@ -3,11 +3,11 @@ import { ConfigurationHandler } from "./ConfigurationHandler";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelStep, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, StartPlaylistStep, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelStep, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { getStepClassByKey, log, serializeTexture } from "./utils";
+import { deserializeTexture, getStepClassByKey, serializeTexture } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 
 // let suppressSoundUpdates: boolean = false;
@@ -184,9 +184,10 @@ export class BattleTransition {
 
 
   static async executePreparedSequence(id: string): Promise<void> {
-    log("Prepared sequences:", id, PreparedSequences);
     const prepared = PreparedSequences[id];
     if (!prepared) throw new InvalidTransitionError(typeof prepared);
+
+    Hooks.callAll(CUSTOM_HOOKS.TRANSITION_START, prepared.original);
 
     let container: PIXI.Container | null = null;
 
@@ -196,11 +197,14 @@ export class BattleTransition {
 
       hideLoadingBar();
 
+      BattleTransition.SuppressSoundUpdates = true;
       // Execute
       for (const step of prepared.prepared.sequence) {
         const exec = step.execute(container, prepared.original);
         if (exec instanceof Promise) await exec;
       }
+
+      BattleTransition.SuppressSoundUpdates = false;
 
       // Teardown
       for (const step of prepared.prepared.sequence) {
@@ -232,18 +236,6 @@ export class BattleTransition {
     if (!scene.canUserModify(game.user as User, "update")) throw new PermissionDeniedError();
 
 
-    // Check for startplaylist step, adding one at the end if it does not exist
-    if (!sequence.some(step => step.type === "startplaylist")) {
-      const startPlaylist = new StartPlaylistStep({}).config;
-      sequence = [
-        ...sequence,
-        {
-          ...StartPlaylistStep.DefaultSettings,
-          ...startPlaylist
-        }
-      ];
-    }
-
     // Socket time baybee
     await SocketHandler.execute(sequence);
   }
@@ -255,9 +247,24 @@ export class BattleTransition {
    */
   static async prepareSequence(sequence: TransitionSequence): Promise<TransitionStep[]> {
     const steps: TransitionStep[] = [];
-    for (const step of sequence.sequence) {
+    for (const temp of sequence.sequence) {
+      const step = { ...temp };
       const instance = getStepInstance(step);
       if (!instance) throw new InvalidTransitionError(typeof step.type === "string" ? step.type : typeof step.type);
+
+      // Handle steps with backgrounds
+      if (Object.prototype.hasOwnProperty.call(step, "backgroundType")) {
+        const bgStep = step as unknown as BackgroundTransition;
+        switch (bgStep.backgroundType) {
+          case "color":
+            bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundColor ?? "transparent");
+            break;
+          case "image":
+            bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundImage ?? "transparent");
+            break;
+        }
+      }
+
       const res = instance.prepare(sequence);
       if (res instanceof Promise) await res;
       steps.push(instance);

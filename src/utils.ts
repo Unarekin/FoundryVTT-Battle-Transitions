@@ -539,6 +539,10 @@ export async function nextFrame() {
 /**
  * Returns a {@link Promise} that rejects after the specified amount of time
  */
-export async function timeout(time: number): Promise<void> {
-  return new Promise<void>((resolve, reject) => { setTimeout(reject, time) });
+export async function timeout(time: number, err?: Error): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    setTimeout(() => {
+      reject(err ? err : new Error());
+    }, time)
+  });
 }
