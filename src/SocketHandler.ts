@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import { BattleTransition } from "./BattleTransition";
-import { PrepareTimedOutError, SequenceTimedOutError } from "./errors";
 import { TransitionSequence } from "./interfaces";
 import { StartPlaylistConfiguration, StartPlaylistStep, TransitionConfiguration } from "./steps";
-import { log, timeout } from "./utils";
+import { localize, log, wait } from "./utils";
 
 const TIMEOUT_PERIOD = 3000;
 
@@ -54,16 +53,22 @@ class SocketHandler {
       }, 0);
 
       const users = (game.users?.contents.filter(user => user.active) as User[]) ?? []
+
+      const usersPrepared: User[] = [];
+
       // Prepare
-      await Promise.race([
-        Promise.all(users.map(user => this.#socket.executeAsUser("transition.prep", user.id, actual) as Promise<void>)),
-        timeout(TIMEOUT_PERIOD, new PrepareTimedOutError())
-      ])
+      await Promise.any([
+        Promise.all(users.map(user => (this.#socket.executeAsUser("transition.prep", user.id, actual) as Promise<void>).then(() => { usersPrepared.push(user) }))),
+        wait(TIMEOUT_PERIOD)
+      ]);
+
+      if (usersPrepared.length < users.length)
+        ui.notifications?.warn(localize("BATTLETRANSITIONS.WARNINGS.PREPARETIMEOUT"), { console: false });
 
       // Execute
-      await Promise.race([
-        Promise.all(users.map(user => this.#socket.executeAsUser("transition.exec", user.id, actual.id) as Promise<void>)),
-        timeout(expectedDuration + TIMEOUT_PERIOD, new SequenceTimedOutError())
+      await Promise.any([
+        Promise.all(usersPrepared.map(user => this.#socket.executeAsUser("transition.exec", user.id, actual.id) as Promise<void>)),
+        wait(expectedDuration + TIMEOUT_PERIOD)
       ]);
 
     } catch (err) {

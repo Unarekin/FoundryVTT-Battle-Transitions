@@ -6,7 +6,10 @@
         "OK": "Ok"
       }
     },
-    "TRANSITIONCANCELED": "Transition canceled.",
+    "WARNINGS": {
+      "TRANSITIONCANCELED": "Transition canceled.",
+      "PREPARETIMEOUT": "One or more clients timed out waiting for a response."
+    },
     "DIRECTIONS": {
       "BOTTOM": "Bottom",
       "BOTTOMLEFT": "Bottom Left",
