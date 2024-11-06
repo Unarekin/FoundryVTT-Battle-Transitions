@@ -50,10 +50,15 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
   }
 
   public async execute(container: PIXI.Container): Promise<void> {
+    const config: ZoomBlurConfiguration = {
+      ...ZoomBlurStep.DefaultSettings,
+      ...this.config
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const filter = new (PIXI.filters as any).ZoomBlurFilter({
       strength: 0,
-      innerRadius: this.config.innerRadius * window.innerWidth,
+      innerRadius: config.innerRadius * window.innerWidth,
       radius: -1,
       center: [window.innerWidth / 2, window.innerHeight / 2]
 
@@ -63,7 +68,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     this.addFilter(container, filter);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { uStrength: this.config.maxStrength, duration: this.config.duration / 1000, ease: this.config.easing || "none" });
+    await TweenMax.to(filter.uniforms, { uStrength: config.maxStrength, duration: config.duration / 1000, ease: config.easing || "none" });
 
   }
 }

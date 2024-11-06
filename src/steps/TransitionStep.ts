@@ -20,7 +20,7 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   // #region Constructors (1)
 
-  constructor(public readonly config: t) { }
+  constructor(public readonly config: Partial<t>) { }
 
   // #endregion Constructors (1)
 
@@ -60,9 +60,7 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   public prepare(sequence?: TransitionSequence): Promise<void> | void { }
 
   public serialize(): Promise<t> | t {
-    return {
-      ...this.config
-    };
+    return this.config as t;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

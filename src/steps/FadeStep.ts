@@ -13,7 +13,8 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
     version: "1.1.0",
     bgSizingMode: "stretch",
     backgroundType: "color",
-    backgroundColor: "#00000000"
+    backgroundColor: "#00000000",
+    easing: "none"
   }
 
   public static hidden: boolean = false;
@@ -60,7 +61,11 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
-    const background = this.config.deserializedTexture ?? createColorTexture("transparent");
+    const config: FadeConfiguration = {
+      ...FadeStep.DefaultSettings,
+      ...this.config
+    }
+    const background = config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new FadeTransitionFilter(background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);

@@ -70,8 +70,12 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
-    const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new RadialWipeFilter(this.config.radial, background.baseTexture);
+    const config: RadialWipeConfiguration = {
+      ...RadialWipeStep.DefaultSettings,
+      ...this.config
+    }
+    const background = config.deserializedTexture ?? createColorTexture("transparent");
+    const filter = new RadialWipeFilter(config.radial, background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }

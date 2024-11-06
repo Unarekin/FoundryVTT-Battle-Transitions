@@ -25,7 +25,8 @@
       "INVALIDSOUND": "Invalid sound: {sound}",
       "NEWERVERSION": "Data appears to be from a newer version: {version}",
       "INVALIDVERSION": "Invalid data version: {version}",
-      "UNABLETOMIGRATE": "Unable to migrate data from {old} to {current}"
+      "UNABLETOMIGRATE": "Unable to migrate data from {old} to {current}",
+      "PREPARETIMEDOUT": "Timed out waiting for users to signal they're ready to transition."
     }
   }
 }

@@ -60,7 +60,13 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
     if (this.config.scene === canvas?.scene?.id) {
       throw new SequenceTimedOutError();
     }
-    if (sequence.caller === (game.user as User).id) await activateScene(this.config.scene);
+
+
+
+    if (sequence.caller === (game.user as User).id) await activateScene({
+      ...SceneChangeStep.DefaultSettings,
+      ...this.config
+    }.scene);
     else await awaitHook(CUSTOM_HOOKS.SCENE_ACTIVATED);
 
     hideTransitionCover();
@@ -69,7 +75,10 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
   public override async validate(): Promise<boolean | Error> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const scene = (game.scenes as any).get(this.config.scene);
-    if (!(scene instanceof Scene)) return Promise.resolve(new InvalidSceneError(this.config.scene));
+    if (!(scene instanceof Scene)) return Promise.resolve(new InvalidSceneError({
+      ...SceneChangeStep.DefaultSettings,
+      ...this.config
+    }.scene));
     else return Promise.resolve(true);
   }
 

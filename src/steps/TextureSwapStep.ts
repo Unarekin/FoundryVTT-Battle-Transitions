@@ -61,7 +61,12 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public execute(container: PIXI.Container, sequence: TransitionSequence): void {
-    const background = this.config.deserializedTexture ?? createColorTexture("transparent");
+    const config: TextureSwapConfiguration = {
+      ...TextureSwapStep.DefaultSettings,
+      ...this.config
+    };
+
+    const background = config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new TextureSwapFilter(background.baseTexture);
     this.addFilter(container, filter);
   }

@@ -57,8 +57,12 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
+    const config: SoundConfiguration = {
+      ...SoundStep.DefaultSettings,
+      ...this.config
+    }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    const sound = await foundry.audio.AudioHelper.play({ src: this.config.file, volume: this.config.volume / 100, autoplay: true }, true) as Sound;
+    const sound = await foundry.audio.AudioHelper.play({ src: this.config.file, volume: config.volume / 100, autoplay: true }, true) as Sound;
     this.#sound = sound;
   }
 

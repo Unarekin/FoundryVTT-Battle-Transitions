@@ -9,6 +9,7 @@ import { BattleTransition } from "./BattleTransition";
 import semver from "semver";
 import { awaitHook, log } from './utils';
 import { libWrapper } from "./vendor/libwrapper.shim";
+import { SceneChangeStep } from './steps';
 
 (window as any).semver = semver;
 (window as any).BattleTransition = BattleTransition;
@@ -35,10 +36,15 @@ Hooks.once("init", async () => {
         delta.active = false;
         (delta as any).isTriggered = true;
 
-        void new BattleTransition(this).execute({
-          caller: game.user?.id ?? "",
-          sequence: config.sequence
-        });
+        const sceneChangeStep = new SceneChangeStep({ scene: this.id ?? "" });
+        void BattleTransition.executeSequence([
+          {
+            ...SceneChangeStep.DefaultSettings,
+            ...sceneChangeStep.config
+          },
+          ...config.sequence
+        ]);
+
       }
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return wrapped(delta);

@@ -68,8 +68,12 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence) {
-    const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new LinearWipeFilter(this.config.direction, background.baseTexture);
+    const config: LinearWipeConfiguration = {
+      ...LinearWipeStep.DefaultSettings,
+      ...this.config
+    }
+    const background = config.deserializedTexture ?? createColorTexture("transparent");
+    const filter = new LinearWipeFilter(config.direction, background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }

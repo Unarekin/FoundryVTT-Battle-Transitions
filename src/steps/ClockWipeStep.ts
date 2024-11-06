@@ -73,8 +73,12 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
+    const config: ClockWipeConfiguration = {
+      ...ClockWipeStep.DefaultSettings,
+      ...this.config
+    }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new ClockWipeFilter(this.config.clockDirection, this.config.direction, background.baseTexture);
+    const filter = new ClockWipeFilter(config.clockDirection, config.direction, background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }

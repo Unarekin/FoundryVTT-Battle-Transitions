@@ -51,8 +51,12 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
+    const config: WaveWipeConfiguration = {
+      ...WaveWipeStep.DefaultSettings,
+      ...this.config
+    }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new WaveWipeFilter(this.config.direction, background.baseTexture);
+    const filter = new WaveWipeFilter(config.direction, background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }

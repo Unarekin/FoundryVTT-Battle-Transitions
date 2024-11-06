@@ -6,9 +6,9 @@
     "typeRoots": [
       "./@types",
       "./node_modules/@types",
-      "./node_modules/gsap/types",
-      "./node_modules/@types/semver"
+      "./node_modules/gsap/types"
     ],
+    "outDir": "dist",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "module": "Node16",
