@@ -16,7 +16,7 @@ export type SerializedAsset = TextureBuffer | DataURLBuffer | string;
 
 export interface TransitionSequence {
   caller: string;
-  remote?: boolean;
+  id: string;
   sequence: TransitionConfiguration[];
 }
 
@@ -36,4 +36,17 @@ export interface SceneConfiguration {
 
 export interface TransitionBuilderOptions extends ApplicationOptions {
   scene?: string;
+}
+
+export interface PreparedTransitionHash {
+  original: TransitionSequence;
+  prepared: PreparedTransitionSequence;
+  overlay: PIXI.DisplayObject[];
+}
+
+export interface ExportedTransition {
+  author: string;
+  description?: string;
+  version: number;
+  sequence: TransitionConfiguration[]
 }

@@ -61,8 +61,12 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
   // #region Public Methods (1)
 
   public async execute(container: PIXI.Container): Promise<void> {
+    const config: DiamondWipeConfiguration = {
+      ...DiamondWipeStep.DefaultSettings,
+      ...this.config
+    }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new DiamondTransitionFilter(this.config.size, background.baseTexture);
+    const filter = new DiamondTransitionFilter(config.size, background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }

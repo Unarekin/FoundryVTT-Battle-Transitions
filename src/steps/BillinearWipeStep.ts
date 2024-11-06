@@ -66,8 +66,12 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, _sequence: TransitionSequence): Promise<void> {
+    const config: BilinearWipeConfiguration = {
+      ...BilinearWipeStep.DefaultSettings,
+      ...this.config
+    }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new BilinearWipeFilter(this.config.direction, this.config.radial, background.baseTexture);
+    const filter = new BilinearWipeFilter(config.direction, config.radial, background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter)
   }

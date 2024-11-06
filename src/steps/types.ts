@@ -1,4 +1,4 @@
-import { PreparedTransitionSequence, SerializedAsset, TransitionSequence } from "../interfaces";
+import { SerializedAsset } from "../interfaces";
 import { Easing, BilinearDirection, RadialDirection, ClockDirection, WipeDirection, SizingMode, BackgroundType } from "../types";
 
 export interface TransitionConfiguration {
@@ -81,13 +81,8 @@ export type VideoConfiguration = BackgroundTransition & TransitionConfiguration 
 
 export type WaitConfiguration = TransitionConfiguration & DurationTransition;
 
-export interface ParallelSequence {
-  sequence: TransitionSequence;
-  prepared: PreparedTransitionSequence;
-}
-
 export interface ParallelConfiguration extends TransitionConfiguration {
-  sequences: ParallelSequence[];
+  sequences: TransitionConfiguration[][];
 }
 
 export type MeltConfiguration = TransitionConfiguration & BackgroundTransition & DurationTransition & AnimatedTransition;

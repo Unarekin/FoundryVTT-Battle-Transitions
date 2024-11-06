@@ -60,11 +60,15 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
+    const config: FlashConfiguration = {
+      ...FlashStep.DefaultSettings,
+      ...this.config
+    };
     const background = this.config.deserializedTexture ?? createColorTexture("tranparent");
 
     const filter = new TextureSwapFilter(background.baseTexture);
     this.addFilter(container, filter);
-    await wait(this.config.duration);
+    await wait(config.duration);
     this.removeFilter(container, filter);
     filter.destroy();
   }

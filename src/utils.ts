@@ -535,3 +535,14 @@ export function getCompendiumFromUUID(uuid: string): string {
 export async function nextFrame() {
   return new Promise(resolve => { requestAnimationFrame(resolve); });
 }
+
+/**
+ * Returns a {@link Promise} that rejects after the specified amount of time
+ */
+export async function timeout(time: number, err?: Error): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    setTimeout(() => {
+      reject(err ? err : new Error());
+    }, time)
+  });
+}

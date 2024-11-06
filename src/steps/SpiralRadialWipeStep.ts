@@ -61,8 +61,12 @@ export class SpiralRadialWipeStep extends TransitionStep<SpiralRadialWipeConfigu
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
+    const config: SpiralRadialWipeConfiguration = {
+      ...SpiralRadialWipeStep.DefaultSettings,
+      ...this.config
+    };
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new SpiralRadialWipeFilter(this.config.direction, this.config.radial, background.baseTexture);
+    const filter = new SpiralRadialWipeFilter(config.direction, config.radial, background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }

@@ -6,6 +6,7 @@
         "OK": "Ok"
       }
     },
+    "TRANSITIONCANCELED": "Transition canceled.",
     "DIRECTIONS": {
       "BOTTOM": "Bottom",
       "BOTTOMLEFT": "Bottom Left",

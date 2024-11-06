@@ -5,7 +5,7 @@ import { AddTransitionStepDialog, EditTransitionStepDialog } from "./dialogs";
 import { SceneConfiguration } from "./interfaces";
 import { DataMigration } from "./DataMigration";
 import { BattleTransition } from "./BattleTransition";
-import { TransitionConfiguration } from "./steps";
+import { SceneChangeConfiguration, SceneChangeStep, TransitionConfiguration } from "./steps";
 
 // #region Classes (1)
 
@@ -36,15 +36,16 @@ export class ConfigurationHandler {
           const sequence = this.GetSceneTransition(scene) ?? [];
           if (!(Array.isArray(sequence) && sequence.length)) return;
 
-          void new BattleTransition(scene).execute({
-            caller: game.user?.id ?? "",
-            remote: false,
-            sequence
-            // sequence: [
-            //   { type: "scenechange", scene: scene.id } as SceneChangeConfiguration,
-            //   ...sequence
-            // ]
-          });
+          const sceneChange = new SceneChangeStep({ scene: scene.id ?? "" });
+          const step: SceneChangeConfiguration = {
+            ...SceneChangeStep.DefaultSettings,
+            ...sceneChange.config
+          };
+
+          void BattleTransition.executeSequence([
+            step,
+            ...sequence
+          ])
         }
       },
       {
@@ -303,15 +304,17 @@ async function buildTransitionV2(scene?: Scene): Promise<void> {
           const sceneId = $(dialog).find("#scene").val() as string;
           if (!sceneId) return;
           const sequence = buildTransitionFromForm($(dialog));
-          void new BattleTransition(sceneId).execute({
-            caller: game.user?.id ?? "",
-            remote: false,
-            sequence
-            // sequence: [
-            //   { type: "scenechange", version: "1.1.0", scene: sceneId } as SceneChangeConfiguration,
-            //   ...sequence
-            // ]
-          })
+
+          const step = new SceneChangeStep({ scene: sceneId });
+          const config: SceneChangeConfiguration = {
+            ...SceneChangeStep.DefaultSettings,
+            ...step.config
+          }
+
+          void BattleTransition.executeSequence([
+            config,
+            ...sequence
+          ])
         }
       }
     ]
@@ -354,15 +357,16 @@ async function buildTransitionV1(scene?: Scene): Promise<void> {
 
           const sequence = buildTransitionFromForm($(html));
           if (Array.isArray(sequence) && sequence.length) {
-            void new BattleTransition(sceneId).execute({
-              caller: game.user?.id ?? "",
-              remote: false,
-              sequence
-              // sequence: [
-              //   { type: "scenechange", scene: sceneId, version: "1.1.0" } as SceneChangeConfiguration,
-              //   ...sequence
-              // ]
-            })
+            const step = new SceneChangeStep({ scene: sceneId });
+            const config: SceneChangeConfiguration = {
+              ...SceneChangeStep.DefaultSettings,
+              ...step.config
+            };
+
+            void BattleTransition.executeSequence([
+              config,
+              ...sequence
+            ]);
           }
         }
       }

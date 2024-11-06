@@ -2,7 +2,7 @@ import { TransitionStep } from "./TransitionStep";
 import { TransitionSequence } from "../interfaces";
 import { SceneChangeConfiguration, StartPlaylistConfiguration } from "./types";
 import { InvalidSceneError, NotImplementedError } from "../errors";
-import { log, parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements } from "../utils";
 import { SceneChangeStep } from "./SceneChangeStep";
 import { BattleTransition } from "../BattleTransition";
 
@@ -50,12 +50,10 @@ export class StartPlaylistStep extends TransitionStep<StartPlaylistConfiguration
       if (scene.playlist) {
         if (scene.playlistSound) {
           const sound = typeof scene.playlistSound === "string" ? scene.playlist.sounds.get(scene.playlistSound) : (scene.playlistSound as PlaylistSound);
-          log("Preloading;", sound);
           if (sound) await sound.load();
         } else {
           const firstId = scene.playlist.playbackOrder[0];
           const sound = scene.playlist.sounds.get(firstId);
-          log("Preloading:", sound);
           if (sound) await sound.load();
         }
       }

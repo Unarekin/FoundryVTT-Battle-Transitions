@@ -77,8 +77,12 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
+    const config: SpotlightWipeConfiguration = {
+      ...SpotlightWipeStep.DefaultSettings,
+      ...this.config
+    };
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new SpotlightWipeFilter(this.config.direction, this.config.radial, background.baseTexture);
+    const filter = new SpotlightWipeFilter(config.direction, config.radial, background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }

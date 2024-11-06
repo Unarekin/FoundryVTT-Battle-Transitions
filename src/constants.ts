@@ -1,3 +1,5 @@
+import { PreparedTransitionHash } from "./interfaces";
+
 export const COVER_ID = "transition-cover";
 export const TRANSLATION_KEY = "BATTLETRANSITIONS";
 export const LOG_ICON = "⚔️";
@@ -9,3 +11,5 @@ export const CUSTOM_HOOKS = {
   SCENE_ACTIVATED: `${__MODULE_ID__}.sceneActivated`
 }
 
+
+export const PreparedSequences: { [x: string]: PreparedTransitionHash } = {};

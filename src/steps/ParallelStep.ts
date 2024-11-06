@@ -1,5 +1,5 @@
 import { BattleTransition } from "../BattleTransition";
-import { NotImplementedError } from "../errors";
+import { InvalidTransitionError, NotImplementedError } from "../errors";
 import { TransitionSequence } from "../interfaces";
 import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration } from "./types";
@@ -43,17 +43,33 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
   // #region Public Methods (2)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
-    await new BattleTransition().executeParallelSequence(container, this.config);
+    for (const prepared of this.#preparedSequences) {
+      for (const step of prepared) {
+        const res = step.execute(container, sequence);
+        if (res instanceof Promise) await res;
+      }
+    }
   }
 
-  public async prepare(): Promise<void> {
-    // Prepare our sub-sequences
-    const battleTransition = new BattleTransition();
+  #preparedSequences: TransitionStep[][] = [];
 
-    for (const sequence of this.config.sequences) {
-      sequence.prepared = await battleTransition.prepareSequence(sequence.sequence);
+  public async prepare(sequence: TransitionSequence): Promise<void> {
+    const config: ParallelConfiguration = {
+      ...ParallelStep.DefaultSettings,
+      ...this.config
+    };
+
+    if (!(Array.isArray(config.sequences) && config.sequences.length)) throw new InvalidTransitionError(typeof config.sequences);
+
+    this.#preparedSequences = [];
+    for (const step of config.sequences) {
+      this.#preparedSequences.push(await BattleTransition.prepareSequence({
+        ...sequence,
+        sequence: step
+      }));
+
     }
   }
 

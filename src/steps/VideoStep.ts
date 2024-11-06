@@ -1,7 +1,7 @@
 import { FileNotFoundError } from "../errors";
 import { TextureSwapFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { log, createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { VideoConfiguration } from "./types";
 
@@ -70,9 +70,13 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
-    log("executeVideo:", [...container.children]);
+    const config: VideoConfiguration = {
+      ...VideoStep.DefaultSettings,
+      ...this.config
+    };
+
     const texture = this.#preloadedVideo;
-    if (!texture) throw new FileNotFoundError(this.config.file);
+    if (!texture) throw new FileNotFoundError(config.file);
 
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const resource = texture?.baseTexture.resource as PIXI.VideoResource;
@@ -97,7 +101,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
       container.parent.addChild(videoContainer);
 
       source.addEventListener("ended", () => {
-        if (this.config.clear) setTimeout(() => { sprite.destroy(); }, 500);
+        if (config.clear) setTimeout(() => { sprite.destroy(); }, 500);
         resolve();
       });
 
@@ -108,8 +112,12 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
   }
 
   public async prepare(): Promise<void> {
+    const config: VideoConfiguration = {
+      ...VideoStep.DefaultSettings,
+      ...this.config
+    };
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    const texture: PIXI.Texture = await (PIXI.loadVideo as any).load(this.config.file) as PIXI.Texture;
+    const texture: PIXI.Texture = await (PIXI.loadVideo as any).load(config.file) as PIXI.Texture;
     this.#preloadedVideo = texture;
   }
 

@@ -59,12 +59,13 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> | void {
-    const macro = fromUuidSync(this.config.macro);
-    if (!(macro instanceof Macro)) throw new InvalidMacroError(this.config.macro);
+    const config: MacroConfiguration = {
+      ...MacroStep.DefaultSettings,
+      ...this.config
+    }
+    const macro = fromUuidSync(config.macro);
+    if (!(macro instanceof Macro)) throw new InvalidMacroError(config.macro);
     return macro.execute() as void | Promise<void>
-    // const macro = coerceMacro(this.config.macro);
-    // if (!(macro instanceof Macro)) throw new InvalidMacroError(typeof this.config.macro === "string" ? this.config.macro : typeof this.config.macro);
-    // return macro.execute() as void | Promise<void>;
   }
 
   // #endregion Public Methods (1)

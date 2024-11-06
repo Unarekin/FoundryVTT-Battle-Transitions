@@ -53,7 +53,11 @@ export class WaitStep extends TransitionStep<WaitConfiguration> {
   // #region Public Methods (1)
 
   public execute(): Promise<void> {
-    return new Promise<void>(resolve => { setTimeout(resolve, this.config.duration); });
+    const config: WaitConfiguration = {
+      ...WaitStep.DefaultSettings,
+      ...this.config
+    }
+    return new Promise<void>(resolve => { setTimeout(resolve, config.duration); });
   }
 
   // #endregion Public Methods (1)

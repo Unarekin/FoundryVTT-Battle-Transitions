@@ -1,13 +1,14 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { ConfigurationHandler } from "./ConfigurationHandler";
-import { CUSTOM_HOOKS } from "./constants";
-import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, RepeatExecuteError, TransitionToSelfError } from "./errors";
+import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
+import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelStep, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
-import { AngularWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SceneChangeStep, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TransitionStep, WaitConfiguration, WaitStep, WaveWipeConfiguration, VideoConfiguration, BackgroundTransition, ParallelSequence, AngularWipeStep, BilinearWipeStep, ClockWipeStep, DiamondWipeStep, FadeStep, FireDissolveStep, SpiralRadialWipeStep, FlashStep, InvertStep, LinearWipeStep, MacroStep, MeltStep, ParallelStep, RadialWipeStep, SoundStep, SpotlightWipeStep, TextureSwapStep, WaveWipeStep, VideoStep, RemoveOverlayStep, RestoreOverlayStep, StartPlaylistStep, ZoomBlurStep, ZoomBlurConfiguration, TwistConfiguration, TwistStep } from "./steps";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { deserializeTexture, serializeTexture } from "./utils";
+import { deserializeTexture, getStepClassByKey, serializeTexture } from "./utils";
+import { TransitionStep } from "./steps/TransitionStep";
 
 // let suppressSoundUpdates: boolean = false;
 
@@ -26,70 +27,13 @@ export class BattleTransition {
   // #region Properties (3)
 
   #sequence: TransitionConfiguration[] = [];
-  #stepTypes: { [x: string]: typeof TransitionStep } = {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    angularwipe: (AngularWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    bilinearwipe: (BilinearWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    clockwipe: (ClockWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    diamondwipe: (DiamondWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    fade: (FadeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    firedissolve: (FireDissolveStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    flash: (FlashStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    invert: (InvertStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    linearwipe: (LinearWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    macro: (MacroStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    melt: (MeltStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    parallel: (ParallelStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    radialwipe: (RadialWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    removeoverlay: (RemoveOverlayStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    restoreoverlay: (RestoreOverlayStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    scenechange: (SceneChangeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    sound: (SoundStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    spiralradialwipe: (SpiralRadialWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    spotlightwipe: (SpotlightWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    startplaylist: (StartPlaylistStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    textureswap: (TextureSwapStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    twist: (TwistStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    video: (VideoStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    wait: (WaitStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    wavewipe: (WaveWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    zoomblur: (ZoomBlurStep as any)
-  }
 
-  // eslint-disable-next-line no-unused-private-class-members
-  #transitionOverlay: PIXI.DisplayObject[] = [];
+  // // eslint-disable-next-line no-unused-private-class-members
+  // #transitionOverlay: PIXI.DisplayObject[] = [];
 
   // #endregion Properties (3)
 
   // #region Constructors (6)
-
-  #scene: Scene | null = null;
-
   static SuppressSoundUpdates: boolean = false;
 
   // static get SuppressSoundUpdates(): boolean { return suppressSoundUpdates; }
@@ -109,7 +53,6 @@ export class BattleTransition {
         const scene = coerceScene(arg);
         if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
         if (scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
-        this.#scene = scene;
         this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
       }
     } catch (err) {
@@ -239,68 +182,116 @@ export class BattleTransition {
     return this;
   }
 
-  /**
-   * Begins executing a given transition sequence, notifying other connected clients to do the same.
-   * @param {TransitionConfiguration[]} [sequence] - {@link TransitionConfiguration}[] to execute.  Defaults to sequence pre-configured on this {@link BattleTransition}.
-   */
-  public async execute(sequence?: TransitionSequence): Promise<void> {
+
+  static async executePreparedSequence(id: string): Promise<void> {
+    const prepared = PreparedSequences[id];
+    if (!prepared) throw new InvalidTransitionError(typeof prepared);
+
+    Hooks.callAll(CUSTOM_HOOKS.TRANSITION_START, prepared.original);
+
+    let container: PIXI.Container | null = null;
+
     try {
-      if (!sequence) {
-        sequence = {
-          caller: game.user?.id ?? "",
-          remote: false,
-          sequence: this.#sequence
-        };
+      container = await setupTransition();
+      prepared.overlay = [...container.children];
+
+      hideLoadingBar();
+
+      BattleTransition.SuppressSoundUpdates = true;
+      // Execute
+      for (const step of prepared.prepared.sequence) {
+        const exec = step.execute(container, prepared.original);
+        if (exec instanceof Promise) await exec;
       }
 
-      // Notify other clients to execute, if necessary
-      if (!sequence.remote) {
+      BattleTransition.SuppressSoundUpdates = false;
 
-        // Ensure we start with a scene change
-        if (sequence.sequence[0].type !== "scenechange") {
-          if (this.#scene instanceof Scene) {
-            sequence.sequence.unshift({
-              ...SceneChangeStep.DefaultSettings,
-              id: foundry.utils.randomID(),
-              scene: this.#scene.id
-            } as SceneChangeConfiguration);
-          } else {
-            throw new InvalidSceneError(typeof this.#scene);
-          }
-        }
-
-
-        // Ensure we have a start playlist step
-        if (!sequence.sequence.some(step => step.type === "startplaylist")) {
-          sequence.sequence.push({
-            ...StartPlaylistStep.DefaultSettings,
-            id: foundry.utils.randomID()
-          })
-        }
-
-        // Last minute validation of our sequence
-        const valid = await this.#validateSequence(sequence.sequence);
-        if (valid instanceof Error) throw valid;
-
-        const serialized = await this.#serializeSequence(sequence.sequence);
-        await SocketHandler.execute({
-          ...sequence,
-          sequence: serialized
-        });
-      } else {
-        await this.#executeSequence(sequence);
+      // Teardown
+      for (const step of prepared.prepared.sequence) {
+        await step.teardown(container);
       }
-    } catch (err) {
-      ui.notifications?.error((err as Error).message, { console: false });
-      throw err;
+
+    } finally {
+      setTimeout(() => { showLoadingBar(); }, 250);
+      if (container) cleanupTransition(container);
+      if (prepared) Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END, prepared.original)
+      else Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END);
+      delete PreparedSequences[id];
     }
   }
 
-  public async executeParallelSequence(container: PIXI.Container, config: ParallelConfiguration) {
-    await Promise.all(
-      config.sequences.map(({ sequence, prepared }) => this.#doExecuteSequence(container, sequence, prepared))
-    );
+  /**
+   * Validates a transition sequence and triggers it for all connected clients
+   * @param {TransitionConfiguration[]} sequence - {@link TransitionConfiguration}[] representing steps of the sequence
+   */
+  static async executeSequence(sequence: TransitionConfiguration[]): Promise<void> {
+    // Check for scenechange step
+    if (sequence[0].type !== "scenechange") throw new InvalidSceneError(typeof undefined);
+
+    // Validate the target scene
+    const scene = (game.scenes?.get((sequence[0] as SceneChangeConfiguration).scene)) as Scene;
+    if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof (sequence[0] as SceneChangeConfiguration).scene === "string" ? (sequence[0] as SceneChangeConfiguration).scene : typeof (sequence[0] as SceneChangeConfiguration).scene);
+
+    // Make sure we have permission to activate the new scene
+    if (!scene.canUserModify(game.user as User, "update")) throw new PermissionDeniedError();
+
+
+    // Socket time baybee
+    await SocketHandler.execute(sequence);
   }
+
+  /**
+   * Prepares a given set of transitions steps for execution, allowing them to preload media etc
+   * @param {TransitionSequence[]} sequence - {@link TransitionConfiguration}[] steps to be prepared
+   * @returns 
+   */
+  static async prepareSequence(sequence: TransitionSequence): Promise<TransitionStep[]> {
+    const steps: TransitionStep[] = [];
+    for (const temp of sequence.sequence) {
+      const step = { ...temp };
+      const instance = getStepInstance(step);
+      if (!instance) throw new InvalidTransitionError(typeof step.type === "string" ? step.type : typeof step.type);
+
+      // Handle steps with backgrounds
+      if (Object.prototype.hasOwnProperty.call(step, "backgroundType")) {
+        const bgStep = step as unknown as BackgroundTransition;
+        switch (bgStep.backgroundType) {
+          case "color":
+            bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundColor ?? "transparent");
+            break;
+          case "image":
+            bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundImage ?? "transparent");
+            break;
+        }
+      }
+
+      const res = instance.prepare(sequence);
+      if (res instanceof Promise) await res;
+      steps.push(instance);
+    }
+
+    PreparedSequences[sequence.id] = {
+      original: sequence,
+      prepared: {
+        ...sequence,
+        sequence: steps,
+      },
+      overlay: []
+    }
+
+    return steps;
+  }
+
+
+  /**
+   * Executes the transition sequence built for this {@link BattleTransition} instance.
+   * @returns {Promise} - A promise that resolves when the transition is done for all users
+   */
+  public async execute(): Promise<void> {
+    if (!(Array.isArray(this.#sequence) && this.#sequence.length)) throw new InvalidTransitionError(typeof this.#sequence);
+    await SocketHandler.execute(this.#sequence)
+  }
+
 
   /**
    * Fades the screen
@@ -407,68 +398,22 @@ export class BattleTransition {
    * @returns 
    */
   public parallel(...callbacks: TransitionSequenceCallback[]): this {
-    const sequences: TransitionSequence[] = [];
+    const sequences: TransitionConfiguration[][] = [];
     for (const callback of callbacks) {
-      const transition = new BattleTransition();
-      const res = callback(transition);
+      const res = callback(new BattleTransition());
       if (res instanceof Promise) throw new ParallelExecuteError();
-      sequences.push({
-        caller: game.user?.id ?? "",
-        remote: false,
-        sequence: transition.sequence
-      });
+      sequences.push(res);
     }
 
+    const step = new ParallelStep({
+
+    });
     this.#sequence.push({
-      type: "parallel",
-      sequences: sequences.map(sequence => ({
-        sequence,
-        prepared: {
-          ...sequence,
-          sequence: []
-        }
-      } as ParallelSequence))
-    } as ParallelConfiguration);
+      ...ParallelStep.DefaultSettings,
+      ...step.config
+    });
 
     return this;
-  }
-
-  public async prepareSequence(sequence: TransitionSequence): Promise<PreparedTransitionSequence> {
-    try {
-      const steps: TransitionStep[] = [];
-
-      for (const step of sequence.sequence) {
-        const instance = this.#getStepInstance(step);
-
-        if (Object.prototype.hasOwnProperty.call(step, "backgroundType")) {
-          const bgStep = step as unknown as BackgroundTransition;
-
-          switch (bgStep.backgroundType) {
-            case "color":
-              bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundColor ?? "transparent");
-              break;
-            case "image":
-              bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundImage ?? "transparent");
-              break;
-          }
-        }
-
-        // if (typeof (step as unknown as BackgroundTransition).serializedTexture !== "undefined") {
-        //   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        //   (step as BackgroundTransition).deserializedTexture = deserializeTexture((step as BackgroundTransition).serializedTexture as any);
-        // }
-        const prep = instance.prepare(sequence);
-        if (prep instanceof Promise) await prep;
-
-        steps.push(instance);
-      }
-      return {
-        ...sequence,
-        sequence: steps
-      };
-    } catch (err) {
-      throw err as Error;
-    }
   }
 
   /**
@@ -694,73 +639,18 @@ export class BattleTransition {
     return this;
   }
 
-  // #endregion Public Methods (39)
-
-  // #region Private Methods (6)
-
-  async #doExecuteSequence(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionSequence) {
-    for (const step of prepared.sequence) {
-      const exec = step.execute(container, sequence);
-      if (exec instanceof Promise) await exec;
-    }
-  }
-
-  async #executeSequence(sequence: TransitionSequence) {
-    BattleTransition.SuppressSoundUpdates = true;
-    Hooks.callAll(CUSTOM_HOOKS.TRANSITION_START, sequence);
-    let container: PIXI.Container | null = null;
-    try {
-      // Prepare overlay
-      container = await setupTransition();
-      this.#transitionOverlay = [...container.children];
-      hideLoadingBar();
-
-      const preparedSequence = await this.prepareSequence(sequence);
-      await this.#doExecuteSequence(container, sequence, preparedSequence);
-      await this.#teardownSequence(container, preparedSequence);
-
-      BattleTransition.SuppressSoundUpdates = false;
-    } catch (err) {
-      throw err as Error;
-    } finally {
-      setTimeout(() => { showLoadingBar() }, 250);
-      if (container) cleanupTransition(container);
-      Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END, sequence);
-    }
-  }
-
-  #getStepInstance(step: TransitionConfiguration): TransitionStep {
-    const handler = this.#stepTypes[step.type];
-    if (!handler) throw new InvalidTransitionError(step.type);
-    return handler.from(step);
-  }
-
-  async #serializeSequence(sequence: TransitionConfiguration[] = this.#sequence): Promise<TransitionConfiguration[]> {
-    const serializedSequence: TransitionConfiguration[] = [];
-    for (const step of sequence) {
-      const instance = this.#getStepInstance(step);
-      const res = instance.serialize();
-      const serialized = (res instanceof Promise) ? await res : res;
-      const bg = serialized as unknown as BackgroundTransition;
-      if (typeof bg.deserializedTexture !== "undefined" && typeof bg.serializedTexture === "undefined")
-        bg.serializedTexture = serializeTexture(bg.deserializedTexture);
-      delete bg.deserializedTexture;
-
-      serializedSequence.push(serialized);
-    }
-    return serializedSequence;
-  }
-
-  async #teardownSequence(container: PIXI.Container, sequence: PreparedTransitionSequence) {
+  static async teardownSequence(container: PIXI.Container, sequence: PreparedTransitionSequence) {
     for (const step of sequence.sequence) {
       await step.teardown(container);
     }
   }
 
-  async #validateSequence(sequence: TransitionConfiguration[] = this.#sequence): Promise<boolean | Error> {
+  static async validateSequence(sequence: TransitionConfiguration[]): Promise<boolean | Error> {
     try {
       for (const step of sequence) {
-        const handler = this.#stepTypes[step.type];
+
+        const handler = getStepClassByKey(step.type);
+        // const handler = BattleTransition.StepTypes[step.type];
         if (!handler) throw new InvalidTransitionError(step.type);
         const valid = await handler.validate(step);
         if (valid instanceof Error) return valid;
@@ -798,3 +688,9 @@ export class BattleTransition {
 }
 
 // #endregion Classes (1)
+
+function getStepInstance(step: TransitionConfiguration): TransitionStep {
+  const handler = getStepClassByKey(step.type);
+  if (!handler) throw new InvalidTransitionError(step.type);
+  return handler.from(step);
+}
