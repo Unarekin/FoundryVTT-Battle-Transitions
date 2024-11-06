@@ -6,6 +6,8 @@ import { TransitionSequence } from "./interfaces";
 import { TransitionConfiguration } from "./steps";
 import { log, timeout } from "./utils";
 
+const TIMEOUT_PERIOD = 3000;
+
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 class SocketHandler {
   #socket: any;
@@ -27,19 +29,35 @@ class SocketHandler {
         sequence
       };
 
+      const expectedDuration = sequence.reduce((prev, curr) => {
+
+        switch (typeof (curr as any).duration) {
+          case "string": {
+            const duration = parseFloat((curr as any).duration as string);
+            if (!isNaN(duration)) return prev + duration;
+            break;
+          }
+          case "number": {
+            return prev + (curr as any).duration as number;
+          }
+        }
+        return prev;
+      }, 0);
+
       log("Executing:", actual)
+      log("Expected duration:", expectedDuration);
 
       const users = (game.users?.contents.filter(user => user.active) as User[]) ?? []
       // Prepare
       await Promise.race([
         Promise.all(users.map(user => this.#socket.executeAsUser("transition.prep", user.id, actual) as Promise<void>)),
-        timeout(3000).catch(() => { throw new PrepareTimedOutError(); })
+        timeout(TIMEOUT_PERIOD + expectedDuration).catch(() => { throw new PrepareTimedOutError(); })
       ])
 
       // Execute
       await Promise.race([
-        Promise.all(users.map(user => this.#socket.executeAsUser("transition.exec", user.id, actual) as Promise<void>)),
-        timeout(3000).catch(() => { throw new SequenceTimedOutError(); })
+        Promise.all(users.map(user => this.#socket.executeAsUser("transition.exec", user.id, actual.id) as Promise<void>)),
+        timeout(expectedDuration + TIMEOUT_PERIOD).catch(() => { throw new SequenceTimedOutError(); })
       ]);
 
     } catch (err) {

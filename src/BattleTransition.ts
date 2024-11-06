@@ -3,14 +3,12 @@ import { ConfigurationHandler } from "./ConfigurationHandler";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
+import { AngularWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelStep, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, StartPlaylistStep, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
-import { TransitionConfiguration, TransitionStep, ParallelStep, StartPlaylistStep, SceneChangeConfiguration, AngularWipeConfiguration, BilinearWipeConfiguration, FireDissolveConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, WaitConfiguration, WaveWipeConfiguration, TwistConfiguration, ZoomBlurConfiguration, VideoConfiguration, RadialWipeStep, RemoveOverlayStep, RestoreOverlayStep, SceneChangeStep, SoundStep, SpiralRadialWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaitStep, WaveWipeStep, ZoomBlurStep, MeltStep, AngularWipeStep, BilinearWipeStep, ClockWipeStep, DiamondWipeStep, FadeStep, FireDissolveStep, FlashStep, InvertStep, LinearWipeStep, MacroStep } from "./steps";
-
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { log, serializeTexture } from "./utils";
-
-log("Hrm", ParallelStep, RadialWipeStep)
+import { getStepClassByKey, log, serializeTexture } from "./utils";
+import { TransitionStep } from "./steps/TransitionStep";
 
 // let suppressSoundUpdates: boolean = false;
 
@@ -30,60 +28,6 @@ export class BattleTransition {
 
   #sequence: TransitionConfiguration[] = [];
 
-  static StepTypes: { [x: string]: typeof TransitionStep } = {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    angularwipe: (AngularWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    bilinearwipe: (BilinearWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    clockwipe: (ClockWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    diamondwipe: (DiamondWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    fade: (FadeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    firedissolve: (FireDissolveStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    flash: (FlashStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    invert: (InvertStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    linearwipe: (LinearWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    macro: (MacroStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    melt: (MeltStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    parallel: (ParallelStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    radialwipe: (RadialWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    removeoverlay: (RemoveOverlayStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    restoreoverlay: (RestoreOverlayStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    scenechange: (SceneChangeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    sound: (SoundStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    spiralradialwipe: (SpiralRadialWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    spotlightwipe: (SpotlightWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    startplaylist: (StartPlaylistStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    textureswap: (TextureSwapStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    twist: (TwistStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    video: (VideoStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    wait: (WaitStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    wavewipe: (WaveWipeStep as any),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    zoomblur: (ZoomBlurStep as any)
-  }
   // // eslint-disable-next-line no-unused-private-class-members
   // #transitionOverlay: PIXI.DisplayObject[] = [];
 
@@ -240,6 +184,7 @@ export class BattleTransition {
 
 
   static async executePreparedSequence(id: string): Promise<void> {
+    log("Prepared sequences:", id, PreparedSequences);
     const prepared = PreparedSequences[id];
     if (!prepared) throw new InvalidTransitionError(typeof prepared);
 
@@ -263,10 +208,11 @@ export class BattleTransition {
       }
 
     } finally {
-      showLoadingBar();
+      setTimeout(() => { showLoadingBar(); }, 250);
       if (container) cleanupTransition(container);
       if (prepared) Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END, prepared.original)
       else Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END);
+      delete PreparedSequences[id];
     }
   }
 
@@ -695,7 +641,9 @@ export class BattleTransition {
   static async validateSequence(sequence: TransitionConfiguration[]): Promise<boolean | Error> {
     try {
       for (const step of sequence) {
-        const handler = BattleTransition.StepTypes[step.type];
+
+        const handler = getStepClassByKey(step.type);
+        // const handler = BattleTransition.StepTypes[step.type];
         if (!handler) throw new InvalidTransitionError(step.type);
         const valid = await handler.validate(step);
         if (valid instanceof Error) return valid;
@@ -735,10 +683,7 @@ export class BattleTransition {
 // #endregion Classes (1)
 
 function getStepInstance(step: TransitionConfiguration): TransitionStep {
-  log("Getting step instance:", step, BattleTransition.StepTypes);
-  const handler = BattleTransition.StepTypes[step.type];
+  const handler = getStepClassByKey(step.type);
   if (!handler) throw new InvalidTransitionError(step.type);
   return handler.from(step);
 }
-
-log("Step types:", BattleTransition.StepTypes)
