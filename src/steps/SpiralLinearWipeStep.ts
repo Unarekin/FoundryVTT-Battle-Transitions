@@ -57,7 +57,7 @@ export class SpiralLinearWipeStep extends TransitionStep<SpiralLinearWipeConfigu
     return new SpiralLinearWipeStep({
       ...SpiralLinearWipeStep.DefaultSettings,
       backgroundImage,
-      ...parseConfigurationFormElements(elem, "id", "duration", "backgroundType", "backgroundColor", "radial", "direction", "clockDirection")
+      ...parseConfigurationFormElements(elem, "id", "duration", "backgroundType", "backgroundColor", "radial", "direction", "clockDirection", "easing")
     })
   }
 
