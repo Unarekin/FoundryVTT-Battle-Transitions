@@ -36,6 +36,9 @@
       "SPIRALLINEAR": {
         "DESCRIPTION": "A linear spiral, starting from the inside or outside of the screen."
       },
+      "SPIRALRADIAL": {
+        "DESCRIPTION": "A spiral wipe, transitioning along the axes of its tails similar to a bilinear wipe."
+      },
       "COMMON": {
         "BACKGROUND": {
           "COLOR": "Color",

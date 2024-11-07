@@ -1,9 +1,8 @@
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from "../utils";
+import { createColorTexture, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SpiralRadialWipeConfiguration } from "./types";
 import { SpiralRadialWipeFilter } from "../filters";
-import { NotImplementedError } from "../errors";
 
 export class SpiralRadialWipeStep extends TransitionStep<SpiralRadialWipeConfiguration> {
   // #region Properties (5)
@@ -36,7 +35,8 @@ export class SpiralRadialWipeStep extends TransitionStep<SpiralRadialWipeConfigu
       ...SpiralRadialWipeStep.DefaultSettings,
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
-      radialSelect: generateRadialDirectionSelectOptions()
+      radialSelect: generateRadialDirectionSelectOptions(),
+      directionSelect: generateClockDirectionSelectOptions()
     });
   }
 
@@ -50,9 +50,15 @@ export class SpiralRadialWipeStep extends TransitionStep<SpiralRadialWipeConfigu
     else return new SpiralRadialWipeStep(arg as SpiralRadialWipeConfiguration);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static fromFormElement(form: HTMLFormElement): SpiralRadialWipeStep {
-    throw new NotImplementedError();
+    const elem = $(form) as JQuery<HTMLFormElement>;
+
+    const backgroundImage = elem.find("#backgroundImage").val() as string ?? "";
+    return new SpiralRadialWipeStep({
+      ...SpiralRadialWipeStep.DefaultSettings,
+      backgroundImage,
+      ...parseConfigurationFormElements(elem, "id", "duration", "easing", "backgroundType", "backgroundColor", "direction", "radial")
+    })
   }
 
   // #endregion Public Static Methods (6)
