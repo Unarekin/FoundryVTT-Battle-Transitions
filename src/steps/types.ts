@@ -97,6 +97,13 @@ export type SpiralRadialWipeConfiguration = WipeTransition & ({
   radial: RadialDirection;
 });
 
+export type SpiralLinearWipeConfiguration = WipeTransition & ({
+  clockDirection: ClockDirection;
+  direction: WipeDirection;
+  radial: RadialDirection;
+
+})
+
 export type InvertConfiguration = TransitionConfiguration
 
 export type AngularWipeConfiguration = WipeTransition;
@@ -133,4 +140,4 @@ export type ZoomBlurConfiguration = TransitionConfiguration & DurationTransition
 export type TwistConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
   maxAngle: number;
   direction: ClockDirection;
-})
+});

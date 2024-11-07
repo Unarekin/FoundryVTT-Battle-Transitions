@@ -15,6 +15,7 @@ import { AngularWipeFilter } from './AngularWipe/AngularWipeFilter';
 import { WaveWipeFilter } from './WaveWipe/WaveWipeFilter';
 import { SpiralRadialWipeFilter } from './SpiralRadialWipe/SpiralRadialWipeFilter';
 import { InvertFilter } from "./Invert/InvertFilter";
+import { SpiralLinearWipeFilter } from './SpiralLinearWipe/SpiralLinearWipeFilter';
 
 export {
   CustomFilter,
@@ -33,7 +34,8 @@ export {
   AngularWipeFilter,
   WaveWipeFilter,
   SpiralRadialWipeFilter,
-  InvertFilter
+  InvertFilter,
+  SpiralLinearWipeFilter
 }
 
 export const filters = {
@@ -54,5 +56,6 @@ export const filters = {
   AngularWipeFilter,
   WaveWipeFilter,
   SpiralRadialWipeFilter,
-  InvertFilter
+  InvertFilter,
+  SpiralLinearWipeFilter
 };

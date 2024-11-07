@@ -3,11 +3,11 @@ import { ConfigurationHandler } from "./ConfigurationHandler";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelStep, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelStep, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralLinearWipeConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { deserializeTexture, getStepClassByKey, serializeTexture } from "./utils";
+import { deserializeTexture, getStepClassByKey, isColor, serializeTexture } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 
 // let suppressSoundUpdates: boolean = false;
@@ -255,18 +255,23 @@ export class BattleTransition {
       // Handle steps with backgrounds
       if (Object.prototype.hasOwnProperty.call(step, "backgroundType")) {
         const bgStep = step as unknown as BackgroundTransition;
-        switch (bgStep.backgroundType) {
-          case "color":
-            bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundColor ?? "transparent");
-            break;
-          case "image":
-            bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundImage ?? "transparent");
-            break;
+        if (bgStep.serializedTexture) {
+          bgStep.deserializedTexture = deserializeTexture(bgStep.serializedTexture);
+        } else {
+          switch (bgStep.backgroundType) {
+            case "color":
+              bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundColor ?? "transparent");
+              break;
+            case "image":
+              bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundImage ?? "transparent");
+              break;
+          }
         }
       }
 
       const res = instance.prepare(sequence);
       if (res instanceof Promise) await res;
+
       steps.push(instance);
     }
 
@@ -525,6 +530,36 @@ export class BattleTransition {
   }
 
   /**
+   * A linear spiral wipe
+   * @param {ClockDirection} clock - Whether the spiral travels clockwise or counterclockwise
+   * @param {RadialDirection} radial - Whether the spiral starts from the inside or outside of the overlay
+   * @param {WipeDirection} direction - Side of the screen from which the wipe starts
+   * @param {number} [duration=1000] - Duration, in milliseconds, for the wipe to last
+   * @param {TextureLike} background - {@link TextureLike}
+   * @param {Easing} easing - {@link Easing}
+   * @returns 
+   */
+  public spiralLinearWipe(clock: ClockDirection, radial: RadialDirection, direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const serializedTexture = serializeTexture(background);
+
+    const backgroundType = typeof serializedTexture === "string" && isColor(serializedTexture) ? "color" : "image";
+    this.#sequence.push({
+      type: "spirallinearwipe",
+      version: "1.1.0",
+      duration,
+      direction,
+      clockDirection: clock,
+      radial,
+      easing,
+      bgSizingMode: "stretch",
+      backgroundType,
+      serializedTexture
+    } as SpiralLinearWipeConfiguration);
+
+    return this;
+  }
+
+  /**
    * Queues up a wipe that operates much like a radial wipe, but in a spiral pattern rather than circular
    * @param {ClockDirection} direction - {@link ClockDirection}
    * @param {RadialDirection} radial - {@link RadialDirection}
@@ -683,6 +718,7 @@ export class BattleTransition {
 
     return this;
   }
+
 
   // #endregion Private Methods (6)
 }

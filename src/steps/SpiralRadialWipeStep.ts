@@ -24,7 +24,7 @@ export class SpiralRadialWipeStep extends TransitionStep<SpiralRadialWipeConfigu
   public static hidden: boolean = false;
   public static key = "spiralradialwipe";
   public static name = "SPIRALRADIALWIPE";
-  public static template = "spiralwipe-config";
+  public static template = "spiralradialwipe-config";
 
   // #endregion Properties (5)
 

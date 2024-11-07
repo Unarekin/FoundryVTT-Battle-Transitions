@@ -5,12 +5,12 @@ import { RadialDirection, ClockDirection } from '../../types';
 
 const textures = {
   clockwise: {
-    inside: "spiral-clockwise-inside",
-    outside: "spiral-clockwise-outside"
+    inside: "spiral-radial-clockwise-inside",
+    outside: "spiral-radial-clockwise-outside"
   },
   counterclockwise: {
-    inside: "spiral-counterclockwise-inside",
-    outside: "spiral-counterclockwise-outside"
+    inside: "spiral-radial-counterclockwise-inside",
+    outside: "spiral-radial-counterclockwise-outside"
   }
 }
 

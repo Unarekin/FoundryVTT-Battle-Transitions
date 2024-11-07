@@ -15,6 +15,7 @@ export * from './RemoveOverlayStep';
 export * from './RestoreOverlayStep';
 export * from './SceneChangeStep';
 export * from './SoundStep';
+export * from './SpiralLinearWipeStep';
 export * from './SpiralRadialWipeStep';
 export * from './SpotlightWipeStep';
 export * from './StartPlaylistStep';

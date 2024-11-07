@@ -33,6 +33,9 @@
           "LABEL": "Clock Direction"
         }
       },
+      "SPIRALLINEAR": {
+        "DESCRIPTION": "A linear spiral, starting from the inside or outside of the screen."
+      },
       "COMMON": {
         "BACKGROUND": {
           "COLOR": "Color",
