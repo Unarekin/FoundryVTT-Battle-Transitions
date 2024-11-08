@@ -8,7 +8,7 @@ export class WaveWipeFilter extends TextureWipeFilter {
     const bg = coerceTexture(background);
     if (!(bg instanceof PIXI.Texture)) throw new InvalidTextureError();
 
-    const wipeTexture = PIXI.Texture.from(`/modules/${__MODULE_ID__}/assets/wipes/saw-${direction === "inside" ? "inside" : "outside"}.webp`);
+    const wipeTexture = PIXI.Texture.from(`/modules/${__MODULE_ID__}/assets/wipes/wave-${direction === "inside" ? "inside" : "outside"}.webp`);
     super(wipeTexture, bg);
   }
 }

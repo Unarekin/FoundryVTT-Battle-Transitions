@@ -1,14 +1,13 @@
-import { NotImplementedError } from "../errors";
 import { WaveWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture } from "../utils";
+import { createColorTexture, generateEasingSelectOptions, generateRadialDirectionSelectOptions, log, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { WaveWipeConfiguration } from "./types";
 
 export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
   // #region Properties (5)
 
-  public readonly template = "wavewipe-config";
+  public static template = "wavewipe-config";
 
   public static DefaultSettings: WaveWipeConfiguration = {
     type: "wavewipe",
@@ -30,19 +29,36 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
 
   // #region Public Static Methods (5)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/require-await
+
   public static async RenderTemplate(config?: WaveWipeConfiguration): Promise<string> {
-    throw new NotImplementedError();
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${WaveWipeStep.template}.hbs`, {
+      ...WaveWipeStep.DefaultSettings,
+      ...(config ? config : {}),
+      radialSelect: generateRadialDirectionSelectOptions(),
+      easingSelect: generateEasingSelectOptions()
+    });
   }
 
-  // @TODO: Implement fromFormElement
   public static from(config: WaveWipeConfiguration): WaveWipeStep
   public static from(form: HTMLFormElement): WaveWipeStep
   public static from(form: JQuery<HTMLFormElement>): WaveWipeStep
   public static from(arg: unknown): WaveWipeStep {
-    if (arg instanceof HTMLFormElement) throw new NotImplementedError();
-    else if (Array.isArray(arg) && arg[0] instanceof HTMLFormElement) throw new NotImplementedError();
+    if (arg instanceof HTMLFormElement) return WaveWipeStep.fromFormElement(arg)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return WaveWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new WaveWipeStep(arg as WaveWipeConfiguration);
+  }
+
+  public static fromFormElement(form: HTMLFormElement): WaveWipeStep {
+    const elem = $(form) as JQuery<HTMLFormElement>;
+    const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";
+
+    return new WaveWipeStep({
+      ...WaveWipeStep.DefaultSettings,
+      serializedTexture,
+      ...parseConfigurationFormElements(elem, "id", "duration", "backgroundType", "backgroundColor", "easing", "direction")
+    })
+
   }
 
   // #endregion Public Static Methods (5)

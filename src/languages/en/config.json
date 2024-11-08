@@ -184,6 +184,9 @@
       },
       "TWIST": {
         "DESCRIPTION": "Twist the screen"
+      },
+      "WAVEWIPE": {
+        "DESCRIPTION": "Similar to a bilinear wipe, but with a wavey line instead of straight."
       }
     }
   }
