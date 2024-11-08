@@ -14,7 +14,13 @@
       <range-picker value="{{innerRadius}}" min="0" max="1" id="innerRadius" name="innerRadius"></range-picker>
     </div>
     <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.INNERRADIUS.HINT"}}</p>
-
     {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
+    <div class="form-group">
+      <label for="easing">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL"}}</label>
+      <select name="easing" id="easing">
+        {{selectOptions easingSelect selected=easing localize=true}}
+      </select>
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.HINT"}}</p>
   </form>
 </div>

@@ -1,4 +1,4 @@
-import { parseConfigurationFormElements } from '../utils';
+import { generateEasingSelectOptions, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { ZoomBlurConfiguration } from './types';
 
@@ -21,7 +21,8 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ZoomBlurStep.template}.hbs`, {
       id: foundry.utils.randomID(),
       ...ZoomBlurStep.DefaultSettings,
-      ...(config ? config : {})
+      ...(config ? config : {}),
+      easingSelect: generateEasingSelectOptions()
     });
   }
 
