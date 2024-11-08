@@ -1,4 +1,4 @@
-import { generateClockDirectionSelectOptions, parseConfigurationFormElements } from '../utils';
+import { generateClockDirectionSelectOptions, generateEasingSelectOptions, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { TwistConfiguration } from './types';
 export class TwistStep extends TransitionStep<TwistConfiguration> {
@@ -26,6 +26,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
       ...(config ? config : {}),
 
       directionSelect: generateClockDirectionSelectOptions(),
+      easingSelect: generateEasingSelectOptions()
     });
   }
 
@@ -67,7 +68,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
     const elem = $(form) as JQuery<HTMLFormElement>;
     return new TwistStep({
       ...TwistStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "duration", "direction")
+      ...parseConfigurationFormElements(elem, "id", "duration", "direction", "easing")
     })
   }
 
