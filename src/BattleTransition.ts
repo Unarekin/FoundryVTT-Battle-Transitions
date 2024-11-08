@@ -7,7 +7,7 @@ import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfigurati
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { deserializeTexture, getStepClassByKey, isColor, serializeTexture } from "./utils";
+import { deserializeTexture, getStepClassByKey, isColor, localize, serializeTexture, shouldUseAppV2 } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 
 // let suppressSoundUpdates: boolean = false;
@@ -717,6 +717,55 @@ export class BattleTransition {
     } as ZoomBlurConfiguration)
 
     return this;
+  }
+
+  public static async SelectScene(omitCurrent: boolean = false): Promise<Scene | null> {
+    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
+      scenes: game.scenes?.contents.reduce((prev, curr) => {
+        if (omitCurrent && curr.id === game.scenes?.current?.id) return prev;
+        return [...prev, { id: curr.id, name: curr.name }]
+      }, [] as { id: string, name: string }[])
+    });
+
+    if (shouldUseAppV2()) {
+      return foundry.applications.api.DialogV2.wait({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        window: ({ title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE") } as any),
+        content,
+        buttons: [
+          {
+            label: `<i class="fas fa-times"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")}`,
+            action: "cancel",
+            callback: () => Promise.resolve(null)
+          },
+          {
+            label: `<i class="fas fa-check"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK")}`,
+            action: "ok",
+            callback: (event: Event, button: HTMLButtonElement, dialog: HTMLDialogElement) => {
+              return Promise.resolve(game.scenes?.get($(dialog).find("#scene").val() as string) ?? null);
+            }
+          }
+        ]
+      })
+    } else {
+      return Dialog.wait({
+        title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE"),
+        content,
+        default: "ok",
+        buttons: {
+          cancel: {
+            icon: `<i class="fas fa-times"></i>`,
+            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
+            callback: () => null
+          },
+          ok: {
+            icon: `<i class="fas fa-check"></i>`,
+            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+            callback: (html) => game.scenes?.get($(html).find("#scene").val() as string) ?? null
+          }
+        }
+      }) as Promise<Scene | null>
+    }
   }
 
 
