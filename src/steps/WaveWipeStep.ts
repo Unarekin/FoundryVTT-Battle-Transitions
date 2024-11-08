@@ -1,6 +1,6 @@
 import { WaveWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, generateEasingSelectOptions, generateRadialDirectionSelectOptions, log, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, generateEasingSelectOptions, generateRadialDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { WaveWipeConfiguration } from "./types";
 
