@@ -28,6 +28,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
   public static key = "video";
   public static name = "VIDEO";
   public static template = "video-config";
+  public static icon = "<i class='bt-icon video fa-fw'></i>"
 
   // #endregion Properties (7)
 

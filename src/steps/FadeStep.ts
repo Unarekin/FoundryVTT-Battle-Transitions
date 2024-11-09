@@ -21,6 +21,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
   public static key = "fade";
   public static name = "FADE";
   public static template = "fade-config";
+  public static icon = "<i class='bt-icon fade fa-fw'></i>"
 
   // #endregion Properties (5)
 

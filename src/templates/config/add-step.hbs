@@ -1,6 +1,7 @@
 <div id="add-step-form" class="bt two-columns">
   {{#each transitionTypes}}
-    <button data-transition="{{key}}">{{localize name}}</button>
+    {{log this}}
+    <button data-transition="{{key}}">{{#if hasIcon}}{{{icon}}} {{/if}}{{localize name}}</button>
   {{/each}}
 </div>
 <hr />

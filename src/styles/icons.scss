@@ -1,3 +1,12 @@
+@mixin mask-icon($url) {
+  $mask: url($url);
+
+  mask-image: $mask;
+  -webkit-mask-image: $mask;
+  mask-repeat: no-repeat;
+  mask-position: center;
+}
+
 .bt-icon {
   background-size: contain;
   background-repeat: no-repeat;
@@ -16,10 +25,102 @@ nav .bt-icon {
   background-color: var(--color-text-dark-primary);
 }
 
-.bt-icon.crossed-swords {
-  // background-image: url("/modules/battle-transitions/assets/icons/crossed-swords.svg");
-  mask-image: url("/modules/battle-transitions/assets/icons/crossed-swords.svg");
-  -webkit-mask-image: url("/modules/battle-transitions/assets/icons/crossed-swords.svg");
-  mask-repeat: no-repeat;
-  mask-position: center;
+button .bt-icon {
+  background-color: var(--button-text-color);
+}
+
+#add-step-form button {
+  position: relative;
+  padding-left: 24px;
+}
+
+#add-step-form .bt-icon {
+  position: absolute;
+  left: 4px;
+}
+
+.bt-icon {
+  &.angular-wipe {
+    @include mask-icon("../assets/icons/angular-wipe.svg");
+  }
+
+  &.crossed-swords {
+    @include mask-icon("../assets/icons/crossed-swords.svg");
+  }
+
+  &.clock-wipe {
+    @include mask-icon("../assets/icons/clock-wipe.svg");
+  }
+
+  &.diamond-wipe {
+    @include mask-icon("../assets/icons/diamond-wipe.svg");
+  }
+
+  &.fade {
+    @include mask-icon("../assets/icons/fade.svg");
+  }
+
+  &.fire-dissolve {
+    @include mask-icon("../assets/icons/fire-dissolve.svg");
+  }
+
+  &.flash {
+    @include mask-icon("../assets/icons/flash.svg");
+  }
+
+  &.macro {
+    @include mask-icon("../assets/icons/macro.svg");
+  }
+
+  &.melt {
+    @include mask-icon("../assets/icons/melt.svg");
+  }
+
+  &.radial-wipe {
+    @include mask-icon("../assets/icons/radial-wipe.svg");
+  }
+
+  &.remove-overlay {
+    @include mask-icon("../assets/icons/remove-overlay.svg");
+  }
+
+  &.restore-overlay {
+    @include mask-icon("../assets/icons/restore-overlay.svg");
+  }
+
+  &.scene-change {
+    @include mask-icon("../assets/icons/scene-change.svg");
+  }
+
+  &.sound {
+    @include mask-icon("../assets/icons/sound.svg");
+  }
+
+  &.spotlight-wipe {
+    @include mask-icon("../assets/icons/spotlight-wipe.svg");
+  }
+
+  &.start-ambient-playlist {
+    @include mask-icon("../assets/icons/start-ambient-playlist.svg");
+  }
+
+  &.texture-swap {
+    @include mask-icon("../assets/icons/texture-swap.svg");
+  }
+
+  &.twist {
+    @include mask-icon("../assets/icons/twist.svg");
+  }
+
+  &.video {
+    @include mask-icon("../assets/icons/video.svg");
+  }
+
+  &.wait {
+    @include mask-icon("../assets/icons/wait.svg");
+  }
+
+  &.wave-wipe {
+    @include mask-icon("../assets/icons/wave-wipe.svg");
+  }
 }

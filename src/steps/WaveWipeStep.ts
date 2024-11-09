@@ -24,6 +24,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
   public static hidden: boolean = false;
   public static key = "wavewipe";
   public static name: string = "WAVEWIPE";
+  public static icon = "<i class='bt-icon wave-wipe fa-fw'></i>"
 
   // #endregion Properties (5)
 

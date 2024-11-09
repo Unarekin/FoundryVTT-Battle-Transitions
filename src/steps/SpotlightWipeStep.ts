@@ -29,6 +29,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
   public static key = "spotlightwipe";
   public static name = "SPOTLIGHTWIPE";
   public static template = "spotlightwipe-config";
+  public static icon = "<i class='bt-icon spotlight-wipe fa-fw'></i>"
 
   // #endregion Properties (6)
 

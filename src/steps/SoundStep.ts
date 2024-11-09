@@ -19,6 +19,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   public static key = "sound";
   public static name = "SOUND";
   public static template = "sound-config";
+  public static icon = "<i class='bt-icon sound fa-fw'></i>"
 
   // #endregion Properties (6)
 

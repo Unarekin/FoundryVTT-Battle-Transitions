@@ -16,7 +16,7 @@ export class AddTransitionStepDialog {
 async function addStepV2(): Promise<TransitionConfiguration | undefined> {
   const steps = getSortedSteps().filter(step => !step.hidden);
   const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/add-step.hbs`, {
-    transitionTypes: steps.map(step => ({ key: step.DefaultSettings.type, name: localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${step.name}`) }))
+    transitionTypes: steps.map(step => ({ key: step.DefaultSettings.type, name: localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${step.name}`), icon: step.icon, hasIcon: !!step.icon }))
   });
 
   const key = await new Promise<string | undefined>(resolve => {
@@ -54,7 +54,7 @@ async function addStepV1(): Promise<TransitionConfiguration | undefined> {
     const steps = getSortedSteps().filter(step => !step.hidden);
 
     const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/add-step.hbs`, {
-      transitionTypes: steps.map(step => ({ key: step.DefaultSettings.type, name: localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${step.name}`) }))
+      transitionTypes: steps.map(step => ({ key: step.DefaultSettings.type, name: localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${step.name}`), icon: step.icon, hasIcon: !!step.icon }))
     });
 
     const key = await new Promise<string | undefined>((resolve) => {
