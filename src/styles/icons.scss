@@ -66,6 +66,12 @@ button .bt-icon {
   left: 4px;
 }
 
+#step-search-results {
+  .bt-icon {
+    background-color: var(--color-text-dark-primary);
+  }
+}
+
 .bt-icon {
   &.angular-wipe {
     @include mask-icon("../assets/icons/angular-wipe.svg");

@@ -1,4 +1,6 @@
+import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
+import { getStepClassByKey } from "../utils";
 import { AddStepDialogV1 } from "./AddStepDialogV1";
 
 export class SceneConfigV12 extends SceneConfig {
@@ -23,5 +25,9 @@ function addEventListeners(app: SceneConfig, html: JQuery<HTMLElement>) {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function addStep(app: SceneConfig, html: JQuery<HTMLElement>) {
   const key = await AddStepDialogV1.prompt();
-  console.log("Adding:", key);
+  if (!key) return;
+  const step = getStepClassByKey(key);
+  if (!step) throw new InvalidTransitionError(key);
+
+  // Edit
 }

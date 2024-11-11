@@ -13,7 +13,7 @@ export class StartPlaylistStep extends TransitionStep<StartPlaylistConfiguration
 
   public static key = "startplaylist";
   public static name = "STARTPLAYLIST";
-  public static icon = "<i class='bt-icon start-ambient-playlist fa-fw'></i>"
+  public static icon = "<i class='bt-icon start-ambient-playlist fa-fw fas'></i>"
   public static category = "technical";
 
   public static DefaultSettings: StartPlaylistConfiguration = {

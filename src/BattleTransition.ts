@@ -1,5 +1,4 @@
 import { coerceMacro, coerceScene } from "./coercion";
-import { ConfigurationHandler } from "./ConfigurationHandler";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
@@ -71,8 +70,10 @@ export class BattleTransition {
 
   // #region Public Static Methods (1)
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static BuildTransition(scene?: Scene): Promise<void> {
-    return ConfigurationHandler.BuildTransition(scene);
+    return Promise.resolve();
+    // return ConfigurationHandler.BuildTransition(scene);
   }
 
   // #endregion Public Static Methods (1)

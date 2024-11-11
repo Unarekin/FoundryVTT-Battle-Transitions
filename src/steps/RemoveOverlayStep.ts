@@ -16,7 +16,7 @@ export class RemoveOverlayStep extends TransitionStep<RemoveOverlayConfiguration
   public static name = "REMOVEOVERLAY";
   public static skipConfig = true;
   public static template = "";
-  public static icon = "<i class='bt-icon remove-overlay fa-fw'></i>"
+  public static icon = "<i class='bt-icon remove-overlay fa-fw fas'></i>"
   public static category = "technical";
 
   // #endregion Properties (6)

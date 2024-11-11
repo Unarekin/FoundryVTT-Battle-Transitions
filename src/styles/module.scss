@@ -1,9 +1,5 @@
 @import "./icons.scss";
 
-.ui-helper-hidden-accessible {
-  display: none;
-}
-
 .center {
   text-align: center;
 }
@@ -57,6 +53,12 @@
   }
 }
 
+.transition-config {
+  .search-box {
+    position: relative;
+  }
+}
+
 .bt {
   .dialog-buttons {
     max-height: 36px;
@@ -64,5 +66,28 @@
 
   .two-columns {
     columns: 2;
+  }
+}
+
+#step-search-results {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 500;
+  top: 0;
+  left: 0;
+
+  display: none;
+
+  div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+
+    &:hover {
+      background-color: #e9e9e9;
+    }
   }
 }
