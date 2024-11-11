@@ -1,6 +1,6 @@
 import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
-import { getStepClassByKey } from "../utils";
+import { getStepClassByKey, log } from "../utils";
 import { AddStepDialogV1 } from "./AddStepDialogV1";
 
 export class SceneConfigV12 extends SceneConfig {
@@ -29,5 +29,6 @@ async function addStep(app: SceneConfig, html: JQuery<HTMLElement>) {
   const step = getStepClassByKey(key);
   if (!step) throw new InvalidTransitionError(key);
 
+  log("Adding:", key);
   // Edit
 }

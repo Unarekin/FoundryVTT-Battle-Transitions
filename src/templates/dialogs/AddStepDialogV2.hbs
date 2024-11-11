@@ -1,0 +1,28 @@
+<div class="dialog-content sheet transition-config v2">
+  <div class="dialog-header">
+    <section class="search-box">
+      <input type="text" id="search-text" name="search-text" class="search-text" placeholder="{{localize "BATTLETRANSITIONS.DIALOGS.ADDSTEP.SEARCH.PLACEHOLDER"}}">
+      <i class="fas fa-search search-icon"></i>
+      <i class="fas fa-circle-xmark search-cancel" id="clear-search" title="{{localize "BATTLETRANSITIONS.DIALOGS.BUTTONS.CLEARSEARCH"}}"></i>
+    </section>
+  </div>
+
+  <nav class="sheet-tabs tabs" data-group="primary-tabs">
+    {{#each tabs}}
+      <a class="item" data-tab="{{id}}">{{#if hasIcon}}{{{icon}}}
+        {{/if}}{{localize title}}</a>
+    {{/each}}
+  </nav>
+  <section class="tab-content">
+  <form>
+    {{#each tabs}}
+      <div class="tab two-columns" data-tab="{{id}}" data-group="primary-tabs">
+        {{#each data}}
+          {{> "/modules/battle-transitions/templates/config/add-step-button.hbs" this}}
+        {{/each}}
+      </div>
+    {{/each}}
+  </form>
+</section>
+</div>
+<hr>

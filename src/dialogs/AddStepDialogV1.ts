@@ -1,6 +1,6 @@
-import { InvalidTransitionError } from "../errors";
-import { getSortedSteps, getStepClassByKey, localize } from "../utils";
-import { StepContext } from "./types";
+import { localize } from "../utils";
+import { clearSearchResults, handleSearchInput } from "./addStepFunctions";
+import { getStepsForCategory } from "./functions";
 
 // #region Classes (1)
 
@@ -62,11 +62,9 @@ export class AddStepDialogV1 {
 
 // #endregion Classes (1)
 
-// #region Functions (6)
+// #region Functions (1)
 
 function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>, resolve: (value: string | null) => void) {
-  const searchIndex = buildIndex();
-
   // Set up tabs
   const tabs = new Tabs({
     contentSelector: ".tab-content",
@@ -77,52 +75,10 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>, resolve: (
   tabs.bind($(html)[0]);
 
   html.find("#search-text").on("input", e => {
-    const input = html.find("#search-text").val() as string;
-
-    let resultsDiv = $("#step-search-results");
-    if (resultsDiv.length === 0) {
-      const div = document.createElement("div");
-      div.setAttribute("id", "step-search-results");
-      div.classList.add("step-search-results");
-      document.body.appendChild(div);
-
-      resultsDiv = $("#step-search-results");
-    }
-
-    if (!resultsDiv.length) throw new Error();
-
-    clearSearchResults();
-    if (input.length < 3) return;
-
-    $("#clear-search").css("display", "block");
-
-    const results = searchIndex.search(input);
-    for (const result of results) {
-      const step = getStepClassByKey(result.ref);
-      if (!step) throw new InvalidTransitionError(result.ref);
-
-      const resultDiv = document.createElement("div");
-      resultDiv.dataset.key = result.ref;
-
-      resultDiv.innerHTML = localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${step.name}`);
-      if (step.icon) resultDiv.innerHTML = `${step.icon}${resultDiv.innerHTML}`;
-      else resultDiv.style.paddingLeft = "calc(1.25em + 12px)";
-      resultsDiv.append(resultDiv);
-      resultsDiv.addClass("v1");
-
-      $(resultDiv).on("click", () => {
-        resultsDiv.css("display", "none");
-        resultsDiv.children().remove();
-        void dialog.close();
-        resolve(result.ref);
-      });
-    }
-
-    DO_POSITION_SEARCH_RESULTS = true;
-    positionSearchResults($(e.currentTarget));
-
-    resultsDiv.css("display", "block");
-  });
+    handleSearchInput($(e.currentTarget) as JQuery<HTMLInputElement>, (key: string) => {
+      resolve(key);
+      void dialog.close();
+  }); });
 
   html.find("#clear-search").on("click", () => {
     clearSearchResults();
@@ -138,57 +94,32 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>, resolve: (
   })
 }
 
-function buildIndex(): lunr.Index {
-  const steps = getSortedSteps();
+// #endregion Functions (1)
 
-  return lunr(function (this: lunr.Builder) {
-    this.field("name");
-    this.field("description");
-    this.ref("key");
+//   clearSearchResults();
+//   if (input.length < 3) return;
 
-    for (const step of steps) {
-      this.add({
-        name: localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${step.name}`),
-        description: localize(`BATTLETRANSITIONS.SCENECONFIG.${step.name}.DESCRIPTION`),
-        key: step.key
-      })
-    }
-  })
-}
+//   $("#clear-search").css("display", "block");
 
-function clearSearchResults() {
-  stopPositioningSearchResults();
+//   const results = getSearchResults(input);
 
-  $("#step-search-results").children().remove();
-  $("#step-search-results").css("display", "none");
-  $("#clear-search").css("display", "none");
-}
+//   for (const step of results) {
+//     const resultDiv = document.createElement("div");
+//     resultDiv.dataset.key = step.key;
 
-function getStepsForCategory(category: string): StepContext[] {
-  return getSortedSteps().reduce((prev, curr) => curr.category === category ? [...prev, { key: curr.key, name: `BATTLETRANSITIONS.TRANSITIONTYPES.${curr.name}`, icon: curr.icon, tooltip: "", hasIcon: !!curr.icon }] : prev, [] as StepContext[]);
-}
+//     resultDiv.innerHTML = localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${step.name}`);
+//     if (step.icon) resultDiv.innerHTML = `${step.icon}${resultDiv.innerHTML}`;
+//     else resultDiv.style.paddingLeft = "calc(1.25em + 12px)";
+//     resultsDiv.append(resultDiv);
+//     resultsDiv.addClass("v1");
 
-function positionSearchResults(target: JQuery<HTMLElement>) {
-  if (!DO_POSITION_SEARCH_RESULTS) return;
-  const resultsDiv = $("#step-search-results");
-  if (!resultsDiv?.length) return;
+//     $(resultDiv).on("click", () => {
+//       resultsDiv.css("display", "none");
+//       resultsDiv.children().remove();
+//       void dialog.close();
+//       resolve(step.key);
+//     });
+//   }
 
-  resultsDiv.css("top", (target?.offset()?.top ?? 0) + (target?.height() ?? 0) + 8);
-  resultsDiv.css("left", target?.offset()?.left ?? 0);
-
-  resultsDiv.css("width", target?.width() ?? 150);
-
-  requestAnimationFrame(() => { positionSearchResults(target); })
-}
-
-function stopPositioningSearchResults() {
-  DO_POSITION_SEARCH_RESULTS = false;
-}
-
-// #endregion Functions (6)
-
-// #region Variables (1)
-
-let DO_POSITION_SEARCH_RESULTS: boolean = false;
-
-// #endregion Variables (1)
+//   showSearchResults($(e.currentTarget));
+// });
