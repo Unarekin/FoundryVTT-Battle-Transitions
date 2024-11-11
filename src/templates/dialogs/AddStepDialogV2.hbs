@@ -1,4 +1,4 @@
-<div class="dialog-content sheet transition-config v2">
+<div class="dialog-content sheet transition-config v2 bt">
   <div class="dialog-header">
     <section class="search-box">
       <input type="text" id="search-text" name="search-text" class="search-text" placeholder="{{localize "BATTLETRANSITIONS.DIALOGS.ADDSTEP.SEARCH.PLACEHOLDER"}}">
@@ -16,10 +16,12 @@
   <section class="tab-content">
   <form>
     {{#each tabs}}
-      <div class="tab two-columns" data-tab="{{id}}" data-group="primary-tabs">
+      <div class="tab" data-tab="{{id}}" data-group="primary-tabs">
+        <section class="two-columns">
         {{#each data}}
           {{> "/modules/battle-transitions/templates/config/add-step-button.hbs" this}}
         {{/each}}
+        </section>
       </div>
     {{/each}}
   </form>

@@ -75,10 +75,11 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>, resolve: (
   tabs.bind($(html)[0]);
 
   html.find("#search-text").on("input", e => {
-    handleSearchInput($(e.currentTarget) as JQuery<HTMLInputElement>, (key: string) => {
+    handleSearchInput($(e.currentTarget) as JQuery<HTMLInputElement>, dialog, (key: string) => {
       resolve(key);
       void dialog.close();
-  }); });
+    });
+  });
 
   html.find("#clear-search").on("click", () => {
     clearSearchResults();
@@ -95,31 +96,3 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>, resolve: (
 }
 
 // #endregion Functions (1)
-
-//   clearSearchResults();
-//   if (input.length < 3) return;
-
-//   $("#clear-search").css("display", "block");
-
-//   const results = getSearchResults(input);
-
-//   for (const step of results) {
-//     const resultDiv = document.createElement("div");
-//     resultDiv.dataset.key = step.key;
-
-//     resultDiv.innerHTML = localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${step.name}`);
-//     if (step.icon) resultDiv.innerHTML = `${step.icon}${resultDiv.innerHTML}`;
-//     else resultDiv.style.paddingLeft = "calc(1.25em + 12px)";
-//     resultsDiv.append(resultDiv);
-//     resultsDiv.addClass("v1");
-
-//     $(resultDiv).on("click", () => {
-//       resultsDiv.css("display", "none");
-//       resultsDiv.children().remove();
-//       void dialog.close();
-//       resolve(step.key);
-//     });
-//   }
-
-//   showSearchResults($(e.currentTarget));
-// });

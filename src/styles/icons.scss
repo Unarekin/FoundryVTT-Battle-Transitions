@@ -29,8 +29,17 @@ nav .bt-icon {
   background-color: var(--color-text-dark-primary);
 }
 
-.v2 button .bt-icon {
-  background-color: var(--button-text-color);
+.v2 {
+  button {
+    position: relative;
+  }
+
+  .bt-icon {
+    position: absolute;
+    left: 4px;
+    top: -1px;
+    background-color: var(--button-text-color);
+  }
 }
 
 button .bt-icon {

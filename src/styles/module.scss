@@ -69,6 +69,15 @@
   }
 }
 
+.v2.bt [data-group="primary-buttons"] button {
+  position: relative;
+
+  i {
+    position: absolute;
+    left: 0;
+  }
+}
+
 #step-search-results {
   position: absolute;
   border: 1px solid #d4d4d4;

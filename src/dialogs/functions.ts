@@ -3,8 +3,7 @@ import { AddStepDialogV1 } from './AddStepDialogV1';
 import { AddStepDialogV2 } from './AddStepDialogV2';
 import { StepContext } from './types';
 
-export async function addStep(): Promise<string | null> {
-  return AddStepDialogV1.prompt();
+export async function addStepDialog(): Promise<string | null> {
   if (shouldUseAppV2()) return AddStepDialogV2.prompt();
   else return AddStepDialogV1.prompt();
 }

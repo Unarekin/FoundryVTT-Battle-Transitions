@@ -1,5 +1,5 @@
 import { TransitionStep } from "../steps";
-import { getSortedSteps, getStepClassByKey, localize, log } from "../utils";
+import { getSortedSteps, getStepClassByKey, localize } from "../utils";
 
 // #region Functions (9)
 
@@ -56,10 +56,8 @@ export function getSearchResults(term: string): (typeof TransitionStep)[] {
   return results.map(res => getStepClassByKey(res.ref)).filter(res => !!res);
 }
 
-export function handleSearchInput(input: JQuery<HTMLInputElement>, cb: (key: string) => void) {
+export function handleSearchInput(input: JQuery<HTMLInputElement>, dialog: Dialog | foundry.applications.api.DialogV2, cb: (key: string) => void) {
   const term = input.val();
-  log("Search input:", term);
-
   if (!term || term.length < 3) {
     hideSearchResults();
     return;
@@ -79,7 +77,7 @@ export function handleSearchInput(input: JQuery<HTMLInputElement>, cb: (key: str
     $(div).on("click", () => { cb(step.key); });
     resultsDiv.append(div);
   }
-  showSearchResults(input);
+  showSearchResults(input, dialog);
 }
 
 export function hideSearchResults() {
@@ -88,25 +86,30 @@ export function hideSearchResults() {
   $("#clear-search").css("display", "none");
 }
 
-function positionSearchResults(target: JQuery<HTMLElement>) {
+function positionSearchResults(target: JQuery<HTMLElement>, dialog: Dialog | foundry.applications.api.DialogV2) {
   if (!DO_POSITION_SEARCH_RESULTS) return;
   const resultsDiv = $("#step-search-results");
-  if (!resultsDiv?.length) return;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  if (!resultsDiv?.length || !target.length || (dialog instanceof Dialog && dialog.closing) || (dialog instanceof foundry.applications.api.DialogV2 && ((dialog as any).state as number) === -2)) {
+    clearSearchResults();
+    return;
+  }
 
   resultsDiv.css("top", (target?.offset()?.top ?? 0) + (target?.height() ?? 0) + 8);
   resultsDiv.css("left", target?.offset()?.left ?? 0);
 
   resultsDiv.css("width", target?.width() ?? 150);
 
-  requestAnimationFrame(() => { positionSearchResults(target); })
+  requestAnimationFrame(() => { positionSearchResults(target, dialog); })
 }
 
-export function showSearchResults(target: JQuery<HTMLElement>) {
+export function showSearchResults(target: JQuery<HTMLElement>, dialog: Dialog | foundry.applications.api.DialogV2) {
   const div = $("#step-search-results")
   div.css("display", "block");
   DO_POSITION_SEARCH_RESULTS = true;
 
-  positionSearchResults(target);
+  positionSearchResults(target, dialog);
 }
 
 // #endregion Functions (9)
