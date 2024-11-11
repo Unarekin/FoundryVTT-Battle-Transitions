@@ -25,9 +25,17 @@ nav .bt-icon {
   background-color: var(--color-text-dark-primary);
 }
 
-button .bt-icon {
+.v1 button .bt-icon {
+  background-color: var(--color-text-dark-primary);
+}
+
+.v2 button .bt-icon {
   background-color: var(--button-text-color);
-  // background-color: var(--color-text-dark-primary);
+}
+
+button .bt-icon {
+  float: left;
+  margin-top: 8px;
 }
 
 .transition-config {
