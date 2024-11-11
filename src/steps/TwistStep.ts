@@ -17,6 +17,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
   public static name = "TWIST";
   public static template = "twist-config";
   public static icon = "<i class='bt-icon twist fa-fw'></i>"
+  public static category = "warp";
 
 
 

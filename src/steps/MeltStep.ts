@@ -23,6 +23,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
   public static name = "MELT";
   public static template = "melt-config";
   public static icon = "<i class='bt-icon melt fa-fw'></i>"
+  public static category = "warp";
 
   // #endregion Properties (5)
 

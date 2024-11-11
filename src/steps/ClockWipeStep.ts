@@ -26,6 +26,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
   public static name = "CLOCKWIPE";
   public static template = "clockwipe-config";
   public static icon = "<i class='bt-icon clock-wipe fa-fw'></i>"
+  public static category = "wipe";
 
   // #endregion Properties (5)
 

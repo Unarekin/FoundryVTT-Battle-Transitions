@@ -1,0 +1,23 @@
+{
+  "BATTLETRANSITIONS": {
+    "DIALOGS": {
+      "BUTTONS": {
+        "CANCEL": "Cancel",
+        "OK": "Ok",
+        "CLEARSEARCH": "Clear search"
+      },
+      "ADDSTEP": {
+        "TITLE": "Add Transition Step",
+        "SEARCH": {
+          "PLACEHOLDER": "Search"
+        },
+        "TABS": {
+          "WIPES": "Wipes",
+          "WARPS": "Warps",
+          "EFFECTS": "Effects",
+          "TECHNICAL": "Technical"
+        }
+      }
+    }
+  }
+}

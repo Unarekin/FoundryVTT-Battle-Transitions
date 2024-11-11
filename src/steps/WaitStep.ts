@@ -18,6 +18,7 @@ export class WaitStep extends TransitionStep<WaitConfiguration> {
   public static name = "WAIT";
   public static template = "wait-config";
   public static icon = "<i class='bt-icon wait fa-fw'></i>"
+  public static category = "technical";
 
   // #endregion Properties (5)
 

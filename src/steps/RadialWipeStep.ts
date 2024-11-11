@@ -30,6 +30,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   public static name = "RADIALWIPE";
   public static template = "radialwipe-config";
   public static icon = "<i class='bt-icon radial-wipe fa-fw'></i>"
+  public static category = "wipe";
 
   // #endregion Properties (6)
 

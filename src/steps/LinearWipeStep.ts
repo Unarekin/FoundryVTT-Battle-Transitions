@@ -27,6 +27,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   public static key = "linearwipe";
   public static name = "LINEARWIPE";
   public static template = "linearwipe-config";
+  public static category = "wipe";
 
   // #endregion Properties (6)
 

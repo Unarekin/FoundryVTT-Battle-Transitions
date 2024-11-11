@@ -27,14 +27,41 @@ nav .bt-icon {
 
 button .bt-icon {
   background-color: var(--button-text-color);
+  // background-color: var(--color-text-dark-primary);
 }
 
-#add-step-form button {
+.transition-config {
+  .search-box {
+    position: relative;
+
+    .search-icon {
+      position: absolute;
+      top: 6px;
+      left: 4px;
+    }
+
+    .search-cancel {
+      position: absolute;
+      top: 6px;
+      right: 4px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .search-text {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+}
+
+.add-step-tab button {
   position: relative;
   padding-left: 24px;
+  white-space: nowrap;
 }
 
-#add-step-form .bt-icon {
+.add-step-tab .bt-icon {
   position: absolute;
   left: 4px;
 }

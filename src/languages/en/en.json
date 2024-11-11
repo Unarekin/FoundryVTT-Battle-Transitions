@@ -1,11 +1,5 @@
 {
   "BATTLETRANSITIONS": {
-    "DIALOGS": {
-      "BUTTONS": {
-        "CANCEL": "Cancel",
-        "OK": "Ok"
-      }
-    },
     "WARNINGS": {
       "TRANSITIONCANCELED": "Transition canceled.",
       "PREPARETIMEOUT": "One or more clients timed out waiting for a response."

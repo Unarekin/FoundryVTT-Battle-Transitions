@@ -1,5 +1,9 @@
 @import "./icons.scss";
 
+.ui-helper-hidden-accessible {
+  display: none;
+}
+
 .center {
   text-align: center;
 }
@@ -54,11 +58,11 @@
 }
 
 .bt {
-  &.dialog-buttons {
+  .dialog-buttons {
     max-height: 36px;
   }
 
-  &.two-columns {
+  .two-columns {
     columns: 2;
   }
 }

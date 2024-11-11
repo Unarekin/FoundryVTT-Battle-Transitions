@@ -22,6 +22,7 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
   public static name = "FLASH";
   public static template = "flash-config";
   public static icon = "<i class='bt-icon flash fa-fw'></i>"
+  public static category = "effect";
 
   // #endregion Properties (5)
 

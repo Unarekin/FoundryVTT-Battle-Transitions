@@ -16,6 +16,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
   public static key = "zoomblur";
   public static name = "ZOOMBLUR";
   public static template = "zoomblur-config";
+  public static category = "warp";
 
   public static async RenderTemplate(config?: ZoomBlurConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ZoomBlurStep.template}.hbs`, {

@@ -20,6 +20,7 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
   public static name = "FIREDISSOLVE";
   public static template = "firedissolve-config";
   public static icon = "<i class='bt-icon fire-dissolve fa-fw'></i>"
+  public static category = "wipe";
 
   // #endregion Properties (5)
 

@@ -22,6 +22,7 @@ export class SpiralLinearWipeStep extends TransitionStep<SpiralLinearWipeConfigu
   public static key = "spirallinearwipe";
   public static name = "SPIRALLINEARWIPE";
   public static template = "spirallinearwipe-config";
+  public static category = "wipe";
 
   public static async RenderTemplate(config?: SpiralLinearWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpiralLinearWipeStep.template}.hbs`, {

@@ -1,9 +1,6 @@
 {
   "BATTLETRANSITIONS": {
     "SCENECONFIG": {
-      "ADDSTEPDIALOG": {
-        "TITLE": "Add Transition Step"
-      },
       "ANGULARWIPE": {
         "DESCRIPTION": "A wipe that clears angled sections of the screen progressively closer to the center."
       },
