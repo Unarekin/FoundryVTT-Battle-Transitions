@@ -13,7 +13,7 @@ transitionCover.style.position = "absolute";
 transitionCover.style.width = "100%";
 transitionCover.style.height = "100%";
 transitionCover.style.backgroundRepeat = "no-repeat";
-transitionCover.style.backgroundSize = "100% 100%";
+
 transitionCover.id = COVER_ID;
 document.body.appendChild(transitionCover);
 
@@ -28,7 +28,9 @@ export async function createSnapshot() {
   if (!canvas) throw new CanvasNotFoundError();
   if (!(canvas.app && canvas.hidden && canvas.primary && canvas.tiles && canvas.drawings && canvas.scene && canvas.stage)) throw new NotInitializedError();
 
-  const { sceneWidth, sceneHeight } = canvas.scene.dimensions;
+  // const { sceneWidth, sceneHeight } = canvas.scene.dimensions;
+  const sceneWidth = window.innerWidth;
+  const sceneHeight = window.innerHeight;
 
   const renderer = canvas.app.renderer;
 

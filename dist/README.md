@@ -3,16 +3,17 @@
 ![Supported Foundry Version](https://img.shields.io/endpoint?url=https%3A%2F%2Ffoundryshields.com%2Fversion%3Fstyle%3Dflat%26url%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2FUnarekin%2FFoundryVTT-Battle-Transitions%2Frefs%2Fheads%2Fmaster%2Fmodule.json)
 ![Supported Game Systems](https://img.shields.io/endpoint?url=https%3A%2F%2Ffoundryshields.com%2Fsystem%3FnameType%3Dfull%26showVersion%3D1%26style%3Dflat%26url%3Dhttps%3A%2F%2Fraw.githubusercontent.com%2FUnarekin%2FFoundryVTT-Battle-Transitions%2Frefs%2Fheads%2Fmaster%2Fmodule.json)
 
-![BattleTransitionsLogo](https://github.com/user-attachments/assets/66dab803-764d-4558-b9c7-05ed403752a2)
+![GitHub Downloads (specific asset, all releases)](https://img.shields.io/github/downloads/Unarekin/FoundryVTT-Battle-Transitions/module.zip)
+[![Forge Installs](https://img.shields.io/badge/dynamic/json?label=Forge%20Installs&query=package.installs&suffix=%25&url=https%3A%2F%2Fforge-vtt.com%2Fapi%2Fbazaar%2Fpackage%2Fbattle-transitions)](https://forge-vtt.com/bazaar#package=battle-transitions) 
+![BattleTransitionsLogo](https://github.com/user-attachments/assets/089b3b1c-8fed-48ed-b388-0fa743808a7e)
 
 - [Battle Transitions](#battle-transitions)
   - [Installation](#installation)
   - [Examples](#examples)
   - [How does this Work?](#how-does-this-work)
   - [What About \[Some Effect Here\]?](#what-about-some-effect-here)
-  - [Contributing](#contributing)
-      - [On Automated Testing](#on-automated-testing)
   - [Known Issues / Compatibility With Other Modules](#known-issues--compatibility-with-other-modules)
+- [Attributions \& Acknowledgements](#attributions--acknowledgements)
 - [Support](#support)
 
 
@@ -22,9 +23,7 @@ Battle Transitions seeks to empower GMs with the ability to configure interestin
 The current list of transition types is somewhat basic, but with the framework in place, this list ease easy to expand as time goes on and I plan to introduce ever more interesting options.
 
 ## Installation
-1. In Foundry, open the 'Add-on Modules' tab
-2. Click 'Install Module'
-3. Enter the following URL into the 'Manifest URL' field at the bottom
+You can install this module through the Foundry module installer by searching for "battle transitions", or copying and pasting the manifest URL in the text field at the bottom:
 ```
 https://github.com/Unarekin/FoundryVTT-Battle-Transitions/releases/latest/download/module.json
 ```
@@ -42,13 +41,6 @@ I do have a short list of effects from some classic JRPG titles (mostly Final Fa
 
 If you'd like to request some particular effect, please [open a github issue](https://github.com/Unarekin/FoundryVTT-Battle-Transitions/issues/new) and describe the effect you would like to see.  If you're looking to reproduce an effect from an existing game, please provide a sample video of the effect in action to better illustrate just how it ought to look.
 
-## Contributing
-If you'd like to contribute fixes or new effects to the project, feel free to [open a pull request](https://github.com/Unarekin/FoundryVTT-Battle-Transitions/compare).
-
-#### On Automated Testing
-There *is* a framework in place to allow for automated E2E and component testing via [Cypress](https://www.cypress.io/), but there are some issues in integrating with Foundry that need to be addressed before automated testing can be fully embraced.
-
-
 ## Known Issues / Compatibility With Other Modules
 - This is an early release, and uses some unorthodox methods to accomplish its goals.  As such, there is a non-zero chance that things will break, leaving things in an unusable state.  In general, running the Cleanup macro should resolve many of these, but if all else fails, reloading the browser window will reset things back to normal.
 - Compatibility with [Scene Transitions](https://foundryvtt.com/packages/scene-transitions/) - Currently, no specific measures are taken to ensure compatibility with Scene Transitions or any other modules that affect Foundry's behavior when changing scenes, but preliminary testing shows that the two modules can be used side-by-side if you take some care with how you configure the timing of your Battle Transition sequence.
@@ -57,5 +49,14 @@ There *is* a framework in place to allow for automated E2E and component testing
 
 For a list of known bugs and feature requests, please see the project's [issues page](https://github.com/Unarekin/FoundryVTT-Battle-Transitions/issues)
 
+# Attributions & Acknowledgements
+- The [crossed swords icon](https://game-icons.net/1x1/lorc/crossed-swords.html) is from [Game-Icons.net](https://game-icons.net/), by [Lorc](https://lorcblog.blogspot.com/) and is released under the [CC-BY-3.0](http://creativecommons.org/licenses/by/3.0/) license
+- The [character](https://opengameart.org/content/js-actors-aeon-warriors-field-battle-sprites) and [wolf](https://opengameart.org/content/js-monsters-aeon-monsters-i) sprites used in the logo animation are by [JosephSeraph](https://opengameart.org/users/josephseraph) on [OpenGameArt](https://opengameart.org/) and are both released under under the [CC-BY-3.0](http://creativecommons.org/licenses/by/3.0/) license
+- The [Hazy Hills](https://opengameart.org/content/battle-background-hazy-hills-0) background used in the logo animation is by [ansimuz](https://opengameart.org/users/ansimuz) also from [OpenGameArt](https://opengameart.org/) and released under the [CC-BY-3.0](http://creativecommons.org/licenses/by/3.0/) license
+- The cloud background used in the logo animation is from [Pixel Clouds Parallax](https://garzettdev.itch.io/pixel-clouds) by [garzetdev](https://garzettdev.itch.io/) on [itch.io](https://itch.io) and is released under no specific license, but free to use in commercial projects
+
+
 # Support
 Do please consider throwing me a few bucks over on [Ko-Fi](https://ko-fi.com/unarekin) if you like what you see and are feeling generous.
+
+
