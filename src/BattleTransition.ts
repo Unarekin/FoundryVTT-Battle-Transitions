@@ -2,7 +2,7 @@ import { coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelStep, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralLinearWipeConfiguration, SpiralRadialWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelStep, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
@@ -540,12 +540,12 @@ export class BattleTransition {
    * @param {Easing} easing - {@link Easing}
    * @returns 
    */
-  public spiralLinearWipe(clock: ClockDirection, radial: RadialDirection, direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+  public spiralWipe(clock: ClockDirection, radial: RadialDirection, direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
 
     const backgroundType = typeof serializedTexture === "string" && isColor(serializedTexture) ? "color" : "image";
     this.#sequence.push({
-      type: "spirallinearwipe",
+      type: "spiralwipe",
       version: "1.1.0",
       duration,
       direction,
@@ -555,7 +555,7 @@ export class BattleTransition {
       bgSizingMode: "stretch",
       backgroundType,
       serializedTexture
-    } as SpiralLinearWipeConfiguration);
+    } as SpiralWipeConfiguration);
 
     return this;
   }
@@ -569,7 +569,7 @@ export class BattleTransition {
    * @param {Easing} [easing="none"] - {@link Easing}
    * @returns 
    */
-  public spiralRadialWipe(direction: ClockDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+  public spiralShutter(direction: ClockDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
     this.#sequence.push({
       type: "spiralradialwipe",
@@ -578,7 +578,7 @@ export class BattleTransition {
       easing,
       direction,
       radial
-    } as SpiralRadialWipeConfiguration)
+    } as SpiralShutterConfiguration)
 
     return this;
   }

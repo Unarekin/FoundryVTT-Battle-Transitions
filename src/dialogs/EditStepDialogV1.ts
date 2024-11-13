@@ -11,7 +11,7 @@ export class EditStepDialogV1 {
 
     return new Promise<TransitionConfiguration | null>(resolve => {
       const dialog = new Dialog({
-        title: localize(`BATTLETRANSITIONS.DIALOGS.EDITSTEP.TITLE`, { name: localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${step.name}`) }),
+        title: localize(`BATTLETRANSITIONS.DIALOGS.EDITSTEP.TITLE`, { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) }),
         content,
         buttons: {
           ok: {
@@ -45,7 +45,7 @@ export class EditStepDialogV1 {
 
 function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
   // Select number and text fields on focus
-  html.find("input[type='number'] input[type='text']").on("focus", e => { (e.currentTarget as HTMLInputElement).select(); })
+  html.find("input[type='number'],input[type='text']").on("focus", e => { (e.currentTarget as HTMLInputElement).select(); })
 
 
   // Background type

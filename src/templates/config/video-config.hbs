@@ -5,7 +5,7 @@
 >
   <form>
     <input type="hidden" name="id" id="id" value="{{id}}" />
-    <p>{{localize "BATTLETRANSITIONS.SCENECONFIG.VIDEO.DESCRIPTION"}}</p>
+    <p>{{localize "BATTLETRANSITIONS.VIDEO.DESCRIPTION"}}</p>
     <div class="form-group">
       <label for="file">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.VIDEO.FILE.LABEL"
@@ -22,7 +22,7 @@
       }}</p>
     <div class="form-group">
       <label for="volume">{{localize
-          "BATTLETRANSITIONS.SCENECONFIG.VIDEO.VOLUME.LABEL"
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.LABEL"
         }}</label>
       <range-picker
         value="{{volume}}"
@@ -34,7 +34,7 @@
       ></range-picker>
     </div>
     <p class="notes">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.VIDEO.VOLUME.HINT"
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.HINT"
       }}</p>
 {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
   </form>

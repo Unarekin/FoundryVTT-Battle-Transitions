@@ -82,6 +82,16 @@ export class ConfigurationHandler {
     else await SceneConfigV11.inject(app, html, options, ConfigurationHandler.GetSceneConfiguration(app.object));
   }
 
+  public static BuildTransitionFromForm(html: JQuery<HTMLElement>) {
+    const sequence: TransitionConfiguration[] = [];
+    html.find("#transition-step-list [data-transition-type]").each((index, element) => {
+      const flag = element.dataset.flag ?? "";
+      const step = JSON.parse(flag) as TransitionConfiguration;
+      sequence.push(step);
+    });
+    return sequence;
+  }
+
 }
 
 

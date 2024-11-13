@@ -1,11 +1,11 @@
-import { SpiralLinearWipeFilter } from '../filters';
+import { SpiralWipeFilter } from '../filters';
 import { createColorTexture, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
-import { SpiralLinearWipeConfiguration } from './types';
+import { SpiralWipeConfiguration } from './types';
 
-export class SpiralLinearWipeStep extends TransitionStep<SpiralLinearWipeConfiguration> {
-  public static DefaultSettings: SpiralLinearWipeConfiguration = {
-    type: "spirallinearwipe",
+export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
+  public static DefaultSettings: SpiralWipeConfiguration = {
+    type: "SpiralWipe",
     duration: 1000,
     direction: "left",
     clockDirection: "clockwise",
@@ -19,15 +19,15 @@ export class SpiralLinearWipeStep extends TransitionStep<SpiralLinearWipeConfigu
   };
 
   public static hidden: boolean = false;
-  public static key = "spirallinearwipe";
-  public static name = "SPIRALLINEARWIPE";
-  public static template = "spirallinearwipe-config";
+  public static key = "spiralwipe";
+  public static name = "SPIRALWIPE";
+  public static template = "spiralwipe-config";
   public static category = "wipe";
 
-  public static async RenderTemplate(config?: SpiralLinearWipeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpiralLinearWipeStep.template}.hbs`, {
+  public static async RenderTemplate(config?: SpiralWipeConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpiralWipeStep.template}.hbs`, {
       id: foundry.utils.randomID(),
-      ...SpiralLinearWipeStep.DefaultSettings,
+      ...SpiralWipeStep.DefaultSettings,
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),
@@ -41,35 +41,35 @@ export class SpiralLinearWipeStep extends TransitionStep<SpiralLinearWipeConfigu
     })
   }
 
-  public static from(config: SpiralLinearWipeConfiguration): SpiralLinearWipeStep
-  public static from(form: HTMLFormElement): SpiralLinearWipeStep
-  public static from(form: JQuery<HTMLFormElement>): SpiralLinearWipeStep
-  public static from(arg: unknown): SpiralLinearWipeStep {
-    if (arg instanceof HTMLFormElement) return SpiralLinearWipeStep.fromFormElement(arg);
+  public static from(config: SpiralWipeConfiguration): SpiralWipeStep
+  public static from(form: HTMLFormElement): SpiralWipeStep
+  public static from(form: JQuery<HTMLFormElement>): SpiralWipeStep
+  public static from(arg: unknown): SpiralWipeStep {
+    if (arg instanceof HTMLFormElement) return SpiralWipeStep.fromFormElement(arg);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    else if (((arg as any)[0]) instanceof HTMLFormElement) return SpiralLinearWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
-    else return new SpiralLinearWipeStep(arg as SpiralLinearWipeConfiguration);
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return SpiralWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
+    else return new SpiralWipeStep(arg as SpiralWipeConfiguration);
   }
 
-  public static fromFormElement(form: HTMLFormElement): SpiralLinearWipeStep {
+  public static fromFormElement(form: HTMLFormElement): SpiralWipeStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
     const backgroundImage = elem.find("#backgroundImage").val() as string ?? "";
 
-    return new SpiralLinearWipeStep({
-      ...SpiralLinearWipeStep.DefaultSettings,
+    return new SpiralWipeStep({
+      ...SpiralWipeStep.DefaultSettings,
       backgroundImage,
       ...parseConfigurationFormElements(elem, "id", "duration", "backgroundType", "backgroundColor", "radial", "direction", "clockDirection", "easing")
     })
   }
 
   public async execute(container: PIXI.Container): Promise<void> {
-    const config: SpiralLinearWipeConfiguration = {
-      ...SpiralLinearWipeStep.DefaultSettings,
+    const config: SpiralWipeConfiguration = {
+      ...SpiralWipeStep.DefaultSettings,
       ...this.config
     };
 
     const background = config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new SpiralLinearWipeFilter(config.clockDirection, config.radial, config.direction, background.baseTexture);
+    const filter = new SpiralWipeFilter(config.clockDirection, config.radial, config.direction, background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }

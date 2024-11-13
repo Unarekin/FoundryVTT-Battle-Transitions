@@ -92,12 +92,12 @@ export type WaveWipeConfiguration = WipeTransition & ({
   direction: RadialDirection;
 });
 
-export type SpiralRadialWipeConfiguration = WipeTransition & ({
+export type SpiralShutterConfiguration = WipeTransition & ({
   direction: ClockDirection;
   radial: RadialDirection;
 });
 
-export type SpiralLinearWipeConfiguration = WipeTransition & ({
+export type SpiralWipeConfiguration = WipeTransition & ({
   clockDirection: ClockDirection;
   direction: WipeDirection;
   radial: RadialDirection;

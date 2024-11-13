@@ -1,14 +1,14 @@
 import { TransitionSequence } from "../interfaces";
 import { createColorTexture, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
-import { SpiralRadialWipeConfiguration } from "./types";
-import { SpiralRadialWipeFilter } from "../filters";
+import { SpiralShutterConfiguration } from "./types";
+import { SpiralShutterFilter } from "../filters";
 
-export class SpiralRadialWipeStep extends TransitionStep<SpiralRadialWipeConfiguration> {
+export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration> {
   // #region Properties (5)
 
-  public static DefaultSettings: SpiralRadialWipeConfiguration = {
-    type: "spiralradialwipe",
+  public static DefaultSettings: SpiralShutterConfiguration = {
+    type: "SpiralShutter",
     duration: 1000,
     direction: "clockwise",
     radial: "inside",
@@ -21,19 +21,19 @@ export class SpiralRadialWipeStep extends TransitionStep<SpiralRadialWipeConfigu
   }
 
   public static hidden: boolean = false;
-  public static key = "spiralradialwipe";
-  public static name = "SPIRALRADIALWIPE";
-  public static template = "spiralradialwipe-config";
+  public static key = "spiralshutter";
+  public static name = "SPIRALSHUTTER";
+  public static template = "spiralshutter-config";
   public static category = "wipe";
 
   // #endregion Properties (5)
 
   // #region Public Static Methods (6)
 
-  public static async RenderTemplate(config?: SpiralRadialWipeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpiralRadialWipeStep.template}.hbs`, {
+  public static async RenderTemplate(config?: SpiralShutterConfiguration): Promise<string> {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpiralShutterStep.template}.hbs`, {
       id: foundry.utils.randomID(),
-      ...SpiralRadialWipeStep.DefaultSettings,
+      ...SpiralShutterStep.DefaultSettings,
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),
@@ -41,22 +41,22 @@ export class SpiralRadialWipeStep extends TransitionStep<SpiralRadialWipeConfigu
     });
   }
 
-  public static from(config: SpiralRadialWipeConfiguration): SpiralRadialWipeStep
-  public static from(form: HTMLFormElement): SpiralRadialWipeStep
-  public static from(form: JQuery<HTMLFormElement>): SpiralRadialWipeStep
-  public static from(arg: unknown): SpiralRadialWipeStep {
-    if (arg instanceof HTMLFormElement) return SpiralRadialWipeStep.fromFormElement(arg);
+  public static from(config: SpiralShutterConfiguration): SpiralShutterStep
+  public static from(form: HTMLFormElement): SpiralShutterStep
+  public static from(form: JQuery<HTMLFormElement>): SpiralShutterStep
+  public static from(arg: unknown): SpiralShutterStep {
+    if (arg instanceof HTMLFormElement) return SpiralShutterStep.fromFormElement(arg);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    else if (((arg as any)[0]) instanceof HTMLFormElement) return SpiralRadialWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
-    else return new SpiralRadialWipeStep(arg as SpiralRadialWipeConfiguration);
+    else if (((arg as any)[0]) instanceof HTMLFormElement) return SpiralShutterStep.fromFormElement((arg as any)[0] as HTMLFormElement);
+    else return new SpiralShutterStep(arg as SpiralShutterConfiguration);
   }
 
-  public static fromFormElement(form: HTMLFormElement): SpiralRadialWipeStep {
+  public static fromFormElement(form: HTMLFormElement): SpiralShutterStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
 
     const backgroundImage = elem.find("#backgroundImage").val() as string ?? "";
-    return new SpiralRadialWipeStep({
-      ...SpiralRadialWipeStep.DefaultSettings,
+    return new SpiralShutterStep({
+      ...SpiralShutterStep.DefaultSettings,
       backgroundImage,
       ...parseConfigurationFormElements(elem, "id", "duration", "easing", "backgroundType", "backgroundColor", "direction", "radial")
     })
@@ -68,12 +68,12 @@ export class SpiralRadialWipeStep extends TransitionStep<SpiralRadialWipeConfigu
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
-    const config: SpiralRadialWipeConfiguration = {
-      ...SpiralRadialWipeStep.DefaultSettings,
+    const config: SpiralShutterConfiguration = {
+      ...SpiralShutterStep.DefaultSettings,
       ...this.config
     };
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new SpiralRadialWipeFilter(config.direction, config.radial, background.baseTexture);
+    const filter = new SpiralShutterFilter(config.direction, config.radial, background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }

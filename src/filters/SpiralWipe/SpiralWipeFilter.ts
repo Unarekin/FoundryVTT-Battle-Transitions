@@ -4,7 +4,7 @@ import { ClockDirection, RadialDirection, TextureLike, WipeDirection } from "../
 import { TextureWipeFilter } from "../TextureWipe/TextureWipeFilter";
 
 
-export class SpiralLinearWipeFilter extends TextureWipeFilter {
+export class SpiralWipeFilter extends TextureWipeFilter {
   constructor(clock: ClockDirection, radial: RadialDirection, direction: WipeDirection, background: TextureLike) {
     const bg = coerceTexture(background);
     if (!(bg instanceof PIXI.Texture)) throw new InvalidTextureError();

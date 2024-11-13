@@ -13,8 +13,8 @@ export function buildIndex(): lunr.Index {
 
     for (const step of steps) {
       this.add({
-        name: localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${step.name}`),
-        description: localize(`BATTLETRANSITIONS.SCENECONFIG.${step.name}.DESCRIPTION`),
+        name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
+        description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
         key: step.key
       })
     }
@@ -41,7 +41,7 @@ function createSearchResultDiv(step: typeof TransitionStep): HTMLDivElement {
   const div = document.createElement("div");
   div.dataset.key = step.key;
 
-  div.innerHTML = localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${step.name}`);
+  div.innerHTML = localize(`BATTLETRANSITIONS.${step.name}.NAME`);
   if (step.icon) div.innerHTML = `${step.icon}${div.innerHTML}`;
   else div.style.paddingLeft = "calc(1.25em + 12px)";
 
@@ -91,7 +91,7 @@ function positionSearchResults(target: JQuery<HTMLElement>, dialog: Dialog | fou
   const resultsDiv = $("#step-search-results");
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  if (!resultsDiv?.length || !target.length || (dialog instanceof Dialog && dialog.closing) || (dialog instanceof foundry.applications.api.DialogV2 && ((dialog as any).state as number) === -2)) {
+  if (!resultsDiv?.length || !target.length || (dialog instanceof Dialog && dialog.closing) || (foundry.applications?.api?.DialogV2 && dialog instanceof foundry.applications.api.DialogV2 && ((dialog as any).state as number) === -2)) {
     clearSearchResults();
     return;
   }

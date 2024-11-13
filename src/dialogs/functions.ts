@@ -1,6 +1,8 @@
+import { TransitionConfiguration } from '../steps';
 import { getSortedSteps, shouldUseAppV2 } from '../utils';
 import { AddStepDialogV1 } from './AddStepDialogV1';
 import { AddStepDialogV2 } from './AddStepDialogV2';
+import { EditStepDialogV1 } from './EditStepDialogV1';
 import { StepContext } from './types';
 
 export async function addStepDialog(): Promise<string | null> {
@@ -9,8 +11,25 @@ export async function addStepDialog(): Promise<string | null> {
 }
 
 
-export function getStepsForCategory(category: string): StepContext[] {
-  return getSortedSteps().reduce((prev, curr) => curr.category === category ? [...prev, { key: curr.key, name: `BATTLETRANSITIONS.TRANSITIONTYPES.${curr.name}`, icon: curr.icon, tooltip: "", hasIcon: !!curr.icon }] : prev, [] as StepContext[]);
+export function getStepsForCategory(category: string, hidden: boolean = false): StepContext[] {
+  return getSortedSteps().reduce((prev, curr) => curr.category === category && (hidden ? true : curr.hidden === false) ? [...prev, { key: curr.key, name: `BATTLETRANSITIONS.${curr.name}.NAME`, description: `BATTLETRANSITIONS.${curr.name}.DESCRIPTION`, icon: curr.icon, tooltip: "", hasIcon: !!curr.icon }] : prev, [] as StepContext[]);
 }
 
+export async function editStepDialog(config: TransitionConfiguration): Promise<TransitionConfiguration | null> {
+  return EditStepDialogV1.prompt(config);
+}
 
+export async function confirm(title: string, content: string): Promise<boolean> {
+  if (shouldUseAppV2()) {
+    return foundry.applications.api.DialogV2.confirm({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      window: ({ title } as any),
+      content
+    });
+  } else {
+    return Dialog.confirm({
+      title,
+      content
+    }).then(val => !!val);
+  }
+}
