@@ -34,6 +34,7 @@ export async function registerTemplates() {
       "duration-selector",
       "add-step-button"
     ].map(name => `/modules/${__MODULE_ID__}/templates/config/${name}.hbs`),
-    `/modules/${__MODULE_ID__}/templates/scene-selector.hbs`
+    `/modules/${__MODULE_ID__}/templates/scene-selector.hbs`,
+    `/modules/${__MODULE_ID__}/templates/transition-steps.hbs`
   ]);
 }

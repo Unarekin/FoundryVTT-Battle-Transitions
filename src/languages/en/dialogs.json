@@ -4,7 +4,8 @@
       "BUTTONS": {
         "CANCEL": "Cancel",
         "OK": "Ok",
-        "CLEARSEARCH": "Clear search"
+        "CLEARSEARCH": "Clear search",
+        "TRANSITION": "Transition"
       },
       "ADDSTEP": {
         "TITLE": "Add Transition Step",
@@ -24,6 +25,13 @@
       "REMOVECONFIRM": {
         "CONTENT": "Are you sure you wish to remove {name}?",
         "TITLE": "Remove {name}"
+      },
+      "TRANSITIONBUILDER": {
+        "TITLE": "Transition Builder"
+      },
+      "SCENESELECTOR": {
+        "DESCRIPTION": "Please select a scene below:",
+        "TITLE": "Scene Selector"
       }
     }
   }

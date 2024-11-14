@@ -5,6 +5,8 @@ import { AddStepDialogV2 } from './AddStepDialogV2';
 import { EditStepDialogV1 } from './EditStepDialogV1';
 import { StepContext } from './types';
 import { EditStepDialogV2 } from './EditStepDialogV2';
+import { TransitionBuilderV1 } from './TransitionBuilderV1';
+import { TransitionBuilderV2 } from './TransitionBuilderV2';
 
 export async function addStepDialog(): Promise<string | null> {
   if (shouldUseAppV2()) return AddStepDialogV2.prompt();
@@ -44,4 +46,9 @@ export function buildTransitionFromForm(html: JQuery<HTMLElement>) {
     sequence.push(step);
   });
   return sequence;
+}
+
+export async function transitionBuilderDialog(scene?: Scene): Promise<TransitionConfiguration[] | null> {
+  if (shouldUseAppV2()) return TransitionBuilderV2.prompt(scene);
+  else return TransitionBuilderV1.prompt(scene);
 }

@@ -54,8 +54,8 @@ export class ConfigurationHandler {
           const sceneId = li.data("sceneId") as string;
           const scene = game.scenes?.get(sceneId);
           if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId)
-          // if (scene.canUserModify(game.user as User, "update"))
-          // void ConfigurationHandler.BuildTransition(scene);
+          if (scene.canUserModify(game.user as User, "update"))
+            void BattleTransition.BuildTransition(scene);
 
         }
       }

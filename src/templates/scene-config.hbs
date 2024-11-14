@@ -4,15 +4,4 @@
     type="checkbox" name="auto-trigger" id="auto-trigger" {{checked autoTrigger}}/>
 </div>
   <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.HINT" }}</p>
-<fieldset>
-  <legend>{{localize
-      "BATTLETRANSITIONS.SCENECONFIG.TRANSITIONCONFIG.LABEL"
-    }}</legend>
-    <section id="transition-step-list">
-
-    </section>
-  </section>
-  
-  <button data-action="add-step" id="add-step" name="add-step"><i class="fas fa-plus"></i>{{localize "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.ADDSTEP"}}</button>
-
-</fieldset>
+{{> "/modules/battle-transitions/templates/transition-steps.hbs" this}}

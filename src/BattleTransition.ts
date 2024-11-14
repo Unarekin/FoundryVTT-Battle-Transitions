@@ -8,6 +8,7 @@ import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } fr
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
 import { deserializeTexture, getStepClassByKey, isColor, localize, serializeTexture, shouldUseAppV2 } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
+import { transitionBuilderDialog } from "./dialogs";
 
 // let suppressSoundUpdates: boolean = false;
 
@@ -70,10 +71,9 @@ export class BattleTransition {
 
   // #region Public Static Methods (1)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public static BuildTransition(scene?: Scene): Promise<void> {
-    return Promise.resolve();
-    // return ConfigurationHandler.BuildTransition(scene);
+  public static async BuildTransition(scene?: Scene): Promise<void> {
+    const transition = await transitionBuilderDialog(scene);
+    if (transition) await BattleTransition.executeSequence(transition);
   }
 
   // #endregion Public Static Methods (1)

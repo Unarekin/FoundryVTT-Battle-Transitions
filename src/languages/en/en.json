@@ -61,13 +61,6 @@
     "NAVIGATION": {
       "CUSTOM": "Transition Builder",
       "TRIGGER": "Transition"
-    },
-    "SCENESELECTOR": {
-      "DESCRIPTION": "Please select a scene below:",
-      "TITLE": "Scene Selector"
-    },
-    "TRANSITIONBUILDER": {
-      "TITLE": "Transition Builder"
     }
   }
 }
