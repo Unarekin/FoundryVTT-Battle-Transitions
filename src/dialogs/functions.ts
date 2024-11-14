@@ -4,6 +4,7 @@ import { AddStepDialogV1 } from './AddStepDialogV1';
 import { AddStepDialogV2 } from './AddStepDialogV2';
 import { EditStepDialogV1 } from './EditStepDialogV1';
 import { StepContext } from './types';
+import { EditStepDialogV2 } from './EditStepDialogV2';
 
 export async function addStepDialog(): Promise<string | null> {
   if (shouldUseAppV2()) return AddStepDialogV2.prompt();
@@ -16,7 +17,8 @@ export function getStepsForCategory(category: string, hidden: boolean = false): 
 }
 
 export async function editStepDialog(config: TransitionConfiguration): Promise<TransitionConfiguration | null> {
-  return EditStepDialogV1.prompt(config);
+  if (shouldUseAppV2()) return EditStepDialogV2.prompt(config);
+  else return EditStepDialogV1.prompt(config);
 }
 
 export async function confirm(title: string, content: string): Promise<boolean> {

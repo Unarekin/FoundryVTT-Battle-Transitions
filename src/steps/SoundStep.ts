@@ -46,10 +46,14 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   public static fromFormElement(form: HTMLFormElement): SoundStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
     const file = elem.find("#file").val() as string ?? "";
+    const volume = elem.find("#volume").val() as number ?? 100;
+
+
     return new SoundStep({
       ...SoundStep.DefaultSettings,
       file,
-      ...parseConfigurationFormElements(elem, "id", "volume")
+      volume,
+      ...parseConfigurationFormElements(elem, "id")
     })
   }
 
