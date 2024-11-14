@@ -11,7 +11,7 @@ export class EditStepDialogV2 {
     return new Promise<TransitionConfiguration | null>(resolve => {
       const dialog = new foundry.applications.api.DialogV2({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        window: ({ title: localize(`BATTLETRANSITIONS.DIALOGS.EDITSTEP.TITLE`, { name: localize(`BATTLETRANSITIONS.${step.name}`) }) } as any),
+        window: ({ title: localize(`BATTLETRANSITIONS.DIALOGS.EDITSTEP.TITLE`, { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) }) } as any),
         content,
         buttons: [
           {
@@ -39,6 +39,7 @@ export class EditStepDialogV2 {
       })
       void dialog.render(true)
         .then(dialog => {
+          dialog.position.width = 500;
           addEventListeners(dialog, $(dialog.element));
         })
     });
@@ -49,6 +50,13 @@ function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQue
   // Select number and text fields on focus
   html.find("input[type='number'],input[type='text']").on("focus", e => { (e.currentTarget as HTMLInputElement).select(); })
 
+  // Set up tabs
+  const tabs = new Tabs({
+    contentSelector: ".tab-content",
+    navSelector: ".tabs[data-group='primary-tabs']",
+    initial: "wipes",
+  });
+  tabs.bind(dialog.element);
 
   // Background type
   setBackgroundType(html);

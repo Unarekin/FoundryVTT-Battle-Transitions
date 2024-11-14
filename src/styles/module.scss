@@ -66,6 +66,12 @@
 
   .two-columns {
     columns: 2;
+
+    button {
+      white-space: nowrap;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
   }
 }
 
@@ -99,4 +105,8 @@
       background-color: #e9e9e9;
     }
   }
+}
+
+.no-row-gap .tab {
+  row-gap: 0px;
 }

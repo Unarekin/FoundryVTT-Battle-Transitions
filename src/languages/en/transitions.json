@@ -111,6 +111,10 @@
     "ZOOMBLUR": {
       "DESCRIPTION": "Simultaneously zoom in on and blur the screen.",
       "NAME": "Zoom & Blur"
+    },
+    "BOSSSPLASH": {
+      "NAME": "Boss Splash Screen",
+      "DESCRIPTION": "Trigger an animation from the Boss Splash Screen module."
     }
   }
 }

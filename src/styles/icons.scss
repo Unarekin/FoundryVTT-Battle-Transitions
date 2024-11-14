@@ -94,6 +94,10 @@ button .bt-icon {
     @include mask-icon("../assets/icons/angular-wipe.svg");
   }
 
+  &.boss-splash {
+    @include mask-icon("../assets/icons/boss-splash.svg");
+  }
+
   &.crossed-swords {
     @include mask-icon("../assets/icons/crossed-swords.svg");
   }

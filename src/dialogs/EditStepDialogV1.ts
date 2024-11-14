@@ -37,7 +37,7 @@ export class EditStepDialogV1 {
         }
       });
 
-      dialog.render(true, { classes: ["dialog", "bt"], resizable: true });
+      dialog.render(true, { classes: ["dialog", "bt"], resizable: true, width: 500 });
     })
   }
 }
@@ -47,6 +47,13 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
   // Select number and text fields on focus
   html.find("input[type='number'],input[type='text']").on("focus", e => { (e.currentTarget as HTMLInputElement).select(); })
 
+  // Set up tabs
+  const tabs = new Tabs({
+    contentSelector: ".tab-content",
+    navSelector: ".tabs[data-group='primary-tabs']",
+    initial: "wipes",
+  });
+  tabs.bind(html[0]);
 
   // Background type
   setBackgroundType(html);

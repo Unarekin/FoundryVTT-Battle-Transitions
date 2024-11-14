@@ -1,6 +1,6 @@
 import { InvalidMacroError } from "../errors";
 import { TransitionSequence } from "../interfaces";
-import { getCompendiumFromUUID, getMacros, log, parseConfigurationFormElements } from "../utils";
+import { getCompendiumFromUUID, getMacros, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { MacroConfiguration } from "./types";
 
@@ -25,7 +25,6 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
   // #region Public Static Methods (6)
 
   public static RenderTemplate(config?: MacroConfiguration): Promise<string> {
-    log("Macros:", getMacros().sort(sortMacro).map(formatMacro))
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${MacroStep.template}.hbs`, {
       id: foundry.utils.randomID(),
       ...MacroStep.DefaultSettings,

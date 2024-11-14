@@ -141,3 +141,26 @@ export type TwistConfiguration = TransitionConfiguration & DurationTransition & 
   maxAngle: number;
   direction: ClockDirection;
 });
+
+export type BossSplashConfiguration = TransitionConfiguration & DurationTransition & ({
+  actor: string;
+  topColor: string;
+  midColor: string;
+  botColor: string;
+
+  fontColor: string;
+  fontShadow: string;
+  subColor: string;
+  subShadow: string;
+
+  sound?: string;
+  font: string;
+  fontSize: string;
+
+  subSize: string;
+  message?: string;
+  subText?: string;
+
+  animationDelay: number;
+
+});

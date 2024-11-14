@@ -10,47 +10,6 @@ import * as steps from "./steps"
 
 // #region Functions (33)
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function addNavigationButton(buttons: any[]) {
-  // buttons.push({
-  //   name: "BATTLETRANSITIONS.NAVIGATION.TRIGGER",
-  //   icon: `<i class="fas bt-icon fa-fw crossed-swords"></i>`,
-  //   condition: (li: JQuery<HTMLLIElement>) => {
-  //     const scene = game.scenes?.get(li.data("sceneId") as string);
-  //     const steps: TransitionStep[] = scene?.getFlag(__MODULE_ID__, "steps") ?? [];
-
-  //     return (game.users?.current && scene?.canUserModify(game.users?.current, "update")) && !scene.active && steps.length;
-  //   },
-  //   callback: (li: JQuery<HTMLLIElement>) => {
-  //     const sceneId = li.data("sceneId") as string | undefined;
-  //     if (!sceneId) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
-  //     const scene = game.scenes?.get(sceneId);
-  //     if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
-  //     const steps: TransitionStep[] = scene.getFlag(__MODULE_ID__, "steps") ?? [];
-  //     if (!steps.length) return;
-
-  //     SocketHandler.transition(sceneId, steps);
-  //   }
-  // }, {
-  //   name: "BATTLETRANSITIONS.NAVIGATION.CUSTOM",
-  //   icon: "<i class='fas fa-fw fa-hammer'></i>",
-  //   condition: (li: JQuery<HTMLLIElement>) => {
-  //     const sceneId = li.data("sceneId") as string;
-  //     const scene = game.scenes?.get(sceneId);
-  //     if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
-  //     return (game.users?.current && scene?.canUserModify(game.users?.current, "update")) && !scene.active;
-  //   },
-  //   callback: (li: JQuery<HTMLLIElement>) => {
-  //     const sceneId = li.data("sceneId") as string;
-  //     const scene = game.scenes?.get(sceneId);
-  //     if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
-  //     if (scene?.canUserModify(game.users?.current as User, "update")) {
-  //       void TransitionChain.BuildTransition(scene);
-  //     }
-  //   }
-  // })
-}
-
 /**
  * Quick wrapper to wait for a hook to get called
  * @param {string} hook The hook to await
@@ -173,6 +132,16 @@ function deserializeTextureBuffer(data: TextureBuffer): PIXI.Texture {
   return PIXI.Texture.fromBuffer(data.buffer, data.width, data.height);
 }
 
+function isNumeric(value: unknown): boolean {
+  if (typeof value === "number") return true;
+
+  if (typeof value === "string") {
+    const temp = parseFloat(value);
+    return temp.toString() === value;
+  }
+  return false;
+}
+
 function findFormValue(serialized: { name: string, value: unknown }[], key: string): unknown {
   const elem = serialized.find(({ name }) => name === key);
 
@@ -186,7 +155,7 @@ function findFormValue(serialized: { name: string, value: unknown }[], key: stri
   if (!elem) return null;
   if (key === "id" && !elem.value) return foundry.utils.randomID();
 
-  return elem.value;
+  return isNumeric(elem.value) ? parseFloat(elem.value as string) : elem.value;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -267,6 +236,10 @@ export function generateRadialDirectionSelectOptions(): { [x: string]: string } 
   }
 }
 
+export function generateFontSelectOptions(): { [x: string]: string } {
+  return Object.fromEntries(FontConfig.getAvailableFonts().map(font => [font, font]));
+}
+
 export function getCanvasGroup(): ScreenSpaceCanvasGroup | undefined {
   return canvas?.stage?.children.find(child => child instanceof ScreenSpaceCanvasGroup);
 }
@@ -279,6 +252,7 @@ export function getCurrentOverlayObject(): PIXI.DisplayObject | undefined {
 }
 
 export function getSortedSteps(): (typeof TransitionStep)[] {
+  log("Steps:", steps);
   return Object.values(steps).sort((a, b) => localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${a.name}`).localeCompare(localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${b.name}`))) as (typeof TransitionStep)[];
 }
 
@@ -523,6 +497,19 @@ export function getMacros(): Macro[] {
         ...curr.index.contents
       ] as Macro[];
     }, [] as Macro[]) ?? [])
+  ]
+}
+
+export function getActors(): Actor[] {
+  return [
+    ...((game.actors?.contents.slice() as Actor[]) ?? []),
+    ...(game.packs?.contents.reduce((prev, curr) => {
+      if (curr.documentName !== "Actor") return prev;
+      return [
+        ...prev,
+        ...curr.index.contents
+      ] as Actor[]
+    }, [] as Actor[]) ?? [])
   ]
 }
 
