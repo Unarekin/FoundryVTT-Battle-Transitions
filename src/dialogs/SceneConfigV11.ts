@@ -1,8 +1,9 @@
+import { ConfigurationHandler } from "../ConfigurationHandler";
 import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
 import { getStepClassByKey, localize } from "../utils";
-import { addStepDialog, confirm, editStepDialog } from "./functions";
+import { addStepDialog, buildTransitionFromForm, confirm, editStepDialog } from "./functions";
 
 export class SceneConfigV11 extends SceneConfig {
   static async inject(app: SceneConfig, html: JQuery<HTMLElement>, options: any, config: SceneConfiguration): Promise<void> {
@@ -27,6 +28,23 @@ function addEventListeners(app: SceneConfig, html: JQuery<HTMLElement>) {
     handle: ".drag-handle",
     containment: "parent",
     axis: "y"
+  });
+
+  // Save button
+
+  // Save button
+  html.find("button[type='submit']").on("click", () => {
+    const autoTrigger = !!(html.find("#auto-trigger").val() ?? false);
+    const sequence = buildTransitionFromForm(html);
+
+    void ConfigurationHandler.SetSceneConfiguration(
+      app.document,
+      {
+        version: "1.1.0",
+        autoTrigger,
+        isTriggered: false,
+        sequence
+      });
   });
 }
 

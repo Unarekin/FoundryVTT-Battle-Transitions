@@ -8,7 +8,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
   // #region Properties (5)
 
   public static DefaultSettings: SpiralShutterConfiguration = {
-    type: "SpiralShutter",
+    type: "spiralshutter",
     duration: 1000,
     direction: "clockwise",
     radial: "inside",

@@ -33,3 +33,13 @@ export async function confirm(title: string, content: string): Promise<boolean> 
     }).then(val => !!val);
   }
 }
+
+export function buildTransitionFromForm(html: JQuery<HTMLElement>) {
+  const sequence: TransitionConfiguration[] = [];
+  html.find("#transition-step-list [data-transition-type]").each((index, element) => {
+    const flag = element.dataset.flag ?? "";
+    const step = JSON.parse(flag) as TransitionConfiguration;
+    sequence.push(step);
+  });
+  return sequence;
+}

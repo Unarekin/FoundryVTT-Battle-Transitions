@@ -1,9 +1,10 @@
+import { ConfigurationHandler } from "../ConfigurationHandler";
 import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
 import { getStepClassByKey, localize } from "../utils";
 
-import { addStepDialog, editStepDialog, confirm } from "./functions";
+import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from "./functions";
 
 export class SceneConfigV12 extends SceneConfig {
   static async inject(app: SceneConfig, html: JQuery<HTMLElement>, options: any, config: SceneConfiguration) {
@@ -13,6 +14,12 @@ export class SceneConfigV12 extends SceneConfig {
 
     const navContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, config);
     html.find("footer.sheet-footer").before(`<div class="tab" data-group="main" data-tab="${__MODULE_ID__}">${navContent}</div>`);
+
+    // Insert sequence steps
+    for (const step of config.sequence) {
+      await upsertStepButton(app, html, step);
+    }
+
     addEventListeners(app, html);
   }
 }
@@ -30,6 +37,21 @@ function addEventListeners(app: SceneConfig, html: JQuery<HTMLElement>) {
     handle: ".drag-handle",
     containment: "parent",
     axis: "y"
+  });
+
+  // Save button
+  html.find(".sheet-footer button[type='submit']").on("click", () => {
+    const autoTrigger = !!(html.find("#auto-trigger").val() ?? false);
+    const sequence = buildTransitionFromForm(html);
+
+    void ConfigurationHandler.SetSceneConfiguration(
+      app.document,
+      {
+        version: "1.1.0",
+        autoTrigger,
+        isTriggered: false,
+        sequence
+      });
   });
 }
 

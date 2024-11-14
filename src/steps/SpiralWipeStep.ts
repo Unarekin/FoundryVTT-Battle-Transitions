@@ -5,7 +5,7 @@ import { SpiralWipeConfiguration } from './types';
 
 export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
   public static DefaultSettings: SpiralWipeConfiguration = {
-    type: "SpiralWipe",
+    type: "spiralwipe",
     duration: 1000,
     direction: "left",
     clockDirection: "clockwise",
