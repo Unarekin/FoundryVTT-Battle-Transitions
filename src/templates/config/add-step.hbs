@@ -1,6 +1,21 @@
-<div id="add-step-form" class="bt two-columns">
-  {{#each transitionTypes}}
-    <button data-transition="{{key}}">{{localize name}}</button>
-  {{/each}}
-</div>
-<hr />
+<nav class="tabs" data-group="primary">
+  <a class="item" data-tab="wipes">{{localize "BATTLETRANSITIONS.SCENECONFIG.ADDSTEPDIALOG.TABS.WIPES"}}</a>
+  <a class="item" data-tab="warps">{{localize "BATTLETRANSITIONS.SCENECONFIG.ADDSTEPDIALOG.TABS.WARPS"}}</a>
+  <a class="item" data-tab="effects">{{localize "BATTLETRANSITIONS.SCENECONFIG.ADDSTEPDIALOG.TABS.EFFECTS"}}</a>
+  <a class="item" data-tab="technical">{{localize "BATTLETRANSITIONS.SCENECONFIG.ADDSTEPDIALOG.TABS.TECHNICAL"}}</a>
+</nav>
+<section class="add-step-tab tab-content two-columns bt">
+  <div class="tab" data-tab="wipes" data-group="primary">
+    {{#each wipes}}{{> "/modules/battle-transitions/templates/config/add-step-button.hbs" this}}{{/each}}
+  </div>
+  <div class="tab" data-tab="warps" data-group="primary">
+    {{#each warps}}{{> "/modules/battle-transitions/templates/config/add-step-button.hbs" this}}{{/each}}
+  </div>
+  <div class="tab" data-tab="effects" data-group="primary">
+    {{#each effects}}{{> "/modules/battle-transitions/templates/config/add-step-button.hbs" this}}{{/each}}
+  </div>
+  <div class="tab" data-tab="technical" data-group="primary">
+    {{#each technical}}{{> "/modules/battle-transitions/templates/config/add-step-button.hbs" this}}{{/each}}
+  </div>
+</section>
+<hr>

@@ -19,6 +19,8 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   public static key = "sound";
   public static name = "SOUND";
   public static template = "sound-config";
+  public static icon = "<i class='bt-icon sound fa-fw fas'></i>"
+  public static category = "technical";
 
   // #endregion Properties (6)
 
@@ -44,10 +46,14 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   public static fromFormElement(form: HTMLFormElement): SoundStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
     const file = elem.find("#file").val() as string ?? "";
+    const volume = elem.find("#volume").val() as number ?? 100;
+
+
     return new SoundStep({
       ...SoundStep.DefaultSettings,
       file,
-      ...parseConfigurationFormElements(elem, "id", "volume")
+      volume,
+      ...parseConfigurationFormElements(elem, "id")
     })
   }
 

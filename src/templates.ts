@@ -31,7 +31,8 @@ export async function registerTemplates() {
       "linearwipe-config",
       "step-item",
       "background-selector",
-      "duration-selector"
+      "duration-selector",
+      "add-step-button"
     ].map(name => `/modules/${__MODULE_ID__}/templates/config/${name}.hbs`),
     `/modules/${__MODULE_ID__}/templates/scene-selector.hbs`
   ]);

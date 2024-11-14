@@ -16,6 +16,7 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
   public static key = "parallel";
   public static name = "PARALLEL";
   public static template = "";
+  public static category = "technical";
 
   // #endregion Properties (5)
 

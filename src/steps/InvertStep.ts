@@ -18,6 +18,7 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
   public static name = "INVERT";
   public static skipConfig = true;
   public static template = "";
+  public static category = "effect";
 
   // #endregion Properties (6)
 

@@ -24,6 +24,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
   public static key = "bilinearwipe";
   public static name = "BILINEARWIPE";
   public static template = "bilinearwipe-config";
+  public static category = "wipe";
 
   // #endregion Properties (5)
 

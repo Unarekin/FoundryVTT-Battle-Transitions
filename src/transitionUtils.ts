@@ -13,6 +13,7 @@ transitionCover.style.position = "absolute";
 transitionCover.style.width = "100%";
 transitionCover.style.height = "100%";
 transitionCover.style.backgroundRepeat = "no-repeat";
+
 transitionCover.id = COVER_ID;
 document.body.appendChild(transitionCover);
 

@@ -19,6 +19,8 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
   public static key = "scenechange";
   public static name = "SCENECHANGE";
   public static template = "scenechange-config";
+  public static icon = "<i class='bt-icon scene-change fa-fw fas'></i>"
+  public static category = "technical";
 
   // #endregion Properties (5)
 

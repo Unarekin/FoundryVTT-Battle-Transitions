@@ -13,9 +13,9 @@ import { TextureSwapFilter } from './TextureSwap/TextureSwapFilter';
 import { MeltFilter } from "./Melt/MeltFilter";
 import { AngularWipeFilter } from './AngularWipe/AngularWipeFilter';
 import { WaveWipeFilter } from './WaveWipe/WaveWipeFilter';
-import { SpiralRadialWipeFilter } from './SpiralRadialWipe/SpiralRadialWipeFilter';
 import { InvertFilter } from "./Invert/InvertFilter";
-import { SpiralLinearWipeFilter } from './SpiralLinearWipe/SpiralLinearWipeFilter';
+import { SpiralShutterFilter } from './SpiralShutter/SpiralShutterFilter';
+import { SpiralWipeFilter } from './SpiralWipe/SpiralWipeFilter';
 
 export {
   CustomFilter,
@@ -33,9 +33,9 @@ export {
   MeltFilter,
   AngularWipeFilter,
   WaveWipeFilter,
-  SpiralRadialWipeFilter,
+  SpiralShutterFilter,
   InvertFilter,
-  SpiralLinearWipeFilter
+  SpiralWipeFilter
 }
 
 export const filters = {
@@ -55,7 +55,7 @@ export const filters = {
   MeltFilter,
   AngularWipeFilter,
   WaveWipeFilter,
-  SpiralRadialWipeFilter,
   InvertFilter,
-  SpiralLinearWipeFilter
+  SpiralWipeFilter,
+  SpiralShutterFilter
 };

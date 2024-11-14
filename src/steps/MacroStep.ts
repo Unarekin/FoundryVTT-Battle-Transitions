@@ -17,6 +17,8 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
   public static key = "macro";
   public static name = "MACRO";
   public static template = "macro-config";
+  public static icon = "<i class='bt-icon macro fa-fw fas'></i>"
+  public static category = "technical";
 
   // #endregion Properties (5)
 

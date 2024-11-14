@@ -434,7 +434,7 @@ export function serializeTexture(texture: any): string | TextureBuffer | DataURL
 }
 
 export function shouldUseAppV2(): boolean {
-  return game.release?.isNewer("12") ?? false;
+  return (game.release?.isNewer("12") ?? false) && !!foundry.applications.api.ApplicationV2;
 }
 
 export function sizeOf(obj: unknown) {

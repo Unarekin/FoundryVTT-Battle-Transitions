@@ -21,6 +21,8 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
   public static key: string = "textureswap";
   public static name = "TEXTURESWAP";
   public static template = "textureswap-config";
+  public static icon = "<i class='bt-icon texture-swap fa-fw fas'></i>"
+  public static category = "effect";
 
   // #endregion Properties (6)
 

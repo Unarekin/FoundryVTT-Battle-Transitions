@@ -15,6 +15,8 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   public static name: string = "UNNAMED";
   public static skipConfig: boolean = false;
   public static template: string = "";
+  public static icon: string = "";
+  public static category: string = "";
 
   // #endregion Properties (6)
 

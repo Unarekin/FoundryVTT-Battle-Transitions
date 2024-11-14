@@ -1,0 +1,116 @@
+{
+  "BATTLETRANSITIONS": {
+    "ANGULARWIPE": {
+      "DESCRIPTION": "A wipe that clears angled sections of the screen progressively closer to the center.",
+      "NAME": "Angular Wipe"
+    },
+    "BILINEARWIPE": {
+      "DESCRIPTION": "Two linear wipes along a horizontal, vertical, or diagonal axis originating from either the center or outer edges of the screen.",
+      "NAME": "Bilinear Wipe"
+    },
+    "CHROMAKEY": {
+      "DESCRIPTION": "Replace one color found in the current transition image with another.  Useful for adding transparency to green screen videos.",
+      "NAME": "Chroma Key"
+    },
+    "CLOCKWIPE": {
+      "DESCRIPTION": "Wipe the screen around the center point in either a clockwise or counterclockwise direction.",
+      "NAME": "Clock Wipe"
+    },
+    "DIAMONDWIPE": {
+      "DESCRIPTION": "Break the screen into diamond shapes that shrink over time, starting from the left to the right.",
+      "NAME": "Diamond Wipe"
+    },
+    "FADE": {
+      "DESCRIPTION": "Fade from the current foreground to a specified background color.",
+      "NAME": "Fade"
+    },
+    "FIREDISSOLVE": {
+      "DESCRIPTION": "Apply a burning effect to the screen, exposing the underlying background.",
+      "NAME": "Fire Dissolve (Burn)"
+    },
+    "FLASH": {
+      "DESCRIPTION": "Flashes the screen a given color or texture.",
+      "NAME": "Flash"
+    },
+    "INVERT": {
+      "DESCRIPTION": "Invert the current screen texture/color.",
+      "NAME": "Invert"
+    },
+    "LINEARWIPE": {
+      "DESCRIPTION": "A linear wipe from one side of the screen to the other, exposing a given background color along the way.",
+      "NAME": "Linear Wipe"
+    },
+    "MACRO": {
+      "DESCRIPTION": "Execute a macro.  This will execute for each user with their own permissions, so please be sure they have permission at all.",
+      "NAME": "Macro"
+    },
+    "MELT": {
+      "DESCRIPTION": "Melt the screen like you may have seen in a certain demon-killing FPS.",
+      "NAME": "Melt"
+    },
+    "PARALLEL": {
+      "DESCRIPTION": "Run multiple sequences of transition effects simultaneously.",
+      "NAME": "Parallel"
+    },
+    "RADIALWIPE": {
+      "DESCRIPTION": "Circular wipe, starting either from the inside or outside of the screen.",
+      "NAME": "Radial Wipe (Shutter)"
+    },
+    "REMOVEOVERLAY": {
+      "DESCRIPTION": "Remove the transition overlay, exposing the new scene.",
+      "NAME": "Remove Overlay"
+    },
+    "RESTOREOVERLAY": {
+      "DESCRIPTION": "Restore the transition overlay, covering the new scene again.",
+      "NAME": "Restore Overlay"
+    },
+    "SCENECHANGE": {
+      "DESCRIPTION": "Change the active scene.",
+      "NAME": "Change Scene"
+    },
+    "SOUND": {
+      "DESCRIPTION": "Play a sound during the transition.  Unlike most transition steps, this one will NOT wait until the sound is finished to continue to the next.",
+      "NAME": "Play Sound"
+    },
+    "SPIRALSHUTTER": {
+      "DESCRIPTION": "A shutter-type wipe in a spiral shape.",
+      "NAME": "Spiral Shutter"
+    },
+    "SPIRALWIPE": {
+      "DESCRIPTION": "A spiral-shaped screen wipe, starting from the outside or inside of the screen.",
+      "NAME": "Spiral Wipe"
+    },
+    "SPOTLIGHTWIPE": {
+      "DESCRIPTION": "Bilinear wipe centered on a point along the edge of, and starting from either the inside or outside of the screen.",
+      "NAME": "Spotlight Wipe"
+    },
+    "STARTPLAYLIST": {
+      "DESCRIPTION": "Start playing the new scene's configured ambient sound / playlist.",
+      "NAME": "Start Ambient Playlist"
+    },
+    "TEXTURESWAP": {
+      "DESCRIPTION": "Set the current transition background to a given image.",
+      "NAME": "Texture Swap"
+    },
+    "TWIST": {
+      "DESCRIPTION": "Twist the screen image.",
+      "NAME": "Twist"
+    },
+    "VIDEO": {
+      "DESCRIPTION": "Play a video.",
+      "NAME": "Video"
+    },
+    "WAIT": {
+      "DESCRIPTION": "Wait some specified amount of time.",
+      "NAME": "Wait"
+    },
+    "WAVEWIPE": {
+      "DESCRIPTION": "A wavy bilinear wipe.",
+      "NAME": "Wave Wipe"
+    },
+    "ZOOMBLUR": {
+      "DESCRIPTION": "Simultaneously zoom in on and blur the screen.",
+      "NAME": "Zoom & Blur"
+    }
+  }
+}
