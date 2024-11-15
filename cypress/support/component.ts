@@ -17,6 +17,8 @@ declare global {
   namespace Cypress {
     interface Chainable {
       mount: typeof hbsMount;
+      dialogV1: typeof dialogV1Mount;
+      dialogV2: typeof dialogV2Mount;
     }
   }
 }
@@ -35,6 +37,36 @@ function render(component: HTMLElement | null, root: HTMLElement) {
 }
 
 setupHooks(cleanup);
+
+
+Cypress.Commands.add("dialogV1", dialogV1Mount);
+Cypress.Commands.add("dialogV2", dialogV2Mount);
+
+function dialogV1Mount(template: string, options: HandlebarsMountOptions): Cypress.Chainable<JQuery<HTMLElement>> {
+  return cy.readFile("./cypress/support/dialogV1-template.hbml", { log: false })
+    .then((container: string) => {
+      return (isPathlike(template) ? cy.readFile(template, { log: false }) : cy.wrap(template, { log: false }))
+        .then((content: string) => {
+          const renderFunc = Handlebars.compile(content);
+          let source = renderFunc(options.context);
+          if (container) source = container.replace("<!-- ##CONTENT## -->", source);
+          return hbsMount(source, options);
+        })
+    })
+}
+
+function dialogV2Mount(template: string, options: HandlebarsMountOptions): Cypress.Chainable<JQuery<HTMLElement>> {
+  return cy.readFile("./cypress/support/dialogV2-template.hbml", { log: false })
+    .then((container: string) => {
+      return (isPathlike(template) ? cy.readFile(template, { log: false }) : cy.wrap(template, { log: false }))
+        .then((content: string) => {
+          const renderFunc = Handlebars.compile(content);
+          let source = renderFunc(options.context);
+          if (container) source = container.replace("<!-- ##CONTENT## -->", source);
+          return hbsMount(source, options);
+        })
+    })
+}
 
 function hbsMount(template: string, options: HandlebarsMountOptions): Cypress.Chainable<JQuery<HTMLElement>> {
 
