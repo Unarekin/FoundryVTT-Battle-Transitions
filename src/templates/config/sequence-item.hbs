@@ -1,0 +1,36 @@
+<div class="flexrow" data-sequence="{{index}}" data-sequence="{{serialized}}">
+  <div><span class="link" data-action="configure" data-index="{{index}}">{{name}}</span></div>
+  <i class="fas fa-cogs fa-fw step-button flex0" data-action="configure" data-sequence="{{index}}"></i>
+  <i class="fas fa-trash fa-fw step-button flex0" data-action="remove" data-sequence="{{index}}"></i>
+</div>
+
+{{!-- <div
+  class="flexrow step-config-item"
+  data-transition-type="{{type}}"
+  data-flag="{{flag}}"
+  data-id="{{id}}"
+  title="{{localize description}}"
+>
+  <div class="flex0 drag-handle"><i class="fas fa-grip-lines"></i></div>
+  <div><span class="link" data-action="configure">{{name}}</span></div>
+  <div>{{summary}}</div>
+  <i
+    class="fas fa-cogs fa-fw step-button flex0"
+    data-action="configure"
+    data-step="{{id}}"
+    title="{{localize
+      'BATTLETRANSITIONS.SCENECONFIG.BUTTONS.CONFIGURE'
+      name=name
+    }}"
+  ></i>
+  <i
+    class="fas fa-trash fa-fw step-button flex0"
+    data-action="remove"
+    data-step="{{id}}"
+    title="{{localize
+      'BATTLETRANSITIONS.SCENECONFIG.BUTTONS.REMOVE'
+      name=name
+    }}"
+  ></i>
+
+</div> --}}

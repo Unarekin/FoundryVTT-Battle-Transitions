@@ -13,11 +13,12 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
     version: "1.1.0",
     sequences: []
   };
-  public static hidden: boolean = true;
+  public static hidden: boolean = false;
   public static key = "parallel";
   public static name = "PARALLEL";
-  public static template = "";
+  public static template = "parallel-config";
   public static category = "technical";
+  public static icon = `<i class="fas fa-fw fa-arrows-down-to-line"></i>`
 
   // #endregion Properties (5)
 

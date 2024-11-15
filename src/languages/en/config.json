@@ -6,67 +6,67 @@
         "LABEL": "Automatically Trigger"
       },
       "BOSSSPLASH": {
-        "TABS": {
-          "BASICS": "Basics",
-          "COLORS": "Colors",
-          "FONT": "Font",
-          "ANIMATION": "Animation"
-        },
-        "MESSAGE": {
-          "LABEL": "Message",
-          "HINT": "If unspecified, will display an actor's name."
-        },
-        "SUBTEXT": {
-          "LABEL": "Subtext",
-          "HINT": "Text displayed below the main message."
-        },
-        "TOPCOLOR": {
-          "LABEL": "Top Color",
-          "HINT": "Color to be used for top, primary color bar."
-        },
-        "MIDCOLOR": {
-          "LABEL": "Middle Color",
-          "HINT": "Color to be used for middle, secondary color bar."
-        },
-        "BOTCOLOR": {
-          "LABEL": "Bottom Color",
-          "HINT": "Coor to be used for bottom, tertiary color bar."
-        },
-        "FONT": {
-          "LABEL": "Font",
-          "HINT": "Font to use for message text."
-        },
-        "FONTCOLOR": {
-          "LABEL": "Font Color",
-          "HINT": "Color for main message text."
-        },
-        "FONTSHADOW": {
-          "LABEL": "Font Shadow Color",
-          "HINT": "Color for the shadow on the main message text."
-        },
         "ANIMATIONDELAY": {
-          "LABEL": "Animation Delay",
-          "HINT": "Time, in milliseconds, to wait before beginning the animation."
+          "HINT": "Time, in milliseconds, to wait before beginning the animation.",
+          "LABEL": "Animation Delay"
         },
         "ANIMATIONDURATION": {
-          "LABEL": "Animation Duration",
-          "HINT": "Time, in milliseconds, that it should take for the slide-in animation to play."
+          "HINT": "Time, in milliseconds, that it should take for the slide-in animation to play.",
+          "LABEL": "Animation Duration"
         },
-        "SUBCOLOR": {
-          "LABEL": "Subtext Color",
-          "HINT": "Color of the secondary message text."
+        "BOTCOLOR": {
+          "HINT": "Coor to be used for bottom, tertiary color bar.",
+          "LABEL": "Bottom Color"
         },
-        "SUBSHADOW": {
-          "LABEL": "Subtext Shadow Color",
-          "HINT": "Color of the shadow for the secondary message text."
+        "FONT": {
+          "HINT": "Font to use for message text.",
+          "LABEL": "Font"
+        },
+        "FONTCOLOR": {
+          "HINT": "Color for main message text.",
+          "LABEL": "Font Color"
+        },
+        "FONTSHADOW": {
+          "HINT": "Color for the shadow on the main message text.",
+          "LABEL": "Font Shadow Color"
         },
         "FONTSIZE": {
-          "LABEL": "Font Size",
-          "HINT": "Size of the main message font."
+          "HINT": "Size of the main message font.",
+          "LABEL": "Font Size"
+        },
+        "MESSAGE": {
+          "HINT": "If unspecified, will display an actor's name.",
+          "LABEL": "Message"
+        },
+        "MIDCOLOR": {
+          "HINT": "Color to be used for middle, secondary color bar.",
+          "LABEL": "Middle Color"
+        },
+        "SUBCOLOR": {
+          "HINT": "Color of the secondary message text.",
+          "LABEL": "Subtext Color"
+        },
+        "SUBSHADOW": {
+          "HINT": "Color of the shadow for the secondary message text.",
+          "LABEL": "Subtext Shadow Color"
         },
         "SUBSIZE": {
-          "LABEL": "Subtext Size",
-          "HINT": "Size of the secondary message font."
+          "HINT": "Size of the secondary message font.",
+          "LABEL": "Subtext Size"
+        },
+        "SUBTEXT": {
+          "HINT": "Text displayed below the main message.",
+          "LABEL": "Subtext"
+        },
+        "TABS": {
+          "ANIMATION": "Animation",
+          "BASICS": "Basics",
+          "COLORS": "Colors",
+          "FONT": "Font"
+        },
+        "TOPCOLOR": {
+          "HINT": "Color to be used for top, primary color bar.",
+          "LABEL": "Top Color"
         }
       },
       "BUTTONS": {
@@ -88,8 +88,8 @@
       },
       "COMMON": {
         "ACTOR": {
-          "LABEL": "Actor",
-          "HINT": ""
+          "HINT": "",
+          "LABEL": "Actor"
         },
         "BACKGROUND": {
           "COLOR": "Color",
@@ -133,6 +133,9 @@
           "HINT": "Size of the burn holes during transiton",
           "LABEL": "Burn Size"
         }
+      },
+      "PARALLEL": {
+        "ADDSEQUENCE": "Add Sequence"
       },
       "SOUND": {
         "FILE": {

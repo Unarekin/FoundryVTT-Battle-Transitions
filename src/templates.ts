@@ -32,7 +32,8 @@ export async function registerTemplates() {
       "step-item",
       "background-selector",
       "duration-selector",
-      "add-step-button"
+      "add-step-button",
+      "sequence-item"
     ].map(name => `/modules/${__MODULE_ID__}/templates/config/${name}.hbs`),
     `/modules/${__MODULE_ID__}/templates/scene-selector.hbs`,
     `/modules/${__MODULE_ID__}/templates/transition-steps.hbs`,
