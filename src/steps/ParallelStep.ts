@@ -67,7 +67,6 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
     this.#preparedSequences = [];
     for (const step of config.sequences) {
-      log("Preparing sequence:", step);
       const prepared = await BattleTransition.prepareSequence({
         ...sequence,
         sequence: step
