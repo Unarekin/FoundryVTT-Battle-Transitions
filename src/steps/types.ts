@@ -81,6 +81,7 @@ export type VideoConfiguration = BackgroundTransition & TransitionConfiguration 
 
 export type WaitConfiguration = TransitionConfiguration & DurationTransition;
 
+
 export interface ParallelConfiguration extends TransitionConfiguration {
   sequences: TransitionConfiguration[][];
 }
@@ -162,5 +163,6 @@ export type BossSplashConfiguration = TransitionConfiguration & DurationTransiti
   subText?: string;
 
   animationDelay: number;
+  animationDuration: number;
 
 });

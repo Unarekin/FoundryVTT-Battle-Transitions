@@ -1,6 +1,7 @@
 import { BattleTransition } from "../BattleTransition";
-import { InvalidTransitionError, NotImplementedError } from "../errors";
+import { NotImplementedError } from "../errors";
 import { TransitionSequence } from "../interfaces";
+import { log } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration } from "./types";
 
@@ -44,14 +45,16 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
   // #region Public Methods (2)
 
+  private async executeSequence(container: PIXI.Container, sequence: TransitionSequence, steps: TransitionStep[]): Promise<void> {
+    for (const step of steps) {
+      const res = step.execute(container, sequence);
+      if (res instanceof Promise) await res;
+    }
+  }
+
 
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
-    for (const prepared of this.#preparedSequences) {
-      for (const step of prepared) {
-        const res = step.execute(container, sequence);
-        if (res instanceof Promise) await res;
-      }
-    }
+    await Promise.all(this.#preparedSequences.map(prepared => this.executeSequence(container, sequence, prepared)));
   }
 
   #preparedSequences: TransitionStep[][] = [];
@@ -62,15 +65,15 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
       ...this.config
     };
 
-    if (!(Array.isArray(config.sequences) && config.sequences.length)) throw new InvalidTransitionError(typeof config.sequences);
-
     this.#preparedSequences = [];
     for (const step of config.sequences) {
-      this.#preparedSequences.push(await BattleTransition.prepareSequence({
+      log("Preparing sequence:", step);
+      const prepared = await BattleTransition.prepareSequence({
         ...sequence,
         sequence: step
-      }));
-
+      });
+      log(prepared);
+      this.#preparedSequences.push(prepared);
     }
   }
 

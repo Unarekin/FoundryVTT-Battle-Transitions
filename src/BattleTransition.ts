@@ -2,7 +2,7 @@ import { coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, ParallelStep, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
@@ -10,11 +10,12 @@ import { deserializeTexture, getStepClassByKey, isColor, localize, serializeText
 import { TransitionStep } from "./steps/TransitionStep";
 import { transitionBuilderDialog } from "./dialogs";
 
+type TransitionSequenceCallback = (transition: BattleTransition) => BattleTransition;
+
 // let suppressSoundUpdates: boolean = false;
 
 // #region Type aliases (1)
 
-type TransitionSequenceCallback = (transition: BattleTransition) => TransitionConfiguration[];
 
 // #endregion Type aliases (1)
 
@@ -247,45 +248,51 @@ export class BattleTransition {
    * @returns 
    */
   static async prepareSequence(sequence: TransitionSequence): Promise<TransitionStep[]> {
-    const steps: TransitionStep[] = [];
-    for (const temp of sequence.sequence) {
-      const step = { ...temp };
-      const instance = getStepInstance(step);
-      if (!instance) throw new InvalidTransitionError(typeof step.type === "string" ? step.type : typeof step.type);
+    try {
+      const steps: TransitionStep[] = [];
+      for (const temp of sequence.sequence) {
+        const step = { ...temp };
+        const instance = getStepInstance(step);
+        if (!instance) throw new InvalidTransitionError(typeof step.type === "string" ? step.type : typeof step.type);
 
-      // Handle steps with backgrounds
-      if (Object.prototype.hasOwnProperty.call(step, "backgroundType")) {
-        const bgStep = step as unknown as BackgroundTransition;
-        if (bgStep.serializedTexture) {
-          bgStep.deserializedTexture = deserializeTexture(bgStep.serializedTexture);
-        } else {
-          switch (bgStep.backgroundType) {
-            case "color":
-              bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundColor ?? "transparent");
-              break;
-            case "image":
-              bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundImage ?? "transparent");
-              break;
+        // Handle steps with backgrounds
+        if (Object.prototype.hasOwnProperty.call(step, "backgroundType")) {
+          const bgStep = step as unknown as BackgroundTransition;
+          if (bgStep.serializedTexture) {
+            bgStep.deserializedTexture = deserializeTexture(bgStep.serializedTexture);
+          } else {
+            switch (bgStep.backgroundType) {
+              case "color":
+                bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundColor ?? "transparent");
+                break;
+              case "image":
+                bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundImage ?? "transparent");
+                break;
+            }
           }
         }
+
+        const res = instance.prepare(sequence);
+        if (res instanceof Promise) await res;
+
+        steps.push(instance);
       }
 
-      const res = instance.prepare(sequence);
-      if (res instanceof Promise) await res;
+      PreparedSequences[sequence.id] = {
+        original: sequence,
+        prepared: {
+          ...sequence,
+          sequence: steps,
+        },
+        overlay: []
+      }
 
-      steps.push(instance);
+      return steps;
+    } catch (err) {
+      ui.notifications?.error((err as Error).message, { console: false });
+      console.error(err);
+      return []
     }
-
-    PreparedSequences[sequence.id] = {
-      original: sequence,
-      prepared: {
-        ...sequence,
-        sequence: steps,
-      },
-      overlay: []
-    }
-
-    return steps;
   }
 
 
@@ -408,16 +415,18 @@ export class BattleTransition {
     for (const callback of callbacks) {
       const res = callback(new BattleTransition());
       if (res instanceof Promise) throw new ParallelExecuteError();
-      sequences.push(res);
+      sequences.push(res.sequence);
     }
 
-    const step = new ParallelStep({
+    const step = getStepClassByKey("parallel");
+    if (!step) throw new InvalidTransitionError("parallel");
 
-    });
-    this.#sequence.push({
-      ...ParallelStep.DefaultSettings,
-      ...step.config
-    });
+    const config: ParallelConfiguration = {
+      ...step?.DefaultSettings,
+      sequences
+    };
+
+    this.#sequence.push(config);
 
     return this;
   }
