@@ -28,6 +28,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   public static name = "LINEARWIPE";
   public static template = "linearwipe-config";
   public static category = "wipe";
+  public static icon = `<i class="fas fa-fw fa-arrow-right"></i>`
 
   // #endregion Properties (6)
 

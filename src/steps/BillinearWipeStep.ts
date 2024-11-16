@@ -25,7 +25,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
   public static name = "BILINEARWIPE";
   public static template = "bilinearwipe-config";
   public static category = "wipe";
-
+  public static icon = `<i class="fas fa-fw fa-arrows-left-right-to-line"></i>`
   // #endregion Properties (5)
 
   // #region Public Static Methods (6)

@@ -17,6 +17,7 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
   public static name: string = "PIXELATE";
   public static template: string = "pixelate-config";
   public static category: string = "effect";
+  public static icon = `<i class="fas fa-fw fa-image"></i>`
 
   public static async RenderTemplate(config?: PixelateConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${PixelateStep.template}.hbs`, {

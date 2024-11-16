@@ -23,6 +23,7 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
   public static name = "SPIRALWIPE";
   public static template = "spiralwipe-config";
   public static category = "wipe";
+  public static icon = `<i class="fas fa-fw fa-arrows-spin"></i>`
 
   public static async RenderTemplate(config?: SpiralWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpiralWipeStep.template}.hbs`, {

@@ -25,6 +25,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
   public static name = "SPIRALSHUTTER";
   public static template = "spiralshutter-config";
   public static category = "wipe";
+  public static icon = "<i class='bt-icon spiral-shutter fa-fw fas'></i>"
 
   // #endregion Properties (5)
 

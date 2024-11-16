@@ -19,6 +19,7 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
   public static skipConfig = true;
   public static template = "";
   public static category = "effect";
+  public static icon = "<i class='bt-icon invert fa-fw fas'></i>"
 
   // #endregion Properties (6)
 

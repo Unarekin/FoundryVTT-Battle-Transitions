@@ -17,6 +17,7 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
   public static name: string = "HUESHIFT";
   public static template: string = "hueshift-config";
   public static category: string = "effect";
+  public static icon = "<i class='bt-icon hue-shift fa-fw fas'></i>"
 
   public static RenderTemplate(config?: HueShiftConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${HueShiftStep.template}.hbs`, {

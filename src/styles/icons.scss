@@ -128,6 +128,14 @@ button .bt-icon {
     @include mask-icon("../assets/icons/flash.svg");
   }
 
+  &.hue-shift {
+    @include mask-icon("../assets/icons/hue-shift.svg");
+  }
+
+  &.invert {
+    @include mask-icon("../assets/icons/invert.svg");
+  }
+
   &.macro {
     @include mask-icon("../assets/icons/macro.svg");
   }
@@ -156,6 +164,10 @@ button .bt-icon {
     @include mask-icon("../assets/icons/sound.svg");
   }
 
+  &.spiral-shutter {
+    @include mask-icon("../assets/icons/spiral-shutter.svg");
+  }
+
   &.spotlight-wipe {
     @include mask-icon("../assets/icons/spotlight-wipe.svg");
   }
@@ -182,5 +194,9 @@ button .bt-icon {
 
   &.wave-wipe {
     @include mask-icon("../assets/icons/wave-wipe.svg");
+  }
+
+  &.zoomblur {
+    @include mask-icon("../assets/icons/zoom-blur.svg");
   }
 }
