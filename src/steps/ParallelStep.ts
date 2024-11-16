@@ -2,7 +2,7 @@ import { BattleTransition } from "../BattleTransition";
 import { addStepDialog, confirm, editStepDialog } from "../dialogs";
 import { InvalidTransitionError } from "../errors";
 import { TransitionSequence } from "../interfaces";
-import { getStepClassByKey, localize, log, parseConfigurationFormElements } from "../utils";
+import { getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration, TransitionConfiguration } from './types';
 
@@ -250,8 +250,8 @@ function buildTransition(html: JQuery<HTMLElement>): TransitionConfiguration[] {
 
 function renumberSequences(html: JQuery<HTMLElement>) {
   html.find("[data-sequence]").each((i, elem) => {
-    $(elem).data("index", i + 1);
-    $(elem).find("[data-action='configure']").text(localize("BATTLETRANSITIONS.SCENECONFIG.PARALLEL.SEQUENCE", { index: i + i }));
+    $(elem).data("index", i);
+    $(elem).find("[data-action='configure']").text(localize("BATTLETRANSITIONS.SCENECONFIG.PARALLEL.SEQUENCE", { index: i + 1 }));
   })
 }
 
