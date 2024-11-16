@@ -37,6 +37,9 @@ export class AddStepDialogV2 {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         window: ({ title: localize("BATTLETRANSITIONS.DIALOGS.ADDSTEP.TITLE") } as any),
         content,
+        position: {
+          width: 450
+        },
         buttons: [
           {
 
@@ -74,6 +77,12 @@ function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQue
     else resolve(null);
     clearSearchResults();
     void dialog.close();
+  })
+
+
+  html.find("#clear-search").on("click", () => {
+    clearSearchResults();
+    html.find("#search-text").val("");
   })
 
   // Search
