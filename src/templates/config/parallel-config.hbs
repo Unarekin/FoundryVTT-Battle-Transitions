@@ -1,16 +1,33 @@
-<div class="flexcol step-config-item" data-transition-type="parallel" data-id="{{id}}">
+<div
+  class="flexcol step-config-item"
+  data-transition-type="parallel"
+  data-id="{{id}}"
+>
   <form>
-    <input type="hidden" name="id" id="id" value="{{id}}">
-    <div class="flexrow">
-      <div>
-        {{#each sequences}}
-          {{> "/modules/battle-transitions/templates/config/sequence-item.hbs" this index=@index}}
-        {{/each}}
-        <button data-action="add-sequence">{{localize "BATTLETRANSITIONS.SCENECONFIG.PARALLEL.ADDSEQUENCE"}}</button>
-      </div>
-      <div>
-        
-      </div>
-    </div>
+    <input type="hidden" name="id" id="id" value="{{id}}" />
+    <table class="no-margins">
+      <tr>
+        <td id="sequence-list">
+
+          <button data-action="add-sequence">
+            <i class="fas fa-plus"></i>
+            {{localize "BATTLETRANSITIONS.SCENECONFIG.PARALLEL.ADDSEQUENCE"}}
+          </button>
+        </td>
+        <td class="flexcol" id="selected-sequence" data-index="">
+          <div class="flex0 centered full-width" id="sequence-name"></div>
+          <div id="selected-sequence-steps" class="flex1">
+
+          </div>
+          <div class="flex0">
+            <button data-action="add-step" id="add-step" name="add-step"><i
+                class="fas fa-plus"
+              ></i>{{localize
+                "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.ADDSTEP"
+              }}</button>
+          </div>
+        </td>
+      </tr>
+    </table>
   </form>
 </div>

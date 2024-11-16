@@ -252,7 +252,6 @@ export function getCurrentOverlayObject(): PIXI.DisplayObject | undefined {
 }
 
 export function getSortedSteps(): (typeof TransitionStep)[] {
-  log("Steps:", steps);
   return Object.values(steps).sort((a, b) => localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${a.name}`).localeCompare(localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${b.name}`))) as (typeof TransitionStep)[];
 }
 

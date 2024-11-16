@@ -135,7 +135,8 @@
         }
       },
       "PARALLEL": {
-        "ADDSEQUENCE": "Add Sequence"
+        "ADDSEQUENCE": "Add Sequence",
+        "SEQUENCE": "Sequence {index}"
       },
       "SOUND": {
         "FILE": {

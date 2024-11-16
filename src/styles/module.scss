@@ -27,11 +27,6 @@
     margin-bottom: 5px;
   }
 
-  .step-button {
-    cursor: pointer;
-    margin-left: 3px;
-  }
-
   .link {
     cursor: pointer;
   }
@@ -41,15 +36,6 @@
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(0, 0, 0, 0.25);
     margin: 2px;
-  }
-
-  .ui-sortable-helper .drag-handle {
-    cursor: grabbing;
-  }
-
-  .drag-handle {
-    margin-right: 2px;
-    cursor: grab;
   }
 }
 
@@ -109,4 +95,60 @@
 
 .no-row-gap .tab {
   row-gap: 0px;
+}
+
+.step-config-item {
+  .centered {
+    text-align: center;
+  }
+
+  #selected-sequence {
+    button[data-action="add-step"] {
+      margin-top: 5px;
+    }
+  }
+
+  #sequence-list {
+    padding-right: 5px;
+    width: 33%;
+
+    button[data-action="add-sequence"] {
+      margin-top: 5px;
+    }
+  }
+
+  .no-margins {
+    margin: 0;
+
+    td {
+      margin: 0;
+      padding: 2px;
+      height: 100%;
+    }
+  }
+}
+
+.sequence-item,
+.step-button {
+  padding-bottom: 5px;
+  margin-left: 3px;
+
+  &.link {
+    cursor: pointer;
+  }
+}
+
+.ui-sortable-helper {
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  margin: 2px;
+
+  .drag-handle {
+    cursor: grabbing;
+  }
+}
+
+.drag-handle {
+  margin-right: 2px;
+  cursor: grab;
 }

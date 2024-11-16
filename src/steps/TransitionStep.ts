@@ -56,7 +56,7 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   // #region Public Methods (5)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public addEventListeners(element: HTMLElement | JQuery<HTMLElement>): void { }
+  public static addEventListeners(element: HTMLElement | JQuery<HTMLElement>, config?: TransitionConfiguration): void { }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public prepare(sequence?: TransitionSequence): Promise<void> | void { }
