@@ -1,0 +1,14 @@
+<div class="flexcol step-config-item" data-transition-type="pixelate" data-id="{{id}}">
+  <form>
+    <input type="hidden" name="id" id="id" value="{{id}}">
+    <p>{{localize "BATTLETRANSITIONS.PIXELATE.DESCRIPTION"}}</p>
+    
+    <div class="form-group">
+      <label for="maxSize">{{localize "BATTLETRANSITIONS.SCENECONFIG.PIXELATE.MAXSIZE.LABEL"}}</label>
+      <input type="number" name="maxSize" id="maxSize" value="{{maxSize}}" step="1">
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.PIXELATE.MAXSIZE.HINT"}}</p>
+
+    {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
+  </form>
+</div>

@@ -795,6 +795,24 @@ export class BattleTransition {
     return this;
   }
 
+  /**
+   * Progressively increases the relative size of displayed pixels
+   * @param {number} [maxSize=10] - Relative size of pixels
+   * @param {number} [duration=1000] - Duration, in milliseconds, to scale up the pixels
+   */
+  public pixelate(maxSize: number = 100, duration: number = 1000): this {
+    const step = getStepClassByKey("pixelate");
+    if (!step) throw new InvalidTransitionError("pixelate");
+    const config = {
+      ...step.DefaultSettings,
+      maxSize,
+      duration
+    };
+    this.#sequence.push(config);
+
+    return this;
+  }
+
   // #endregion Private Methods (6)
 }
 

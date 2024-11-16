@@ -28,11 +28,13 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   // #region Public Static Methods (7)
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/require-await
   public static async RenderTemplate(config?: TransitionConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${TransitionStep.template}.hbs`, {
-      ...TransitionStep.DefaultSettings,
-      ...(config ? config : {})
-    });
+    throw new NotImplementedError();
+    // return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${TransitionStep.template}.hbs`, {
+    //   ...TransitionStep.DefaultSettings,
+    //   ...(config ? config : {})
+    // });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

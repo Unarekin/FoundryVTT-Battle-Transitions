@@ -166,3 +166,7 @@ export type BossSplashConfiguration = TransitionConfiguration & DurationTransiti
   animationDuration: number;
 
 });
+
+export type PixelateConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
+  maxSize: number;
+})

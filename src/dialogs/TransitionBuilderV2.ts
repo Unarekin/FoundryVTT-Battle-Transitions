@@ -80,6 +80,7 @@ async function addStep(dialog: foundry.applications.api.DialogV2, html: JQuery<H
   if (!step) throw new InvalidTransitionError(key);
 
   let config: TransitionConfiguration | null = null;
+
   if (!step.skipConfig) {
     config = await editStepDialog(step.DefaultSettings);
   } else {

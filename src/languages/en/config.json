@@ -138,6 +138,12 @@
         "ADDSEQUENCE": "Add Sequence",
         "SEQUENCE": "Sequence {index}"
       },
+      "PIXELATE": {
+        "MAXSIZE": {
+          "LABEL": "Maximum Pixel Size",
+          "HINT": "Maximum relative size of pixels."
+        }
+      },
       "SOUND": {
         "FILE": {
           "HINT": "Sound file to play",

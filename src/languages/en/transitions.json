@@ -8,6 +8,10 @@
       "DESCRIPTION": "Two linear wipes along a horizontal, vertical, or diagonal axis originating from either the center or outer edges of the screen.",
       "NAME": "Bilinear Wipe"
     },
+    "BOSSSPLASH": {
+      "DESCRIPTION": "Trigger an animation from the Boss Splash Screen module.",
+      "NAME": "Boss Splash Screen"
+    },
     "CHROMAKEY": {
       "DESCRIPTION": "Replace one color found in the current transition image with another.  Useful for adding transparency to green screen videos.",
       "NAME": "Chroma Key"
@@ -51,6 +55,10 @@
     "PARALLEL": {
       "DESCRIPTION": "Run multiple sequences of transition effects simultaneously.",
       "NAME": "Parallel"
+    },
+    "PIXELATE": {
+      "DESCRIPTION": "Increase the displayed size of pixels in the overlay texture.",
+      "NAME": "Pixelate"
     },
     "RADIALWIPE": {
       "DESCRIPTION": "Circular wipe, starting either from the inside or outside of the screen.",
@@ -111,10 +119,6 @@
     "ZOOMBLUR": {
       "DESCRIPTION": "Simultaneously zoom in on and blur the screen.",
       "NAME": "Zoom & Blur"
-    },
-    "BOSSSPLASH": {
-      "NAME": "Boss Splash Screen",
-      "DESCRIPTION": "Trigger an animation from the Boss Splash Screen module."
     }
   }
 }

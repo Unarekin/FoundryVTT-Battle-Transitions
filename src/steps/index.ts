@@ -11,6 +11,7 @@ export * from './LinearWipeStep';
 export * from './MacroStep';
 export * from './MeltStep';
 export * from './ParallelStep';
+export * from './PixelateStep';
 export * from './RadialWipeStep';
 export * from './RemoveOverlayStep';
 export * from './RestoreOverlayStep';

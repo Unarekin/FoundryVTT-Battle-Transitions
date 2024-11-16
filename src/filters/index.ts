@@ -17,6 +17,7 @@ import { InvertFilter } from "./Invert/InvertFilter";
 import { SpiralShutterFilter } from './SpiralShutter/SpiralShutterFilter';
 import { SpiralWipeFilter } from './SpiralWipe/SpiralWipeFilter';
 
+
 export {
   CustomFilter,
   FireDissolveFilter,
