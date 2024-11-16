@@ -1,5 +1,5 @@
-import { BossSplashStep, TransitionConfiguration } from '../steps';
-import { getSortedSteps, log, shouldUseAppV2 } from '../utils';
+import { TransitionConfiguration } from '../steps';
+import { getSortedSteps, shouldUseAppV2 } from '../utils';
 import { AddStepDialogV1 } from './AddStepDialogV1';
 import { AddStepDialogV2 } from './AddStepDialogV2';
 import { EditStepDialogV1 } from './EditStepDialogV1';
@@ -49,7 +49,6 @@ export function buildTransitionFromForm(html: JQuery<HTMLElement>) {
 }
 
 export async function transitionBuilderDialog(scene?: Scene): Promise<TransitionConfiguration[] | null> {
-  log("BossSplashStep:", BossSplashStep.hidden, game.modules?.get("boss-splash")?.active);
   if (shouldUseAppV2()) return TransitionBuilderV2.prompt(scene);
   else return TransitionBuilderV1.prompt(scene);
 }

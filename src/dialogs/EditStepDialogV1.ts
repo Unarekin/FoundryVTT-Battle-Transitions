@@ -34,6 +34,7 @@ export class EditStepDialogV1 {
         },
         render: (html: HTMLElement | JQuery<HTMLElement>) => {
           addEventListeners(dialog, $(html));
+          step.addEventListeners($(html), config);
         }
       });
 

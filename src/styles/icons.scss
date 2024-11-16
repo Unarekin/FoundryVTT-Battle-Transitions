@@ -40,6 +40,12 @@ nav .bt-icon {
     top: -1px;
     background-color: var(--button-text-color);
   }
+
+  .fas:not(.bt-icon) {
+    position: absolute;
+    left: 4px;
+    top: 8px;
+  }
 }
 
 button .bt-icon {

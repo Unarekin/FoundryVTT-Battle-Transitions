@@ -41,6 +41,7 @@ export class EditStepDialogV2 {
         .then(dialog => {
           dialog.position.width = 500;
           addEventListeners(dialog, $(dialog.element));
+          step.addEventListeners($(dialog.element), config);
         })
     });
   }
