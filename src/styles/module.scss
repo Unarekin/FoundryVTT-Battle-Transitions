@@ -52,13 +52,13 @@
 
   .two-columns {
     columns: 2;
-
-    button {
-      white-space: nowrap;
-      padding-left: 24px;
-      padding-right: 24px;
-    }
   }
+}
+
+button[data-transition] {
+  white-space: nowrap;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 
 .v2.bt [data-group="primary-buttons"] button {
