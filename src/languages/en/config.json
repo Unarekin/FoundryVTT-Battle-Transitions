@@ -5,6 +5,12 @@
         "HINT": "Automatically trigger this transition any time this scene is activated.",
         "LABEL": "Automatically Trigger"
       },
+      "HUESHIFT": {
+        "MAXSHIFT": {
+          "LABEL": "Shift Amount",
+          "HINT": "Amount by which to shift the hue.  1 will wrap back around to the original hue."
+        }
+      },
       "BOSSSPLASH": {
         "ANIMATIONDELAY": {
           "HINT": "Time, in milliseconds, to wait before beginning the animation.",

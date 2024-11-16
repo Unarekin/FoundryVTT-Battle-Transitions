@@ -630,6 +630,23 @@ export class BattleTransition {
     return this;
   }
 
+  /**
+   * 
+   * @param {number} amount - Amount by which to shift the hue
+   * @param {number} [duration=0] - Duration, in milliseconds, the shift should take to complete
+   */
+  public hueShift(amount: number, duration: number = 0): this {
+    const step = getStepClassByKey("hueshift");
+    if (!step) throw new InvalidTransitionError("hueshift");
+    const config = {
+      ...step.DefaultSettings,
+      maxShift: amount,
+      duration
+    };
+    this.#sequence.push(config);
+    return this;
+  }
+
   public video(file: string): this
   public video(file: string, volume: number): this
   public video(file: string, background: TextureLike): this

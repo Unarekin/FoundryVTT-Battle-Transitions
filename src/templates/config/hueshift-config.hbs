@@ -1,0 +1,23 @@
+<div class="flexcol step-config-item" data-transition-type="pixelate" data-id="{{id}}">
+  <form>
+    <input type="hidden" id="id" name="id" value="{{id}}">
+    <p>{{localize "BATTLETRANSITIONS.HUESHIFT.DESCRIPTION"}}</p>
+
+    <div class="form-group">
+      <label for="maxShift">{{localize "BATTLETRANSITIONS.SCENECONFIG.HUESHIFT.MAXSHIFT.LABEL"}}</label>
+      <range-picker value="{{maxShift}}" min="0" max="1" id="maxShift" name="maxShift"></range-picker>
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.HUESHIFT.MAXSHIFT.HINT"}}</p>
+
+    {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
+
+    <div class="form-group">
+      <label for="easing">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL"}}</label>
+      <select name="easing" id="easing">
+        {{selectOptions easingSelect selected=easing localize=true}}
+      </select>
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.HINT"}}</p>
+  </form>
+
+</div>

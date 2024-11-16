@@ -6,6 +6,7 @@ export * from './DiamondWipeStep';
 export * from './FadeStep';
 export * from './FireDissolveStep';
 export * from './FlashStep';
+export * from './HueShiftStep';
 export * from './InvertStep';
 export * from './LinearWipeStep';
 export * from './MacroStep';

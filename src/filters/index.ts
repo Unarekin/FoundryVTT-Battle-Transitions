@@ -16,6 +16,8 @@ import { WaveWipeFilter } from './WaveWipe/WaveWipeFilter';
 import { InvertFilter } from "./Invert/InvertFilter";
 import { SpiralShutterFilter } from './SpiralShutter/SpiralShutterFilter';
 import { SpiralWipeFilter } from './SpiralWipe/SpiralWipeFilter';
+import { HueShiftFilter } from './HueShift/HueShiftFilter';
+
 
 
 export {
@@ -36,7 +38,8 @@ export {
   WaveWipeFilter,
   SpiralShutterFilter,
   InvertFilter,
-  SpiralWipeFilter
+  SpiralWipeFilter,
+  HueShiftFilter
 }
 
 export const filters = {
@@ -58,5 +61,6 @@ export const filters = {
   WaveWipeFilter,
   InvertFilter,
   SpiralWipeFilter,
-  SpiralShutterFilter
+  SpiralShutterFilter,
+  HueShiftFilter
 };

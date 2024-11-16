@@ -52,6 +52,10 @@
       "DESCRIPTION": "Melt the screen like you may have seen in a certain demon-killing FPS.",
       "NAME": "Melt"
     },
+    "HUESHIFT": {
+      "NAME": "Hue Shift",
+      "DESCRIPTION": "Shift the screen's hue."
+    },
     "PARALLEL": {
       "DESCRIPTION": "Run multiple sequences of transition effects simultaneously.",
       "NAME": "Parallel"

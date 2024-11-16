@@ -170,3 +170,7 @@ export type BossSplashConfiguration = TransitionConfiguration & DurationTransiti
 export type PixelateConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
   maxSize: number;
 })
+
+export type HueShiftConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
+  maxShift: number;
+})
