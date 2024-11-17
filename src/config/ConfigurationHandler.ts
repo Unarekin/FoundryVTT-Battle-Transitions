@@ -86,7 +86,8 @@ export class ConfigurationHandler {
 
     // Add step button handler
     this.rootElement.find("button[data-action='add-step']").on("click", e => {
-      if ($(e.currentTarget).is(":focus")) return this.onAddStep(e);
+      // if ($(e.currentTarget).is(":focus")) return this.onAddStep(e);
+      if ($(e.currentTarget).is(":visible")) return this.onAddStep(e);
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
