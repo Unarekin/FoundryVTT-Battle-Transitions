@@ -436,9 +436,12 @@ export class BattleTransition {
    * @returns 
    */
   public flash(texture: TextureLike, duration: number): this {
+    const step = getStepClassByKey("flash");
+    if (!step) throw new InvalidTransitionError("flash");
+
     const serializedTexture = serializeTexture(texture);
     this.#sequence.push({
-      type: "flash",
+      ...step.DefaultSettings,
       duration,
       serializedTexture
     } as FlashConfiguration);
