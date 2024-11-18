@@ -16,6 +16,7 @@ export * from './ParallelStep';
 export * from './PixelateStep';
 export * from './RadialWipeStep';
 export * from './RemoveOverlayStep';
+export * from './RepeatStep';
 export * from './RestoreOverlayStep';
 export * from './SceneChangeStep';
 export * from './SoundStep';

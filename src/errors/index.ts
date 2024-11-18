@@ -15,6 +15,7 @@ export * from './NoApplicationError';
 export * from './NoBackgroundProvidedError';
 export * from './NoCoverElementError';
 export * from './NoImageProvidedError';
+export * from './NoPreviousStepError';
 export * from './NoVideoProvidedError';
 export * from './NotImplementedError';
 export * from './NotInitializedError';

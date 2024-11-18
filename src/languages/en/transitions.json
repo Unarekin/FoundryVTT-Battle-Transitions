@@ -24,6 +24,10 @@
       "DESCRIPTION": "Wipe the screen around the center point in either a clockwise or counterclockwise direction.",
       "NAME": "Clock Wipe"
     },
+    "REPEAT": {
+      "NAME": "Repeat",
+      "DESCRIPTION": "Repeat either the previous step or a specified sequence of steps."
+    },
     "DIAMONDWIPE": {
       "DESCRIPTION": "Break the screen into diamond shapes that shrink over time, starting from the left to the right.",
       "NAME": "Diamond Wipe"

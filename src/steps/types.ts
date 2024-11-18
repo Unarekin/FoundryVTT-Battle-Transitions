@@ -3,7 +3,7 @@ import { Easing, BilinearDirection, RadialDirection, ClockDirection, WipeDirecti
 
 export interface TransitionConfiguration {
   type: string;
-  id?: string;
+  id: string;
   version: string;
 }
 
@@ -113,7 +113,9 @@ export type FlashConfiguration = TransitionConfiguration & BackgroundTransition 
 
 export type RepeatConfiguration = TransitionConfiguration & ({
   iterations: number;
-  sequence: TransitionConfiguration[]
+  sequence?: TransitionConfiguration[];
+  delay: number;
+  style: "sequence" | "previous";
 });
 
 export type SceneChangeConfiguration = TransitionConfiguration & ({

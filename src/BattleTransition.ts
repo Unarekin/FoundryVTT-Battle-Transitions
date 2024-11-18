@@ -1,8 +1,8 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
-import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
+import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
@@ -599,7 +599,7 @@ export class BattleTransition {
    * Will remove the current transition overlay, exposing the new scene
    */
   public removeOverlay(): this {
-    this.#sequence.push({ type: "removeoverlay", version: "1.1.0" });
+    this.#sequence.push({ id: foundry.utils.randomID(), type: "removeoverlay", version: "1.1.0" });
     return this;
   }
 
@@ -633,29 +633,37 @@ export class BattleTransition {
     const delay = typeof args[0] === "number" ? args[0] : 0;
     const callback = (typeof args[0] === "number" ? args[1] : args[0]) as TransitionSequenceCallback;
 
+    if ((typeof callback === "function") && !this.#sequence.some(step => step.type !== "scenechange")) throw new NoPreviousStepError();
+
+    const step = getStepClassByKey("repeat");
+    if (!step) throw new InvalidTransitionError("repeat");
+
+
     if (callback) {
       const transition = new BattleTransition();
       const res = callback(transition);
       if (res instanceof Promise) throw new RepeatExecuteError();
-      for (let i = 0; i < iterations; i++) {
-        this.#sequence.push(...transition.sequence);
-        if (delay) this.wait(delay);
-      }
-    } else {
-      // Repeat the last step
-      const step = this.#sequence[this.#sequence.length - 1];
-      if (delay) this.wait(delay);
-      for (let i = 0; i < iterations; i++) {
-        this.#sequence.push(step);
-        if (delay) this.wait(delay);
-      }
-    }
 
+      this.#sequence.push({
+        ...step.DefaultSettings,
+        iterations,
+        delay,
+        style: "sequence",
+        sequence: res.sequence
+      } as RepeatConfiguration)
+    } else {
+      this.#sequence.push({
+        ...step.DefaultSettings,
+        iterations: iterations - 1,
+        delay,
+        style: "previous"
+      } as RepeatConfiguration)
+    }
     return this;
   }
 
   public restoreOverlay(): this {
-    this.#sequence.push({ type: "restoreoverlay", version: "1.1.0" });
+    this.#sequence.push({ id: foundry.utils.randomID(), type: "restoreoverlay", version: "1.1.0" });
     return this;
   }
 

@@ -11,6 +11,27 @@
           "LABEL": "Number of Bars"
         }
       },
+      "REPEAT": {
+        "ITERATIONS": {
+          "LABEL": "Iterations",
+          "HINT": "Number of times to repeat."
+        },
+        "DELAY": {
+          "LABEL": "Delay",
+          "HINT": "Time to delay between repetitions"
+        },
+        "PREVIOUS": {
+          "LABEL": "Previous",
+          "HINT": "Repeat the step prior to this one."
+        },
+        "SEQUENCE": {
+          "LABEL": "Sequence",
+          "HINT": "Repeat the specified sequence."
+        },
+        "STYLE": {
+          "LABEL": "Repeat Style"
+        }
+      },
       "BOSSSPLASH": {
         "ANIMATIONDELAY": {
           "HINT": "Time, in milliseconds, to wait before beginning the animation.",

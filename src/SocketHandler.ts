@@ -25,7 +25,7 @@ class SocketHandler {
       const actual: TransitionSequence = {
         caller: game.user?.id ?? "",
         id,
-        sequence
+        sequence: sequence.map(step => typeof step.id === "undefined" ? ({ ...step, id: foundry.utils.randomID() }) : step)
       };
 
       // Ensure we have a StartPlaylist step in our sequence
