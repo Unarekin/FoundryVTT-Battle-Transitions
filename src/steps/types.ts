@@ -174,3 +174,8 @@ export type PixelateConfiguration = TransitionConfiguration & DurationTransition
 export type HueShiftConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
   maxShift: number;
 })
+
+export type BarWipeConfiguration = WipeTransition & ({
+  direction: "vertical" | "horizontal";
+  bars: number;
+})

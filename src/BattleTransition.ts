@@ -2,7 +2,7 @@ import { coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
@@ -10,39 +10,37 @@ import { deserializeTexture, getStepClassByKey, isColor, localize, serializeText
 import { TransitionStep } from "./steps/TransitionStep";
 import { transitionBuilderDialog } from "./dialogs";
 
-type TransitionSequenceCallback = (transition: BattleTransition) => BattleTransition;
-
-// let suppressSoundUpdates: boolean = false;
-
 // #region Type aliases (1)
 
+type TransitionSequenceCallback = (transition: BattleTransition) => BattleTransition;
 
 // #endregion Type aliases (1)
 
 // #region Classes (1)
 
+// let suppressSoundUpdates: boolean = false;
+
 /**
  * Primary class that handles queueing, synchronizing, and executing transition sequences.
  */
 export class BattleTransition {
-  // #region Properties (3)
+  // #region Properties (2)
 
   #sequence: TransitionConfiguration[] = [];
 
   // // eslint-disable-next-line no-unused-private-class-members
   // #transitionOverlay: PIXI.DisplayObject[] = [];
+  public static SuppressSoundUpdates: boolean = false;
 
-  // #endregion Properties (3)
+  // #endregion Properties (2)
 
   // #region Constructors (6)
-  static SuppressSoundUpdates: boolean = false;
 
   // static get SuppressSoundUpdates(): boolean { return suppressSoundUpdates; }
   // static set SuppressSoundUpdates(val: boolean) {
   //   log("Setting SuppressSoundUpdates:", val);
   //   suppressSoundUpdates = val;
   // }
-
   constructor()
   constructor(scene: Scene)
   constructor(id: string)
@@ -70,16 +68,195 @@ export class BattleTransition {
 
   // #endregion Public Getters And Setters (1)
 
-  // #region Public Static Methods (1)
+  // #region Public Static Methods (7)
 
   public static async BuildTransition(scene?: Scene): Promise<void> {
     const transition = await transitionBuilderDialog(scene);
     if (transition) await BattleTransition.executeSequence(transition);
   }
 
-  // #endregion Public Static Methods (1)
+  public static async SelectScene(omitCurrent: boolean = false): Promise<Scene | null> {
+    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
+      scenes: game.scenes?.contents.reduce((prev, curr) => {
+        if (omitCurrent && curr.id === game.scenes?.current?.id) return prev;
+        return [...prev, { id: curr.id, name: curr.name }]
+      }, [] as { id: string, name: string }[])
+    });
 
-  // #region Public Methods (39)
+    if (shouldUseAppV2()) {
+      return foundry.applications.api.DialogV2.wait({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        window: ({ title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE") } as any),
+        content,
+        buttons: [
+          {
+            label: `<i class="fas fa-times"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")}`,
+            action: "cancel",
+            callback: () => Promise.resolve(null)
+          },
+          {
+            label: `<i class="fas fa-check"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK")}`,
+            action: "ok",
+            callback: (event: Event, button: HTMLButtonElement, dialog: HTMLDialogElement) => {
+              return Promise.resolve(game.scenes?.get($(dialog).find("#scene").val() as string) ?? null);
+            }
+          }
+        ]
+      })
+    } else {
+      return Dialog.wait({
+        title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE"),
+        content,
+        default: "ok",
+        buttons: {
+          cancel: {
+            icon: `<i class="fas fa-times"></i>`,
+            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
+            callback: () => null
+          },
+          ok: {
+            icon: `<i class="fas fa-check"></i>`,
+            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+            callback: (html) => game.scenes?.get($(html).find("#scene").val() as string) ?? null
+          }
+        }
+      }) as Promise<Scene | null>
+    }
+  }
+
+  public static async executePreparedSequence(id: string): Promise<void> {
+    const prepared = PreparedSequences[id];
+    if (!prepared) throw new InvalidTransitionError(typeof prepared);
+
+    Hooks.callAll(CUSTOM_HOOKS.TRANSITION_START, prepared.original);
+
+    let container: PIXI.Container | null = null;
+
+    try {
+      container = await setupTransition();
+      prepared.overlay = [...container.children];
+
+      hideLoadingBar();
+
+      BattleTransition.SuppressSoundUpdates = true;
+      // Execute
+      for (const step of prepared.prepared.sequence) {
+        const exec = step.execute(container, prepared.original);
+        if (exec instanceof Promise) await exec;
+      }
+
+      BattleTransition.SuppressSoundUpdates = false;
+
+      // Teardown
+      for (const step of prepared.prepared.sequence) {
+        await step.teardown(container);
+      }
+
+    } finally {
+      setTimeout(() => { showLoadingBar(); }, 250);
+      if (container) cleanupTransition(container);
+      if (prepared) Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END, prepared.original)
+      else Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END);
+      delete PreparedSequences[id];
+    }
+  }
+
+  /**
+   * Validates a transition sequence and triggers it for all connected clients
+   * @param {TransitionConfiguration[]} sequence - {@link TransitionConfiguration}[] representing steps of the sequence
+   */
+  public static async executeSequence(sequence: TransitionConfiguration[]): Promise<void> {
+    // Check for scenechange step
+    if (sequence[0].type !== "scenechange") throw new InvalidSceneError(typeof undefined);
+
+    // Validate the target scene
+    const scene = (game.scenes?.get((sequence[0] as SceneChangeConfiguration).scene)) as Scene;
+    if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof (sequence[0] as SceneChangeConfiguration).scene === "string" ? (sequence[0] as SceneChangeConfiguration).scene : typeof (sequence[0] as SceneChangeConfiguration).scene);
+
+    // Make sure we have permission to activate the new scene
+    if (!scene.canUserModify(game.user as User, "update")) throw new PermissionDeniedError();
+
+    // Socket time baybee
+    await SocketHandler.execute(sequence);
+  }
+
+  /**
+   * Prepares a given set of transitions steps for execution, allowing them to preload media etc
+   * @param {TransitionSequence[]} sequence - {@link TransitionConfiguration}[] steps to be prepared
+   * @returns 
+   */
+  public static async prepareSequence(sequence: TransitionSequence): Promise<TransitionStep[]> {
+    try {
+      const steps: TransitionStep[] = [];
+      for (const temp of sequence.sequence) {
+        const step = { ...temp };
+        const instance = getStepInstance(step);
+        if (!instance) throw new InvalidTransitionError(typeof step.type === "string" ? step.type : typeof step.type);
+
+        // Handle steps with backgrounds
+        if (Object.prototype.hasOwnProperty.call(step, "backgroundType")) {
+          const bgStep = step as unknown as BackgroundTransition;
+          if (bgStep.serializedTexture) {
+            bgStep.deserializedTexture = deserializeTexture(bgStep.serializedTexture);
+          } else {
+            switch (bgStep.backgroundType) {
+              case "color":
+                bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundColor ?? "transparent");
+                break;
+              case "image":
+                bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundImage ?? "transparent");
+                break;
+            }
+          }
+        }
+
+        const res = instance.prepare(sequence);
+        if (res instanceof Promise) await res;
+
+        steps.push(instance);
+      }
+
+      PreparedSequences[sequence.id] = {
+        original: sequence,
+        prepared: {
+          ...sequence,
+          sequence: steps,
+        },
+        overlay: []
+      }
+
+      return steps;
+    } catch (err) {
+      ui.notifications?.error((err as Error).message, { console: false });
+      console.error(err);
+      return []
+    }
+  }
+
+  public static async teardownSequence(container: PIXI.Container, sequence: PreparedTransitionSequence) {
+    for (const step of sequence.sequence) {
+      await step.teardown(container);
+    }
+  }
+
+  public static async validateSequence(sequence: TransitionConfiguration[]): Promise<boolean | Error> {
+    try {
+      for (const step of sequence) {
+        const handler = getStepClassByKey(step.type);
+        // const handler = BattleTransition.StepTypes[step.type];
+        if (!handler) throw new InvalidTransitionError(step.type);
+        const valid = await handler.validate(step);
+        if (valid instanceof Error) return valid;
+      }
+      return true;
+    } catch (err) {
+      throw err as Error;
+    }
+  }
+
+  // #endregion Public Static Methods (7)
+
+  // #region Public Methods (44)
 
   /**
    * Adds an angular wipe, mimicking the battle with Brock in Pokemon Fire Red
@@ -96,6 +273,31 @@ export class BattleTransition {
       serializedTexture,
       easing
     } as AngularWipeConfiguration);
+
+    return this;
+  }
+
+  /**
+   * Generate a wipe of alternating bars either horizontally or vertically
+   * @param {number} bars - Number of bars into which to split the screen
+   * @param {"horizontal" | "vertical"} direction - Direction the bars should travel
+   * @param {number} [duration=1000] - Duration, in milliseconds, the wipe should take to complete
+   * @param {TextureLike} [background="transparent"] - {@link TextureLike}
+   * @param {Easing} [easing="none"] - {@link Easing}
+   */
+  public barWipe(bars: number, direction: "horizontal" | "vertical", duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const serializedTexture = serializeTexture(background);
+
+    const step = getStepClassByKey("barwipe");
+    if (!step) throw new InvalidTransitionError("barwipe");
+    this.#sequence.push({
+      ...step.DefaultSettings,
+      duration,
+      bars,
+      easing,
+      direction,
+      serializedTexture
+    } as BarWipeConfiguration);
 
     return this;
   }
@@ -120,6 +322,22 @@ export class BattleTransition {
       easing
     } as BilinearWipeConfiguration);
 
+    return this;
+  }
+
+  /**
+   * Triggers an animation from the Boss Splash Screen module
+   * @param {BossSplashConfiguration} config - {@link BossSplashConfiguration}
+   */
+  public bossSplash(config: BossSplashConfiguration): this {
+    const step = getStepClassByKey("bosssplash");
+    if (!step) throw new InvalidTransitionError("bosssplash");
+    const newConfig: BossSplashConfiguration = {
+      ...step.DefaultSettings,
+      ...config
+    };
+
+    this.#sequence.push(newConfig);
     return this;
   }
 
@@ -184,118 +402,6 @@ export class BattleTransition {
     return this;
   }
 
-
-  static async executePreparedSequence(id: string): Promise<void> {
-    const prepared = PreparedSequences[id];
-    if (!prepared) throw new InvalidTransitionError(typeof prepared);
-
-    Hooks.callAll(CUSTOM_HOOKS.TRANSITION_START, prepared.original);
-
-    let container: PIXI.Container | null = null;
-
-    try {
-      container = await setupTransition();
-      prepared.overlay = [...container.children];
-
-      hideLoadingBar();
-
-      BattleTransition.SuppressSoundUpdates = true;
-      // Execute
-      for (const step of prepared.prepared.sequence) {
-        const exec = step.execute(container, prepared.original);
-        if (exec instanceof Promise) await exec;
-      }
-
-      BattleTransition.SuppressSoundUpdates = false;
-
-      // Teardown
-      for (const step of prepared.prepared.sequence) {
-        await step.teardown(container);
-      }
-
-    } finally {
-      setTimeout(() => { showLoadingBar(); }, 250);
-      if (container) cleanupTransition(container);
-      if (prepared) Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END, prepared.original)
-      else Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END);
-      delete PreparedSequences[id];
-    }
-  }
-
-  /**
-   * Validates a transition sequence and triggers it for all connected clients
-   * @param {TransitionConfiguration[]} sequence - {@link TransitionConfiguration}[] representing steps of the sequence
-   */
-  static async executeSequence(sequence: TransitionConfiguration[]): Promise<void> {
-    // Check for scenechange step
-    if (sequence[0].type !== "scenechange") throw new InvalidSceneError(typeof undefined);
-
-    // Validate the target scene
-    const scene = (game.scenes?.get((sequence[0] as SceneChangeConfiguration).scene)) as Scene;
-    if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof (sequence[0] as SceneChangeConfiguration).scene === "string" ? (sequence[0] as SceneChangeConfiguration).scene : typeof (sequence[0] as SceneChangeConfiguration).scene);
-
-    // Make sure we have permission to activate the new scene
-    if (!scene.canUserModify(game.user as User, "update")) throw new PermissionDeniedError();
-
-
-    // Socket time baybee
-    await SocketHandler.execute(sequence);
-  }
-
-  /**
-   * Prepares a given set of transitions steps for execution, allowing them to preload media etc
-   * @param {TransitionSequence[]} sequence - {@link TransitionConfiguration}[] steps to be prepared
-   * @returns 
-   */
-  static async prepareSequence(sequence: TransitionSequence): Promise<TransitionStep[]> {
-    try {
-      const steps: TransitionStep[] = [];
-      for (const temp of sequence.sequence) {
-        const step = { ...temp };
-        const instance = getStepInstance(step);
-        if (!instance) throw new InvalidTransitionError(typeof step.type === "string" ? step.type : typeof step.type);
-
-        // Handle steps with backgrounds
-        if (Object.prototype.hasOwnProperty.call(step, "backgroundType")) {
-          const bgStep = step as unknown as BackgroundTransition;
-          if (bgStep.serializedTexture) {
-            bgStep.deserializedTexture = deserializeTexture(bgStep.serializedTexture);
-          } else {
-            switch (bgStep.backgroundType) {
-              case "color":
-                bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundColor ?? "transparent");
-                break;
-              case "image":
-                bgStep.deserializedTexture = deserializeTexture(bgStep.backgroundImage ?? "transparent");
-                break;
-            }
-          }
-        }
-
-        const res = instance.prepare(sequence);
-        if (res instanceof Promise) await res;
-
-        steps.push(instance);
-      }
-
-      PreparedSequences[sequence.id] = {
-        original: sequence,
-        prepared: {
-          ...sequence,
-          sequence: steps,
-        },
-        overlay: []
-      }
-
-      return steps;
-    } catch (err) {
-      ui.notifications?.error((err as Error).message, { console: false });
-      console.error(err);
-      return []
-    }
-  }
-
-
   /**
    * Executes the transition sequence built for this {@link BattleTransition} instance.
    * @returns {Promise} - A promise that resolves when the transition is done for all users
@@ -304,7 +410,6 @@ export class BattleTransition {
     if (!(Array.isArray(this.#sequence) && this.#sequence.length)) throw new InvalidTransitionError(typeof this.#sequence);
     await SocketHandler.execute(this.#sequence)
   }
-
 
   /**
    * Fades the screen
@@ -337,6 +442,23 @@ export class BattleTransition {
       duration,
       serializedTexture
     } as FlashConfiguration);
+    return this;
+  }
+
+  /**
+   * 
+   * @param {number} amount - Amount by which to shift the hue
+   * @param {number} [duration=0] - Duration, in milliseconds, the shift should take to complete
+   */
+  public hueShift(amount: number, duration: number = 0): this {
+    const step = getStepClassByKey("hueshift");
+    if (!step) throw new InvalidTransitionError("hueshift");
+    const config = {
+      ...step.DefaultSettings,
+      maxShift: amount,
+      duration
+    };
+    this.#sequence.push(config);
     return this;
   }
 
@@ -426,6 +548,24 @@ export class BattleTransition {
       sequences
     };
 
+    this.#sequence.push(config);
+
+    return this;
+  }
+
+  /**
+   * Progressively increases the relative size of displayed pixels
+   * @param {number} [maxSize=10] - Relative size of pixels
+   * @param {number} [duration=1000] - Duration, in milliseconds, to scale up the pixels
+   */
+  public pixelate(maxSize: number = 100, duration: number = 1000): this {
+    const step = getStepClassByKey("pixelate");
+    if (!step) throw new InvalidTransitionError("pixelate");
+    const config = {
+      ...step.DefaultSettings,
+      maxSize,
+      duration
+    };
     this.#sequence.push(config);
 
     return this;
@@ -540,6 +680,29 @@ export class BattleTransition {
   }
 
   /**
+   * Queues up a wipe that operates much like a radial wipe, but in a spiral pattern rather than circular
+   * @param {ClockDirection} direction - {@link ClockDirection}
+   * @param {RadialDirection} radial - {@link RadialDirection}
+   * @param {number} [duration=1000] - Duration, in milliseconds, the wipe should last
+   * @param {TextureLike} [background="transparent"] {@link TextureLike}
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns 
+   */
+  public spiralShutter(direction: ClockDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    const serializedTexture = serializeTexture(background);
+    this.#sequence.push({
+      type: "spiralradialwipe",
+      serializedTexture,
+      duration,
+      easing,
+      direction,
+      radial
+    } as SpiralShutterConfiguration)
+
+    return this;
+  }
+
+  /**
    * A linear spiral wipe
    * @param {ClockDirection} clock - Whether the spiral travels clockwise or counterclockwise
    * @param {RadialDirection} radial - Whether the spiral starts from the inside or outside of the overlay
@@ -565,29 +728,6 @@ export class BattleTransition {
       backgroundType,
       serializedTexture
     } as SpiralWipeConfiguration);
-
-    return this;
-  }
-
-  /**
-   * Queues up a wipe that operates much like a radial wipe, but in a spiral pattern rather than circular
-   * @param {ClockDirection} direction - {@link ClockDirection}
-   * @param {RadialDirection} radial - {@link RadialDirection}
-   * @param {number} [duration=1000] - Duration, in milliseconds, the wipe should last
-   * @param {TextureLike} [background="transparent"] {@link TextureLike}
-   * @param {Easing} [easing="none"] - {@link Easing}
-   * @returns 
-   */
-  public spiralShutter(direction: ClockDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const serializedTexture = serializeTexture(background);
-    this.#sequence.push({
-      type: "spiralradialwipe",
-      serializedTexture,
-      duration,
-      easing,
-      direction,
-      radial
-    } as SpiralShutterConfiguration)
 
     return this;
   }
@@ -630,20 +770,14 @@ export class BattleTransition {
     return this;
   }
 
-  /**
-   * 
-   * @param {number} amount - Amount by which to shift the hue
-   * @param {number} [duration=0] - Duration, in milliseconds, the shift should take to complete
-   */
-  public hueShift(amount: number, duration: number = 0): this {
-    const step = getStepClassByKey("hueshift");
-    if (!step) throw new InvalidTransitionError("hueshift");
-    const config = {
-      ...step.DefaultSettings,
-      maxShift: amount,
-      duration
-    };
-    this.#sequence.push(config);
+  public twist(duration: number = 1000, direction: ClockDirection = "clockwise", maxAngle: number = 10): this {
+    this.#sequence.push({
+      type: "twist",
+      duration,
+      direction,
+      maxAngle
+    } as TwistConfiguration);
+
     return this;
   }
 
@@ -701,40 +835,6 @@ export class BattleTransition {
     return this;
   }
 
-  static async teardownSequence(container: PIXI.Container, sequence: PreparedTransitionSequence) {
-    for (const step of sequence.sequence) {
-      await step.teardown(container);
-    }
-  }
-
-  static async validateSequence(sequence: TransitionConfiguration[]): Promise<boolean | Error> {
-    try {
-      for (const step of sequence) {
-
-        const handler = getStepClassByKey(step.type);
-        // const handler = BattleTransition.StepTypes[step.type];
-        if (!handler) throw new InvalidTransitionError(step.type);
-        const valid = await handler.validate(step);
-        if (valid instanceof Error) return valid;
-      }
-      return true;
-    } catch (err) {
-      throw err as Error;
-    }
-  }
-
-  public twist(duration: number = 1000, direction: ClockDirection = "clockwise", maxAngle: number = 10): this {
-    this.#sequence.push({
-      type: "twist",
-      duration,
-      direction,
-      maxAngle
-    } as TwistConfiguration);
-
-    return this;
-  }
-
-
   public zoomBlur(duration: number = 1000, maxStrength: number = 0.5, innerRadius: number = 0): this {
     this.#sequence.push({
       type: "zoomblur",
@@ -746,97 +846,17 @@ export class BattleTransition {
     return this;
   }
 
-  public static async SelectScene(omitCurrent: boolean = false): Promise<Scene | null> {
-    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
-      scenes: game.scenes?.contents.reduce((prev, curr) => {
-        if (omitCurrent && curr.id === game.scenes?.current?.id) return prev;
-        return [...prev, { id: curr.id, name: curr.name }]
-      }, [] as { id: string, name: string }[])
-    });
-
-    if (shouldUseAppV2()) {
-      return foundry.applications.api.DialogV2.wait({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        window: ({ title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE") } as any),
-        content,
-        buttons: [
-          {
-            label: `<i class="fas fa-times"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")}`,
-            action: "cancel",
-            callback: () => Promise.resolve(null)
-          },
-          {
-            label: `<i class="fas fa-check"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK")}`,
-            action: "ok",
-            callback: (event: Event, button: HTMLButtonElement, dialog: HTMLDialogElement) => {
-              return Promise.resolve(game.scenes?.get($(dialog).find("#scene").val() as string) ?? null);
-            }
-          }
-        ]
-      })
-    } else {
-      return Dialog.wait({
-        title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE"),
-        content,
-        default: "ok",
-        buttons: {
-          cancel: {
-            icon: `<i class="fas fa-times"></i>`,
-            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
-            callback: () => null
-          },
-          ok: {
-            icon: `<i class="fas fa-check"></i>`,
-            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
-            callback: (html) => game.scenes?.get($(html).find("#scene").val() as string) ?? null
-          }
-        }
-      }) as Promise<Scene | null>
-    }
-  }
-
-
-  /**
-   * Triggers an animation from the Boss Splash Screen module
-   * @param {BossSplashConfiguration} config - {@link BossSplashConfiguration}
-   */
-  public bossSplash(config: BossSplashConfiguration): this {
-    const step = getStepClassByKey("bosssplash");
-    if (!step) throw new InvalidTransitionError("bosssplash");
-    const newConfig: BossSplashConfiguration = {
-      ...step.DefaultSettings,
-      ...config
-    };
-
-    this.#sequence.push(newConfig);
-    return this;
-  }
-
-  /**
-   * Progressively increases the relative size of displayed pixels
-   * @param {number} [maxSize=10] - Relative size of pixels
-   * @param {number} [duration=1000] - Duration, in milliseconds, to scale up the pixels
-   */
-  public pixelate(maxSize: number = 100, duration: number = 1000): this {
-    const step = getStepClassByKey("pixelate");
-    if (!step) throw new InvalidTransitionError("pixelate");
-    const config = {
-      ...step.DefaultSettings,
-      maxSize,
-      duration
-    };
-    this.#sequence.push(config);
-
-    return this;
-  }
-
-  // #endregion Private Methods (6)
+  // #endregion Public Methods (44)
 }
 
 // #endregion Classes (1)
+
+// #region Functions (1)
 
 function getStepInstance(step: TransitionConfiguration): TransitionStep {
   const handler = getStepClassByKey(step.type);
   if (!handler) throw new InvalidTransitionError(step.type);
   return handler.from(step);
 }
+
+// #endregion Functions (1)

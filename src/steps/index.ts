@@ -1,4 +1,5 @@
 export * from './AngularWipeStep';
+export * from './BarWipeStep';
 export * from './BillinearWipeStep';
 export * from './BossSplashStep';
 export * from './ClockWipeStep';

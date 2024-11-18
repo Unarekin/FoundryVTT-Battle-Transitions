@@ -5,10 +5,10 @@
         "HINT": "Automatically trigger this transition any time this scene is activated.",
         "LABEL": "Automatically Trigger"
       },
-      "HUESHIFT": {
-        "MAXSHIFT": {
-          "LABEL": "Shift Amount",
-          "HINT": "Amount by which to shift the hue.  1 will wrap back around to the original hue."
+      "BARWIPE": {
+        "BARS": {
+          "HINT": "Number of bars into which to split the screen.",
+          "LABEL": "Number of Bars"
         }
       },
       "BOSSSPLASH": {
@@ -140,14 +140,20 @@
           "LABEL": "Burn Size"
         }
       },
+      "HUESHIFT": {
+        "MAXSHIFT": {
+          "HINT": "Amount by which to shift the hue.  1 will wrap back around to the original hue.",
+          "LABEL": "Shift Amount"
+        }
+      },
       "PARALLEL": {
         "ADDSEQUENCE": "Add Sequence",
         "SEQUENCE": "Sequence {index}"
       },
       "PIXELATE": {
         "MAXSIZE": {
-          "LABEL": "Maximum Pixel Size",
-          "HINT": "Maximum relative size of pixels."
+          "HINT": "Maximum relative size of pixels.",
+          "LABEL": "Maximum Pixel Size"
         }
       },
       "SOUND": {
