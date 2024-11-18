@@ -1,15 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { initializeCanvas } from './transitionUtils';
 import { CUSTOM_HOOKS } from "./constants";
-import { TransitionChain } from "./TransitionChain";
 import { registerHelpers, registerTemplates } from "./templates";
-import { ConfigurationHandler } from './config/ConfigurationHandler';
+import { ConfigurationHandler } from './ConfigurationHandler';
 
 import SocketHandler from "./SocketHandler";
-import { addNavigationButton } from './utils';
-import { TransitionStep } from './interfaces';
+import { BattleTransition } from "./BattleTransition";
+import semver from "semver";
+import { awaitHook, log } from './utils';
+import { libWrapper } from "./vendor/libwrapper.shim";
+import { SceneChangeStep } from './steps';
 
-(window as any).BattleTransition = TransitionChain;
+
+(window as any).semver = semver;
+(window as any).BattleTransition = BattleTransition;
 
 
 Hooks.once("canvasReady", () => {
@@ -17,14 +21,38 @@ Hooks.once("canvasReady", () => {
   Hooks.callAll(CUSTOM_HOOKS.INITIALIZE)
 })
 
-Hooks.on("renderSceneConfig", (app: Application) => {
-  new ConfigurationHandler(app, (app as any).object as Scene);
-});
-
 
 Hooks.once("init", async () => {
   registerHelpers();
   await registerTemplates();
+
+  if (typeof libWrapper === "function") {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-function-type
+    (libWrapper as any).register(__MODULE_ID__, "Scene.prototype.update", function (this: Scene, wrapped: Function, ...args: unknown[]) {
+
+      const delta = args[0] as Partial<Scene>;
+      const config = ConfigurationHandler.GetSceneConfiguration(this);
+
+      if (delta.active && config.autoTrigger && config.sequence?.length && !(this.flags[__MODULE_ID__] as any).isTriggered) {
+        delete delta.active;
+        const sceneChangeStep = new SceneChangeStep({ scene: this.id ?? "" });
+        void BattleTransition.executeSequence([
+          {
+            ...SceneChangeStep.DefaultSettings,
+            ...sceneChangeStep.config
+          },
+          ...config.sequence
+        ]);
+        if (Object.keys(delta).length === 0) return false;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return wrapped(delta);
+    }, "MIXED");
+  }
+});
+
+Hooks.on("renderSceneConfig", (app: SceneConfig, html: JQuery<HTMLElement>, options: any) => {
+  void ConfigurationHandler.InjectSceneConfig(app, html, options);
 });
 
 Hooks.once("socketlib.ready", () => {
@@ -33,29 +61,41 @@ Hooks.once("socketlib.ready", () => {
 });
 
 Hooks.on("getSceneNavigationContext", (html: JQuery<HTMLElement>, buttons: any[]) => {
-  addNavigationButton(buttons);
+  ConfigurationHandler.AddToNavigationBar(buttons);
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-Hooks.on("preUpdateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
-  if (delta.active && !(scene.getFlag(__MODULE_ID__, "autoTriggered") as boolean ?? false)) {
-    const config: any = scene.getFlag(__MODULE_ID__, "config");
-    const steps: TransitionStep[] = scene.getFlag(__MODULE_ID__, "steps");
-
-    if (config?.autoTrigger && steps?.length) {
-      // SocketHandler.autoTrigger(steps);
-      delta.active = false;
-      SocketHandler.transition(scene.id as string, steps);
+Hooks.on("preUpdatePlaylist", (playlist: Playlist, delta: Partial<Playlist>) => {
+  if (delta.playing) {
+    // log("preUpdatePlaylist:", BattleTransition.SuppressSoundUpdates, delta)
+    if (BattleTransition.SuppressSoundUpdates) {
+      return false;
     }
   }
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-Hooks.on("updateScene", async (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
-  if (delta.active && (scene.getFlag(__MODULE_ID__, "autoTriggered") as boolean ?? false)) {
-    if (scene.canUserModify(game.users?.current as User, "update")) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      await (scene as any).setFlag(__MODULE_ID__, "autoTriggered", false);
+Hooks.on("preUpdatePlaylistSound", (sound: PlaylistSound, delta: Partial<PlaylistSound>) => {
+  if (delta.playing) {
+    // log("preUpdatePlaylistSound:", BattleTransition.SuppressSoundUpdates, delta);
+    if (BattleTransition.SuppressSoundUpdates) {
+      return false;
     }
+
   }
 })
+
+Hooks.on(CUSTOM_HOOKS.TRANSITION_START, (...args: unknown[]) => {
+  log("Transition start:", args);
+})
+
+Hooks.on(CUSTOM_HOOKS.TRANSITION_END, (...args: unknown[]) => {
+  log("Transition end:", args);
+})
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+Hooks.on("updateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
+  if (delta.active) {
+    if (scene.canUserModify(game.user as User, "update")) void scene.unsetFlag(__MODULE_ID__, "isTriggered");
+
+    awaitHook("canvasReady").then(() => { Hooks.callAll(CUSTOM_HOOKS.SCENE_ACTIVATED, scene); }).catch(console.error);
+  }
+});

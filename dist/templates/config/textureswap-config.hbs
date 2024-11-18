@@ -1,0 +1,24 @@
+<div
+  class="flexcol step-config-item"
+  data-transition-type="textureswap"
+  data-id="{{id}}"
+>
+  <form>
+    <input type="hidden" name="id" id="id" value="{{id}}" />
+    <p>{{localize "BATTLETRANSITIONS.TEXTURESWAP.DESCRIPTION"}}</p>
+    <div class="form-group">
+      <label for="texture">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.TEXTURESWAP.TEXTURE.LABEL"
+        }}</label>
+      <file-picker
+        name="texture"
+        id="texture"
+        type="image"
+        value="{{texture}}"
+      ></file-picker>
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.TEXTURESWAP.TEXTURE.HINT"
+      }}</p>
+  </form>
+</div>

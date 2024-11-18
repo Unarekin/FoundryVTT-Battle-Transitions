@@ -1,0 +1,14 @@
+<div class="form-group">
+  <label for="actor">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.ACTOR.LABEL"}}</label>
+  <select name="actor" id="actor">
+    <option value=""></option>
+    {{#group actors by="type"}}
+      <optgroup label="{{value}}">
+        {{#each items}}
+          <option value="{{uuid}}"{{#if selected}} selected{{/if}}>{{name}}{{#if pack}} ({{pack}}){{/if}}</option>
+        {{/each}}
+      </optgroup>
+    {{/group}}
+  </select>
+</div>
+<p></p>

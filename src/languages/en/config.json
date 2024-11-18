@@ -1,15 +1,100 @@
 {
   "BATTLETRANSITIONS": {
     "SCENECONFIG": {
-      "ADDSTEPDIALOG": {
-        "TITLE": "Add Transition Step"
-      },
       "AUTOTRIGGER": {
         "HINT": "Automatically trigger this transition any time this scene is activated.",
         "LABEL": "Automatically Trigger"
       },
-      "BILINEARWIPE": {
-        "DESCRIPTION": "Two linear wipes along a horizontal, vertical, or diagonal axis originating from either the center or outer edges of the screen."
+      "BARWIPE": {
+        "BARS": {
+          "HINT": "Number of bars into which to split the screen.",
+          "LABEL": "Number of Bars"
+        }
+      },
+      "REPEAT": {
+        "ITERATIONS": {
+          "LABEL": "Iterations",
+          "HINT": "Number of times to repeat."
+        },
+        "DELAY": {
+          "LABEL": "Delay",
+          "HINT": "Time to delay between repetitions"
+        },
+        "PREVIOUS": {
+          "LABEL": "Previous",
+          "HINT": "Repeat the step prior to this one."
+        },
+        "SEQUENCE": {
+          "LABEL": "Sequence",
+          "HINT": "Repeat the specified sequence."
+        },
+        "STYLE": {
+          "LABEL": "Repeat Style"
+        }
+      },
+      "BOSSSPLASH": {
+        "ANIMATIONDELAY": {
+          "HINT": "Time, in milliseconds, to wait before beginning the animation.",
+          "LABEL": "Animation Delay"
+        },
+        "ANIMATIONDURATION": {
+          "HINT": "Time, in milliseconds, that it should take for the slide-in animation to play.",
+          "LABEL": "Animation Duration"
+        },
+        "BOTCOLOR": {
+          "HINT": "Coor to be used for bottom, tertiary color bar.",
+          "LABEL": "Bottom Color"
+        },
+        "FONT": {
+          "HINT": "Font to use for message text.",
+          "LABEL": "Font"
+        },
+        "FONTCOLOR": {
+          "HINT": "Color for main message text.",
+          "LABEL": "Font Color"
+        },
+        "FONTSHADOW": {
+          "HINT": "Color for the shadow on the main message text.",
+          "LABEL": "Font Shadow Color"
+        },
+        "FONTSIZE": {
+          "HINT": "Size of the main message font.",
+          "LABEL": "Font Size"
+        },
+        "MESSAGE": {
+          "HINT": "If unspecified, will display an actor's name.",
+          "LABEL": "Message"
+        },
+        "MIDCOLOR": {
+          "HINT": "Color to be used for middle, secondary color bar.",
+          "LABEL": "Middle Color"
+        },
+        "SUBCOLOR": {
+          "HINT": "Color of the secondary message text.",
+          "LABEL": "Subtext Color"
+        },
+        "SUBSHADOW": {
+          "HINT": "Color of the shadow for the secondary message text.",
+          "LABEL": "Subtext Shadow Color"
+        },
+        "SUBSIZE": {
+          "HINT": "Size of the secondary message font.",
+          "LABEL": "Subtext Size"
+        },
+        "SUBTEXT": {
+          "HINT": "Text displayed below the main message.",
+          "LABEL": "Subtext"
+        },
+        "TABS": {
+          "ANIMATION": "Animation",
+          "BASICS": "Basics",
+          "COLORS": "Colors",
+          "FONT": "Font"
+        },
+        "TOPCOLOR": {
+          "HINT": "Color to be used for top, primary color bar.",
+          "LABEL": "Top Color"
+        }
       },
       "BUTTONS": {
         "ADDSTEP": "Add Step",
@@ -17,23 +102,31 @@
         "REMOVE": "Remove {name}"
       },
       "CHROMAKEY": {
-        "DESCRIPTION": "Replace one color found in the current transition image with another.  Useful for adding transparency to green screen videos.",
         "KEYCOLOR": {
           "HINT": "Color to be removed",
           "LABEL": "Key Color"
         }
       },
       "CLOCKWIPE": {
-        "DESCRIPTION": "Wipe the screen around the center point in either a clockwise or counterclockwise direction.",
         "DIRECTION": {
           "HINT": "Direction to travel",
           "LABEL": "Clock Direction"
         }
       },
       "COMMON": {
+        "ACTOR": {
+          "HINT": "",
+          "LABEL": "Actor"
+        },
         "BACKGROUND": {
-          "HINT": "Background color to show behind this step",
-          "LABEL": "Background Color"
+          "COLOR": "Color",
+          "HINT": "Background color or image to show behind this step",
+          "IMAGE": "Image",
+          "LABEL": "Background"
+        },
+        "CLOCKDIRECTION": {
+          "HINT": "Clockwise or counterclockwise",
+          "LABEL": "Direction"
         },
         "DIRECTION": {
           "HINT": "Direction from which to start",
@@ -46,82 +139,52 @@
         "RADIAL": {
           "HINT": "Start from inside or outside",
           "LABEL": "Radial Direction"
-        }
-      },
-      "DIAMOND": {
-        "DESCRIPTION": "Break the screen into diamond shapes that shrink over time, starting from the left to the right.",
-        "SIZE": {
-          "HINT": "Size of diamondsudration",
-          "LABEL": "Size"
-        }
-      },
-      "EASING": {
-        "DESCRIPTION": "The easing function to use when animating this transition.",
-        "LABEL": "Easing"
-      },
-      "EDITSTEPDIALOG": {
-        "TITLE": "Edit {name}"
-      },
-      "FADE": {
-        "BACKGROUND": {
-          "HINT": "Background color to which to fade",
-          "LABEL": "Background Color"
-        },
-        "DESCRIPTION": "Fade from the current foreground to a specified background color.",
-        "DURATION": {
-          "HINT": "Duration of the fade, in milliseconds",
-          "LABEL": "Duration"
-        },
-        "NAME": "Fade",
-        "RADIAL": {
-          "HINT": "Start transition from inside or outside",
-          "LABEL": "Radial Direction"
-        }
-      },
-      "FIREDISSOLVE": {
-        "BURNSIZE": {
-          "HINT": "Size of the burn holes during transiton",
-          "LABEL": "Burn Size"
-        },
-        "DESCRIPTION": "Apply a 'burning' effect to the screen, exposing the underlying background."
-      },
-      "LINEARWIPE": {
-        "BACKGROUND": {
-          "HINT": "Background color to which to wipe",
-          "LABEL": "BG Color"
-        },
-        "DESCRIPTION": "A linear wipe from one side of the screen to the other, exposing a given background color along the way.",
-        "DIRECTION": {
-          "HINT": "The direction from which the wipe should start.",
-          "LABEL": "Start Direction"
-        },
-        "DURATION": {
-          "HINT": "Duration of the wipe, in milliseconds",
-          "LABEL": "Duration"
-        },
-        "NAME": "Linear Wipe"
-      },
-      "RADIALWIPE": {
-        "DESCRIPTION": "Circular wipe, starting either from the inside or outside of the screen."
-      },
-      "REMOVECONFIRM": "Are you sure you wish to remove {name}?",
-      "SOUND": {
-        "DESCRIPTION": "Play a sound during the transition.  Unlike most transition steps, this one will NOT wait until the sound is finished to continue to the next.",
-        "FILE": {
-          "HINT": "Sound file to play",
-          "LABEL": "File"
         },
         "VOLUME": {
           "HINT": "",
           "LABEL": "Volume"
         }
       },
-      "SPOTLIGHTWIPE": {
-        "DESCRIPTION": "Bilinear wipe centered on a point along the edge of, and starting from either the inside or outside of the screen."
+      "DIAMOND": {
+        "SIZE": {
+          "HINT": "Size of diamondsudration",
+          "LABEL": "Size"
+        }
       },
-      "TAB": "Battle Transition",
+      "EASING": {
+        "HINT": "The easing function to use when animating this transition.",
+        "LABEL": "Easing"
+      },
+      "FIREDISSOLVE": {
+        "BURNSIZE": {
+          "HINT": "Size of the burn holes during transiton",
+          "LABEL": "Burn Size"
+        }
+      },
+      "HUESHIFT": {
+        "MAXSHIFT": {
+          "HINT": "Amount by which to shift the hue.  1 will wrap back around to the original hue.",
+          "LABEL": "Shift Amount"
+        }
+      },
+      "PARALLEL": {
+        "ADDSEQUENCE": "Add Sequence",
+        "SEQUENCE": "Sequence {index}"
+      },
+      "PIXELATE": {
+        "MAXSIZE": {
+          "HINT": "Maximum relative size of pixels.",
+          "LABEL": "Maximum Pixel Size"
+        }
+      },
+      "SOUND": {
+        "FILE": {
+          "HINT": "Sound file to play",
+          "LABEL": "File"
+        }
+      },
+      "TAB": "Transition",
       "TEXTURESWAP": {
-        "DESCRIPTION": "Set the current transition background to a given image.",
         "TEXTURE": {
           "HINT": "Texture to which to swap",
           "LABEL": "Texture"
@@ -131,18 +194,20 @@
         "LABEL": "Transition Steps"
       },
       "VIDEO": {
-        "DESCRIPTION": "Play a video a part of the transition.",
         "FILE": {
           "HINT": "Video to play",
           "LABEL": "File"
-        },
-        "VOLUME": {
-          "HINT": "",
-          "LABEL": "Volume"
         }
       },
-      "WAIT": {
-        "DESCRIPTION": "Wait a specified amount of time before continuing."
+      "ZOOMBLUR": {
+        "INNERRADIUS": {
+          "HINT": "Radius of a circle in the center of the screen that is not blurred.",
+          "LABEL": "Inner Radius"
+        },
+        "MAXSTRENGTH": {
+          "HINt": "Maximum strength of the effect.",
+          "LABEL": "Maximum Strength"
+        }
       }
     }
   }

@@ -1,5 +1,20 @@
 @import "./icons.scss";
 
+.center {
+  text-align: center;
+}
+
+#transition-step-list {
+  i[data-action="configure"],
+  i[data-action="remove"] {
+    cursor: pointer;
+  }
+}
+
+.transition-builder .dialog-buttons {
+  max-height: 36px;
+}
+
 [data-tab="battle-transitions"] {
   button[data-action="add-step"] {
     position: relative;
@@ -12,11 +27,6 @@
     margin-bottom: 5px;
   }
 
-  .step-button {
-    cursor: pointer;
-    margin-left: 3px;
-  }
-
   .link {
     cursor: pointer;
   }
@@ -27,13 +37,118 @@
     border: 1px solid rgba(0, 0, 0, 0.25);
     margin: 2px;
   }
+}
 
-  .ui-sortable-helper .drag-handle {
-    cursor: grabbing;
+.transition-config {
+  .search-box {
+    position: relative;
   }
+}
+
+.bt {
+  .dialog-buttons {
+    max-height: 36px;
+  }
+
+  .two-columns {
+    columns: 2;
+  }
+}
+
+button[data-transition] {
+  white-space: nowrap;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.v2.bt [data-group="primary-buttons"] button {
+  position: relative;
+
+  i {
+    position: absolute;
+    left: 0;
+  }
+}
+
+#step-search-results {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 500;
+  top: 0;
+  left: 0;
+
+  display: none;
+
+  div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+
+    &:hover {
+      background-color: #e9e9e9;
+    }
+  }
+}
+
+.no-row-gap .tab {
+  row-gap: 0px;
+}
+
+.step-config-item {
+  .centered {
+    text-align: center;
+  }
+
+  #selected-sequence {
+    button[data-action="add-step"] {
+      margin-top: 5px;
+    }
+  }
+
+  #sequence-list {
+    padding-right: 5px;
+    width: 33%;
+
+    button[data-action="add-sequence"] {
+      margin-top: 5px;
+    }
+  }
+
+  .no-margins {
+    margin: 0;
+
+    td {
+      margin: 0;
+      padding: 2px;
+      height: 100%;
+    }
+  }
+}
+
+.sequence-item,
+.step-button {
+  padding-bottom: 5px;
+  margin-left: 3px;
+
+  &.link {
+    cursor: pointer;
+  }
+}
+
+.ui-sortable-helper {
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  margin: 2px;
 
   .drag-handle {
-    margin-right: 2px;
-    cursor: grab;
+    cursor: grabbing;
   }
+}
+
+.drag-handle {
+  margin-right: 2px;
+  cursor: grab;
 }

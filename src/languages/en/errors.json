@@ -14,8 +14,20 @@
       "INVALIDELEMENT": "Unable to locate HTML element",
       "PERMISSIONDENIED": "Permision denied.",
       "EXECUTECALLEDPARALLEL": "Do not call execute function when creating parallel transition chains.",
+      "EXECUTECALLEDREPEAT": "Do not call execute function when creating repeated transition sequences",
       "TRANSITIONTOSELF": "Attempting to transition to the current scene.",
-      "FILENOTFOUND": "File not found: {file}"
+      "FILENOTFOUND": "File not found: {file}",
+      "NOBACKGROUNDPROVIDED": "No background image or color provided.",
+      "NOVIDEOPROVIDED": "No video provided.",
+      "NOIMAGEPROVIDED": "No image provided.",
+      "NOTIMPLEMENTED": "Not implemented.",
+      "SEQUENCETIMEDOUT": "Transition sequence timed out.",
+      "INVALIDSOUND": "Invalid sound: {sound}",
+      "NEWERVERSION": "Data appears to be from a newer version: {version}",
+      "INVALIDVERSION": "Invalid data version: {version}",
+      "UNABLETOMIGRATE": "Unable to migrate data from {old} to {current}",
+      "PREPARETIMEDOUT": "Timed out waiting for users to signal they're ready to transition.",
+      "NOPREVIOUSSTEP": "No previous step to repeat."
     }
   }
 }

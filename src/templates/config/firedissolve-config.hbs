@@ -1,0 +1,37 @@
+<div
+  class="flexcol step-config-item"
+  data-transition-type="firedissolve"
+  data-id="{{id}}"
+>
+  <form>
+    <input type="hidden" value="{{id}}" name="id" id="id" />
+    <p>{{localize "BATTLETRANSITIONS.FIREDISSOLVE.DESCRIPTION"}}</p>
+    {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
+    <div class="form-group">
+      <label for="burnsize">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.FIREDISSOLVE.BURNSIZE.LABEL"
+        }}</label>
+      <input
+        type="number"
+        name="burnsize"
+        id="burnsize"
+        min="0"
+        value="{{burnSize}}"
+      />
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.FIREDISSOLVE.BURNSIZE.HINT"
+      }}</p>
+    <div class="form-group">
+      <label for="easing">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL"
+        }}</label>
+      <select name="easing" id="easing">
+        {{selectOptions easingSelect selected=easing localize=true}}
+      </select>
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.EASING.HINT"
+      }}</p>
+  </form>
+</div>

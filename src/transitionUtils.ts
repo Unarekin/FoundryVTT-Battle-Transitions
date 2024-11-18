@@ -1,7 +1,7 @@
 import { COVER_ID } from "./constants";
 import { ScreenSpaceCanvasGroup } from './ScreenSpaceCanvasGroup';
 import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError } from './errors';
-import { awaitHook, createColorTexture, log } from "./utils";
+import { awaitHook, createColorTexture } from "./utils";
 import { coerceScene } from "./coercion";
 
 
@@ -13,6 +13,7 @@ transitionCover.style.position = "absolute";
 transitionCover.style.width = "100%";
 transitionCover.style.height = "100%";
 transitionCover.style.backgroundRepeat = "no-repeat";
+
 transitionCover.id = COVER_ID;
 document.body.appendChild(transitionCover);
 
@@ -40,7 +41,6 @@ export async function createSnapshot() {
   if (!transitionCover) throw new NoCoverElementError();
 
   transitionCover.style.backgroundImage = "";
-  const start = Date.now();
   const img = await renderer.extract.image(rt);
 
   const tempCanvas = document.createElement("canvas");
@@ -57,12 +57,11 @@ export async function createSnapshot() {
   const src = tempCanvas.toDataURL();
 
   // const img = renderer.extract.canvas(rt) as HTMLCanvasElement;
-  log(`Image transfered in ${Date.now() - start}ms`);
   transitionCover.style.backgroundImage = `url(${src})`;
   transitionCover.style.backgroundColor = renderer.background.backgroundColor.toHex()
   transitionCover.style.display = "block";
 
-  const sprite = PIXI.Sprite.from(rt);
+  const sprite = new PIXI.Sprite(rt);
   return sprite;
 }
 
@@ -70,6 +69,8 @@ export async function setupTransition(): Promise<PIXI.Container> {
   if (!canvasGroup) throw new CannotInitializeCanvasError();
   const snapshot = await createSnapshot();
   const container = new PIXI.Container();
+  container.width = window.innerWidth;
+  container.height = window.innerHeight;
 
   const bgTexture = createColorTexture(canvas?.app?.renderer.background.backgroundColor ?? "white");
   const sprite = new PIXI.Sprite(bgTexture);
@@ -77,7 +78,13 @@ export async function setupTransition(): Promise<PIXI.Container> {
   sprite.height = window.innerHeight;
   container.addChild(sprite);
   container.addChild(snapshot);
-  canvasGroup.addChild(container);
+
+  const outerContainer = new PIXI.Container();
+  outerContainer.width = window.innerWidth;
+  outerContainer.height = window.innerHeight;
+
+  outerContainer.addChild(container);
+  canvasGroup.addChild(outerContainer);
 
   return container;
 }
@@ -123,7 +130,7 @@ export async function activateScene(arg: unknown): Promise<Scene> {
   // void scene.activate();
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-  await (scene as any).setFlag(__MODULE_ID__, "autoTriggered", true);
+  await (scene as any).setFlag(__MODULE_ID__, "isTriggered", true);
   void scene.activate();
   // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   // void (scene as any).update({

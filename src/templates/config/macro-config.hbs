@@ -1,0 +1,24 @@
+<div
+  class="flexcol step-config-item"
+  data-transition-type="macro"
+  data-id="{{id}}"
+>
+  <form>
+    <input type="hidden" value="{{id}}" name="id" id="id" />
+    <p>{{localize "BATTLETRANSITIONS.MACRO.DESCRIPTION"}}</p>
+    <p class="form-group">
+      <label for="macro">{{localize
+          "BATTLETRANSITIONS.MACRO.NAME"
+        }}</label>
+      <select name="macro" id="macro">
+        {{#group macros by="pack"}}
+          {{#if value}}<optgroup label="{{value}}">{{/if}}
+            {{#each items}}
+              <option value="{{uuid}}">{{name}}</option>
+            {{/each}}
+          {{#if value}}</optgroup>{{/if}}
+        {{/group}}
+      </select>
+    </p>
+  </form>
+</div>

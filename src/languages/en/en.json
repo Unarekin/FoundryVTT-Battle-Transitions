@@ -1,10 +1,8 @@
 {
   "BATTLETRANSITIONS": {
-    "DIALOGS": {
-      "BUTTONS": {
-        "CANCEL": "Cancel",
-        "OK": "Ok"
-      }
+    "WARNINGS": {
+      "TRANSITIONCANCELED": "Transition canceled.",
+      "PREPARETIMEOUT": "One or more clients timed out waiting for a response."
     },
     "DIRECTIONS": {
       "BOTTOM": "Bottom",
@@ -61,26 +59,8 @@
       "PIXELS": "{value}px"
     },
     "NAVIGATION": {
+      "CUSTOM": "Transition Builder",
       "TRIGGER": "Transition"
-    },
-    "SCENESELECTOR": {
-      "TITLE": "Scene Selector",
-      "DESCRIPTION": "Please select a scene below:"
-    },
-    "TRANSITIONTYPES": {
-      "BILINEARWIPE": "Bilinear Wipe",
-      "CHROMAKEY": "Chroma Key",
-      "CLOCKWIPE": "Clock Wipe",
-      "DIAMOND": "Diamond",
-      "FADE": "Fade",
-      "FIREDISSOLVE": "Fire Dissolve",
-      "LINEARWIPE": "Linear Wipe",
-      "RADIALWIPE": "Radial Wipe",
-      "SOUND": "Sound",
-      "SPOTLIGHTWIPE": "Spotlight Wipe",
-      "TEXTURESWAP": "Texture Swap",
-      "VIDEO": "Video",
-      "WAIT": "Wait"
     }
   }
 }

@@ -1,0 +1,38 @@
+{
+  "BATTLETRANSITIONS": {
+    "DIALOGS": {
+      "BUTTONS": {
+        "CANCEL": "Cancel",
+        "OK": "Ok",
+        "CLEARSEARCH": "Clear search",
+        "TRANSITION": "Transition"
+      },
+      "ADDSTEP": {
+        "TITLE": "Add Transition Step",
+        "SEARCH": {
+          "PLACEHOLDER": "Search"
+        },
+        "TABS": {
+          "WIPES": "Wipes",
+          "WARPS": "Warps",
+          "EFFECTS": "Effects",
+          "TECHNICAL": "Technical"
+        }
+      },
+      "EDITSTEP": {
+        "TITLE": "Edit {name}"
+      },
+      "REMOVECONFIRM": {
+        "CONTENT": "Are you sure you wish to remove {name}?",
+        "TITLE": "Remove {name}"
+      },
+      "TRANSITIONBUILDER": {
+        "TITLE": "Transition Builder"
+      },
+      "SCENESELECTOR": {
+        "DESCRIPTION": "Please select a scene below:",
+        "TITLE": "Scene Selector"
+      }
+    }
+  }
+}

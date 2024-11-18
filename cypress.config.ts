@@ -1,8 +1,7 @@
-import "dotenv/config";
 import path from "path";
 import { defineConfig } from "cypress";
 import { promises as fs } from "fs";
-import { searchForWorkspaceRoot } from 'vite';
+import { searchForWorkspaceRoot } from "vite";
 
 module.exports = defineConfig({
   viewportWidth: 1920,
@@ -13,18 +12,9 @@ module.exports = defineConfig({
   screenshotsFolder: "cypress/reports/screenshots",
   reporterOptions: {
     charts: true,
-    overwrite: false,
+    overwrite: true,
     html: true,
     reportDir: "cypress/reports"
-  },
-
-  e2e: {
-    baseUrl: "http://localhost:30000",
-    setupNodeEvents(on, config) {
-      // implement node event listeners here
-      require("cypress-mochawesome-reporter/plugin")(on);
-      return config;
-    },
   },
 
   component: {
@@ -36,7 +26,7 @@ module.exports = defineConfig({
           fs: {
             allow: [
               searchForWorkspaceRoot(process.cwd()),
-              path.join(process.env["FOUNDRY_INSTALL_LOCATION"], "resources/app/public")
+              path.join(process.env["FOUNDRY_INSTALL_LOCATION"] ?? "", "resources/app/public")
             ]
           }
         }
@@ -46,9 +36,9 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       require("cypress-mochawesome-reporter/plugin")(on);
       on("task", {
-        readFileMaybe(filename) { return fs.readFile(filename, "utf-8") }
+        readFileMaybe(filename) { return fs.readFile(filename, "utf-8"); }
       });
       return config;
     }
   }
-});
+})

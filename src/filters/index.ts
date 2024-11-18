@@ -10,8 +10,14 @@ import { SpotlightWipeFilter } from './SpotlightWipe/SpotlightWipeFilter';
 import { RadialWipeFilter } from './RadialWipe/RadialWipeFilter';
 import { ChromaKeyFilter } from './ChromaKey/ChromaKeyFilter';
 import { TextureSwapFilter } from './TextureSwap/TextureSwapFilter';
-// import { MeltFilter } from "./Melt/MeltFilter";
-// import { GlitchFilter } from './Glitch/GlitchFilter';
+import { MeltFilter } from "./Melt/MeltFilter";
+import { AngularWipeFilter } from './AngularWipe/AngularWipeFilter';
+import { WaveWipeFilter } from './WaveWipe/WaveWipeFilter';
+import { InvertFilter } from "./Invert/InvertFilter";
+import { SpiralShutterFilter } from './SpiralShutter/SpiralShutterFilter';
+import { SpiralWipeFilter } from './SpiralWipe/SpiralWipeFilter';
+import { HueShiftFilter } from './HueShift/HueShiftFilter';
+import { BarWipeFilter } from "./BarWipe/BarWipeFilter";
 
 
 export {
@@ -27,8 +33,14 @@ export {
   RadialWipeFilter,
   ChromaKeyFilter,
   TextureSwapFilter,
-  // MeltFilter,
-  // GlitchFilter
+  MeltFilter,
+  AngularWipeFilter,
+  WaveWipeFilter,
+  SpiralShutterFilter,
+  InvertFilter,
+  SpiralWipeFilter,
+  HueShiftFilter,
+  BarWipeFilter
 }
 
 export const filters = {
@@ -45,6 +57,12 @@ export const filters = {
   RadialWipeFilter,
   ChromaKeyFilter,
   TextureSwapFilter,
-  // MeltFilter,
-  // GlitchFilter
+  MeltFilter,
+  AngularWipeFilter,
+  WaveWipeFilter,
+  InvertFilter,
+  SpiralWipeFilter,
+  SpiralShutterFilter,
+  HueShiftFilter,
+  BarWipeFilter
 };

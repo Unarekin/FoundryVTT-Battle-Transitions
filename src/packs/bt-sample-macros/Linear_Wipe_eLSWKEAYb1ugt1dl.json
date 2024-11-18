@@ -1,0 +1,27 @@
+{
+  "name": "Linear Wipe",
+  "type": "script",
+  "_id": "eLSWKEAYb1ugt1dl",
+  "author": "EWXMWWsbLjRVVnzu",
+  "img": "modules/battle-transitions/assets/wipes/linear-left.webp",
+  "scope": "global",
+  "command": "/*\nThis macro will demonstrate a simple linear wipe.\n*/\n\nconst scene = await BattleTransition.SelectScene();\nif (!scene) return;\n\nnew BattleTransition(scene).linearWipe(\"left\").execute();",
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0,
+    "EWXMWWsbLjRVVnzu": 3
+  },
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.331",
+    "systemId": "worldbuilding",
+    "systemVersion": "0.8.2",
+    "createdTime": 1729781095148,
+    "modifiedTime": 1729782272928,
+    "lastModifiedBy": "EWXMWWsbLjRVVnzu"
+  },
+  "_key": "!macros!eLSWKEAYb1ugt1dl"
+}
