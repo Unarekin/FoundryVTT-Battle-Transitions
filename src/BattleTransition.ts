@@ -141,7 +141,7 @@ export class BattleTransition {
       BattleTransition.SuppressSoundUpdates = true;
       // Execute
       for (const step of prepared.prepared.sequence) {
-        const exec = step.execute(container, prepared.original);
+        const exec = step.execute(container, prepared.original, prepared);
         if (exec instanceof Promise) await exec;
       }
 
@@ -470,7 +470,12 @@ export class BattleTransition {
    * @returns 
    */
   public invert(): this {
-    this.#sequence.push({ type: "invert" } as InvertConfiguration);
+    const step = getStepClassByKey("invert");
+    if (!step) throw new InvalidTransitionError("invert");
+    this.#sequence.push({
+      ...step.DefaultSettings,
+      id: foundry.utils.randomID()
+    } as InvertConfiguration);
     return this;
   }
 
@@ -600,6 +605,19 @@ export class BattleTransition {
    */
   public removeOverlay(): this {
     this.#sequence.push({ id: foundry.utils.randomID(), type: "removeoverlay", version: "1.1.0" });
+    return this;
+  }
+
+  /**
+   * Removes any active transition effects from the overlay.
+   */
+  public clearEffects(): this {
+    const step = getStepClassByKey("cleareffects");
+    if (!step) throw new InvalidTransitionError("cleareffects");
+    this.#sequence.push({
+      ...step.DefaultSettings,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 

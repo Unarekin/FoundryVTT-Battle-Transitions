@@ -1,12 +1,13 @@
 import { NotImplementedError } from "../errors";
 import { CustomFilter } from "../filters";
-import { TransitionSequence } from '../interfaces';
+import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { AnimatedTransition, TransitionConfiguration } from "./types";
 
 export abstract class TransitionStep<t extends TransitionConfiguration = TransitionConfiguration> {
   // #region Properties (6)
 
   public static DefaultSettings: TransitionConfiguration = {
+    id: "",
     type: "UNKNOWN",
     version: "1.1.0"
   };
@@ -22,7 +23,9 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   // #region Constructors (1)
 
-  constructor(public readonly config: Partial<t>) { }
+  constructor(public readonly config: Partial<t>) {
+    if (!config.id) this.config.id = foundry.utils.randomID();
+  }
 
   // #endregion Constructors (1)
 
@@ -76,7 +79,7 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   // #region Public Abstract Methods (1)
 
-  public abstract execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> | void;
+  public abstract execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> | void;
 
   // #endregion Public Abstract Methods (1)
 

@@ -84,7 +84,10 @@ async function addStep(dialog: foundry.applications.api.DialogV2, html: JQuery<H
   if (!step.skipConfig) {
     config = await editStepDialog(step.DefaultSettings);
   } else {
-    config = step.DefaultSettings;
+    config = {
+      ...step.DefaultSettings,
+      id: foundry.utils.randomID()
+    };
   }
 
   if (!config) return;

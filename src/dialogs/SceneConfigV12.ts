@@ -67,7 +67,10 @@ async function addStep(app: SceneConfig, html: JQuery<HTMLElement>) {
     // Edit form
     config = await editStepDialog(step.DefaultSettings)
   } else {
-    config = step.DefaultSettings;
+    config = {
+      ...step.DefaultSettings,
+      id: foundry.utils.randomID()
+    }
   }
   if (!config) return;
 

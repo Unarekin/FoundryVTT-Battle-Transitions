@@ -2,6 +2,7 @@ export * from './AngularWipeStep';
 export * from './BarWipeStep';
 export * from './BillinearWipeStep';
 export * from './BossSplashStep';
+export * from './ClearEffectsStep';
 export * from './ClockWipeStep';
 export * from './DiamondWipeStep';
 export * from './FadeStep';

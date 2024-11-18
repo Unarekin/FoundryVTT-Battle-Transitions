@@ -20,6 +20,10 @@
       "DESCRIPTION": "Replace one color found in the current transition image with another.  Useful for adding transparency to green screen videos.",
       "NAME": "Chroma Key"
     },
+    "CLEAREFFECTS": {
+      "DESCRIPTION": "Remove any transition effects that have been applied to the overlay.",
+      "NAME": "Clear Effects"
+    },
     "CLOCKWIPE": {
       "DESCRIPTION": "Wipe the screen around the center point in either a clockwise or counterclockwise direction.",
       "NAME": "Clock Wipe"

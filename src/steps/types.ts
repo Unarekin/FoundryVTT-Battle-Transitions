@@ -132,6 +132,7 @@ export interface MacroConfiguration extends TransitionConfiguration {
 
 export type RemoveOverlayConfiguration = TransitionConfiguration;
 export type RestoreOverlayConfiguration = TransitionConfiguration;
+export type ClearEffectsConfiguration = TransitionConfiguration;
 
 export type StartPlaylistConfiguration = TransitionConfiguration;
 export type ZoomBlurConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
