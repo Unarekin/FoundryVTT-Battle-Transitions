@@ -5,23 +5,8 @@
 >
   <form>
     <input type="hidden" value="{{id}}" name="id" id="id" />
-    <p>{{localize "BATTLETRANSITIONS.SCENECONFIG.DIAMOND.DESCRIPTION"}}</p>
-    <div class="form-group">
-      <label for="duration">{{localize
-          "BATTLETRANSITIONS.SCENECONFIG.COMMON.DURATION.LABEL"
-        }}</label>
-      <input
-        type="number"
-        min="0"
-        step="1"
-        value="{{duration}}"
-        name="duration"
-        id="duration"
-      />
-    </div>
-    <p class="notes">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.COMMON.DURATION.HINT"
-      }}</p>
+    <p>{{localize "BATTLETRANSITIONS.DIAMONDWIPE.DESCRIPTION"}}</p>
+    {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
     <div class="form-group">
       <label for="size">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.DIAMOND.SIZE.LABEL"
@@ -38,21 +23,7 @@
     <p class="notes">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.DIAMOND.SIZE.HINT"
       }}</p>
-    <div class="form-group">
-      <label for="background">{{localize
-          "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.LABEL"
-        }}</label>
-      <input
-        type="text"
-        name="background"
-        id="background"
-        data-color-picker="{alphaChannel: true}"
-        value="{{background}}"
-      />
-    </div>
-    <p class="notes">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.HINT"
-      }}</p>
+      {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
     <div class="form-group">
       <label for="easing">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL"

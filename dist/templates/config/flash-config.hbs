@@ -1,0 +1,8 @@
+<div class="flexcol step-config-item" data-transition-type="flash" data-id="{{id}}">
+  <form>
+    <input type="hidden" name="id" id="id" value="{{id}}">
+    <p>{{localize "BATTLETRANSITIONS.FLASH.DESCRIPTION"}}</p>
+    {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
+    {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
+  </form>
+</div>
