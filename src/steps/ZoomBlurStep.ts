@@ -4,6 +4,7 @@ import { ZoomBlurConfiguration } from './types';
 
 export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
   public static DefaultSettings: ZoomBlurConfiguration = {
+    id: "",
     type: "zoomblur",
     version: "1.1.0",
     duration: 1000,
@@ -21,8 +22,8 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
 
   public static async RenderTemplate(config?: ZoomBlurConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ZoomBlurStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...ZoomBlurStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions()
     });

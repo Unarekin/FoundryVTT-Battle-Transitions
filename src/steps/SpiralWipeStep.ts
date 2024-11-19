@@ -5,6 +5,7 @@ import { SpiralWipeConfiguration } from './types';
 
 export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
   public static DefaultSettings: SpiralWipeConfiguration = {
+    id: "",
     type: "spiralwipe",
     duration: 1000,
     direction: "left",
@@ -27,8 +28,8 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
 
   public static async RenderTemplate(config?: SpiralWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpiralWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...SpiralWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),

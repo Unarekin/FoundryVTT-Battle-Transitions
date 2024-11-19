@@ -10,6 +10,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
   public static template = "wavewipe-config";
 
   public static DefaultSettings: WaveWipeConfiguration = {
+    id: "",
     type: "wavewipe",
     duration: 1000,
     easing: "none",
@@ -35,6 +36,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
   public static async RenderTemplate(config?: WaveWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${WaveWipeStep.template}.hbs`, {
       ...WaveWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       radialSelect: generateRadialDirectionSelectOptions(),
       easingSelect: generateEasingSelectOptions()

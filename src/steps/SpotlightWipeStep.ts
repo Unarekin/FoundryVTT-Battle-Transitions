@@ -13,6 +13,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
   }
 
   public static DefaultSettings: SpotlightWipeConfiguration = {
+    id: "",
     type: "spotlightwipe",
     duration: 1000,
     easing: "none",
@@ -38,8 +39,8 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
 
   public static RenderTemplate(config?: SpotlightWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpotlightWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...SpotlightWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       directionSelect: {

@@ -9,6 +9,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   #sound: Sound | null = null;
 
   public static DefaultSettings: SoundConfiguration = {
+    id: "",
     type: "sound",
     volume: 100,
     file: "",
@@ -29,6 +30,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   public static async RenderTemplate(config?: SoundConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SoundStep.template}.hbs`, {
       ...SoundStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {})
     });
   }

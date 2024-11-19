@@ -5,6 +5,7 @@ import { PixelateConfiguration } from './types';
 
 export class PixelateStep extends TransitionStep<PixelateConfiguration> {
   public static DefaultSettings: PixelateConfiguration = {
+    id: "",
     type: "pixelate",
     version: "1.1.0",
     maxSize: 100,
@@ -21,8 +22,8 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
 
   public static async RenderTemplate(config?: PixelateConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${PixelateStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...PixelateStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {})
     });
   }

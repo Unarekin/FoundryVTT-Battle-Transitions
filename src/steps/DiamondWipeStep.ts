@@ -7,6 +7,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
   // #region Properties (5)
 
   public static DefaultSettings: DiamondWipeConfiguration = {
+    id: "",
     type: "diamondwipe",
     size: 40,
     duration: 1000,
@@ -31,8 +32,8 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
 
   public static RenderTemplate(config?: DiamondWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${DiamondWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...DiamondWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions()
     });

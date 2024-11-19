@@ -8,6 +8,7 @@ export class RemoveOverlayStep extends TransitionStep<RemoveOverlayConfiguration
   // #region Properties (6)
 
   public static DefaultSettings: RemoveOverlayConfiguration = {
+    id: "",
     type: "removeoverlay",
     version: "1.1.0"
   };
@@ -41,6 +42,7 @@ export class RemoveOverlayStep extends TransitionStep<RemoveOverlayConfiguration
   public static fromFormElement(form: HTMLFormElement): RemoveOverlayStep {
     return new RemoveOverlayStep({
       ...RemoveOverlayStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id")
     });
   }

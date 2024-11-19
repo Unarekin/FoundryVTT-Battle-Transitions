@@ -25,7 +25,7 @@ interface v10XConfig {
 
 function v10XMigration(old: v10XConfig): LinearWipeConfiguration {
   return {
-    id: old.id,
+    id: old.id ?? foundry.utils.randomID(),
     type: "linearwipe",
     version: "1.1.0",
     duration: old.duration,

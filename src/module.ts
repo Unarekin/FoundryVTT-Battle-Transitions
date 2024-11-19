@@ -38,8 +38,8 @@ Hooks.once("init", async () => {
         const sceneChangeStep = new SceneChangeStep({ scene: this.id ?? "" });
         void BattleTransition.executeSequence([
           {
-            id: foundry.utils.randomID(),
             ...SceneChangeStep.DefaultSettings,
+            id: foundry.utils.randomID(),
             ...sceneChangeStep.config
           },
           ...config.sequence

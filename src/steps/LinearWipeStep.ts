@@ -12,6 +12,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   }
 
   public static DefaultSettings: LinearWipeConfiguration = {
+    id: "",
     type: "linearwipe",
     duration: 1000,
     easing: "none",
@@ -36,8 +37,8 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
 
   public static async RenderTemplate(config?: LinearWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${LinearWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...LinearWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       directionSelect: generateLinearDirectionSelectOptions()

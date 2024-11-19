@@ -537,7 +537,7 @@ export class BattleTransition {
 
   /**
    * Queues up a set of sequences to run in parallel
-   * @param callbacks 
+   * @param {TransitionSequenceCallback[]} callbacks - Set of {@link TransitionSequenceCallback}s to build sequences to be run in parallel.  Do NOT call `.execute` at the end of these sequences.
    * @returns 
    */
   public parallel(...callbacks: TransitionSequenceCallback[]): this {

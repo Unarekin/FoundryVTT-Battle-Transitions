@@ -14,6 +14,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   }
 
   public static DefaultSettings: RadialWipeConfiguration = {
+    id: "",
     type: "radialwipe",
     easing: "none",
     radial: "inside",
@@ -38,8 +39,8 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
 
   public static RenderTemplate(config?: RadialWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${RadialWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...RadialWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions()

@@ -17,6 +17,7 @@ export class StartPlaylistStep extends TransitionStep<StartPlaylistConfiguration
   public static category = "technical";
 
   public static DefaultSettings: StartPlaylistConfiguration = {
+    id: "",
     type: "startplaylist",
     version: "1.1.0"
   };
@@ -39,6 +40,7 @@ export class StartPlaylistStep extends TransitionStep<StartPlaylistConfiguration
   public static fromFormElement(form: HTMLFormElement): StartPlaylistStep {
     return new StartPlaylistStep({
       ...StartPlaylistStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id")
     });
   }

@@ -3,6 +3,7 @@ import { TransitionStep } from './TransitionStep';
 import { TwistConfiguration } from './types';
 export class TwistStep extends TransitionStep<TwistConfiguration> {
   public static DefaultSettings: TwistConfiguration = {
+    id: "",
     type: "twist",
     version: "1.1.0",
     duration: 1000,
@@ -23,8 +24,8 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
 
   public static async RenderTemplate(config?: TwistConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${TwistStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...TwistStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
 
       directionSelect: generateClockDirectionSelectOptions(),

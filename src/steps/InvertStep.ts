@@ -9,6 +9,7 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
   // #region Properties (6)
 
   public static DefaultSettings: InvertConfiguration = {
+    id: "",
     type: "invert",
     version: "1.1.0"
   }
@@ -43,8 +44,8 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
   public static fromFormElement(form: HTMLFormElement): InvertStep {
     const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id");
     return new InvertStep({
-      id: foundry.utils.randomID(),
       ...InvertStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...elem
     })
   }

@@ -8,6 +8,7 @@ export class WaitStep extends TransitionStep<WaitConfiguration> {
   // #region Properties (5)
 
   public static DefaultSettings: WaitConfiguration = {
+    id: "",
     type: "wait",
     duration: 0,
     version: CURRENT_VERSION
@@ -26,8 +27,8 @@ export class WaitStep extends TransitionStep<WaitConfiguration> {
 
   public static async RenderTemplate(config?: WaitConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${WaitStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...WaitStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {})
     });
   }

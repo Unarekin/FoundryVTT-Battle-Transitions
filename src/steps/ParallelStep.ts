@@ -1,7 +1,7 @@
 import { BattleTransition } from "../BattleTransition";
 import { addStepDialog, confirm, editStepDialog } from "../dialogs";
 import { InvalidTransitionError } from "../errors";
-import { TransitionSequence } from "../interfaces";
+import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration, TransitionConfiguration } from './types';
@@ -14,6 +14,7 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
   #preparedSequences: TransitionStep[][] = [];
 
   public static DefaultSettings: ParallelConfiguration = {
+    id: "",
     type: "parallel",
     version: "1.1.0",
     sequences: []
@@ -31,8 +32,8 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
   public static RenderTemplate(config?: ParallelConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ParallelStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...ParallelStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {})
     });
   }
@@ -106,8 +107,8 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
   // #region Public Methods (2)
 
-  public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
-    await Promise.all(this.#preparedSequences.map(prepared => this.executeSequence(container, sequence, prepared)));
+  public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
+    await Promise.all(this.#preparedSequences.map(seq => this.executeSequence(container, sequence, seq, prepared)));
   }
 
   public async prepare(sequence: TransitionSequence): Promise<void> {
@@ -130,9 +131,9 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
   // #region Private Methods (1)
 
-  private async executeSequence(container: PIXI.Container, sequence: TransitionSequence, steps: TransitionStep[]): Promise<void> {
+  private async executeSequence(container: PIXI.Container, sequence: TransitionSequence, steps: TransitionStep[], prepared: PreparedTransitionHash): Promise<void> {
     for (const step of steps) {
-      const res = step.execute(container, sequence);
+      const res = step.execute(container, sequence, prepared);
       if (res instanceof Promise) await res;
     }
   }

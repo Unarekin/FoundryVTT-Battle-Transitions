@@ -9,6 +9,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
   // #region Properties (5)
 
   public static DefaultSettings: ClockWipeConfiguration = {
+    id: "",
     type: "clockwipe",
     duration: 1000,
     easing: "none" as Easing,
@@ -34,8 +35,8 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
 
   public static RenderTemplate(config?: ClockWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ClockWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...ClockWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       clockDirectionSelect: generateClockDirectionSelectOptions(),

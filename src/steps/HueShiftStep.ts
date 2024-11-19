@@ -5,6 +5,7 @@ import { generateEasingSelectOptions, parseConfigurationFormElements } from '../
 
 export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
   public static DefaultSettings: HueShiftConfiguration = {
+    id: "",
     type: "hueshift",
     duration: 0,
     version: "1.1.0",
@@ -21,8 +22,8 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
 
   public static RenderTemplate(config?: HueShiftConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${HueShiftStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...HueShiftStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions()
     });

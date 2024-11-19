@@ -10,6 +10,7 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
   // #region Properties (5)
 
   public static DefaultSettings = {
+    id: "",
     type: "scenechange",
     scene: "",
     version: "1.1.0"
@@ -28,8 +29,8 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
 
   public static RenderTemplate(config?: SceneChangeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SceneChangeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...SceneChangeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {})
     });
   }

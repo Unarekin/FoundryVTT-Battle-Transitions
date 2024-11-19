@@ -1,7 +1,7 @@
 import { BattleTransition } from "../BattleTransition";
 import { addStepDialog, editStepDialog, confirm } from "../dialogs";
 import { InvalidTransitionError } from "../errors";
-import { TransitionSequence } from "../interfaces";
+import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { RepeatConfiguration, TransitionConfiguration, WaitConfiguration } from './types';
@@ -88,9 +88,9 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
 
   // #region Public Methods (2)
 
-  public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
+  public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
     for (const step of this.#preparedSequence) {
-      const res = step.execute(container, sequence);
+      const res = step.execute(container, sequence, prepared);
       if (res instanceof Promise) await res;
     }
   }

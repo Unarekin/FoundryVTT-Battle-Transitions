@@ -12,6 +12,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
   #videoContainer: PIXI.Container | null = null;
 
   public static DefaultSettings: VideoConfiguration = {
+    id: "",
     type: "video",
     volume: 100,
     clear: false,
@@ -37,8 +38,8 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
 
   public static async RenderTemplate(config?: VideoConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${VideoStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...VideoStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {})
     });
   }

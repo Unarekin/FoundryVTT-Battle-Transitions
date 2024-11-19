@@ -8,6 +8,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
   // #region Properties (5)
 
   public static DefaultSettings: FadeConfiguration = {
+    id: "",
     type: "fade",
     duration: 1000,
     version: "1.1.0",
@@ -30,8 +31,8 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
 
   public static RenderTemplate(config?: FadeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${FadeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...FadeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions()
     });

@@ -19,6 +19,7 @@ interface V10XConfig {
 
 function v10X(old: V10XConfig): WaitConfiguration {
   return {
+    id: old.id ?? foundry.utils.randomID(),
     type: "wait",
     version: "1.1.0",
     duration: old.duration

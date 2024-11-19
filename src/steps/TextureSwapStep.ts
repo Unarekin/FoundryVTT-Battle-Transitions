@@ -10,6 +10,7 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
   public readonly defaultSettings: Partial<TextureSwapConfiguration> = {};
 
   public static DefaultSettings: TextureSwapConfiguration = {
+    id: "",
     type: "textureswap",
     version: "1.1.0",
     bgSizingMode: "stretch",
@@ -30,8 +31,8 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
 
   public static async RenderTemplate(config?: TextureSwapConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${TextureSwapStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...TextureSwapStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {})
     })
   }

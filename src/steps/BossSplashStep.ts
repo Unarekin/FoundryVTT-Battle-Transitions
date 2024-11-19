@@ -13,6 +13,7 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
 
   public static get DefaultSettings(): BossSplashConfiguration {
     return {
+      id: "",
       type: "bosssplash",
       version: "1.1.0",
       duration: 5000,
@@ -55,6 +56,7 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
     }));
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${BossSplashStep.template}.hbs`, {
       ...BossSplashStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
 
       fontSelect: generateFontSelectOptions(),

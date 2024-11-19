@@ -8,6 +8,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
   // #region Properties (5)
 
   public static DefaultSettings: MeltConfiguration = {
+    id: "",
     type: "melt",
     duration: 1000,
     version: "1.1.0",
@@ -31,8 +32,8 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
 
   public static RenderTemplate(config?: MeltConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${MeltStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...MeltStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions()
     });

@@ -8,6 +8,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
   // #region Properties (5)
 
   public static DefaultSettings: SpiralShutterConfiguration = {
+    id: "",
     type: "spiralshutter",
     duration: 1000,
     direction: "clockwise",
@@ -33,8 +34,8 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
 
   public static async RenderTemplate(config?: SpiralShutterConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpiralShutterStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...SpiralShutterStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),

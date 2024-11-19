@@ -21,6 +21,7 @@ interface V10Config {
 
 function v10X(old: V10Config): TextureSwapConfiguration {
   return {
+    id: old.id ?? foundry.utils.randomID(),
     version: "1.1.0",
     type: "textureswap",
     bgSizingMode: "stretch",

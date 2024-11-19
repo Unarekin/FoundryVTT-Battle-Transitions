@@ -8,6 +8,7 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
   // #region Properties (5)
 
   public static DefaultSettings: FireDissolveConfiguration = {
+    id: "",
     type: "firedissolve",
     duration: 1000,
     easing: "none",
@@ -28,8 +29,8 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
 
   public static RenderTemplate(config?: FireDissolveConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${FireDissolveStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...FireDissolveStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions()
     });

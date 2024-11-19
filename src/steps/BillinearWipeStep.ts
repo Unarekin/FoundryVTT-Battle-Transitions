@@ -8,6 +8,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
   // #region Properties (5)
 
   public static DefaultSettings: BilinearWipeConfiguration = {
+    id: "",
     type: "bilinearwipe",
     duration: 1000,
     easing: "none",
@@ -32,8 +33,8 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
 
   public static RenderTemplate(config?: BilinearWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${BilinearWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...BilinearWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       directionSelect: generateBilinearDirectionSelectOptions(),

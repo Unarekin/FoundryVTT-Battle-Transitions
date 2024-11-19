@@ -8,6 +8,7 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
   // #region Properties (5)
 
   public static DefaultSettings: FlashConfiguration = {
+    id: "",
     type: "flash",
     duration: 250,
     version: "1.1.0",
@@ -30,8 +31,8 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
 
   public static RenderTemplate(config?: FlashConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${FlashStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...FlashStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {})
     })
   }

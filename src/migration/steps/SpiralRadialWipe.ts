@@ -1,8 +1,8 @@
 import { Migrator } from "../Migrator";
-import { SpiralRadialWipeConfiguration } from '../../steps/types';
+import { SpiralShutterConfiguration } from '../../steps/types';
 
-export class SpiralRadialWipeMigrator extends Migrator<SpiralRadialWipeConfiguration> {
-  protected migrationFunctions: { [x: string]: (old: unknown) => SpiralRadialWipeConfiguration } = {};
+export class SpiralRadialWipeMigrator extends Migrator<SpiralShutterConfiguration> {
+  protected migrationFunctions: { [x: string]: (old: unknown) => SpiralShutterConfiguration } = {};
 
   public readonly NewestVersion: string = "1.1.0";
 

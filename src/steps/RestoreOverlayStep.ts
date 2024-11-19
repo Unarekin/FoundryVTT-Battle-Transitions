@@ -10,6 +10,7 @@ export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfigurati
   public static readonly template = "";
 
   public static DefaultSettings: RestoreOverlayConfiguration = {
+    id: "",
     type: "restoreoverlay",
     version: "1.1.0"
   };
@@ -42,6 +43,7 @@ export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfigurati
   public static fromFormElement(form: HTMLFormElement): RestoreOverlayStep {
     return new RestoreOverlayStep({
       ...RestoreOverlayStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id")
     });
   }

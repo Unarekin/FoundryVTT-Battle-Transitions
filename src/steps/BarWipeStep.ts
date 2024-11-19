@@ -6,6 +6,7 @@ import { BarWipeConfiguration } from "./types";
 
 export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
   public static DefaultSettings: BarWipeConfiguration = {
+    id: "",
     type: "barwipe",
     duration: 1000,
     easing: "none",
@@ -27,8 +28,8 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
 
   public static RenderTemplate(config?: BarWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${BarWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...BarWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       directionSelect: {

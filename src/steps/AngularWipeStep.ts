@@ -8,6 +8,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
   // #region Properties (5)
 
   public static DefaultSettings: AngularWipeConfiguration = {
+    id: "",
     type: "angularwipe",
     duration: 1000,
     easing: "none",
@@ -31,8 +32,8 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
 
   public static RenderTemplate(config?: AngularWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${AngularWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...AngularWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions()
     });
