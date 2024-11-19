@@ -32,6 +32,7 @@ export class ConfigurationHandler {
 
           const sceneChange = new SceneChangeStep({ scene: scene.id ?? "" });
           const step: SceneChangeConfiguration = {
+            id: foundry.utils.randomID(),
             ...SceneChangeStep.DefaultSettings,
             ...sceneChange.config
           };
