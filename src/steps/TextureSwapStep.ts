@@ -54,7 +54,7 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
     return new TextureSwapStep({
       ...TextureSwapStep.DefaultSettings,
       serializedTexture,
-      ...parseConfigurationFormElements(elem, "id", "backgroundType", "backgroundColor")
+      ...parseConfigurationFormElements(elem, "id", "backgroundType", "backgroundColor", "label")
     });
   }
 

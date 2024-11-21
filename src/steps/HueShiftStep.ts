@@ -46,7 +46,7 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
     return new HueShiftStep({
       ...HueShiftStep.DefaultSettings,
       maxShift,
-      ...parseConfigurationFormElements(elem, "id", "duration", "easing")
+      ...parseConfigurationFormElements(elem, "id", "duration", "easing", "label")
     })
   }
 

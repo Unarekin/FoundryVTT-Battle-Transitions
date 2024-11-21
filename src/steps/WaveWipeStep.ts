@@ -60,7 +60,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     return new WaveWipeStep({
       ...WaveWipeStep.DefaultSettings,
       serializedTexture,
-      ...parseConfigurationFormElements(elem, "id", "duration", "backgroundType", "backgroundColor", "easing", "direction")
+      ...parseConfigurationFormElements(elem, "id", "label", "duration", "backgroundType", "backgroundColor", "easing", "direction")
     })
 
   }

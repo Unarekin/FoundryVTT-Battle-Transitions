@@ -47,7 +47,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
 
     return new ZoomBlurStep({
       ...ZoomBlurStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "duration"),
+      ...parseConfigurationFormElements(elem, "id", "duration", "label"),
       maxStrength,
       innerRadius
     });

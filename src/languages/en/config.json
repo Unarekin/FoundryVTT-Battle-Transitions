@@ -143,6 +143,11 @@
         "VOLUME": {
           "HINT": "",
           "LABEL": "Volume"
+        },
+        "LABEL": {
+          "LABEL": "Label",
+          "HINT": "",
+          "FORMAT": "({label})"
         }
       },
       "DIAMOND": {

@@ -55,7 +55,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
       ...SoundStep.DefaultSettings,
       file,
       volume,
-      ...parseConfigurationFormElements(elem, "id")
+      ...parseConfigurationFormElements(elem, "id", "label")
     })
   }
 

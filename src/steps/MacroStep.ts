@@ -46,7 +46,7 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
   }
 
   public static fromFormElement(form: HTMLFormElement): MacroStep {
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "macro");
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "macro", "label");
     return new MacroStep({
       ...MacroStep.DefaultSettings,
       ...elem

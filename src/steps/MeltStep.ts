@@ -51,7 +51,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
 
   public static fromFormElement(form: HTMLElement): MeltStep {
     const backgroundImage = $(form).find("#backgroudnimage").val() as string ?? "";
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "easing", "backgroundType", "backgroundColor");
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "easing", "backgroundType", "backgroundColor", "label");
     return new MeltStep({
       ...MeltStep.DefaultSettings,
       ...elem,

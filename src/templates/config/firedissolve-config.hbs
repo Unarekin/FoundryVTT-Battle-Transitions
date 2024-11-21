@@ -6,6 +6,13 @@
   <form>
     <input type="hidden" value="{{id}}" name="id" id="id" />
     <p>{{localize "BATTLETRANSITIONS.FIREDISSOLVE.DESCRIPTION"}}</p>
+
+    <div class="form-group">
+      <label for="label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
+      <input type="text" name="label" id="label" value="{{label}}">
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+
     {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
     <div class="form-group">
       <label for="burnsize">{{localize

@@ -160,7 +160,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
 
     const config: ZoomConfiguration = {
       ...ZoomStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "duration", "easing", "amount", "backgroundType", "backgroundColor", "clampBounds"),
+      ...parseConfigurationFormElements(elem, "id", "label", "duration", "easing", "amount", "backgroundType", "backgroundColor", "clampBounds"),
       serializedTexture,
       target
     }

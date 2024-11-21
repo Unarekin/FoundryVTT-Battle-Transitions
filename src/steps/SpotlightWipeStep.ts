@@ -70,7 +70,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
     return new SpotlightWipeStep({
       ...SpotlightWipeStep.DefaultSettings,
       serializedTexture,
-      ...parseConfigurationFormElements(elem, "id", "duration", "direction", "radial", "backgroundType", "backgroundColor", "easing")
+      ...parseConfigurationFormElements(elem, "id", "duration", "direction", "radial", "backgroundType", "backgroundColor", "easing", "label")
     });
   }
 

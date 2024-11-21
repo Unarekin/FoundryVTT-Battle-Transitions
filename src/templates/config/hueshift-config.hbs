@@ -4,6 +4,13 @@
     <p>{{localize "BATTLETRANSITIONS.HUESHIFT.DESCRIPTION"}}</p>
 
     <div class="form-group">
+      <label for="label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
+      <input type="text" name="label" id="label" value="{{label}}">
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+
+
+    <div class="form-group">
       <label for="maxShift">{{localize "BATTLETRANSITIONS.SCENECONFIG.HUESHIFT.MAXSHIFT.LABEL"}}</label>
       <range-picker value="{{maxShift}}" min="0" max="1" id="maxShift" name="maxShift"></range-picker>
     </div>

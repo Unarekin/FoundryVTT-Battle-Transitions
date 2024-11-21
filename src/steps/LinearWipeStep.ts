@@ -57,7 +57,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): LinearWipeStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "easing", "backgroundType", "backgroundColor");
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "easing", "backgroundType", "backgroundColor", "label");
     return new LinearWipeStep({
       ...LinearWipeStep.DefaultSettings,
       ...elem,

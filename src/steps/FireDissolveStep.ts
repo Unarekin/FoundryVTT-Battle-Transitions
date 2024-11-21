@@ -47,7 +47,7 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
   }
 
   public static fromFormElement(form: HTMLFormElement): FireDissolveStep {
-    const elem = parseConfigurationFormElements<FireDissolveConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "easing", "burnSize");
+    const elem = parseConfigurationFormElements<FireDissolveConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "easing", "burnSize", "label");
     return new FireDissolveStep({
       ...FireDissolveStep.DefaultSettings,
       ...elem,

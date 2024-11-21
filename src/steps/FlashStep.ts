@@ -49,7 +49,7 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): FlashStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "backgroundType", "backgroundColor");
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "backgroundType", "backgroundColor", "label");
     return new FlashStep({
       ...FlashStep.DefaultSettings,
       ...elem,

@@ -7,7 +7,10 @@
 >
   <div class="flex0 drag-handle"><i class="fas fa-grip-lines"></i></div>
   <div><span class="link" data-action="configure">{{localize name}}</span></div>
-  <div>{{localize summary}}</div>
+  <div>{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.FORMAT"
+      label=label
+    }}</div>
   {{#unless skipConfig}}
     <i
       class="fas fa-cogs fa-fw step-button flex0 link"

@@ -47,7 +47,7 @@ export class WaitStep extends TransitionStep<WaitConfiguration> {
     const elem = $(form) as JQuery<HTMLFormElement>;
     return new WaitStep({
       ...WaitStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "duration")
+      ...parseConfigurationFormElements(elem, "id", "duration", "label")
     });
   }
 

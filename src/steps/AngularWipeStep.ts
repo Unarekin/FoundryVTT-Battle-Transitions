@@ -51,7 +51,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
 
   public static fromFormElement(formElement: HTMLFormElement): AngularWipeStep {
     const backgroundImage = $(formElement).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements($(formElement) as JQuery<HTMLFormElement>, "id", "duration", "easing", "backgroundType", "backgroundColor");
+    const elem = parseConfigurationFormElements($(formElement) as JQuery<HTMLFormElement>, "id", "duration", "easing", "backgroundType", "backgroundColor", "label");
     return new AngularWipeStep({
       ...AngularWipeStep.DefaultSettings,
       ...elem,

@@ -63,7 +63,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     return new RadialWipeStep({
       ...RadialWipeStep.DefaultSettings,
       serializedTexture,
-      ...parseConfigurationFormElements(elem, "id", "duration", "radial", "backgroundType", "backgroundColor", "easing")
+      ...parseConfigurationFormElements(elem, "id", "duration", "radial", "backgroundType", "backgroundColor", "easing", "label")
     });
   }
 

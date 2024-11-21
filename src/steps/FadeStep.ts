@@ -50,7 +50,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): FadeStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "backgroundType", "backgroundColor", "easing");
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "backgroundType", "backgroundColor", "easing", "label");
     return new FadeStep({
       ...FadeStep.DefaultSettings,
       ...elem,

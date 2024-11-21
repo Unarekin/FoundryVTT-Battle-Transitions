@@ -78,7 +78,7 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
     const sequence = buildTransition(elem);
     return new RepeatStep({
       ...RepeatStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "iterations", "style", "delay"),
+      ...parseConfigurationFormElements(elem, "id", "iterations", "style", "delay", "label"),
       id: foundry.utils.randomID(),
       sequence
     })

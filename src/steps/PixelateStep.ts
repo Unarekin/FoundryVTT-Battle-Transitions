@@ -42,7 +42,7 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
     const elem = $(form) as JQuery<HTMLFormElement>;
     return new PixelateStep({
       ...PixelateStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "duration", "maxSize")
+      ...parseConfigurationFormElements(elem, "id", "duration", "maxSize", "label")
     });
   }
 

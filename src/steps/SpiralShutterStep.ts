@@ -60,7 +60,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
     return new SpiralShutterStep({
       ...SpiralShutterStep.DefaultSettings,
       backgroundImage,
-      ...parseConfigurationFormElements(elem, "id", "duration", "easing", "backgroundType", "backgroundColor", "direction", "radial")
+      ...parseConfigurationFormElements(elem, "id", "duration", "easing", "backgroundType", "backgroundColor", "direction", "radial", "label")
     })
   }
 

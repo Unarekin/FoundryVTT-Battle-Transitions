@@ -6,6 +6,13 @@
   <form>
     <input type="hidden" value="{{id}}" name="id" id="id" />
     <p>{{localize "BATTLETRANSITIONS.LINEARWIPE.DESCRIPTION"}}</p>
+
+    <div class="form-group">
+      <label for="label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
+      <input type="text" name="label" id="label" value="{{label}}">
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+
     <div class="form-group">
       <label for="direction">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.LABEL"

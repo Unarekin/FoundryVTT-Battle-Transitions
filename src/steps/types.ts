@@ -3,6 +3,7 @@ import { Easing, BilinearDirection, RadialDirection, ClockDirection, WipeDirecti
 
 export interface TransitionConfiguration {
   type: string;
+  label?: string;
   id: string;
   version: string;
 }

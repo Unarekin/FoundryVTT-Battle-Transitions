@@ -51,7 +51,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): DiamondWipeStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements<DiamondWipeConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "easing", "backgroundType", "backgroundColor");
+    const elem = parseConfigurationFormElements<DiamondWipeConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "easing", "backgroundType", "backgroundColor", "label");
     return new DiamondWipeStep({
       ...DiamondWipeStep.DefaultSettings,
       ...elem,

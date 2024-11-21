@@ -56,7 +56,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     const backgroundImage = elem.find("#backgroundImage").val() as string ?? "";
     return new BarWipeStep({
       ...BarWipeStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "duration", "bars", "direction", "easing", "backgroundType", "backgroundColor"),
+      ...parseConfigurationFormElements(elem, "id", "duration", "bars", "direction", "easing", "backgroundType", "backgroundColor", "label"),
       serializedTexture: backgroundImage
     })
   }

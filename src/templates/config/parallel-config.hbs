@@ -5,6 +5,18 @@
 >
   <form>
     <input type="hidden" name="id" id="id" value="{{id}}" />
+    <p class="notes">{{localize "BATTLETRANSITIONS.PARALLEL.DESCRIPTION"}}</p>
+
+    <div class="form-group">
+      <label for="label">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"
+        }}</label>
+      <input type="text" name="label" id="label" value="{{label}}" />
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"
+      }}</p>
+
     <table class="no-margins">
       <tr>
         <td id="sequence-list">

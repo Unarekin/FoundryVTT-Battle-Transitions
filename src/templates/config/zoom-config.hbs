@@ -2,6 +2,13 @@
   <form>
     <input type="hidden" name="id" id="id" value="{{id}}">
     <p>{{localize "BATTLETRANSITIONS.ZOOM.DESCRIPTION"}}</p>
+
+    <div class="form-group">
+      <label for="label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
+      <input type="text" name="label" id="label" value="{{label}}">
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+
     <div class="form-group">
       <label for="amount">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.AMOUNT.LABEL"}}</label>
       <input type="number" name="amount" id="amount" value="{{amount}}" min="0" step=".01">

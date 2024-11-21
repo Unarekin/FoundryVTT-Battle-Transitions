@@ -96,7 +96,7 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
     const config: ParallelConfiguration = {
       ...ParallelStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id"),
+      ...parseConfigurationFormElements(elem, "id", "label"),
       sequences
     };
 

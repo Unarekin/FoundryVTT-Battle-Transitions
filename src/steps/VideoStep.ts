@@ -63,7 +63,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
       ...(file ? { file } : {}),
       ...(volume ? { volume: volume / 100 } : {}),
       serializedTexture: backgroundImage,
-      ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor")
+      ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor", "label")
     })
   }
 

@@ -71,7 +71,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
     const elem = $(form) as JQuery<HTMLFormElement>;
     return new TwistStep({
       ...TwistStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "duration", "direction", "easing")
+      ...parseConfigurationFormElements(elem, "id", "duration", "direction", "easing", "label")
     })
   }
 

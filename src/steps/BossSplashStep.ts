@@ -86,7 +86,7 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
     return new BossSplashStep({
       ...BossSplashStep.DefaultSettings,
       sound,
-      ...parseConfigurationFormElements(elem, "id", "actor", "message", "subText", "duration", "animationDelay", "animationDuration", "topColor", "midColor", "botColor", "fontColor", "fontShadow", "subColor", "subShadow", "font", "fontSize", "subSize")
+      ...parseConfigurationFormElements(elem, "id", "actor", "message", "subText", "duration", "animationDelay", "animationDuration", "topColor", "midColor", "botColor", "fontColor", "fontShadow", "subColor", "subShadow", "font", "fontSize", "subSize", "label")
     });
   }
 

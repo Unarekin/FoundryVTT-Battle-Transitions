@@ -54,7 +54,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
 
   public static fromFormElement(form: HTMLFormElement): BilinearWipeStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements<BilinearWipeConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "radial", "easing", "backgroundType", "backgroundColor")
+    const elem = parseConfigurationFormElements<BilinearWipeConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "radial", "easing", "backgroundType", "backgroundColor", "label")
     return new BilinearWipeStep({
       ...BilinearWipeStep.DefaultSettings,
       ...elem,
