@@ -4,6 +4,7 @@ import { SceneChangeConfiguration, SceneChangeStep, TransitionConfiguration } fr
 import { SceneConfigV11, SceneConfigV12 } from "./dialogs";
 import { BattleTransition } from "./BattleTransition";
 import { InvalidSceneError } from "./errors";
+import { log } from "./utils";
 
 export class ConfigurationHandler {
   public static AddToNavigationBar(buttons: any[]) {
@@ -70,6 +71,8 @@ export class ConfigurationHandler {
     for (const key in oldFlag) {
       if (!Object.keys(newConfig).includes(key)) newConfig[`-=${key}`] = null;
     }
+
+    log("Setting:", newConfig);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     return (scene as any).update({

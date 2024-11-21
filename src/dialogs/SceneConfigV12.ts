@@ -41,7 +41,7 @@ function addEventListeners(app: SceneConfig, html: JQuery<HTMLElement>) {
 
   // Save button
   html.find(".sheet-footer button[type='submit']").on("click", () => {
-    const autoTrigger = !!(html.find("#auto-trigger").val() ?? false);
+    const autoTrigger = html.find("#auto-trigger").is(":checked") ?? false;
     const sequence = buildTransitionFromForm(html);
 
     void ConfigurationHandler.SetSceneConfiguration(
