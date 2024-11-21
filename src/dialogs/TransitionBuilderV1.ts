@@ -105,6 +105,7 @@ async function upsertStepButton(dialog: Dialog, html: JQuery<HTMLElement>, confi
     name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
     description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
     type: step.key,
+    skipConfig: step.skipConfig,
     flag: JSON.stringify({
       ...step.DefaultSettings,
       ...config

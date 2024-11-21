@@ -81,6 +81,7 @@ async function upsertStepButton(app: SceneConfig, html: JQuery<HTMLElement>, con
     name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
     description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
     type: step.key,
+    skipConfig: step.skipConfig,
     flag: JSON.stringify({
       ...step.DefaultSettings,
       ...config

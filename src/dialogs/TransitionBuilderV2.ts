@@ -109,6 +109,7 @@ async function upsertStepButton(dialog: foundry.applications.api.DialogV2, html:
     name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
     description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
     type: step.key,
+    skipConfig: step.skipConfig,
     flag: JSON.stringify({
       ...step.DefaultSettings,
       ...config
