@@ -1,6 +1,6 @@
 import { InvalidTargetError } from "../errors";
 import { ZoomFilter } from "../filters";
-import { createColorTexture, generateEasingSelectOptions, localize, log, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, generateEasingSelectOptions, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ZoomConfiguration } from "./types";
 
@@ -34,7 +34,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
 
   // #endregion Properties (8)
 
-  // #region Public Static Methods (8)
+  // #region Public Static Methods (9)
 
   // // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static async RenderTemplate(config?: ZoomConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
@@ -165,12 +165,12 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       target
     }
 
-    log("Zoom step config:", config)
-
     return new ZoomStep(config);
   }
 
-  // #endregion Public Static Methods (8)
+  public static getDuration(config: ZoomConfiguration): number { return { ...ZoomStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (9)
 
   // #region Public Methods (3)
 
@@ -332,7 +332,6 @@ function drawingType(drawing: DrawingDocument) {
       return "UNKNOWN";
   }
 }
-
 
 function highlightObject(uuid: string): void {
   const parsed = (typeof foundry.utils.parseUuid === "function") ? foundry.utils.parseUuid(uuid) : parseUuid(uuid);

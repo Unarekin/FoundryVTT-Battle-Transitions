@@ -4,7 +4,7 @@ import { TransitionSequence } from "../interfaces";
 import { parseConfigurationFormElements } from "../utils";
 
 export class SoundStep extends TransitionStep<SoundConfiguration> {
-  // #region Properties (6)
+  // #region Properties (8)
 
   #sound: Sound | null = null;
 
@@ -16,16 +16,16 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
     version: "1.1.0"
   }
 
+  public static category = "technical";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon sound fa-fw fas'></i>"
   public static key = "sound";
   public static name = "SOUND";
   public static template = "sound-config";
-  public static icon = "<i class='bt-icon sound fa-fw fas'></i>"
-  public static category = "technical";
 
-  // #endregion Properties (6)
+  // #endregion Properties (8)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: SoundConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SoundStep.template}.hbs`, {
@@ -50,7 +50,6 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
     const file = elem.find("#file").val() as string ?? "";
     const volume = elem.find("#volume").val() as number ?? 100;
 
-
     return new SoundStep({
       ...SoundStep.DefaultSettings,
       file,
@@ -59,7 +58,22 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
     })
   }
 
-  // #endregion Public Static Methods (6)
+  //public static getDuration(config: PixelateConfiguration): number { return { ...PixelateStep.DefaultSettings, ...config }.duration }
+  public static getDuration(config: SoundConfiguration): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      const audio = new Audio();
+      audio.onloadedmetadata = () => { resolve(Math.round(audio.duration * 1000)); };
+      audio.onerror = (e, src, line, col, err) => {
+        if (err) reject(err);
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        else reject(new Error(e.toString()));
+      }
+
+      audio.src = config.file;
+    })
+  }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (3)
 

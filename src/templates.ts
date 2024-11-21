@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import groupBy from "./lib/groupBy";
+import { formatDuration } from "./utils";
 
 export function registerHelpers() {
   Handlebars.registerHelper("switch", function (this: any, value, options) {
@@ -19,6 +20,12 @@ export function registerHelpers() {
   });
 
   groupBy.register(Handlebars)
+
+  Handlebars.registerHelper("formatDuration", function (this: any, value: number) {
+    if (typeof value === "number") return formatDuration(value);
+    else if (typeof value === "string" && !isNaN(parseFloat(value))) return formatDuration(parseFloat(value));
+    else return "NaN";
+  })
 }
 
 export async function registerTemplates() {

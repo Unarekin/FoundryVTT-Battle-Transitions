@@ -2,7 +2,8 @@ import { BattleTransition } from "../BattleTransition";
 import { addStepDialog, confirm, editStepDialog } from "../dialogs";
 import { InvalidTransitionError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
-import { getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
+import { sequenceDuration } from "../transitionUtils";
+import { formatDuration, getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration, TransitionConfiguration } from './types';
 
@@ -81,6 +82,15 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     else if (((arg as any)[0]) instanceof HTMLFormElement) return ParallelStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new ParallelStep(arg as ParallelConfiguration);
+  }
+
+  public static async getDuration(config: ParallelConfiguration): Promise<number> {
+    let highest: number = 0;
+    for (const sequence of config.sequences) {
+      const duration = await sequenceDuration(sequence);
+      if (duration > highest) highest = duration;
+    }
+    return highest;
   }
 
   public static fromFormElement(form: HTMLFormElement): ParallelStep {
@@ -283,12 +293,22 @@ async function upsertStepButton(html: JQuery<HTMLElement>, config: TransitionCon
   const step = getStepClassByKey(config.type);
   if (!step) throw new InvalidTransitionError(config.type);
 
+
+
+  const outerSequence = [...buildTransition(html), config];
+  const durationRes = step.getDuration(config, outerSequence);
+  const calculatedDuration = (durationRes instanceof Promise) ? (await durationRes) : durationRes;
+
+  const totalDuration = await sequenceDuration(outerSequence);
+  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+
   const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
     ...step.DefaultSettings,
     ...config,
     name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
     description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
     type: step.key,
+    calculatedDuration,
     flag: JSON.stringify({
       ...step.DefaultSettings,
       ...config

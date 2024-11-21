@@ -3,8 +3,9 @@ import { createColorTexture, generateEasingSelectOptions, parseConfigurationForm
 import { TransitionStep } from "./TransitionStep";
 import { BarWipeConfiguration } from "./types";
 
-
 export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
+  // #region Properties (7)
+
   public static DefaultSettings: BarWipeConfiguration = {
     id: "",
     type: "barwipe",
@@ -19,12 +20,16 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     bars: 4
   }
 
+  public static category: string = "wipe";
   public static hidden: boolean = false;
+  public static icon: string = `<i class="fas fa-fw fa-bars"></i>`;
   public static key: string = "barwipe";
   public static name: string = "BARWIPE";
   public static template: string = "barwipe-config";
-  public static category: string = "wipe";
-  public static icon: string = `<i class="fas fa-fw fa-bars"></i>`;
+
+  // #endregion Properties (7)
+
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: BarWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${BarWipeStep.template}.hbs`, {
@@ -39,7 +44,6 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     })
   }
 
-
   public static from(config: BarWipeConfiguration): BarWipeStep
   public static from(form: HTMLFormElement): BarWipeStep
   public static from(form: JQuery<HTMLFormElement>): BarWipeStep
@@ -48,7 +52,6 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     else if ((arg as any)[0] instanceof HTMLFormElement) return BarWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new BarWipeStep(arg as BarWipeConfiguration);
-
   }
 
   public static fromFormElement(form: HTMLFormElement): BarWipeStep {
@@ -61,6 +64,12 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     })
   }
 
+  public static getDuration(config: BarWipeConfiguration): number { return { ...BarWipeStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
+
+  // #region Public Methods (1)
+
   public async execute(container: PIXI.Container): Promise<void> {
     const config: BarWipeConfiguration = {
       ...BarWipeStep.DefaultSettings,
@@ -72,4 +81,6 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
+
+  // #endregion Public Methods (1)
 }

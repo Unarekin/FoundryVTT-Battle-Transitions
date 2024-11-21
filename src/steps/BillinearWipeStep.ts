@@ -5,7 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { BilinearWipeConfiguration } from "./types";
 
 export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> {
-  // #region Properties (5)
+  // #region Properties (7)
 
   public static DefaultSettings: BilinearWipeConfiguration = {
     id: "",
@@ -21,15 +21,16 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = `<i class="fas fa-fw fa-arrows-left-right-to-line"></i>`
   public static key = "bilinearwipe";
   public static name = "BILINEARWIPE";
   public static template = "bilinearwipe-config";
-  public static category = "wipe";
-  public static icon = `<i class="fas fa-fw fa-arrows-left-right-to-line"></i>`
-  // #endregion Properties (5)
 
-  // #region Public Static Methods (6)
+  // #endregion Properties (7)
+
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: BilinearWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${BilinearWipeStep.template}.hbs`, {
@@ -62,7 +63,9 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     });
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: BilinearWipeConfiguration): number { return { ...BilinearWipeStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
 

@@ -5,7 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { LinearWipeConfiguration } from "./types";
 
 export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
-  // #region Properties (6)
+  // #region Properties (8)
 
   public readonly defaultSettings: Partial<LinearWipeConfiguration> = {
     duration: 1000
@@ -24,16 +24,16 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = `<i class="fas fa-fw fa-arrow-right"></i>`
   public static key = "linearwipe";
   public static name = "LINEARWIPE";
   public static template = "linearwipe-config";
-  public static category = "wipe";
-  public static icon = `<i class="fas fa-fw fa-arrow-right"></i>`
 
-  // #endregion Properties (6)
+  // #endregion Properties (8)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: LinearWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${LinearWipeStep.template}.hbs`, {
@@ -65,7 +65,9 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
     });
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: LinearWipeConfiguration): number { return { ...LinearWipeStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
 

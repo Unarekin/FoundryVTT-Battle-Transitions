@@ -2,8 +2,9 @@ import { parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { PixelateConfiguration } from './types';
 
-
 export class PixelateStep extends TransitionStep<PixelateConfiguration> {
+  // #region Properties (7)
+
   public static DefaultSettings: PixelateConfiguration = {
     id: "",
     type: "pixelate",
@@ -12,13 +13,16 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
     duration: 1000,
     easing: "none"
   };
-
+  public static category: string = "effect";
   public static hidden: boolean = false;
+  public static icon = `<i class="fas fa-fw fa-image"></i>`
   public static key: string = "pixelate";
   public static name: string = "PIXELATE";
   public static template: string = "pixelate-config";
-  public static category: string = "effect";
-  public static icon = `<i class="fas fa-fw fa-image"></i>`
+
+  // #endregion Properties (7)
+
+  // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: PixelateConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${PixelateStep.template}.hbs`, {
@@ -46,6 +50,12 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
     });
   }
 
+  public static getDuration(config: PixelateConfiguration): number { return { ...PixelateStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
+
+  // #region Public Methods (1)
+
   public async execute(container: PIXI.Container): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const filter = new (PIXI.filters as any).PixelateFilter(1) as PIXI.Filter;
@@ -59,4 +69,6 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     await TweenMax.to(filter.uniforms.size, { 0: config.maxSize, 1: config.maxSize, duration: config.duration / 1000, ease: config.easing });
   }
+
+  // #endregion Public Methods (1)
 }

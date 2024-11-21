@@ -6,8 +6,8 @@ export class EditStepDialogV2 {
   static async prompt(config: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<TransitionConfiguration | null> {
     const step = getStepClassByKey(config.type);
     if (!step) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
-
     const content = await step.RenderTemplate(config, oldScene, newScene);
+
     return new Promise<TransitionConfiguration | null>(resolve => {
       const dialog = new foundry.applications.api.DialogV2({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

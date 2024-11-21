@@ -5,7 +5,7 @@ import { SpiralShutterConfiguration } from "./types";
 import { SpiralShutterFilter } from "../filters";
 
 export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration> {
-  // #region Properties (5)
+  // #region Properties (7)
 
   public static DefaultSettings: SpiralShutterConfiguration = {
     id: "",
@@ -21,16 +21,16 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon spiral-shutter fa-fw fas'></i>"
   public static key = "spiralshutter";
   public static name = "SPIRALSHUTTER";
   public static template = "spiralshutter-config";
-  public static category = "wipe";
-  public static icon = "<i class='bt-icon spiral-shutter fa-fw fas'></i>"
 
-  // #endregion Properties (5)
+  // #endregion Properties (7)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: SpiralShutterConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpiralShutterStep.template}.hbs`, {
@@ -64,7 +64,9 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
     })
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: SpiralShutterConfiguration): number { return { ...SpiralShutterStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
 

@@ -1,5 +1,5 @@
 import { TransitionSequence } from '../interfaces';
-import { generateFontSelectOptions, getActors, getCompendiumFromUUID, log, parseConfigurationFormElements, wait } from '../utils';
+import { generateFontSelectOptions, getActors, getCompendiumFromUUID, parseConfigurationFormElements, wait } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { BossSplashConfiguration } from './types';
 
@@ -77,11 +77,10 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
     });
   }
 
+
   public static fromFormElement(form: HTMLFormElement): BossSplashStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
     const sound = elem.find("#sound").val() as string ?? "";
-
-    log("Form:", elem.serializeArray())
 
     return new BossSplashStep({
       ...BossSplashStep.DefaultSettings,

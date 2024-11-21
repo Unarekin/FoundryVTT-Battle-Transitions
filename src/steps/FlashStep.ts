@@ -5,7 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { FlashConfiguration } from "./types";
 
 export class FlashStep extends TransitionStep<FlashConfiguration> {
-  // #region Properties (5)
+  // #region Properties (7)
 
   public static DefaultSettings: FlashConfiguration = {
     id: "",
@@ -18,16 +18,16 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
     backgroundColor: "#00000000"
   }
 
+  public static category = "effect";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon flash fa-fw fas'></i>"
   public static key = "flash";
   public static name = "FLASH";
   public static template = "flash-config";
-  public static icon = "<i class='bt-icon flash fa-fw fas'></i>"
-  public static category = "effect";
 
-  // #endregion Properties (5)
+  // #endregion Properties (7)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: FlashConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${FlashStep.template}.hbs`, {
@@ -57,7 +57,9 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
     })
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: FlashConfiguration): number { return { ...FlashStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
 

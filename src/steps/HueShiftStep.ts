@@ -4,6 +4,8 @@ import { HueShiftFilter } from '../filters';
 import { generateEasingSelectOptions, parseConfigurationFormElements } from '../utils';
 
 export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
+  // #region Properties (7)
+
   public static DefaultSettings: HueShiftConfiguration = {
     id: "",
     type: "hueshift",
@@ -12,13 +14,16 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
     maxShift: 0,
     easing: "none"
   };
-
+  public static category: string = "effect";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon hue-shift fa-fw fas'></i>"
   public static key: string = "hueshift";
   public static name: string = "HUESHIFT";
   public static template: string = "hueshift-config";
-  public static category: string = "effect";
-  public static icon = "<i class='bt-icon hue-shift fa-fw fas'></i>"
+
+  // #endregion Properties (7)
+
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: HueShiftConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${HueShiftStep.template}.hbs`, {
@@ -50,6 +55,12 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
     })
   }
 
+  public static getDuration(config: HueShiftConfiguration): number { return { ...HueShiftStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
+
+  // #region Public Methods (1)
+
   public async execute(container: PIXI.Container): Promise<void> {
     const config: HueShiftConfiguration = {
       ...HueShiftStep.DefaultSettings,
@@ -62,4 +73,6 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     await TweenMax.to(filter.uniforms, { shift: config.maxShift, duration: config.duration / 1000, ease: config.easing ?? "none" });
   }
+
+  // #endregion Public Methods (1)
 }

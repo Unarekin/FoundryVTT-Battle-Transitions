@@ -1,8 +1,9 @@
 import { COVER_ID } from "./constants";
 import { ScreenSpaceCanvasGroup } from './ScreenSpaceCanvasGroup';
-import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError } from './errors';
-import { awaitHook, createColorTexture } from "./utils";
+import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError, InvalidTransitionError } from './errors';
+import { awaitHook, createColorTexture, getStepClassByKey } from "./utils";
 import { coerceScene } from "./coercion";
+import { TransitionConfiguration } from "./steps";
 
 
 
@@ -151,4 +152,15 @@ export function removeFilter(element: PIXI.DisplayObject, filter: PIXI.Filter) {
     const index = element.filters.indexOf(filter);
     if (index !== -1) element.filters.splice(index, 1);
   }
+}
+
+export async function sequenceDuration(sequence: TransitionConfiguration[]): Promise<number> {
+  let duration: number = 0;
+  for (const config of sequence) {
+    const step = getStepClassByKey(config.type);
+    if (!step) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
+    const res = step.getDuration(config, sequence);
+    duration += res instanceof Promise ? await res : res;
+  }
+  return duration;
 }

@@ -39,6 +39,8 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     });
   }
 
+  public static getDuration(config: AngularWipeConfiguration): number { return { ...AngularWipeStep.DefaultSettings, ...config }.duration }
+
   public static from(config: AngularWipeConfiguration): AngularWipeStep
   public static from(form: HTMLFormElement): AngularWipeStep
   public static from(form: JQuery<HTMLFormElement>): AngularWipeStep

@@ -7,21 +7,21 @@
 >
   <div class="flex0 drag-handle"><i class="fas fa-grip-lines"></i></div>
   <div><span class="link" data-action="configure">{{localize name}}</span></div>
-  <div>{{localize
-      "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.FORMAT"
-      label=label
-    }}</div>
-  {{#unless skipConfig}}
+  {{#if label}}
+    <div>{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.FORMAT" label=label}}</div>
+  {{/if}}
+  <div class="right-align">{{#if calculatedDuration}} {{formatDuration calculatedDuration}} {{/if}}</div>
+  {{#if skipConfig}}
+    <i class="fas fa-fw flex0"></i>
+  {{else}}
     <i
       class="fas fa-cogs fa-fw step-button flex0 link"
       data-action="configure"
       data-step="{{id}}"
-      title="{{localize
-        'BATTLETRANSITIONS.SCENECONFIG.BUTTONS.CONFIGURE'
-        name=name
-      }}"
-    ></i>
-  {{/unless}}
+      title="{{localize 'BATTLETRANSITIONS.SCENECONFIG.BUTTONS.CONFIGURE' name=name }}"
+      >
+      </i>
+  {{/if}}
   <i
     class="fas fa-trash fa-fw step-button flex0 link"
     data-action="remove"

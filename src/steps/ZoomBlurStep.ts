@@ -3,6 +3,8 @@ import { TransitionStep } from './TransitionStep';
 import { ZoomBlurConfiguration } from './types';
 
 export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
+  // #region Properties (7)
+
   public static DefaultSettings: ZoomBlurConfiguration = {
     id: "",
     type: "zoomblur",
@@ -13,12 +15,16 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     innerRadius: 0
   }
 
+  public static category = "warp";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon zoomblur fa-fw fas'></i>"
   public static key = "zoomblur";
   public static name = "ZOOMBLUR";
   public static template = "zoomblur-config";
-  public static category = "warp";
-  public static icon = "<i class='bt-icon zoomblur fa-fw fas'></i>"
+
+  // #endregion Properties (7)
+
+  // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: ZoomBlurConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ZoomBlurStep.template}.hbs`, {
@@ -53,6 +59,12 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     });
   }
 
+  public static getDuration(config: ZoomBlurConfiguration): number { return { ...ZoomBlurStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
+
+  // #region Public Methods (1)
+
   public async execute(container: PIXI.Container): Promise<void> {
     const config: ZoomBlurConfiguration = {
       ...ZoomBlurStep.DefaultSettings,
@@ -66,13 +78,13 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
       radius: -1,
       center: [window.innerWidth / 2, window.innerHeight / 2]
 
-
     }) as PIXI.Filter;
 
     this.addFilter(container, filter);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     await TweenMax.to(filter.uniforms, { uStrength: config.maxStrength, duration: config.duration / 1000, ease: config.easing || "none" });
-
   }
+
+  // #endregion Public Methods (1)
 }

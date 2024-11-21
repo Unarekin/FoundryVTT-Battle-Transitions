@@ -5,7 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { FireDissolveConfiguration } from "./types";
 
 export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> {
-  // #region Properties (5)
+  // #region Properties (7)
 
   public static DefaultSettings: FireDissolveConfiguration = {
     id: "",
@@ -16,16 +16,16 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
     version: "1.1.0"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon fire-dissolve fa-fw fas'></i>"
   public static key = "firedissolve";
   public static name = "FIREDISSOLVE";
   public static template = "firedissolve-config";
-  public static icon = "<i class='bt-icon fire-dissolve fa-fw fas'></i>"
-  public static category = "wipe";
 
-  // #endregion Properties (5)
+  // #endregion Properties (7)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: FireDissolveConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${FireDissolveStep.template}.hbs`, {
@@ -54,7 +54,9 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
     });
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: FireDissolveConfiguration): number { return { ...FireDissolveStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
 

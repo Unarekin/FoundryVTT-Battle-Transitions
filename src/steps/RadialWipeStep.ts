@@ -6,7 +6,7 @@ import { TransitionStep } from "./TransitionStep";
 import { RadialWipeConfiguration } from "./types";
 
 export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
-  // #region Properties (6)
+  // #region Properties (8)
 
   public readonly defaultSettings: Partial<RadialWipeConfiguration> = {
     duration: 1000,
@@ -26,16 +26,16 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon radial-wipe fa-fw fas'></i>"
   public static key = "radialwipe";
   public static name = "RADIALWIPE";
   public static template = "radialwipe-config";
-  public static icon = "<i class='bt-icon radial-wipe fa-fw fas'></i>"
-  public static category = "wipe";
 
-  // #endregion Properties (6)
+  // #endregion Properties (8)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: RadialWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${RadialWipeStep.template}.hbs`, {
@@ -67,7 +67,9 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     });
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: RadialWipeConfiguration): number { return { ...RadialWipeStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
 

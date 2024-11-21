@@ -5,9 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { WaveWipeConfiguration } from "./types";
 
 export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
-  // #region Properties (5)
-
-  public static template = "wavewipe-config";
+  // #region Properties (7)
 
   public static DefaultSettings: WaveWipeConfiguration = {
     id: "",
@@ -22,16 +20,16 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon wave-wipe fa-fw fas'></i>"
   public static key = "wavewipe";
   public static name: string = "WAVEWIPE";
-  public static icon = "<i class='bt-icon wave-wipe fa-fw fas'></i>"
-  public static category = "wipe";
+  public static template = "wavewipe-config";
 
-  // #endregion Properties (5)
+  // #endregion Properties (7)
 
-  // #region Public Static Methods (5)
-
+  // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: WaveWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${WaveWipeStep.template}.hbs`, {
@@ -62,10 +60,11 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
       serializedTexture,
       ...parseConfigurationFormElements(elem, "id", "label", "duration", "backgroundType", "backgroundColor", "easing", "direction")
     })
-
   }
 
-  // #endregion Public Static Methods (5)
+  public static getDuration(config: WaveWipeConfiguration): number { return { ...WaveWipeStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
 

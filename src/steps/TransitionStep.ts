@@ -104,5 +104,8 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
     await TweenMax.to(filter.uniforms, { progress: 1, duration: (this.config as unknown as AnimatedTransition).duration / 1000, ease: (this.config as unknown as AnimatedTransition).easing || "none" });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static getDuration(config: TransitionConfiguration, sequence: TransitionConfiguration[]): number | Promise<number> { return 0; }
+
   // #endregion Protected Methods (4)
 }

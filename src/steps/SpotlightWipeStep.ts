@@ -5,7 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { SpotlightWipeConfiguration } from "./types";
 
 export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration> {
-  // #region Properties (6)
+  // #region Properties (8)
 
   public readonly defaultSettings: Partial<SpotlightWipeConfiguration> = {
     duration: 1000,
@@ -26,16 +26,16 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon spotlight-wipe fa-fw fas'></i>"
   public static key = "spotlightwipe";
   public static name = "SPOTLIGHTWIPE";
   public static template = "spotlightwipe-config";
-  public static icon = "<i class='bt-icon spotlight-wipe fa-fw fas'></i>"
-  public static category = "wipe";
 
-  // #endregion Properties (6)
+  // #endregion Properties (8)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: SpotlightWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpotlightWipeStep.template}.hbs`, {
@@ -74,7 +74,9 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
     });
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: SpotlightWipeConfiguration): number { return { ...SpotlightWipeStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
 

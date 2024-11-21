@@ -4,7 +4,7 @@ import { TransitionStep } from "./TransitionStep";
 import { DiamondWipeConfiguration } from "./types";
 
 export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
-  // #region Properties (5)
+  // #region Properties (7)
 
   public static DefaultSettings: DiamondWipeConfiguration = {
     id: "",
@@ -19,16 +19,16 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon diamond-wipe fa-fw fas'></i>"
   public static key = "diamondwipe";
   public static name = "DIAMONDWIPE";
   public static template = "diamondwipe-config";
-  public static icon = "<i class='bt-icon diamond-wipe fa-fw fas'></i>"
-  public static category = "wipe";
 
-  // #endregion Properties (5)
+  // #endregion Properties (7)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: DiamondWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${DiamondWipeStep.template}.hbs`, {
@@ -59,7 +59,9 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
     })
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: DiamondWipeConfiguration): number { return { ...DiamondWipeStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
 

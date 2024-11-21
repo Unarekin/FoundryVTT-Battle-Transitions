@@ -1,8 +1,9 @@
 import { BattleTransition } from "../BattleTransition";
-import { addStepDialog, editStepDialog, confirm } from "../dialogs";
-import { InvalidTransitionError } from "../errors";
+import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from "../dialogs";
+import { InvalidTransitionError, NoPreviousStepError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
-import { getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
+import { sequenceDuration } from "../transitionUtils";
+import { formatDuration, getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { RepeatConfiguration, TransitionConfiguration, WaitConfiguration } from './types';
 import { WaitStep } from "./WaitStep";
@@ -85,6 +86,26 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
   }
 
   // #endregion Public Static Methods (7)
+
+  public static async getDuration(config: RepeatConfiguration, sequence: TransitionConfiguration[]): Promise<number> {
+    if (config.style === "previous") {
+      const index = sequence.findIndex(item => item.id === config.id);
+      if (index === -1) throw new InvalidTransitionError(RepeatStep.key);
+      else if (index === 0) throw new NoPreviousStepError();
+
+      const prev = sequence[index - 1];
+      const step = getStepClassByKey(prev.type);
+      if (!step) throw new InvalidTransitionError(typeof prev.type === "string" ? prev.type : typeof prev.type);
+      const res = step.getDuration(prev, sequence);
+      const duration = res instanceof Promise ? await res : res;
+      return ((duration + config.delay) * (config.iterations - 1)) + config.delay;
+
+    } else {
+      const duration = await sequenceDuration(config.sequence ?? []);
+      return duration + (config.delay * config.iterations);
+    }
+  }
+
 
   // #region Public Methods (2)
 
@@ -215,11 +236,19 @@ async function upsertStepButton(html: JQuery<HTMLElement>, config: TransitionCon
   const step = getStepClassByKey(config.type);
   if (!step) throw new InvalidTransitionError(config.type);
 
+  const outerSequence = [...buildTransitionFromForm(html), config];
+  const durationRes = step.getDuration(config, outerSequence);
+  const calculatedDuration = (durationRes instanceof Promise) ? (await durationRes) : durationRes;
+
+  const totalDuration = await sequenceDuration(outerSequence);
+  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+
   const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
     ...step.DefaultSettings,
     ...config,
     name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
     description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
+    calculatedDuration,
     type: step.key,
     flag: JSON.stringify({
       ...step.DefaultSettings,

@@ -67,7 +67,22 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
     })
   }
 
+
   // #endregion Public Static Methods (6)
+
+  public static getDuration(config: VideoConfiguration): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      const vid = document.createElement("video");
+      vid.onloadedmetadata = () => { resolve(Math.round(vid.duration * 1000)); };
+      vid.onerror = (e, src, line, col, err) => {
+        if (err) reject(err);
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        else reject(new Error(e.toString()));
+      };
+
+      vid.src = config.file;
+    });
+  }
 
   // #region Public Methods (3)
 

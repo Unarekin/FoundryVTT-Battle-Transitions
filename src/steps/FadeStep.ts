@@ -5,7 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { FadeConfiguration } from "./types";
 
 export class FadeStep extends TransitionStep<FadeConfiguration> {
-  // #region Properties (5)
+  // #region Properties (7)
 
   public static DefaultSettings: FadeConfiguration = {
     id: "",
@@ -18,16 +18,16 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
     easing: "none"
   }
 
+  public static category = "effect";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon fade fa-fw fas'></i>"
   public static key = "fade";
   public static name = "FADE";
   public static template = "fade-config";
-  public static icon = "<i class='bt-icon fade fa-fw fas'></i>"
-  public static category = "effect";
 
-  // #endregion Properties (5)
+  // #endregion Properties (7)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: FadeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${FadeStep.template}.hbs`, {
@@ -58,7 +58,9 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
     })
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: FadeConfiguration): number { return { ...FadeStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
 

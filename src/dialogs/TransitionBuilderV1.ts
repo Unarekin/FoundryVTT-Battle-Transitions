@@ -1,7 +1,8 @@
 import { SceneChangeConfiguration, TransitionConfiguration } from "../steps";
-import { getStepClassByKey, localize } from "../utils";
+import { formatDuration, getStepClassByKey, localize } from "../utils";
 import { InvalidSceneError, InvalidTransitionError } from "../errors";
 import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from "./functions";
+import { sequenceDuration } from "../transitionUtils";
 
 export class TransitionBuilderV1 {
   static async prompt(scene?: Scene): Promise<TransitionConfiguration[] | null> {
@@ -99,12 +100,20 @@ async function upsertStepButton(dialog: Dialog, html: JQuery<HTMLElement>, confi
   const step = getStepClassByKey(config.type);
   if (!step) throw new InvalidTransitionError(config.type);
 
+  const sequence = [...buildTransitionFromForm(html), config];
+  const durationRes = step.getDuration(config, sequence);
+  const duration = (durationRes instanceof Promise) ? (await durationRes) : durationRes;
+
+  const totalDuration = await sequenceDuration(sequence);
+  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+
   const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
     ...step.DefaultSettings,
     ...config,
     name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
     description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
     type: step.key,
+    calculatedDuration: duration,
     skipConfig: step.skipConfig,
     flag: JSON.stringify({
       ...step.DefaultSettings,

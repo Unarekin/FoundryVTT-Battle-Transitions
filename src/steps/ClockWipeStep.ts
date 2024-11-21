@@ -6,7 +6,7 @@ import { TransitionStep } from "./TransitionStep";
 import { ClockWipeConfiguration } from "./types";
 
 export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
-  // #region Properties (5)
+  // #region Properties (7)
 
   public static DefaultSettings: ClockWipeConfiguration = {
     id: "",
@@ -22,16 +22,16 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon clock-wipe fa-fw fas'></i>"
   public static key = "clockwipe"
   public static name = "CLOCKWIPE";
   public static template = "clockwipe-config";
-  public static icon = "<i class='bt-icon clock-wipe fa-fw fas'></i>"
-  public static category = "wipe";
 
-  // #endregion Properties (5)
+  // #endregion Properties (7)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: ClockWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ClockWipeStep.template}.hbs`, {
@@ -70,7 +70,9 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     })
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: ClockWipeConfiguration): number { return { ...ClockWipeStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
 

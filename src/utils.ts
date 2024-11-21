@@ -532,3 +532,30 @@ export async function timeout(time: number, err?: Error): Promise<void> {
     }, time)
   });
 }
+
+export function formatDuration(duration: number): string {
+  return localize(`BATTLETRANSITIONS.FORMATTERS.MILLISECONDS`, { value: duration.toLocaleString() });
+}
+
+// function parseDuration(duration: number) {
+//   return {
+//     days: Math.trunc(duration / 86400000),
+//     hours: Math.trunc(duration / 3600000) % 24,
+//     minutes: Math.trunc(duration / 60000) % 60,
+//     seconds: Math.trunc(duration / 1000) % 60,
+//     ms: Math.trunc(duration) % 1000
+//   }
+// }
+
+// export function formatDuration(duration: number): string {
+//   const parsed = parseDuration(duration);
+
+//   const output: number[] = [
+//     ...(parsed.days ? [parsed.days] : []),
+//     ...(parsed.hours || parsed.days ? [parsed.hours] : []),
+//     parsed.minutes,
+//     parsed.seconds
+//   ];
+
+//   return `${output.map(item => item.toString().padStart(2, "0")).join(":")}${parsed.ms ? `.${parsed.ms.toString().padEnd(3, "0")}` : ''}`;
+// }

@@ -4,6 +4,8 @@ import { TransitionStep } from './TransitionStep';
 import { SpiralWipeConfiguration } from './types';
 
 export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
+  // #region Properties (7)
+
   public static DefaultSettings: SpiralWipeConfiguration = {
     id: "",
     type: "spiralwipe",
@@ -18,13 +20,16 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
     backgroundImage: "",
     backgroundColor: "#00000000"
   };
-
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = `<i class="fas fa-fw fa-arrows-spin"></i>`
   public static key = "spiralwipe";
   public static name = "SPIRALWIPE";
   public static template = "spiralwipe-config";
-  public static category = "wipe";
-  public static icon = `<i class="fas fa-fw fa-arrows-spin"></i>`
+
+  // #endregion Properties (7)
+
+  // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: SpiralWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpiralWipeStep.template}.hbs`, {
@@ -64,6 +69,12 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
     })
   }
 
+  public static getDuration(config: SpiralWipeConfiguration): number { return { ...SpiralWipeStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
+
+  // #region Public Methods (1)
+
   public async execute(container: PIXI.Container): Promise<void> {
     const config: SpiralWipeConfiguration = {
       ...SpiralWipeStep.DefaultSettings,
@@ -75,4 +86,6 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
+
+  // #endregion Public Methods (1)
 }
