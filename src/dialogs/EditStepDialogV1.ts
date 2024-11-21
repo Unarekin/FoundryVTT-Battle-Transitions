@@ -1,15 +1,18 @@
+
 import { InvalidTransitionError } from '../errors';
 import { TransitionConfiguration } from '../steps/types';
 import { getStepClassByKey, localize } from '../utils';
 
 export class EditStepDialogV1 {
-  static async prompt(config: TransitionConfiguration): Promise<TransitionConfiguration | null> {
+  static async prompt(config: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<TransitionConfiguration | null> {
     const step = getStepClassByKey(config.type);
     if (!step) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
 
-    const content = await step.RenderTemplate(config);
+    const content = await step.RenderTemplate(config, oldScene, newScene);
 
     return new Promise<TransitionConfiguration | null>(resolve => {
+
+
       const dialog = new Dialog({
         title: localize(`BATTLETRANSITIONS.DIALOGS.EDITSTEP.TITLE`, { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) }),
         content,
@@ -35,6 +38,13 @@ export class EditStepDialogV1 {
         render: (html: HTMLElement | JQuery<HTMLElement>) => {
           addEventListeners(dialog, $(html));
           step.addEventListeners($(html), config);
+          const CLOSE_HOOK_ID = Hooks.on("closeDialog", (closed: Dialog) => {
+            if (closed.id === dialog.id) {
+              Hooks.off("closeDialog", CLOSE_HOOK_ID);
+              step.editDialogClosed(html);
+            }
+          })
+
         }
       });
 

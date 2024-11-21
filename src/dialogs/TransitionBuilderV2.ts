@@ -6,7 +6,8 @@ import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from 
 export class TransitionBuilderV2 {
   static async prompt(scene?: Scene): Promise<TransitionConfiguration[] | null> {
     const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/dialogs/TransitionBuilder.hbs`, {
-      scene: scene?.id,
+      newScene: scene?.id,
+      oldScene: game.scenes?.current?.id ?? "",
       scenes: game.scenes?.contents.map(scene => ({ id: scene.id, name: scene.name })) ?? []
     });
 
@@ -81,8 +82,11 @@ async function addStep(dialog: foundry.applications.api.DialogV2, html: JQuery<H
 
   let config: TransitionConfiguration | null = null;
 
+  const oldScene = html.find("#oldScene").val() as string ?? "";
+  const newScene = html.find("#newScene").val() as string ?? "";
+
   if (!step.skipConfig) {
-    config = await editStepDialog(step.DefaultSettings);
+    config = await editStepDialog(step.DefaultSettings, game.scenes?.get(oldScene), game.scenes?.get(newScene));
   } else {
     config = {
       ...step.DefaultSettings,

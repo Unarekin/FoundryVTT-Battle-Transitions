@@ -1,8 +1,8 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
-import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
+import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
@@ -256,7 +256,7 @@ export class BattleTransition {
 
   // #endregion Public Static Methods (7)
 
-  // #region Public Methods (44)
+  // #region Public Methods (46)
 
   /**
    * Adds an angular wipe, mimicking the battle with Brock in Pokemon Fire Red
@@ -354,6 +354,19 @@ export class BattleTransition {
       burnSize,
       easing
     } as FireDissolveConfiguration)
+    return this;
+  }
+
+  /**
+   * Removes any active transition effects from the overlay.
+   */
+  public clearEffects(): this {
+    const step = getStepClassByKey("cleareffects");
+    if (!step) throw new InvalidTransitionError("cleareffects");
+    this.#sequence.push({
+      ...step.DefaultSettings,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 
@@ -535,7 +548,7 @@ export class BattleTransition {
     return this;
   }
 
-  /**
+  /*
    * Queues up a set of sequences to run in parallel
    * @param {TransitionSequenceCallback[]} callbacks - Set of {@link TransitionSequenceCallback}s to build sequences to be run in parallel.  Do NOT call `.execute` at the end of these sequences.
    * @returns 
@@ -609,19 +622,6 @@ export class BattleTransition {
   }
 
   /**
-   * Removes any active transition effects from the overlay.
-   */
-  public clearEffects(): this {
-    const step = getStepClassByKey("cleareffects");
-    if (!step) throw new InvalidTransitionError("cleareffects");
-    this.#sequence.push({
-      ...step.DefaultSettings,
-      id: foundry.utils.randomID()
-    });
-    return this;
-  }
-
-  /**
    * Repeats the previous transition step a specified number of times
    * @param {number} iterations - Number of times to repeat
    */
@@ -655,7 +655,6 @@ export class BattleTransition {
 
     const step = getStepClassByKey("repeat");
     if (!step) throw new InvalidTransitionError("repeat");
-
 
     if (callback) {
       const transition = new BattleTransition();
@@ -864,6 +863,56 @@ export class BattleTransition {
     return this;
   }
 
+  /**
+   * Zoom into a location on the overlay
+   * 
+   * @remarks This effect does not scale the overlay but instead it multiplies the UV coordinates of the overlying texture.
+   * As such, the actual values for zoom amount operates in reverse fo what you may expect.
+   * 
+   * A zoom value of 1 retains the original size.  Values less than one will zoom in, and greater than 1 will zoom out.
+   * The maximum distance the overlay can zoom out before the displayed size is 0x0 is dependent on the screen resolution
+   * of the viewer, so it is recommended to choose a value that looks "close enough" and possibly fade it out at the end
+   * to make its disappearance smoother.
+   * @param {number} amount - Relative amount to zoom.  See remarks.
+   * @param {number} [duration=1000] - Duration, in milliseconds, that the effect should take to complete
+   * @param {ZoomArg} [arg=[0.5, 0.5]] - {@link ZoomArg} representing the location to center the zoom.
+   * @param {boolean} [clampBounds=false] - If true, will prevent the texture from leaving the boundaries of its containing sprite when zooming out.
+   * @param {TextureLike} [bg="transparent"] - {@link TextureLike} for the background displayed when zooming out if clampBounds is false.
+   * @param {Easing} [easing="none"] - {@link Easing} to use when animating the transition.
+   * @returns 
+   */
+  public zoom(amount: number, duration: number = 1000, arg: ZoomArg = [0.5, 0.5], clampBounds: boolean = false, bg: TextureLike = "transparent", easing: Easing = "none"): this {
+    const step = getStepClassByKey("zoom");
+    if (!step) throw new InvalidTransitionError("zoom");
+
+    const serializedTexture = serializeTexture(bg);
+    const config: ZoomConfiguration = {
+      ...(step.DefaultSettings as ZoomConfiguration),
+      amount,
+      duration,
+      clampBounds,
+      serializedTexture,
+      easing
+    };
+
+    if (Array.isArray(arg)) {
+      config.target = arg;
+    } else if (typeof arg === "string" && fromUuidSync(arg)) {
+      config.target = arg;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    } else if (typeof (arg as any).uuid === "string") {
+      // A UUID directly
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      config.target = (arg as any).uuid as string;
+    } else {
+      throw new InvalidTargetError(arg);
+    }
+
+    this.#sequence.push(config);
+
+    return this;
+  }
+
   public zoomBlur(duration: number = 1000, maxStrength: number = 0.5, innerRadius: number = 0): this {
     this.#sequence.push({
       type: "zoomblur",
@@ -875,7 +924,7 @@ export class BattleTransition {
     return this;
   }
 
-  // #endregion Public Methods (44)
+  // #endregion Public Methods (46)
 }
 
 // #endregion Classes (1)

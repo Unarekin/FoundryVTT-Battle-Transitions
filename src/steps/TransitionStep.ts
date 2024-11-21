@@ -32,12 +32,8 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   // #region Public Static Methods (7)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/require-await
-  public static async RenderTemplate(config?: TransitionConfiguration): Promise<string> {
+  public static async RenderTemplate(config?: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
     throw new NotImplementedError();
-    // return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${TransitionStep.template}.hbs`, {
-    //   ...TransitionStep.DefaultSettings,
-    //   ...(config ? config : {})
-    // });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -62,6 +58,8 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static addEventListeners(element: HTMLElement | JQuery<HTMLElement>, config?: TransitionConfiguration): void { }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static editDialogClosed(element: HTMLElement | JQuery<HTMLElement>): void { }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public prepare(sequence?: TransitionSequence): Promise<void> | void { }

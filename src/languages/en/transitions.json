@@ -132,6 +132,10 @@
       "DESCRIPTION": "A wavy bilinear wipe.",
       "NAME": "Wave Wipe"
     },
+    "ZOOM": {
+      "DESCRIPTION": "Zoom in on some point on the screen.",
+      "NAME": "Zoom"
+    },
     "ZOOMBLUR": {
       "DESCRIPTION": "Simultaneously zoom in on and blur the screen.",
       "NAME": "Zoom & Blur"

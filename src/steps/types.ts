@@ -182,3 +182,14 @@ export type BarWipeConfiguration = WipeTransition & ({
   direction: "vertical" | "horizontal";
   bars: number;
 })
+
+
+
+export type ZoomArg = [number, number] | string | Token | TokenDocument | Tile | TileDocument | Note | NoteDocument | Drawing | DrawingDocument;
+
+export type ZoomConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & BackgroundTransition & ({
+  amount: number;
+  clampBounds: boolean;
+  target: [number, number] | string;
+});
+

@@ -3,11 +3,11 @@ import { TransitionConfiguration } from "../steps";
 import { getStepClassByKey, localize } from "../utils";
 
 export class EditStepDialogV2 {
-  static async prompt(config: TransitionConfiguration): Promise<TransitionConfiguration | null> {
+  static async prompt(config: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<TransitionConfiguration | null> {
     const step = getStepClassByKey(config.type);
     if (!step) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
 
-    const content = await step.RenderTemplate(config);
+    const content = await step.RenderTemplate(config, oldScene, newScene);
     return new Promise<TransitionConfiguration | null>(resolve => {
       const dialog = new foundry.applications.api.DialogV2({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -42,6 +42,13 @@ export class EditStepDialogV2 {
           dialog.position.width = 500;
           addEventListeners(dialog, $(dialog.element));
           step.addEventListeners($(dialog.element), config);
+
+          const CLOSE_HOOK_ID = Hooks.on("closeDialogV2", (closedDialog: foundry.applications.api.DialogV2) => {
+            if (closedDialog.id === dialog.id) {
+              Hooks.off("closeDialogV2", CLOSE_HOOK_ID);
+              step.editDialogClosed($(dialog.element));
+            }
+          });
         })
     });
   }

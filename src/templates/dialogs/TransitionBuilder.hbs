@@ -1,6 +1,7 @@
-{{#if scene}}
-<input type="hidden" name="scene" id="scene" value="{{scene}}">
+{{#if newScene}}
+  <input type="hidden" name="newScene" id="newScene" value="{{newScene}}">
 {{else}}
-{{> "/modules/battle-transitions/templates/scene-selector.hbs"}}
+  {{> "/modules/battle-transitions/templates/scene-selector.hbs"}}
 {{/if}}
+{{#if oldScene}}<input type="hidden" name="oldScene" id="oldScene" value="{{oldScene}}">{{/if}}
 {{> "/modules/battle-transitions/templates/transition-steps.hbs" this}}

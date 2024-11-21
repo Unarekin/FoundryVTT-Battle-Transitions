@@ -6,6 +6,7 @@ export * from './InvalidElementError';
 export * from './InvalidMacroError';
 export * from './InvalidSceneError';
 export * from './InvalidSoundError';
+export * from './InvalidTargetError';
 export * from './InvalidTextureError';
 export * from './InvalidTransitionError';
 export * from './InvalidVersionError';

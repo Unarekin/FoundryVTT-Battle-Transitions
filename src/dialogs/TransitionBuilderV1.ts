@@ -7,7 +7,8 @@ export class TransitionBuilderV1 {
   static async prompt(scene?: Scene): Promise<TransitionConfiguration[] | null> {
 
     const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/dialogs/TransitionBuilder.hbs`, {
-      scene: scene?.id,
+      newScene: scene?.id,
+      oldScene: game.scenes?.current?.id ?? "",
       scenes: game.scenes?.contents.map(scene => ({ id: scene.id, name: scene.name })) ?? []
     });
 
@@ -27,7 +28,7 @@ export class TransitionBuilderV1 {
               const elem = $(html);
               const sequence = buildTransitionFromForm(elem);
 
-              const sceneId = scene ? scene.id : elem.find("#scene").val() as string;
+              const sceneId = scene ? scene.id : elem.find("#newScene").val() as string;
               if (!sceneId) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
               const step = getStepClassByKey("scenechange");
               if (!step) throw new InvalidTransitionError("scenechange");
@@ -141,7 +142,10 @@ function addStepEventListeners(dialog: Dialog, html: JQuery<HTMLElement>, button
 
   // Configure button
   button.find("[data-action='configure']").on("click", () => {
-    editStepDialog(config)
+    const oldScene = html.find("#oldScene").val() as string ?? "";
+    const newScene = html.find("#newScene").val() as string ?? "";
+
+    editStepDialog(config, game.scenes?.get(oldScene), game.scenes?.get(newScene))
       .then(newConfig => {
         if (newConfig) {
           // Replace button

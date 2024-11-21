@@ -18,6 +18,7 @@ import { SpiralShutterFilter } from './SpiralShutter/SpiralShutterFilter';
 import { SpiralWipeFilter } from './SpiralWipe/SpiralWipeFilter';
 import { HueShiftFilter } from './HueShift/HueShiftFilter';
 import { BarWipeFilter } from "./BarWipe/BarWipeFilter";
+import { ZoomFilter } from './Zoom/ZoomFilter';
 
 
 export {
@@ -40,7 +41,8 @@ export {
   InvertFilter,
   SpiralWipeFilter,
   HueShiftFilter,
-  BarWipeFilter
+  BarWipeFilter,
+  ZoomFilter
 }
 
 export const filters = {
@@ -64,5 +66,6 @@ export const filters = {
   SpiralWipeFilter,
   SpiralShutterFilter,
   HueShiftFilter,
-  BarWipeFilter
+  BarWipeFilter,
+  ZoomFilter
 };

@@ -32,4 +32,5 @@ export * from './VideoStep';
 export * from './WaitStep';
 export * from './WaveWipeStep';
 export * from './ZoomBlurStep';
+export * from './ZoomStep';
 export * from './types';

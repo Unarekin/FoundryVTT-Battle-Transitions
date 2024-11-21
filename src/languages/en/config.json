@@ -199,6 +199,63 @@
           "LABEL": "File"
         }
       },
+      "ZOOM": {
+        "AMOUNT": {
+          "LABEL": "Zoom Amount",
+          "HINT": "Amount by which to multiply overlay UVs.  1 = normal size, <1 = closer, >1 = further away."
+        },
+        "TARGET": {
+          "LABEL": "Target",
+          "HINT": "Screen point or scene element on which to center the zoom effect."
+        },
+        "CLAMPBOUNDS": {
+          "LABEL": "Clamp Bounds",
+          "HINT": "Clamp the edges of the overlay texture to the edge of the screen when zooming out."
+        },
+        "TARGETTYPE": {
+          "LABEL": "Target Type",
+          "POINT": {
+            "LABEL": "Screen Point",
+            "HINT": "A normalized point on the screen.  (0,0) is the top left, (1,1) is the top right.  (0.5,0.5) is the center.",
+            "X": "X",
+            "Y": "Y"
+          },
+          "TOKEN": {
+            "LABEL": "Token in Current Scene",
+            "HINT": "Zoom based on the mid point of a token in the current scene.",
+            "SELECT": "Select Token",
+            "SELECTHINT": "Please select a token to use for the target of this effect."
+          },
+          "TILE": {
+            "LABEL": "Tile in Current Scene",
+            "HINT": "Zoom based on the mid point of a tile in the current scene.",
+            "SELECT": "Select Tile",
+            "SELECTHINT": "Please select a tile to use for the target of this effect."
+          },
+          "NOTE": {
+            "LABEL": "Journal Note in Current Scene",
+            "HINT": "Zoom based on the location of a journal note in the current scene",
+            "SELECT": "Select Map Note",
+            "SELECTHINT": "Please select a map note to use for the target of this effect."
+          },
+          "DRAWING": {
+            "LABEL": "Drawing in Current Scene",
+            "HINT": "Zoom based on the mid point of a drawing in the current scene.",
+            "NOTE": "Select Drawing",
+            "SELECT": "Select Drawing",
+            "SELECTHINT": "Please select a drawing to use for the target of this effect.",
+            "SHAPES": {
+              "RECTANGLE": "Rectangle",
+              "ELLIPSE": "Ellipse",
+              "FREEHAND": "Freehand",
+              "TEXT": "Text",
+              "POLYGON": "Polygon",
+              "CIRCLE": "Circle",
+              "UNKNOWN": "Unknown"
+            }
+          }
+        }
+      },
       "ZOOMBLUR": {
         "INNERRADIUS": {
           "HINT": "Radius of a circle in the center of the screen that is not blurred.",
