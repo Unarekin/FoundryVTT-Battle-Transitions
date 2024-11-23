@@ -116,7 +116,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
       source.currentTime = 0;
 
       this.#videoContainer = videoContainer;
-      container.parent.addChild(videoContainer);
+      container.addChild(videoContainer);
 
       source.addEventListener("ended", () => {
         if (config.clear) setTimeout(() => { sprite.destroy(); }, 500);
