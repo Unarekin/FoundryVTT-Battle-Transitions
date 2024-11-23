@@ -1,5 +1,5 @@
 import { NotImplementedError } from '../errors';
-import { TransitionSequence } from '../interfaces';
+import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { RestoreOverlayConfiguration } from './types';
@@ -52,9 +52,8 @@ export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfigurati
 
   // #region Public Methods (1)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public execute(container: PIXI.Container, sequence: TransitionSequence): void {
-    container.alpha = 1;
+  public execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> | void {
+    prepared.overlay.forEach(child => child.alpha = 1);
   }
 
   // #endregion Public Methods (1)
