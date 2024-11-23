@@ -82,6 +82,13 @@ export class ConfigurationHandler {
   public static GetSceneConfiguration(scene: Scene): SceneConfiguration {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const flags = scene.flags[__MODULE_ID__] as any;
+    if (!flags) {
+      return {
+        autoTrigger: false,
+        version: DataMigration.SceneConfiguration.NewestVersion,
+        sequence: []
+      }
+    }
     // Check for data migration
     if (DataMigration.SceneConfiguration.NeedsMigration(flags)) return DataMigration.SceneConfiguration.Migrate(flags);
     else return flags as SceneConfiguration;
