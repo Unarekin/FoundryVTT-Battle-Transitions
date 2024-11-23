@@ -28,8 +28,10 @@ export class SceneConfigV12 extends SceneConfig {
 function addEventListeners(app: SceneConfig, html: JQuery<HTMLElement>) {
   // Add step button
   html.find(`button[data-action="add-step"]`).on("click", e => {
-    e.preventDefault();
-    void addStep(app, html);
+    if ($(e.currentTarget).is(":visible")) {
+      e.preventDefault();
+      void addStep(app, html);
+    }
   });
 
   // Drag reorder

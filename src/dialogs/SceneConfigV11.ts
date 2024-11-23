@@ -20,8 +20,10 @@ export class SceneConfigV11 extends SceneConfig {
 
 function addEventListeners(app: SceneConfig, html: JQuery<HTMLElement>) {
   html.find("button[data-action='add-step']").on("click", e => {
-    e.preventDefault();
-    void addStep(app, html);
+    if ($(e.currentTarget).is(":visible")) {
+      e.preventDefault();
+      void addStep(app, html);
+    }
   });
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
