@@ -8,6 +8,7 @@ export * from './InvalidSceneError';
 export * from './InvalidSoundError';
 export * from './InvalidTargetError';
 export * from './InvalidTextureError';
+export * from './InvalidTipLocationError';
 export * from './InvalidTransitionError';
 export * from './InvalidVersionError';
 export * from './LocalizedError';

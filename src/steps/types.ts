@@ -194,3 +194,20 @@ export type ZoomConfiguration = TransitionConfiguration & DurationTransition & A
   target: [number, number] | string;
 });
 
+
+
+export type LoadingTipSource = "string" | "RollTable";
+export type LoadingTipLocation = "topleft" | "topcenter" | "topright" | "center" | "bottomright" | "bottomcenter" | "bottomleft";
+
+export type LoadingTipConfiguration = TransitionConfiguration & ({
+  message?: string;
+  source: LoadingTipSource;
+  table?: string;
+  duration: number;
+  randomize?: boolean;
+  location: LoadingTipLocation;
+  localize: boolean;
+  fontFamily: string;
+  fontColor: PIXI.ColorSource;
+  fontSize: number;
+});

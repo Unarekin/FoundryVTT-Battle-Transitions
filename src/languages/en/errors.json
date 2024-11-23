@@ -13,6 +13,7 @@
       "INVALIDSOUND": "Invalid sound: {sound}",
       "INVALIDTARGET": "Invalid target: {item}",
       "INVALIDTEXTURE": "Invalid texture provided.",
+      "INVALIDTIPLOCATION": "Invalid loading tip location: {location}",
       "INVALIDTRANSITION": "Invalid transition: {name}",
       "INVALIDVERSION": "Invalid data version: {version}",
       "NEWERVERSION": "Data appears to be from a newer version: {version}",

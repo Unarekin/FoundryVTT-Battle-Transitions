@@ -8,6 +8,10 @@
       "DESCRIPTION": "A wipe that consists of a series of bars from alternating sides of the screen.",
       "NAME": "Bar Wipe"
     },
+    "LOADINGTIP": {
+      "NAME": "Loading Tip",
+      "DESCRIPTION": "Show text-based loading screen tips."
+    },
     "BILINEARWIPE": {
       "DESCRIPTION": "Two linear wipes along a horizontal, vertical, or diagonal axis originating from either the center or outer edges of the screen.",
       "NAME": "Bilinear Wipe"
