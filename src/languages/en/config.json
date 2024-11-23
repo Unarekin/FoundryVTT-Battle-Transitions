@@ -206,6 +206,9 @@
         }
       },
       "ZOOM": {
+        "TARGETDIALOG": {
+          "TITLE": "Zoom Target"
+        },
         "AMOUNT": {
           "HINT": "Amount by which to multiply overlay UVs.  1 = normal size, <1 = closer, >1 = further away.",
           "LABEL": "Zoom Amount"
@@ -219,6 +222,10 @@
           "LABEL": "Target"
         },
         "TARGETTYPE": {
+          "PROMPT": {
+            "LABEL": "Ask Before Transition",
+            "HINT": "Prompt the target of this zoom effect at the start of the transition."
+          },
           "DRAWING": {
             "HINT": "Zoom based on the mid point of a drawing in the current scene.",
             "LABEL": "Drawing in Current Scene",

@@ -239,18 +239,21 @@ export class BattleTransition {
     }
   }
 
-  public static async validateSequence(sequence: TransitionConfiguration[]): Promise<boolean | Error> {
+  public static async validateSequence(sequence: TransitionConfiguration[]): Promise<TransitionConfiguration[] | Error> {
     try {
+      const validated: TransitionConfiguration[] = [];
       for (const step of sequence) {
         const handler = getStepClassByKey(step.type);
         // const handler = BattleTransition.StepTypes[step.type];
         if (!handler) throw new InvalidTransitionError(step.type);
+
         const valid = await handler.validate(step);
         if (valid instanceof Error) return valid;
+        validated.push(valid);
       }
-      return true;
+      return validated;
     } catch (err) {
-      throw err as Error;
+      return err as Error;
     }
   }
 

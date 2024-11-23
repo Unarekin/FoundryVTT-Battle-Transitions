@@ -1,0 +1,106 @@
+<label>{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGET.LABEL"}}</label>
+<p class="notes">{{localize
+    "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGET.HINT"
+  }}</p>
+
+<select name="targetType" id="targetType" value="{{targetType}}">
+  {{selectOptions targetTypeSelect localize=true selected=targetType}}
+</select>
+
+<section data-target-type="point">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.POINT.HINT"
+    }}</p>
+  <div class="form-group">
+    <label for="pointX">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.POINT.X"
+      }}</label>
+    <input
+      type="number"
+      min="0"
+      max="1"
+      value="{{pointX}}"
+      name="pointX"
+      id="pointX"
+    />
+    <label for="pointY">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.POINT.Y"
+      }}</label>
+    <input
+      type="number"
+      min="0"
+      max="1"
+      value="{{pointY}}"
+      name="pointY"
+      id="pointY"
+    />
+  </div>
+</section>
+<section data-target-type="prompt">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.PROMPT.HINT"
+    }}</p>
+</section>
+<section data-target-type="token">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TOKEN.HINT"
+    }}</p>
+  {{#if oldScene}}
+    <select name="selectedToken" id="selectedToken">
+      <option value=""></option>
+      {{selectOptions tokenSelect selected=target localize=false}}
+    </select>
+    <button data-action="select-token">
+      <i class="fas fa-fw fa-spinner fa-spin-pulse" style="display:none"></i>
+      {{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TOKEN.SELECT"}}
+    </button>
+  {{/if}}
+</section>
+<section data-target-type="tile">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TILE.HINT"
+    }}</p>
+  {{#if oldScene}}
+    <select name="selectedTile" id="selectedTile">
+      <option value=""></option>
+      {{selectOptions tileSelect selected=target localize=false}}
+    </select>
+    <button data-action="select-tile">
+      <i class="fas fa-fw fa-spinner fa-spin-pulse" style="display:none"></i>
+      {{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TILE.SELECT"}}
+    </button>
+  {{/if}}
+</section>
+<section data-target-type="drawing">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.HINT"
+    }}</p>
+  {{#if oldScene}}
+    <select name="selectedDrawing" id="selectedDrawing">
+      <option value=""></option>
+      {{selectOptions drawingSelect selected=target localize=true}}
+    </select>
+    <button data-action="select-drawing">
+      <i class="fas fa-fw fa-spinner fa-spin-pulse" style="display:none"></i>
+      {{localize
+        "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.SELECT"
+      }}
+    </button>
+  {{/if}}
+</section>
+<section data-target-type="note">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.NOTE.HINT"
+    }}</p>
+  {{#if oldScene}}
+    <select name="selectedNote" id="selectedNote">
+      <option value=""></option>
+      {{selectOptions noteSelect selected=target localize=false}}
+    </select>
+    <button data-action="select-note">
+      <i class="fas fa-fw fa-spinner fa-spin-pulse" style="display:none"></i>
+      {{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.NOTE.SELECT"}}
+    </button>
+  {{/if}}
+</section>
+<p class="notes"></p>

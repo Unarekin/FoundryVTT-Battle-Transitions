@@ -47,9 +47,8 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
     throw new NotImplementedError();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public static validate(config: TransitionConfiguration): Promise<boolean | Error> | boolean | Error {
-    return true;
+  public static validate(config: TransitionConfiguration): Promise<TransitionConfiguration | Error> | TransitionConfiguration | Error {
+    return config;
   }
 
   // #endregion Public Static Methods (7)
@@ -70,8 +69,6 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public teardown(container: PIXI.Container): Promise<void> | void { }
-
-  public validate(): Promise<boolean | Error> | boolean | Error { return true }
 
   // #endregion Public Methods (5)
 

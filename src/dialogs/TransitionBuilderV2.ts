@@ -154,7 +154,11 @@ function addStepEventListeners(dialog: foundry.applications.api.DialogV2, html: 
   });
 
   button.find("[data-action='configure']").on("click", () => {
-    editStepDialog(config)
+
+    const oldScene = html.find("#oldScene").val() as string ?? "";
+    const newScene = html.find("#newScene").val() as string ?? "";
+
+    editStepDialog(config, game.scenes?.get(oldScene), game.scenes?.get(newScene))
       .then(newConfig => {
         if (newConfig) return upsertStepButton(dialog, html, newConfig);
       }).catch((err: Error) => {

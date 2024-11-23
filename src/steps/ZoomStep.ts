@@ -1,3 +1,4 @@
+import { customDialog } from "../dialogs";
 import { InvalidTargetError } from "../errors";
 import { ZoomFilter } from "../filters";
 import { createColorTexture, generateEasingSelectOptions, localize, parseConfigurationFormElements } from "../utils";
@@ -39,14 +40,21 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
   // // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static async RenderTemplate(config?: ZoomConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
     let targetType: string = "point";
-    if (config && typeof config.target === "string") {
+    if (config && typeof config.target === "string" && config.target) {
       const parsed = foundry.utils.parseUuid ? foundry.utils.parseUuid(config.target) : parseUuid(config.target);
       if (Array.isArray(parsed.embedded)) targetType = parsed.embedded[0].toLowerCase();
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       else targetType = ((parsed as any).type as string ?? "").toLowerCase()
     } else if (config && Array.isArray(config.target)) {
       targetType = "point";
+    } else if (config && typeof config.target === "string" && !config.target) {
+      targetType = "prompt";
     }
+
+    const hasTokens = !!oldScene?.tokens.contents.length;
+    const hasTiles = !!oldScene?.tiles.contents.length;
+    const hasNotes = !!oldScene?.notes.contents.length;
+    const hasDrawings = !!oldScene?.drawings.contents.length;
 
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ZoomStep.template}.hbs`, {
       ...ZoomStep.DefaultSettings,
@@ -58,11 +66,16 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       targetType,
       targetTypeSelect: {
         point: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.POINT.LABEL",
-        token: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TOKEN.LABEL",
-        tile: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TILE.LABEL",
-        note: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.NOTE.LABEL",
-        drawing: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.LABEL"
+        prompt: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.PROMPT.LABEL",
+        ...(hasTokens ? { token: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TOKEN.LABEL" } : {}),
+        ...(hasTiles ? { tile: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TILE.LABEL" } : {}),
+        ...(hasNotes ? { note: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.NOTE.LABEL" } : {}),
+        ...(hasDrawings ? { drawing: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.LABEL" } : {}),
       },
+      hasTokens,
+      hasTiles,
+      hasNotes,
+      hasDrawings,
       tokenSelect: oldScene ? Object.fromEntries(oldScene.tokens.contents.map(token => [token.uuid, token.name])) : {},
       tileSelect: oldScene ? Object.fromEntries(oldScene.tiles.contents.map(tile => [tile.uuid, tile.texture.src])) : {},
       noteSelect: oldScene ? Object.fromEntries(oldScene.notes.contents.map(note => [note.uuid, note.entry?.name])) : {},
@@ -135,28 +148,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     const elem = $(form) as JQuery<HTMLFormElement>;
     const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";
 
-    const targetType = elem.find("#targetType").val() as string ?? "";
-    let targetElem: string = "";
-    switch (targetType) {
-      case "token":
-        targetElem = "selectedToken";
-        break;
-      case "tile":
-        targetElem = "selectedTile";
-        break;
-      case "note":
-        targetElem = "selectedNote";
-        break;
-      case "drawing":
-        targetElem = "selectedDrawing";
-        break;
-      case "point":
-        break;
-    }
-
-    const target = targetType === "point" ? [parseFloat(elem.find("#pointX").val() as string), parseFloat(elem.find("#pointY").val() as string)] as [number, number] : targetElem ? elem.find(`#${targetElem}`).val() as string : "";
-
-    if (!target) throw new InvalidTargetError(targetType);
+    const target = getTargetFromForm(elem);
 
     const config: ZoomConfiguration = {
       ...ZoomStep.DefaultSettings,
@@ -202,27 +194,84 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     else this.#screenLocation = this.normalizeLocation(target);
   }
 
-  public async validate(): Promise<boolean | Error> {
-    const config = {
-      ...ZoomStep.DefaultSettings,
-      ...this.config
-    };
+  static async validate(config: ZoomConfiguration): Promise<ZoomConfiguration | Error> {
+    try {
 
-    if (typeof config.target === "string") {
-      const item = await fromUuid(config.target);
-      if (!item) return new InvalidTargetError(config.target);
-      const parsed = (typeof foundry.utils.parseUuid === "function" ? foundry.utils.parseUuid(config.target) : parseUuid(config.target));
-      // If it's embedded in a scene other than this one
-      if (parsed.primaryType === Scene.documentName && parsed.primaryId !== canvas?.scene?.id) return new InvalidTargetError(config.target);
-      // if it's an actor, locate its token
-      if (parsed.type === Actor.documentName) {
-        const actor = game.actors?.get(parsed.id);
-        if (!actor) return new InvalidTargetError(config.target);
-        if (!(actor.token instanceof Token || actor.token instanceof TokenDocument)) return new InvalidTargetError(config.target);
+      if (typeof config.target === "string" && !config.target) {
+        // Prompt
+        const scene = canvas?.scene;
+
+        const hasTokens = !!scene?.tokens.contents.length;
+        const hasTiles = !!scene?.tiles.contents.length;
+        const hasNotes = !!scene?.notes.contents.length;
+        const hasDrawings = !!scene?.drawings.contents.length;
+
+
+        const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/zoom-target-selector.hbs`, {
+          ...ZoomStep.DefaultSettings,
+          ...config,
+          targetTypeSelect: {
+            point: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.POINT.LABEL",
+            ...(hasTokens ? { token: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TOKEN.LABEL" } : {}),
+            ...(hasTiles ? { tile: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TILE.LABEL" } : {}),
+            ...(hasNotes ? { note: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.NOTE.LABEL" } : {}),
+            ...(hasDrawings ? { drawing: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.LABEL" } : {}),
+          },
+          oldScene: canvas?.scene,
+          hasTokens,
+          hasTiles,
+          hasNotes,
+          hasDrawings,
+          tokenSelect: hasTokens ? Object.fromEntries(scene.tokens.contents.map(token => [token.uuid, token.name])) : {},
+          tileSelect: hasTiles ? Object.fromEntries(scene.tiles.contents.map(tile => [tile.uuid, tile.texture.src])) : {},
+          noteSelect: hasNotes ? Object.fromEntries(scene.notes.contents.map(note => [note.uuid, note.entry?.name])) : {},
+          drawingSelect: hasDrawings ? Object.fromEntries(scene.drawings.contents.map(drawing => [drawing.uuid, localize(`BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.SHAPES.${drawingType(drawing)}`)])) : {},
+          pointX: Array.isArray(config.target) ? config.target[0] as number : 0.5,
+          pointY: Array.isArray(config.target) ? config.target[1] as number : 0.5
+        });
+
+
+
+        const elem = await customDialog("BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETDIALOG.TITLE", content, {
+          ok: {
+            icon: `<i class="fas fa-check"></i>`,
+            label: "BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"
+          },
+          cancel: {
+            icon: `<i class="fas fa-times"></i>`,
+            label: "BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL",
+            callback: () => { throw new InvalidTargetError(undefined); }
+          }
+        },
+          elem => { void ZoomStep.addEventListeners(elem, config); }
+        );
+
+
+        const target = getTargetFromForm(elem);
+        unhighlightAll();
+        if (!target) throw new InvalidTargetError(target);
+        return {
+          ...config,
+          target
+        }
+      } else if (typeof config.target === "string") {
+        const item = await fromUuid(config.target);
+        if (!item) return new InvalidTargetError(config.target);
+        const parsed = (typeof foundry.utils.parseUuid === "function" ? foundry.utils.parseUuid(config.target) : parseUuid(config.target));
+        // If it's embedded in a scene other than this one
+        if (parsed.primaryType === Scene.documentName && parsed.primaryId !== canvas?.scene?.id) return new InvalidTargetError(config.target);
+        // if it's an actor, locate its token
+        if (parsed.type === Actor.documentName) {
+          const actor = game.actors?.get(parsed.id);
+          if (!actor) return new InvalidTargetError(config.target);
+          if (!(actor.token instanceof Token || actor.token instanceof TokenDocument)) return new InvalidTargetError(config.target);
+        }
       }
-    }
 
-    return true;
+      return config;
+    } catch (err) {
+      return err as Error;
+    }
   }
 
   // #endregion Public Methods (3)
@@ -512,3 +561,26 @@ let SELECTING_DRAWING: boolean = false;
 let SELECTING_TILE: boolean = false;
 
 // #endregion Variables (6)
+
+function getTargetFromForm(elem: JQuery<HTMLElement>) {
+  const targetType = elem.find("#targetType").val() as string ?? "";
+  let targetElem: string = "";
+  switch (targetType) {
+    case "token":
+      targetElem = "selectedToken";
+      break;
+    case "tile":
+      targetElem = "selectedTile";
+      break;
+    case "note":
+      targetElem = "selectedNote";
+      break;
+    case "drawing":
+      targetElem = "selectedDrawing";
+      break;
+    case "point":
+      break;
+  }
+
+  return targetType === "point" ? [parseFloat(elem.find("#pointX").val() as string), parseFloat(elem.find("#pointY").val() as string)] as [number, number] : targetElem ? elem.find(`#${targetElem}`).val() as string : "";
+}
