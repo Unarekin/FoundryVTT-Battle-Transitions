@@ -25,7 +25,6 @@ class SocketHandler {
       const id = foundry.utils.randomID();
 
       const validated = await BattleTransition.validateSequence(sequence);
-      log("Validated:", validated);
       if (validated instanceof Error) throw validated;
 
       const actual: TransitionSequence = {

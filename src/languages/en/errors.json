@@ -9,6 +9,8 @@
       "INVALIDDIRECTION": "Invalid direction provided: {direction}",
       "INVALIDELEMENT": "Unable to locate HTML element",
       "INVALIDMARO": "Invalid macro: {macro}",
+      "INVALIDOBJECT": "Invalid object specified: {object}",
+      "INVALIDROLLTABLE": "Invalid RollTable provided: {table}",
       "INVALIDSCENE": "Invalid scene: {name}",
       "INVALIDSOUND": "Invalid sound: {sound}",
       "INVALIDTARGET": "Invalid target: {item}",

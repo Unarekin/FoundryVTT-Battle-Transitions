@@ -196,7 +196,7 @@ export type ZoomConfiguration = TransitionConfiguration & DurationTransition & A
 
 
 
-export type LoadingTipSource = "string" | "RollTable";
+export type LoadingTipSource = "string" | "rolltable";
 export type LoadingTipLocation = "topleft" | "topcenter" | "topright" | "center" | "bottomright" | "bottomcenter" | "bottomleft";
 
 export type LoadingTipConfiguration = TransitionConfiguration & ({
@@ -204,10 +204,6 @@ export type LoadingTipConfiguration = TransitionConfiguration & ({
   source: LoadingTipSource;
   table?: string;
   duration: number;
-  randomize?: boolean;
   location: LoadingTipLocation;
-  localize: boolean;
-  fontFamily: string;
-  fontColor: PIXI.ColorSource;
-  fontSize: number;
+  style: object;
 });

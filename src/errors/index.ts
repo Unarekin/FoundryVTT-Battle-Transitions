@@ -4,6 +4,8 @@ export * from './FileNotFoundError';
 export * from './InvalidDirectionError';
 export * from './InvalidElementError';
 export * from './InvalidMacroError';
+export * from './InvalidObjectError';
+export * from './InvalidRollTableError';
 export * from './InvalidSceneError';
 export * from './InvalidSoundError';
 export * from './InvalidTargetError';

@@ -1,6 +1,6 @@
 import { coerceTexture } from "./coercion";
 import { LOG_ICON } from "./constants";
-import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidTextureError } from "./errors";
+import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidObjectError, InvalidTextureError } from "./errors";
 import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
@@ -559,3 +559,23 @@ export function formatDuration(duration: number): string {
 
 //   return `${output.map(item => item.toString().padStart(2, "0")).join(":")}${parsed.ms ? `.${parsed.ms.toString().padEnd(3, "0")}` : ''}`;
 // }
+
+export function deepCopy(target: any, source: any): void {
+  if (typeof target !== "object") throw new InvalidObjectError(target);
+  if (typeof source !== "object") throw new InvalidObjectError(source);
+
+  for (const prop in source) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (Array.isArray(source[prop]))
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      target[prop] = source[prop].slice();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (typeof source[prop] === "object")
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      deepCopy(target[prop], source[prop]);
+    else
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+      target[prop] = source[prop];
+  }
+}
+
