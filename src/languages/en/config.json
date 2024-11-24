@@ -115,6 +115,14 @@
           "HINT": "Duration in milliseconds",
           "LABEL": "Duration"
         },
+        "FONT": {
+          "LABEL": "Font",
+          "HINT": "Select a font family."
+        },
+        "FONTSIZE": {
+          "LABEL": "Font Size",
+          "HINT": "Size of the font, in pixels."
+        },
         "LABEL": {
           "FORMAT": "({label})",
           "HINT": "",
@@ -196,6 +204,14 @@
         }
       },
       "LOADINGTIP": {
+        "TABS": {
+          "BASICS": "Basics",
+          "FONT": "Font Settings"
+        },
+        "FONTCOLOR": {
+          "LABEL": "Font Color",
+          "HINT": "Color of the loading tip text."
+        },
         "LOCATION": {
           "LABEL": "Screen Location",
           "HINT": "Section of the screen to display the loading tip.",

@@ -1,6 +1,6 @@
 import { TransitionStep } from './TransitionStep';
 import { LoadingTipConfiguration, LoadingTipSource } from './types';
-import { deepCopy, log, parseConfigurationFormElements } from '../utils';
+import { deepCopy, generateFontSelectOptions, log, parseConfigurationFormElements } from '../utils';
 import { InvalidRollTableError, InvalidTipLocationError } from '../errors';
 
 
@@ -33,6 +33,12 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
   public static template = "loadingtip-config";
 
   public static async RenderTemplate(config?: LoadingTipConfiguration): Promise<string> {
+    const style = styleFromJSON({
+      ...LoadingTipStep.DefaultSettings,
+      ...(config ? config : {})
+    }.style);
+    log("rendering style:", style);
+
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${LoadingTipStep.template}.hbs`, {
       ...LoadingTipStep.DefaultSettings,
       id: foundry.utils.randomID(),
@@ -50,7 +56,11 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
         "bottomcenter": "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.BOTTOMCENTER",
         "bottomright": "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.BOTTOMRIGHT"
       },
-      tableSelect: Object.fromEntries(getRollTables().map(table => [table.uuid, table.name]))
+      tableSelect: Object.fromEntries(getRollTables().map(table => [table.uuid, table.name])),
+      fontSelect: generateFontSelectOptions(),
+      fontFamily: style.fontFamily,
+      fontSize: style.fontSize,
+      fontColor: style.fill
     });
   }
 
@@ -75,18 +85,26 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
   public static fromFormElement(form: HTMLFormElement): LoadingTipStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
 
-    log(elem.serializeArray());
-
     const source = elem.find("#sourceType").val() as LoadingTipSource;
     let message: string = "";
     let table: string = "";
     if (source === "string") message = elem.find("#message").val() as string;
     else if (source === "rolltable") table = elem.find("#table").val() as string;
 
+    const style = JSON.parse(JSON.stringify(styleFromJSON({
+      ...LoadingTipStep.DefaultSettings.style,
+      fontFamily: elem.find("#fontFamily").val() as string,
+      fontSize: elem.find("#fontSize").val() as number,
+      fill: elem.find("#fontColor").val() as string
+    }))) as object;
+
+
+
     return new LoadingTipStep({
       ...LoadingTipStep.DefaultSettings,
       ...parseConfigurationFormElements(elem, "id", "duration", "location"),
-      source, message, table
+      source, message, table,
+      style
     });
   }
 

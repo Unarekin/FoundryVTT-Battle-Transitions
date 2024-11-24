@@ -963,7 +963,7 @@ export class BattleTransition {
     if (parsed && parsed.type === RollTable.documentName) {
       const table: RollTable | undefined = fromUuidSync(source) as RollTable | undefined;
       if (table instanceof RollTable) {
-        config.source = "RollTable";
+        config.source = "rolltable";
         config.table = table.uuid;
       }
     } else {

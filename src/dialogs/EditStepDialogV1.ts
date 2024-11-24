@@ -71,6 +71,11 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
   checkFormValidity(html);
   html.find("input").on("input", () => { checkFormValidity(html); });
 
+  // Font selector
+  html.find("[data-font-select] option").each((index, element) => {
+    if (element instanceof HTMLOptionElement)
+      element.style.fontFamily = element.value;
+  })
 
   // Set up tabs
   const tabs = new Tabs({

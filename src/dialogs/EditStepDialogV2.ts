@@ -71,6 +71,12 @@ function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQue
   checkFormValidity(html);
   html.find("input").on("input", () => { checkFormValidity(html); });
 
+  // Font selector
+  html.find("[data-font-select] option").each((index, element) => {
+    if (element instanceof HTMLOptionElement)
+      element.style.fontFamily = element.value;
+  })
+
   // Set up tabs
   const tabs = new Tabs({
     contentSelector: ".tab-content",
