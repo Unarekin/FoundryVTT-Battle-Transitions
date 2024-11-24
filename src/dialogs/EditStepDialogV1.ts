@@ -21,6 +21,12 @@ export class EditStepDialogV1 {
             icon: `<i class="fas fa-check"></i>`,
             label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
             callback: (html: HTMLElement | JQuery<HTMLElement>) => {
+              const valid = step.validateForm(html);
+              if (!valid) {
+                ui.notifications?.warn("BATTLETRANSITIONS.WARNINGS.INVALIDFORM", { console: false, localize: true });
+                return;
+              }
+
               const config = step.from($(html).find("form"))?.config ?? null;
               if (config) resolve({
                 ...step.DefaultSettings,

@@ -2,7 +2,8 @@
   "BATTLETRANSITIONS": {
     "WARNINGS": {
       "TRANSITIONCANCELED": "Transition canceled.",
-      "PREPARETIMEOUT": "One or more clients timed out waiting for a response."
+      "PREPARETIMEOUT": "One or more clients timed out waiting for a response.",
+      "INVALIDFORM": "Invalid form data."
     },
     "DIRECTIONS": {
       "BOTTOM": "Bottom",
