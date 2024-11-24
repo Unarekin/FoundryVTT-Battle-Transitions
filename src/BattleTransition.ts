@@ -2,11 +2,11 @@ import { coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { deserializeTexture, getStepClassByKey, isColor, localize, serializeTexture, shouldUseAppV2 } from "./utils";
+import { deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, serializeTexture, shouldUseAppV2 } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { transitionBuilderDialog } from "./dialogs";
 
@@ -151,7 +151,9 @@ export class BattleTransition {
       for (const step of prepared.prepared.sequence) {
         await step.teardown(container);
       }
-
+    } catch (err) {
+      ui.notifications?.error((err as Error).message, { console: false });
+      console.error(err);
     } finally {
       setTimeout(() => { showLoadingBar(); }, 250);
       if (container) cleanupTransition(container);
@@ -926,6 +928,55 @@ export class BattleTransition {
 
     return this;
   }
+
+
+  public loadingTip(message: string, location?: LoadingTipLocation, duration?: number, style?: PIXI.HTMLTextStyle): this
+  public loadingTip(rollTable: string, location?: LoadingTipLocation, style?: PIXI.HTMLTextStyle): this
+  public loadingTip(source: string, location: LoadingTipLocation = "bottomcenter", ...others: unknown[]): this {
+    const step = getStepClassByKey("loadingtip");
+    if (!step) throw new InvalidTransitionError("loadingtip");
+
+    // Parse arguments
+    const duration: number = typeof others[0] === "number" ? others[0] : 0;
+
+    let style: PIXI.HTMLTextStyle | null = null;
+    if (others[1] instanceof PIXI.HTMLTextStyle) {
+      style = others[1];
+    } else if (others[0] instanceof PIXI.HTMLTextStyle) {
+      style = others[0];
+    } else {
+      style = new PIXI.HTMLTextStyle();
+      deepCopy(style, PIXI.HTMLTextStyle.defaultStyle);
+      deepCopy(style, (step.DefaultSettings as LoadingTipConfiguration).style);
+    }
+
+
+    // Check for UUID
+    const parsed = typeof foundry.utils.parseUuid === "function" ? foundry.utils.parseUuid(source) : parseUuid(source);
+
+    const config: LoadingTipConfiguration = {
+      ...step.DefaultSettings as LoadingTipConfiguration,
+      duration,
+      location
+    }
+
+    if (parsed && parsed.type === RollTable.documentName) {
+      const table: RollTable | undefined = fromUuidSync(source) as RollTable | undefined;
+      if (table instanceof RollTable) {
+        config.source = "RollTable";
+        config.table = table.uuid;
+      }
+    } else {
+      config.source = "string";
+      config.message = source;
+    }
+    config.style = JSON.parse(JSON.stringify(style)) as object;
+
+    this.#sequence.push(config);
+
+    return this;
+  }
+
 
   // #endregion Public Methods (46)
 }

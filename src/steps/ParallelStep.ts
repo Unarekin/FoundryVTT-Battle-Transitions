@@ -141,6 +141,14 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
   // #region Private Methods (1)
 
+  public async teardown(container: PIXI.Container): Promise<void> {
+    for (const sequence of this.#preparedSequences) {
+      for (const step of sequence) {
+        await step.teardown(container);
+      }
+    }
+  }
+
   private async executeSequence(container: PIXI.Container, sequence: TransitionSequence, steps: TransitionStep[], prepared: PreparedTransitionHash): Promise<void> {
     for (const step of steps) {
       const res = step.execute(container, sequence, prepared);

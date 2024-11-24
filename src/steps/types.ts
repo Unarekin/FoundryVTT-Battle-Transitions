@@ -194,3 +194,16 @@ export type ZoomConfiguration = TransitionConfiguration & DurationTransition & A
   target: [number, number] | string;
 });
 
+
+
+export type LoadingTipSource = "string" | "rolltable";
+export type LoadingTipLocation = "topleft" | "topcenter" | "topright" | "center" | "bottomright" | "bottomcenter" | "bottomleft";
+
+export type LoadingTipConfiguration = TransitionConfiguration & ({
+  message?: string;
+  source: LoadingTipSource;
+  table?: string;
+  duration: number;
+  location: LoadingTipLocation;
+  style: object;
+});

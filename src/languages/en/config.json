@@ -195,6 +195,39 @@
           "LABEL": "Texture"
         }
       },
+      "LOADINGTIP": {
+        "LOCATION": {
+          "LABEL": "Screen Location",
+          "HINT": "Section of the screen to display the loading tip.",
+          "TOPLEFT": "Top Left",
+          "TOPCENTER": "Top Center",
+          "TOPRIGHT": "Top Right",
+          "BOTTOMLEFT": "Bottom Left",
+          "BOTTOMRIGHT": "Bottom Right",
+          "BOTTOMCENTER": "Bottom Center",
+          "CENTER": "Center"
+        },
+        "MESSAGE": {
+          "LABEL": "Message",
+          "HINT": "Loading tip message to display."
+        },
+        "ROLLTABLE": {
+          "LABEL": "RollTable",
+          "HINT": "RollTable from which to select message."
+        },
+        "SOURCETYPE": {
+          "LABEL": "Source",
+          "HINT": "The source from the loading tip will come.",
+          "STRING": {
+            "LABEL": "String",
+            "HINT": "Specify a message."
+          },
+          "ROLLTABLE": {
+            "LABEL": "RollTable",
+            "HINT": "Select a random message from a RollTable."
+          }
+        }
+      },
       "TOTALDURATION": "Total duration: {duration}",
       "TRANSITIONCONFIG": {
         "LABEL": "Transition Steps"

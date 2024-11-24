@@ -11,6 +11,7 @@ export * from './FlashStep';
 export * from './HueShiftStep';
 export * from './InvertStep';
 export * from './LinearWipeStep';
+export * from './LoadingTipStep';
 export * from './MacroStep';
 export * from './MeltStep';
 export * from './ParallelStep';

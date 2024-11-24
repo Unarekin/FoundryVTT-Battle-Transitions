@@ -80,13 +80,13 @@ export async function setupTransition(): Promise<PIXI.Container> {
   container.addChild(sprite);
   container.addChild(snapshot);
 
-  const outerContainer = new PIXI.Container();
-  outerContainer.width = window.innerWidth;
-  outerContainer.height = window.innerHeight;
+  // const outerContainer = new PIXI.Container();
+  // outerContainer.width = window.innerWidth;
+  // outerContainer.height = window.innerHeight;
 
-  outerContainer.addChild(container);
-  canvasGroup.addChild(outerContainer);
-
+  // outerContainer.addChild(container);
+  // canvasGroup.addChild(outerContainer);
+  canvasGroup.addChild(container);
   return container;
 }
 
@@ -95,9 +95,12 @@ export function cleanupTransition(container?: PIXI.DisplayObject) {
   transitionCover.style.display = "none";
   transitionCover.style.backgroundImage = "";
   if (container) {
-    if (Array.isArray(container.children) && container.children.length)
+    if (Array.isArray(container.children) && container.children.length) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const children = [...(container.children ?? [])];
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      for (let i = container.children.length - 1; i >= 0; i--) container.children[i].destroy();
+      for (const child of children) child.destroy();
+    }
     container.destroy();
   }
 
