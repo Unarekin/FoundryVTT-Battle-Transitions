@@ -51,6 +51,9 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
     return config;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static validateForm(elem: HTMLElement | JQuery<HTMLElement>): boolean { return true; }
+
   // #endregion Public Static Methods (7)
 
   // #region Public Methods (5)

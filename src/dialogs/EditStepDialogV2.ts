@@ -54,9 +54,22 @@ export class EditStepDialogV2 {
   }
 }
 
+function checkFormValidity(html: JQuery<HTMLElement>) {
+  const stepType = html.find("[data-transition-type]").data("transition-type") as string;
+  const step = getStepClassByKey(stepType);
+  if (!step) throw new InvalidTransitionError(stepType);
+  const valid = step.validateForm(html) && (html.find("form")[0])?.checkValidity();
+
+  if (valid) html.find("button[data-action='ok']").removeAttr("disabled");
+  else html.find("button[data-action='ok']").attr("disabled", "true");
+}
+
 function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>) {
   // Select number and text fields on focus
   html.find("input[type='number'],input[type='text']").on("focus", e => { (e.currentTarget as HTMLInputElement).select(); })
+
+  checkFormValidity(html);
+  html.find("input").on("input", () => { checkFormValidity(html); });
 
   // Set up tabs
   const tabs = new Tabs({
