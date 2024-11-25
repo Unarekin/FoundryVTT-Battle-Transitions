@@ -3,7 +3,9 @@
     "WARNINGS": {
       "TRANSITIONCANCELED": "Transition canceled.",
       "PREPARETIMEOUT": "One or more clients timed out waiting for a response.",
-      "INVALIDFORM": "Invalid form data."
+      "INVALIDFORM": "Invalid form data.",
+      "REMOVEOVERLAYDEPRECATION": "The 'removeOverlay' function is deprecated, and will be removed in a future update.  Please use 'hideOverlay' instead.",
+      "RESTOREOVERLAYDEPRECATION": "The 'restoreOverlay' function is deprecated, and will be removed in a future update.  Please use 'showOverlay' instead."
     },
     "DIRECTIONS": {
       "BOTTOM": "Bottom",

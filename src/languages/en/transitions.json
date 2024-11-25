@@ -84,13 +84,13 @@
       "DESCRIPTION": "Circular wipe, starting either from the inside or outside of the screen.",
       "NAME": "Radial Wipe (Shutter)"
     },
-    "REMOVEOVERLAY": {
-      "DESCRIPTION": "Remove the transition overlay, exposing the new scene.",
-      "NAME": "Remove Overlay"
+    "HIDEOVERLAY": {
+      "DESCRIPTION": "Sets the transition overlay to invisible, exposing the new scene underneath.",
+      "NAME": "Hide Overlay"
     },
-    "RESTOREOVERLAY": {
-      "DESCRIPTION": "Restore the transition overlay, covering the new scene again.",
-      "NAME": "Restore Overlay"
+    "SHOWOVERLAY": {
+      "DESCRIPTION": "Set the transition overlay to visible again.",
+      "NAME": "Show Overlay"
     },
     "SCENECHANGE": {
       "DESCRIPTION": "Change the active scene.",

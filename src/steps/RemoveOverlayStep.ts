@@ -14,10 +14,10 @@ export class RemoveOverlayStep extends TransitionStep<RemoveOverlayConfiguration
   };
   public static hidden: boolean = false;
   public static key = "removeoverlay";
-  public static name = "REMOVEOVERLAY";
+  public static name = "HIDEOVERLAY";
   public static skipConfig = true;
   public static template = "";
-  public static icon = "<i class='bt-icon remove-overlay fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon hide-overlay fa-fw fas'></i>"
   public static category = "technical";
 
   // #endregion Properties (6)

@@ -627,9 +627,20 @@ export class BattleTransition {
   }
 
   /**
-   * Will remove the current transition overlay, exposing the new scene
+   * Sets the transition overlay to invisible, but will still allow for playing transition effects.
+   * @deprecated since 1.1.0 please use {@link hideOverlay} instead.
+   * @see {@link hideOverlay}
    */
   public removeOverlay(): this {
+    ui.notifications?.warn("BATTLETRANSITIONS.WARNINGS.REMOVEOVERLAYDEPRECATION", { localize: true });
+    return this.hideOverlay();
+  }
+
+  /**
+   * Sets the transition overlay to invisible, but will still allow for playing transition effects.
+   * @returns 
+   */
+  public hideOverlay(): this {
     this.#sequence.push({ id: foundry.utils.randomID(), type: "removeoverlay", version: "1.1.0" });
     return this;
   }
@@ -692,7 +703,20 @@ export class BattleTransition {
     return this;
   }
 
+  /**
+   * Sets the transition overlay to visible again.
+   * @deprecated since version 1.1.0 please use {@link showOverlay} instead.
+   * @see {@link showOverlay}
+   */
   public restoreOverlay(): this {
+    ui.notifications?.warn("BATTLETRANSITIONS.WARNINGS.RESTOREOVERLAYDEPRECATION", { localize: true });
+    return this.showOverlay();
+  }
+
+  /**
+   * Sets the transition overlay to visible again.
+   */
+  public showOverlay(): this {
     this.#sequence.push({ id: foundry.utils.randomID(), type: "restoreoverlay", version: "1.1.0" });
     return this;
   }
