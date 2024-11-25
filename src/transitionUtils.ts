@@ -1,7 +1,7 @@
 import { COVER_ID } from "./constants";
 import { ScreenSpaceCanvasGroup } from './ScreenSpaceCanvasGroup';
 import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError, InvalidTransitionError } from './errors';
-import { awaitHook, createColorTexture, getStepClassByKey } from "./utils";
+import { awaitHook, getStepClassByKey } from "./utils";
 import { coerceScene } from "./coercion";
 import { TransitionConfiguration } from "./steps";
 
@@ -36,6 +36,11 @@ export async function createSnapshot() {
   const renderer = canvas.app.renderer;
 
   const rt = PIXI.RenderTexture.create({ width: sceneWidth, height: sceneHeight });
+  // const bgTexture = createColorTexture(renderer.background.backgroundColor.toHex());
+  // const bgSprite = new PIXI.Sprite(bgTexture);
+  // bgSprite.width = sceneWidth;
+  // bgSprite.height = sceneHeight;
+  // renderer.render(bgSprite, { renderTexture: rt, skipUpdateTransform: true, clear: false })
   renderer.render(canvas.stage, { renderTexture: rt, skipUpdateTransform: true, clear: true });
 
   const transitionCover = document.getElementById(COVER_ID) as HTMLImageElement | null;
@@ -72,20 +77,7 @@ export async function setupTransition(): Promise<PIXI.Container> {
   const container = new PIXI.Container();
   container.width = window.innerWidth;
   container.height = window.innerHeight;
-
-  const bgTexture = createColorTexture(canvas?.app?.renderer.background.backgroundColor ?? "white");
-  const sprite = new PIXI.Sprite(bgTexture);
-  sprite.width = window.innerWidth;
-  sprite.height = window.innerHeight;
-  container.addChild(sprite);
   container.addChild(snapshot);
-
-  // const outerContainer = new PIXI.Container();
-  // outerContainer.width = window.innerWidth;
-  // outerContainer.height = window.innerHeight;
-
-  // outerContainer.addChild(container);
-  // canvasGroup.addChild(outerContainer);
   canvasGroup.addChild(container);
   return container;
 }

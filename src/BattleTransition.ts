@@ -6,7 +6,7 @@ import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfigurati
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, serializeTexture, shouldUseAppV2 } from "./utils";
+import { deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, logTexture, serializeTexture, shouldUseAppV2 } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { transitionBuilderDialog } from "./dialogs";
 
@@ -141,6 +141,18 @@ export class BattleTransition {
       BattleTransition.SuppressSoundUpdates = true;
       // Execute
       for (const step of prepared.prepared.sequence) {
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if ((step.config as any).backgroundType === "overlay" || (step.config as any).serializedTexture === "overlay") {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          (step.config as any).deserializedTexture = (container.children[0] as PIXI.Sprite).texture
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if ((step.config as any).deserializedTexture)
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          logTexture((step.config as any).deserializedTexture as PIXI.Texture);
+
         const exec = step.execute(container, prepared.original, prepared);
         if (exec instanceof Promise) await exec;
       }

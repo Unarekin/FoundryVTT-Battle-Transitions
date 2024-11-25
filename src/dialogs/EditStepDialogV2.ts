@@ -1,6 +1,6 @@
 import { InvalidTransitionError } from "../errors";
 import { TransitionConfiguration } from "../steps";
-import { getStepClassByKey, localize } from "../utils";
+import { getStepClassByKey, localize, log } from "../utils";
 
 export class EditStepDialogV2 {
   static async prompt(config: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<TransitionConfiguration | null> {
@@ -71,6 +71,25 @@ function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQue
   checkFormValidity(html);
   html.find("input").on("input", () => { checkFormValidity(html); });
 
+  // log("Background image:", html.find("#backgroundImage"));
+
+  html.find("#backgroundImage").on("input", () => {
+    const val = (html.find("#backgroundImage").val() as string) ?? "";
+    log("Background image:", val);
+
+    if (val) {
+      const tag = document.createElement("img");
+      const img = $(tag);
+      img.addClass("bg-image-preview");
+      img.attr("src", val);
+      html.find("#backgroundImagePreview img").remove();
+      html.find("#backgroundImagePreview").append(img);
+    } else {
+      html.find("#backgroundImagePreview img").remove();
+    }
+
+  });
+
   // Font selector
   html.find("[data-font-select] option").each((index, element) => {
     if (element instanceof HTMLOptionElement)
@@ -96,11 +115,7 @@ function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQue
 
 function setBackgroundType(html: JQuery<HTMLElement>) {
   const bgType = html.find("#backgroundType").val() as string;
-  if (bgType === "color") {
-    html.find("#backgroundColor").css("display", "block");
-    html.find("#backgroundImage").css("display", "none");
-  } else if (bgType === "image") {
-    html.find("#backgroundImage").css("display", "");
-    html.find("#backgroundColor").css("display", "none");
-  }
+
+  html.find(`[data-background-type]`).css("display", "none");
+  html.find(`[data-background-type="${bgType}"]`).css("display", "block");
 }

@@ -21,7 +21,7 @@ export type Easing = "none"
   | "expoScale"
 
 
-export type BackgroundType = "color" | "image"
+export type BackgroundType = "color" | "image" | "overlay";
 export type TextureLike = PIXI.TextureSource | PIXI.ColorSource;
 
 export type SizingMode = "stretch" | "contain" | "cover" | "center";

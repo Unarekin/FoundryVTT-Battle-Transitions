@@ -101,7 +101,8 @@
           "COLOR": "Color",
           "HINT": "Background color or image to show behind this step",
           "IMAGE": "Image",
-          "LABEL": "Background"
+          "LABEL": "Background",
+          "OVERLAY": "Original overlay texture"
         },
         "CLOCKDIRECTION": {
           "HINT": "Clockwise or counterclockwise",

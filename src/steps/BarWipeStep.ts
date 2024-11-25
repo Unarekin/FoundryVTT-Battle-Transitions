@@ -1,4 +1,5 @@
 import { BarWipeFilter } from "../filters";
+import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { createColorTexture, generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { BarWipeConfiguration } from "./types";
@@ -70,13 +71,16 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
 
   // #region Public Methods (1)
 
-  public async execute(container: PIXI.Container): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async execute(container: PIXI.Container, sequence: TransitionSequence, preparedSequence: PreparedTransitionHash): Promise<void> {
     const config: BarWipeConfiguration = {
       ...BarWipeStep.DefaultSettings,
       ...this.config
     }
 
-    const background = this.config.deserializedTexture ?? createColorTexture("transparent");
+
+    const background = config.deserializedTexture ?? createColorTexture("transparent");
+
     const filter = new BarWipeFilter(config.direction, config.bars, background.baseTexture);
     this.addFilter(container, filter);
     await this.simpleTween(filter);

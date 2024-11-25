@@ -75,7 +75,24 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
   html.find("[data-font-select] option").each((index, element) => {
     if (element instanceof HTMLOptionElement)
       element.style.fontFamily = element.value;
-  })
+  });
+
+  // log("Background image:", html.find("#backgroundImage"));
+
+  html.find("#backgroundImage").on("input", () => {
+    const val = (html.find("#backgroundImage").val() as string) ?? "";
+
+    if (val) {
+      const tag = document.createElement("img");
+      const img = $(tag);
+      img.addClass("bg-image-preview");
+      img.attr("src", val);
+      html.find("#backgroundImagePreview img").remove();
+      html.find("#backgroundImagePreview").append(img);
+    } else {
+      html.find("#backgroundImagePreview img").remove();
+    }
+  });
 
   // Set up tabs
   const tabs = new Tabs({
@@ -96,11 +113,7 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
 
 function setBackgroundType(html: JQuery<HTMLElement>) {
   const bgType = html.find("#backgroundType").val() as string;
-  if (bgType === "color") {
-    html.find("#backgroundColor").css("display", "block");
-    html.find("#backgroundImage").css("display", "none");
-  } else if (bgType === "image") {
-    html.find("#backgroundImage").css("display", "");
-    html.find("#backgroundColor").css("display", "none");
-  }
+
+  html.find(`[data-background-type]`).css("display", "none");
+  html.find(`[data-background-type="${bgType}"]`).css("display", "block");
 }
