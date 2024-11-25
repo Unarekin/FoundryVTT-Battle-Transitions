@@ -7,6 +7,7 @@ import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 import { bytesToBase64 } from "./lib/base64Utils";
 import { TransitionStep, BackgroundTransition } from "./steps";
 import * as steps from "./steps"
+import { BackgroundType, TextureLike } from "./types";
 
 // #region Functions (33)
 
@@ -380,6 +381,7 @@ function serializeDataURL(url: string): DataURLBuffer {
 }
 
 export function serializeTexture(texture: any): string | TextureBuffer | DataURLBuffer {
+  if (typeof texture === "string" && texture === "overlay") return "overlay";
   if (typeof texture === "string" && texture.startsWith("data:")) return serializeDataURL(texture);
   if (typeof texture === "string") return texture;
 
@@ -579,3 +581,8 @@ export function deepCopy(target: any, source: any): void {
   }
 }
 
+export function backgroundType(background: TextureLike): BackgroundType {
+  if (typeof background === "string" && background === "overlay") return "overlay";
+  else if (typeof background === "string" && isColor(background)) return "color";
+  else return "image";
+}
