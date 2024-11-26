@@ -93,6 +93,13 @@
         }
       },
       "COMMON": {
+        "DUALSTYLE": {
+          "LABEL": "Apply effect to",
+          "HINT": "This effect can be applied to the transition overlay, the new scene, or both.",
+          "SCENE": "Apply to New Scene",
+          "OVERLAY": "Apply To Overlay",
+          "BOTH": "Apply To Both"
+        },
         "ACTOR": {
           "HINT": "",
           "LABEL": "Actor"

@@ -18,6 +18,11 @@ export interface BackgroundTransition {
   backgroundColor?: string;
 }
 
+export interface DualTransition {
+  applyToScene: boolean;
+  applyToOverlay: boolean;
+}
+
 
 type DurationTransition = {
   duration: number;
@@ -171,7 +176,7 @@ export type BossSplashConfiguration = TransitionConfiguration & DurationTransiti
 
 });
 
-export type PixelateConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
+export type PixelateConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & DualTransition & ({
   maxSize: number;
 })
 
