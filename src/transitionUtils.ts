@@ -4,6 +4,7 @@ import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidS
 import { awaitHook, getStepClassByKey } from "./utils";
 import { coerceScene } from "./coercion";
 import { TransitionConfiguration } from "./steps";
+import { PreparedTransitionSequence } from "./interfaces";
 
 
 
@@ -69,6 +70,21 @@ export async function createSnapshot() {
 
   const sprite = new PIXI.Sprite(rt);
   return sprite;
+}
+
+export function removeFiltersFromScene(sequence: PreparedTransitionSequence) {
+  sequence.sceneFilters.forEach(filter => removeFilterFromScene(filter));
+}
+
+export function addFilterToScene(filter: PIXI.Filter, sequence: PreparedTransitionSequence) {
+  if (Array.isArray(canvas?.environment?.filters)) canvas.environment.filters.push(filter);
+  else if (canvas?.environment) canvas.environment.filters = [filter];
+  sequence.sceneFilters.push(filter);
+}
+
+export function removeFilterFromScene(filter: PIXI.Filter) {
+  if (Array.isArray(canvas?.environment?.filters) && canvas.environment.filters.includes(filter)) canvas.environment?.filters?.splice(canvas.environment.filters.indexOf(filter), 1);
+  filter.destroy();
 }
 
 export async function setupTransition(): Promise<PIXI.Container> {

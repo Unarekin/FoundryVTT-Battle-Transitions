@@ -17,26 +17,27 @@
           "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.OVERLAY"
         }}</option>
     </select>
-  </div>
-  <section data-background-type="color">
-    <input
-      type="text"
-      data-color-picker="{alphaChannel: true}"
-      value="{{backgroundColor}}"
-      id="backgroundColor"
-      name="backgroundColor"
-    />
-  </section>
-  <section data-background-type="image">
-    <file-picker
-      id="backgroundImage"
-      name="backgroundImage"
-      type="imagevideo"
-      value="{{backgroundImage}}"
-    ></file-picker>
-    <section id="backgroundImagePreview"></section>
-  </section>
-  <section data-background-type="overlay">
 
-  </section>
+    <section data-background-type="color">
+      <input
+        type="text"
+        data-color-picker="{alphaChannel: true}"
+        value="{{backgroundColor}}"
+        id="backgroundColor"
+        name="backgroundColor"
+      />
+    </section>
+    <section data-background-type="image">
+      <file-picker
+        id="backgroundImage"
+        name="backgroundImage"
+        type="imagevideo"
+        value="{{backgroundImage}}"
+      ></file-picker>
+      <section id="backgroundImagePreview"></section>
+    </section>
+    <section data-background-type="overlay">
+
+    </section>
+  </div>
 </fieldset>

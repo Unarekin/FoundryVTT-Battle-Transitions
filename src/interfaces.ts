@@ -23,7 +23,8 @@ export interface TransitionSequence {
 export interface PreparedTransitionSequence {
   caller: string;
   remote?: boolean;
-  sequence: TransitionStep<any>[];
+  sequence: TransitionStep<TransitionConfiguration>[];
+  sceneFilters: PIXI.Filter[];
 }
 
 export interface SceneConfiguration {

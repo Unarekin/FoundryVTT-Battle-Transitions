@@ -14,7 +14,7 @@
       <input type="number" name="maxSize" id="maxSize" value="{{maxSize}}" step="1">
     </div>
     <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.PIXELATE.MAXSIZE.HINT"}}</p>
-
+    {{> "/modules/battle-transitions/templates/config/dualtransition-selector.hbs" this}}
     {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
   </form>
 </div>

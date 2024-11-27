@@ -1,3 +1,5 @@
+import { TransitionSequence, PreparedTransitionHash } from '../interfaces';
+import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
 import { generateClockDirectionSelectOptions, generateEasingSelectOptions, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { TwistConfiguration } from './types';
@@ -11,7 +13,9 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
     duration: 1000,
     maxAngle: 10,
     easing: "none",
-    direction: "clockwise"
+    direction: "clockwise",
+    applyToScene: false,
+    applyToOverlay: true
   };
   public static category = "warp";
   public static hidden: boolean = false;
@@ -31,7 +35,13 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
       ...(config ? config : {}),
 
       directionSelect: generateClockDirectionSelectOptions(),
-      easingSelect: generateEasingSelectOptions()
+      easingSelect: generateEasingSelectOptions(),
+      dualStyleSelect: {
+        "overlay": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.OVERLAY`,
+        "scene": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.SCENE`,
+        "both": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.BOTH`
+      },
+      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
     });
   }
 
@@ -47,9 +57,12 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): TwistStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
+    const dualStyle = elem.find("#dualStyle").val() as string;
     return new TwistStep({
       ...TwistStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "duration", "direction", "easing", "label")
+      ...parseConfigurationFormElements(elem, "id", "duration", "direction", "easing", "label"),
+      applyToOverlay: dualStyle === "overlay" || dualStyle === "both",
+      applyToScene: dualStyle === "scene" || dualStyle === "both"
     })
   }
 
@@ -59,23 +72,49 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
 
   // #region Public Methods (1)
 
-  public async execute(container: PIXI.Container): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    const filter = new (PIXI.filters as any).TwistFilter({
-      radius: window.innerWidth,
-      angle: 0,
-      offset: { x: window.innerWidth / 2, y: window.innerHeight / 2 }
-    }) as PIXI.Filter;
+  #sceneFilter: PIXI.Filter | null = null;
 
-    this.addFilter(container, filter);
+  public teardown(): Promise<void> | void {
+    if (this.#sceneFilter) removeFilterFromScene(this.#sceneFilter);
+    this.#sceneFilter = null;
+  }
 
+  public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
     const config: TwistConfiguration = {
       ...TwistStep.DefaultSettings,
       ...this.config
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { angle: this.config.direction === "clockwise" ? config.maxAngle * -1 : this.config.maxAngle, duration: config.duration / 1000, ease: this.config.easing || "none" });
-    // await TweenMax.to(filter.uniforms, {  })
+    const filters: PIXI.Filter[] = [];
+
+    if (config.applyToOverlay) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      const filter = new (PIXI.filters as any).TwistFilter({
+        radius: window.innerWidth,
+        angle: 0,
+        offset: { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+      }) as PIXI.Filter;
+
+      this.addFilter(container, filter);
+      filters.push(filter);
+    }
+
+    if (config.applyToScene && canvas?.stage) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      const filter = new (PIXI.filters as any).TwistFilter({
+        radius: window.innerWidth,
+        angle: 0,
+        offset: { x: window.innerWidth / 2, y: window.innerHeight / 2 }
+      }) as PIXI.Filter;
+      addFilterToScene(filter, prepared.prepared);
+      filters.push(filter);
+    }
+
+
+
+
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+    await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms, { angle: this.config.direction === "clockwise" ? config.maxAngle * -1 : this.config.maxAngle, duration: config.duration / 1000, ease: this.config.easing || "none" })));
   }
 
   // #endregion Public Methods (1)

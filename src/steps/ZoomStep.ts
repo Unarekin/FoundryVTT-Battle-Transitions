@@ -1,6 +1,8 @@
 import { customDialog } from "../dialogs";
 import { InvalidTargetError } from "../errors";
 import { ZoomFilter } from "../filters";
+import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
+import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
 import { createColorTexture, generateEasingSelectOptions, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ZoomConfiguration } from "./types";
@@ -23,7 +25,9 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     easing: "none",
     amount: 1,
     clampBounds: false,
-    target: [0.5, 0.5]
+    target: [0.5, 0.5],
+    applyToOverlay: true,
+    applyToScene: false
   }
 
   public static category: string = "warp";
@@ -81,7 +85,13 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       noteSelect: oldScene ? Object.fromEntries(oldScene.notes.contents.map(note => [note.uuid, note.entry?.name])) : {},
       drawingSelect: oldScene ? Object.fromEntries(oldScene.drawings.contents.map(drawing => [drawing.uuid, localize(`BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.SHAPES.${drawingType(drawing)}`)])) : {},
       pointX: Array.isArray(config?.target) ? config.target[0] : 0.5,
-      pointY: Array.isArray(config?.target) ? config.target[1] : 0.5
+      pointY: Array.isArray(config?.target) ? config.target[1] : 0.5,
+      dualStyleSelect: {
+        "overlay": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.OVERLAY`,
+        "scene": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.SCENE`,
+        "both": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.BOTH`
+      },
+      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
     });
   }
 
@@ -148,13 +158,17 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     const elem = $(form) as JQuery<HTMLFormElement>;
     const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";
 
+    const dualStyle = elem.find("#dualStyle").val() as string;
+
     const target = getTargetFromForm(elem);
 
     const config: ZoomConfiguration = {
       ...ZoomStep.DefaultSettings,
       ...parseConfigurationFormElements(elem, "id", "label", "duration", "easing", "amount", "backgroundType", "backgroundColor", "clampBounds"),
       serializedTexture,
-      target
+      target,
+      applyToOverlay: dualStyle === "overlay" || dualStyle === "both",
+      applyToScene: dualStyle === "scene" || dualStyle === "both"
     }
 
     return new ZoomStep(config);
@@ -166,17 +180,41 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
 
   // #region Public Methods (3)
 
-  public async execute(container: PIXI.Container,): Promise<void> {
+  #sceneFilter: PIXI.Filter | null = null;
+
+
+  public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
     const config: ZoomConfiguration = {
       ...ZoomStep.DefaultSettings,
       ...this.config
     };
 
+
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new ZoomFilter(this.#screenLocation, config.duration ? 1 : config.amount, config.clampBounds, background.baseTexture);
-    this.addFilter(container, filter);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    if (config.duration) await TweenMax.to(filter.uniforms, { amount: config.amount, duration: config.duration / 1000, ease: config.easing });
+    const filters: PIXI.Filter[] = [];
+
+    if (config.applyToOverlay) {
+      const filter = new ZoomFilter(this.#screenLocation, config.duration ? 1 : config.amount, config.clampBounds, background.baseTexture);
+      this.addFilter(container, filter);
+      filters.push(filter);
+    }
+
+    if (config.applyToScene && canvas?.stage) {
+      const filter = new ZoomFilter(this.#screenLocation, config.duration ? 1 : config.amount, config.clampBounds, background.baseTexture);
+      addFilterToScene(filter, prepared.prepared);
+      filters.push(filter);
+      this.#sceneFilter = filter;
+    }
+
+    if (config.duration) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+      await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms, { amount: config.amount, duration: config.duration / 1000, ease: config.easing })))
+    }
+  }
+
+  public teardown(): Promise<void> | void {
+    if (this.#sceneFilter) removeFilterFromScene(this.#sceneFilter);
+    this.#sceneFilter = null;
   }
 
   public async prepare(): Promise<void> {
@@ -207,28 +245,36 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
         const hasDrawings = !!scene?.drawings.contents.length;
 
 
-        const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/zoom-target-selector.hbs`, {
-          ...ZoomStep.DefaultSettings,
-          ...config,
-          targetTypeSelect: {
-            point: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.POINT.LABEL",
-            ...(hasTokens ? { token: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TOKEN.LABEL" } : {}),
-            ...(hasTiles ? { tile: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TILE.LABEL" } : {}),
-            ...(hasNotes ? { note: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.NOTE.LABEL" } : {}),
-            ...(hasDrawings ? { drawing: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.LABEL" } : {}),
-          },
-          oldScene: canvas?.scene,
-          hasTokens,
-          hasTiles,
-          hasNotes,
-          hasDrawings,
-          tokenSelect: hasTokens ? Object.fromEntries(scene.tokens.contents.map(token => [token.uuid, token.name])) : {},
-          tileSelect: hasTiles ? Object.fromEntries(scene.tiles.contents.map(tile => [tile.uuid, tile.texture.src])) : {},
-          noteSelect: hasNotes ? Object.fromEntries(scene.notes.contents.map(note => [note.uuid, note.entry?.name])) : {},
-          drawingSelect: hasDrawings ? Object.fromEntries(scene.drawings.contents.map(drawing => [drawing.uuid, localize(`BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.SHAPES.${drawingType(drawing)}`)])) : {},
-          pointX: Array.isArray(config.target) ? config.target[0] as number : 0.5,
-          pointY: Array.isArray(config.target) ? config.target[1] as number : 0.5
-        });
+        const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/zoom-target-selector.hbs`,
+          {
+            ...ZoomStep.DefaultSettings,
+            ...config,
+            targetTypeSelect: {
+              point: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.POINT.LABEL",
+              ...(hasTokens ? { token: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TOKEN.LABEL" } : {}),
+              ...(hasTiles ? { tile: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TILE.LABEL" } : {}),
+              ...(hasNotes ? { note: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.NOTE.LABEL" } : {}),
+              ...(hasDrawings ? { drawing: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.LABEL" } : {}),
+            },
+            oldScene: canvas?.scene,
+            hasTokens,
+            hasTiles,
+            hasNotes,
+            hasDrawings,
+            tokenSelect: hasTokens ? Object.fromEntries(scene.tokens.contents.map(token => [token.uuid, token.name])) : {},
+            tileSelect: hasTiles ? Object.fromEntries(scene.tiles.contents.map(tile => [tile.uuid, tile.texture.src])) : {},
+            noteSelect: hasNotes ? Object.fromEntries(scene.notes.contents.map(note => [note.uuid, note.entry?.name])) : {},
+            drawingSelect: hasDrawings ? Object.fromEntries(scene.drawings.contents.map(drawing => [drawing.uuid, localize(`BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.SHAPES.${drawingType(drawing)}`)])) : {},
+            pointX: Array.isArray(config.target) ? config.target[0] as number : 0.5,
+            pointY: Array.isArray(config.target) ? config.target[1] as number : 0.5,
+            dualStyleSelect: {
+              "overlay": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.OVERLAY`,
+              "scene": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.SCENE`,
+              "both": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.BOTH`
+            },
+            dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
+          }
+        );
 
 
 

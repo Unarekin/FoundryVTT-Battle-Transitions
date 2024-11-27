@@ -58,7 +58,8 @@ export async function registerTemplates() {
       "duration-selector",
       "add-step-button",
       "sequence-item",
-      "zoom-target-selector"
+      "zoom-target-selector",
+      "dualtransition-selector"
     ].map(name => `/modules/${__MODULE_ID__}/templates/config/${name}.hbs`),
     `/modules/${__MODULE_ID__}/templates/scene-selector.hbs`,
     `/modules/${__MODULE_ID__}/templates/transition-steps.hbs`,

@@ -18,6 +18,11 @@ export interface BackgroundTransition {
   backgroundColor?: string;
 }
 
+export interface DualTransition {
+  applyToScene: boolean;
+  applyToOverlay: boolean;
+}
+
 
 type DurationTransition = {
   duration: number;
@@ -69,7 +74,7 @@ export type SpotlightWipeConfiguration = WipeTransition & ({
   radial: RadialDirection;
 });
 
-export type TextureSwapConfiguration = TransitionConfiguration & BackgroundTransition;
+export type TextureSwapConfiguration = TransitionConfiguration & BackgroundTransition & DualTransition;
 
 
 export type VideoConfiguration = BackgroundTransition & TransitionConfiguration & ({
@@ -106,11 +111,11 @@ export type SpiralWipeConfiguration = WipeTransition & ({
 
 })
 
-export type InvertConfiguration = TransitionConfiguration
+export type InvertConfiguration = TransitionConfiguration & DualTransition;
 
 export type AngularWipeConfiguration = WipeTransition;
 
-export type FlashConfiguration = TransitionConfiguration & BackgroundTransition & DurationTransition;
+export type FlashConfiguration = TransitionConfiguration & BackgroundTransition & DurationTransition & DualTransition;
 
 export type RepeatConfiguration = TransitionConfiguration & ({
   iterations: number;
@@ -133,16 +138,16 @@ export interface MacroConfiguration extends TransitionConfiguration {
 
 export type RemoveOverlayConfiguration = TransitionConfiguration;
 export type RestoreOverlayConfiguration = TransitionConfiguration;
-export type ClearEffectsConfiguration = TransitionConfiguration;
+export type ClearEffectsConfiguration = TransitionConfiguration & DualTransition;
 
 export type StartPlaylistConfiguration = TransitionConfiguration;
-export type ZoomBlurConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
+export type ZoomBlurConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & DualTransition & ({
   maxStrength: number;
   innerRadius: number;
 
 });
 
-export type TwistConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
+export type TwistConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & DualTransition & ({
   maxAngle: number;
   direction: ClockDirection;
 });
@@ -171,11 +176,11 @@ export type BossSplashConfiguration = TransitionConfiguration & DurationTransiti
 
 });
 
-export type PixelateConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
+export type PixelateConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & DualTransition & ({
   maxSize: number;
 })
 
-export type HueShiftConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
+export type HueShiftConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & DualTransition & ({
   maxShift: number;
 })
 
@@ -188,7 +193,7 @@ export type BarWipeConfiguration = WipeTransition & ({
 
 export type ZoomArg = [number, number] | string | Token | TokenDocument | Tile | TileDocument | Note | NoteDocument | Drawing | DrawingDocument;
 
-export type ZoomConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & BackgroundTransition & ({
+export type ZoomConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & BackgroundTransition & DualTransition & ({
   amount: number;
   clampBounds: boolean;
   target: [number, number] | string;
