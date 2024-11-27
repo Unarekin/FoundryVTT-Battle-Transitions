@@ -19,6 +19,12 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   public static icon: string = "";
   public static category: string = "";
 
+  public static reversible = false;
+
+  public reverse(): Promise<void> | void {
+    throw new NotImplementedError();
+  }
+
   // #endregion Properties (6)
 
   // #region Constructors (1)
@@ -47,7 +53,8 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
     throw new NotImplementedError();
   }
 
-  public static validate(config: TransitionConfiguration): Promise<TransitionConfiguration | Error> | TransitionConfiguration | Error {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static validate(config: TransitionConfiguration, sequence: TransitionConfiguration[]): Promise<TransitionConfiguration | Error> | TransitionConfiguration | Error {
     return config;
   }
 

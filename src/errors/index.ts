@@ -28,6 +28,7 @@ export * from './PermissionDeniedError';
 export * from './PrepareTimedOutError';
 export * from './RepeatExecuteError';
 export * from './SequenceTimedOutError';
+export * from './StepNotReversibleError';
 export * from './TransitionHasToStepError';
 export * from './TransitionToSelfError';
 export * from './UnableToMigrateError';

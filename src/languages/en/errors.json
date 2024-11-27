@@ -30,6 +30,7 @@
       "PERMISSIONDENIED": "Permision denied.",
       "PREPARETIMEDOUT": "Timed out waiting for users to signal they're ready to transition.",
       "SEQUENCETIMEDOUT": "Transition sequence timed out.",
+      "STEPNOTREVERSIBLE": "Transition step not reversible: {type}",
       "TRANSITIONTOSELF": "Attempting to transition to the current scene.",
       "UNABLETOMIGRATE": "Unable to migrate data from {old} to {current}"
     }

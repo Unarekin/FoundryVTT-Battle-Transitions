@@ -20,6 +20,7 @@ export * from './RadialWipeStep';
 export * from './RemoveOverlayStep';
 export * from './RepeatStep';
 export * from './RestoreOverlayStep';
+export * from './ReverseStep';
 export * from './SceneChangeStep';
 export * from './SoundStep';
 export * from './SpiralShutterStep';

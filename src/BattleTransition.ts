@@ -1,6 +1,6 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
-import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
+import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
 import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
@@ -245,6 +245,23 @@ export class BattleTransition {
     }
   }
 
+  /**
+   * Executes the previous step, but in reverse.
+   * @returns 
+   */
+  public reverse(): this {
+    const step = getStepClassByKey("reverse");
+    if (!step) throw new InvalidTransitionError("reverse");
+    if (!step.reversible) throw new StepNotReversibleError(step.key);
+
+    this.#sequence.push({
+      ...step.DefaultSettings,
+      id: foundry.utils.randomID()
+    });
+
+    return this;
+  }
+
   public static async teardownSequence(container: PIXI.Container, sequence: PreparedTransitionSequence) {
     for (const step of sequence.sequence) {
       await step.teardown(container);
@@ -259,7 +276,8 @@ export class BattleTransition {
         // const handler = BattleTransition.StepTypes[step.type];
         if (!handler) throw new InvalidTransitionError(step.type);
 
-        const valid = await handler.validate(step);
+
+        const valid = await handler.validate(step, sequence);
         if (valid instanceof Error) return valid;
         validated.push(valid);
       }
