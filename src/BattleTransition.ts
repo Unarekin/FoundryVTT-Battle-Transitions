@@ -4,7 +4,7 @@ import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetE
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
 import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
-import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
+import { cleanupTransition, hideLoadingBar, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
 import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, serializeTexture, shouldUseAppV2 } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
@@ -158,6 +158,8 @@ export class BattleTransition {
       for (const step of prepared.prepared.sequence) {
         await step.teardown(container);
       }
+
+      removeFiltersFromScene(prepared.prepared);
     } catch (err) {
       ui.notifications?.error((err as Error).message, { console: false });
       console.error(err);
@@ -230,6 +232,7 @@ export class BattleTransition {
         prepared: {
           ...sequence,
           sequence: steps,
+          sceneFilters: []
         },
         overlay: []
       }

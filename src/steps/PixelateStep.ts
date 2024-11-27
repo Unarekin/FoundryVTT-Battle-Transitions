@@ -1,4 +1,6 @@
-import { log, parseConfigurationFormElements } from '../utils';
+import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
+import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
+import { parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { PixelateConfiguration } from './types';
 
@@ -70,15 +72,12 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
 
   #sceneFilter: PIXI.Filter | null = null;
 
-  public teardown(): void {
-    log("Teardown:", this);
-    if (this.#sceneFilter) {
-      if (Array.isArray(canvas?.stage?.filters) && canvas.stage.filters.includes(this.#sceneFilter)) canvas.stage.filters.splice(canvas.stage.filters.indexOf(this.#sceneFilter), 1);
-      this.#sceneFilter.destroy();
-    }
+  public teardown(): Promise<void> | void {
+    if (this.#sceneFilter) removeFilterFromScene(this.#sceneFilter);
+    this.#sceneFilter = null;
   }
 
-  public async execute(container: PIXI.Container): Promise<void> {
+  public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
     const config: PixelateConfiguration = {
       ...PixelateStep.DefaultSettings,
       ...this.config
@@ -96,9 +95,7 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
     if (config.applyToScene && canvas?.stage) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       const filter = new (PIXI.filters as any).PixelateFilter(1) as PIXI.Filter;
-      // this.addFilter(canvas.stage, filter);
-      if (Array.isArray(canvas.stage.filters)) canvas.stage.filters.push(filter);
-      else canvas.stage.filters = [filter];
+      addFilterToScene(filter, prepared.prepared);
       filters.push(filter);
       this.#sceneFilter = filter;
     }

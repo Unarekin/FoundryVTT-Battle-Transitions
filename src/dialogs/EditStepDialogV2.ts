@@ -60,6 +60,8 @@ function checkFormValidity(html: JQuery<HTMLElement>) {
   if (!step) throw new InvalidTransitionError(stepType);
   const valid = step.validateForm(html) && (html.find("form")[0])?.checkValidity();
 
+  log(html.find("form :invalid"));
+
   if (valid) html.find("button[data-action='ok']").removeAttr("disabled");
   else html.find("button[data-action='ok']").attr("disabled", "true");
 }
@@ -69,13 +71,12 @@ function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQue
   html.find("input[type='number'],input[type='text']").on("focus", e => { (e.currentTarget as HTMLInputElement).select(); })
 
   checkFormValidity(html);
-  html.find("input").on("input", () => { checkFormValidity(html); });
+  html.find("input,select").on("input", () => { checkFormValidity(html); });
 
   // log("Background image:", html.find("#backgroundImage"));
 
   html.find("#backgroundImage").on("input", () => {
     const val = (html.find("#backgroundImage").val() as string) ?? "";
-    log("Background image:", val);
 
     if (val) {
       const tag = document.createElement("img");

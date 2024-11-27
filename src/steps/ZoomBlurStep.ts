@@ -1,3 +1,5 @@
+import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
+import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
 import { generateEasingSelectOptions, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { ZoomBlurConfiguration } from './types';
@@ -12,7 +14,9 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     duration: 1000,
     maxStrength: 0.5,
     easing: "none",
-    innerRadius: 0
+    innerRadius: 0,
+    applyToOverlay: true,
+    applyToScene: false
   }
 
   public static category = "warp";
@@ -31,7 +35,13 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
       ...ZoomBlurStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
-      easingSelect: generateEasingSelectOptions()
+      easingSelect: generateEasingSelectOptions(),
+      dualStyleSelect: {
+        "overlay": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.OVERLAY`,
+        "scene": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.SCENE`,
+        "both": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.BOTH`
+      },
+      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
     });
   }
 
@@ -51,11 +61,14 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     const maxStrength = elem.find("#maxStrength input[type='number']").val() as number ?? 1;
     const innerRadius = elem.find("#innerRadius input[type='number']").val() as number ?? 0;
 
+    const dualStyle = elem.find("#dualStyle").val() as string;
     return new ZoomBlurStep({
       ...ZoomBlurStep.DefaultSettings,
       ...parseConfigurationFormElements(elem, "id", "duration", "label"),
       maxStrength,
-      innerRadius
+      innerRadius,
+      applyToOverlay: dualStyle === "overlay" || dualStyle === "both",
+      applyToScene: dualStyle === "scene" || dualStyle === "both"
     });
   }
 
@@ -64,26 +77,53 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
   // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
+  #sceneFilter: PIXI.Filter | null = null;
 
-  public async execute(container: PIXI.Container): Promise<void> {
+  public teardown(): Promise<void> | void {
+    if (this.#sceneFilter) removeFilterFromScene(this.#sceneFilter);
+    this.#sceneFilter = null;
+  }
+
+
+
+  public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
     const config: ZoomBlurConfiguration = {
       ...ZoomBlurStep.DefaultSettings,
       ...this.config
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    const filter = new (PIXI.filters as any).ZoomBlurFilter({
-      strength: 0,
-      innerRadius: config.innerRadius * window.innerWidth,
-      radius: -1,
-      center: [window.innerWidth / 2, window.innerHeight / 2]
+    const filters: PIXI.Filter[] = [];
+    if (config.applyToOverlay) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      const filter = new (PIXI.filters as any).ZoomBlurFilter({
+        strength: 0,
+        innerRadius: config.innerRadius * window.innerWidth,
+        radius: -1,
+        center: [window.innerWidth / 2, window.innerHeight / 2]
 
-    }) as PIXI.Filter;
+      }) as PIXI.Filter;
 
-    this.addFilter(container, filter);
+      this.addFilter(container, filter);
+      filters.push(filter);
+    }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { uStrength: config.maxStrength, duration: config.duration / 1000, ease: config.easing || "none" });
+    if (config.applyToScene && canvas?.stage) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      const filter = new (PIXI.filters as any).ZoomBlurFilter({
+        strength: 0,
+        innerRadius: config.innerRadius * window.innerWidth,
+        radius: -1,
+        center: [window.innerWidth / 2, window.innerHeight / 2]
+
+      }) as PIXI.Filter;
+
+      this.#sceneFilter = filter;
+      addFilterToScene(filter, prepared.prepared);
+      filters.push(filter);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+    await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms, { uStrength: config.maxStrength, duration: config.duration / 1000, ease: config.easing || "none" })));
   }
 
   // #endregion Public Methods (1)

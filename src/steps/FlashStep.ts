@@ -1,5 +1,6 @@
 import { TextureSwapFilter } from "../filters";
-import { TransitionSequence } from "../interfaces";
+import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
+import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
 import { createColorTexture, parseConfigurationFormElements, wait } from '../utils';
 import { TransitionStep } from "./TransitionStep";
 import { FlashConfiguration } from "./types";
@@ -15,7 +16,9 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
-    backgroundColor: "#00000000"
+    backgroundColor: "#00000000",
+    applyToOverlay: true,
+    applyToScene: false
   }
 
   public static category = "effect";
@@ -63,19 +66,32 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
 
   // #region Public Methods (1)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
+
+
+  public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
     const config: FlashConfiguration = {
       ...FlashStep.DefaultSettings,
       ...this.config
     };
     const background = this.config.deserializedTexture ?? createColorTexture("tranparent");
 
-    const filter = new TextureSwapFilter(background.baseTexture);
-    this.addFilter(container, filter);
-    await wait(config.duration);
-    this.removeFilter(container, filter);
-    filter.destroy();
+    const promises: Promise<void>[] = [];
+
+    if (config.applyToOverlay) {
+      const filter = new TextureSwapFilter(background.baseTexture);
+      this.addFilter(container, filter);
+      promises.push(wait(config.duration).then(() => { this.removeFilter(container, filter); filter.destroy() }));
+    }
+
+    if (config.applyToScene && canvas?.stage) {
+      const filter = new TextureSwapFilter(background.baseTexture);
+      addFilterToScene(filter, prepared.prepared);
+      promises.push(wait(config.duration).then(() => {
+        removeFilterFromScene(filter);
+      }));
+    }
+
+    await Promise.all(promises);
   }
 
   // #endregion Public Methods (1)
