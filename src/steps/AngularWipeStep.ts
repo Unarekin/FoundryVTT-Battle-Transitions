@@ -25,6 +25,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
   public static template = "angularwipe-config";
   public static icon = "<i class='bt-icon angular-wipe fa-fw fas'></i>"
   public static category = "wipe";
+  public static reversible = true;
 
   // #endregion Properties (5)
 
@@ -61,13 +62,28 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     });
   }
 
+  public async reverse(): Promise<void> {
+    const config = {
+      ...AngularWipeStep.DefaultSettings,
+      ...this.config
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    await TweenMax.to(this.#filter?.uniforms, { progress: 0, duration: config.duration / 1000, ease: config.easing });
+  }
+
   // #endregion Public Static Methods (6)
 
   // #region Public Methods (1)
+  #filter: AngularWipeFilter | null = null;
 
   public async execute(container: PIXI.Container): Promise<void> {
-    const background = this.config.deserializedTexture ?? createColorTexture("transparent");
+    const config = {
+      ...AngularWipeStep.DefaultSettings,
+      ...this.config
+    }
+    const background = config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new AngularWipeFilter(background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
 
     await this.simpleTween(filter);
