@@ -3,7 +3,7 @@ import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
-import { downloadJSON, formatDuration, getStepClassByKey, localize } from "../utils";
+import { downloadJSON, formatDuration, getStepClassByKey, localize, uploadJSON } from "../utils";
 
 import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from "./functions";
 
@@ -44,11 +44,20 @@ function addEventListeners(app: SceneConfig, html: JQuery<HTMLElement>) {
   });
 
   // Download
-  html.find(`button[data-action="export-json"]`).on("click", e => {
-    e.preventDefault();
-    const sequence = buildTransitionFromForm(html);
-    downloadJSON(sequence, `${app.document.name}.json`);
+  html.find(`[data-action="export-json"]`).on("click", e => {
+    if ($(e.currentTarget).is(":visible")) {
+      e.preventDefault();
+      const sequence = buildTransitionFromForm(html);
+      downloadJSON(sequence, `${app.document.name}.json`);
+    }
   });
+
+  html.find(`[data-action="import-json"]`).on("click", e => {
+    if ($(e.currentTarget).is(":visible")) {
+      e.preventDefault();
+      void uploadHandler(app, html);
+    }
+  })
 
   // Save button
   html.find(".sheet-footer button[type='submit']").on("click", () => {
@@ -66,6 +75,17 @@ function addEventListeners(app: SceneConfig, html: JQuery<HTMLElement>) {
   });
 }
 
+async function uploadHandler(app: SceneConfig, html: JQuery<HTMLElement>) {
+  const current = buildTransitionFromForm(html);
+  if (current.length) {
+    const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
+    if (!confirmation) return;
+  }
+  const sequence = await uploadJSON<TransitionConfiguration[]>();
+  html.find("#transition-step-list").children().remove();
+  for (const step of sequence)
+    await upsertStepButton(app, html, step);
+}
 
 async function addStep(app: SceneConfig, html: JQuery<HTMLElement>) {
   const key = await addStepDialog();
@@ -122,6 +142,7 @@ async function upsertStepButton(app: SceneConfig, html: JQuery<HTMLElement>, con
   if (extant.length) extant.replaceWith(button);
   else html.find("#transition-step-list").append(button);
 
+  app.setPosition();
   addStepEventListeners(app, html, button, config);
 }
 

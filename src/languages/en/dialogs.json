@@ -1,13 +1,15 @@
 {
   "BATTLETRANSITIONS": {
     "DIALOGS": {
+      "IMPORTCONFIRM": {
+        "TITLE": "Import Sequence",
+        "MESSAGE": "Importing a sequence will overwrite the existing one, are you sure you want to do this?"
+      },
       "BUTTONS": {
         "CANCEL": "Cancel",
         "OK": "Ok",
         "CLEARSEARCH": "Clear search",
-        "TRANSITION": "Transition",
-        "IMPORTSEQUENCE": "Import Sequence",
-        "EXPORTSEQUENCE": "Export Sequence"
+        "TRANSITION": "Transition"
       },
       "ADDSTEP": {
         "TITLE": "Add Transition Step",

@@ -18,6 +18,7 @@ export * from './NewerVersionError';
 export * from './NoApplicationError';
 export * from './NoBackgroundProvidedError';
 export * from './NoCoverElementError';
+export * from './NoFileError';
 export * from './NoImageProvidedError';
 export * from './NoPreviousStepError';
 export * from './NoVideoProvidedError';

@@ -1,6 +1,6 @@
 import { coerceTexture } from "./coercion";
 import { LOG_ICON } from "./constants";
-import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidObjectError, InvalidTextureError } from "./errors";
+import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidObjectError, InvalidTextureError, NoFileError } from "./errors";
 import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
@@ -452,28 +452,28 @@ export async function wait(duration: number) {
 // #endregion Functions (33)
 
 
-export async function confirmDialog(title: string, content: string): Promise<boolean> {
-  if (shouldUseAppV2() && foundry.applications.api.DialogV2) return confirmV2(title, content);
-  else return confirmV1(title, content);
+// export async function confirmDialog(title: string, content: string): Promise<boolean> {
+//   if (shouldUseAppV2() && foundry.applications.api.DialogV2) return confirmV2(title, content);
+//   else return confirmV1(title, content);
 
-}
+// }
 
-async function confirmV1(title: string, content: string): Promise<boolean> {
-  return Dialog.confirm({
-    title: localize(title),
-    content: localize(content),
-    rejectClose: false
-  }).then(val => !!val)
-}
+// async function confirmV1(title: string, content: string): Promise<boolean> {
+//   return Dialog.confirm({
+//     title: localize(title),
+//     content: localize(content),
+//     rejectClose: false
+//   }).then(val => !!val)
+// }
 
-async function confirmV2(title: string, content: string): Promise<boolean> {
-  return foundry.applications.api.DialogV2.confirm({
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    window: { title: localize(title) } as any,
-    content: localize(content),
-    rejectClose: false
-  }).then(val => !!val);
-}
+// async function confirmV2(title: string, content: string): Promise<boolean> {
+//   return foundry.applications.api.DialogV2.confirm({
+//     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+//     window: { title: localize(title) } as any,
+//     content: localize(content),
+//     rejectClose: false
+//   }).then(val => !!val);
+// }
 
 export function isColor(data: string): boolean {
   return CSS.supports("color", data);
@@ -595,4 +595,32 @@ export function downloadJSON(json: object, name: string) {
   link.download = name.endsWith(".json") ? name : `${name}.json`;
   link.click();
   URL.revokeObjectURL(objUrl);
+}
+
+export function uploadJSON<t = any>(): Promise<t> {
+  return new Promise<t>((resolve, reject) => {
+    const file = document.createElement("input");
+    file.setAttribute("type", "file");
+    file.setAttribute("accept", "application/json");
+    file.onchange = e => {
+      const file = (e.currentTarget as HTMLInputElement).files?.[0];
+      if (!file) {
+        reject(new NoFileError());
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = e => {
+        if (!e.target?.result) throw new NoFileError();
+        if (typeof e.target.result === "string") resolve(JSON.parse(e.target.result) as t);
+      }
+      reader.readAsText(file);
+    }
+    file.onerror = (event, source, line, col, error) => {
+      if (error) reject(error);
+      else reject(new Error(typeof event === "string" ? event : typeof undefined));
+    }
+
+    file.click();
+  })
+
 }

@@ -22,6 +22,7 @@
       "NOAPPLICATION": "No PIXI Application",
       "NOBACKGROUNDPROVIDED": "No background image or color provided.",
       "NOCOVERELEMENT": "Unable to locate transition cover facade",
+      "NOFILE": "No file loaded.",
       "NOIMAGEPROVIDED": "No image provided.",
       "NOPREVIOUSSTEP": "No previous step to repeat.",
       "NOTIMPLEMENTED": "Not implemented.",
