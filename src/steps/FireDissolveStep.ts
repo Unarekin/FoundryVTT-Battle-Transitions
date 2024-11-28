@@ -22,6 +22,7 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
   public static key = "firedissolve";
   public static name = "FIREDISSOLVE";
   public static template = "firedissolve-config";
+  public static reversible: boolean = true;
 
   // #endregion Properties (7)
 
@@ -60,9 +61,16 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
 
   // #region Public Methods (1)
 
+  #filter: FireDissolveFilter | null = null;
+
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof FireDissolveFilter) await this.simpleReverse(this.#filter);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
     const filter = new FireDissolveFilter(this.config.burnSize);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
