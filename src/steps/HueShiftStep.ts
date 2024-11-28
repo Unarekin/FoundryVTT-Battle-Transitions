@@ -84,7 +84,14 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
 
   #filters: HueShiftFilter[] = [];
   public async reverse(): Promise<void> {
-    await Promise.all(this.#filters.map(filter => this.simpleReverse(filter)));
+    const config: HueShiftConfiguration = {
+      ...HueShiftStep.DefaultSettings,
+      ...this.config
+    };
+    await Promise.all(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      this.#filters.map(filter => TweenMax.to(filter.uniforms, { shift: 0, duration: config.duration / 1000, ease: config.easing }))
+    );
   }
 
   public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
