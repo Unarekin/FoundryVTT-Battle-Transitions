@@ -1,4 +1,3 @@
-import { NotImplementedError } from "../errors";
 import { InvertFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
@@ -20,8 +19,7 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
   public static hidden: boolean = false;
   public static key = "invert";
   public static name = "INVERT";
-  public static skipConfig = true;
-  public static template = "";
+  public static template = "invert-config";
   public static category = "effect";
   public static icon = "<i class='bt-icon invert fa-fw fas'></i>"
 
@@ -29,17 +27,17 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
 
   // #region Public Static Methods (6)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static RenderTemplate(config?: InvertConfiguration): Promise<string> {
-    throw new NotImplementedError();
-    /*
-          dualStyleSelect: {
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${InvertStep.template}.hbs`, {
+      ...InvertStep.DefaultSettings,
+      ...(config ? config : {}),
+      dualStyleSelect: {
         "overlay": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.OVERLAY`,
         "scene": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.SCENE`,
         "both": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.BOTH`
       },
       dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
-    */
+    })
   }
 
   public static from(config: InvertConfiguration): InvertStep
