@@ -75,6 +75,28 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
       void uploadHandler(dialog, html);
     }
   })
+
+  html.find("[data-action='clear-steps']").on("click", e => {
+    if ($(e.currentTarget).is(":visible")) {
+      e.preventDefault();
+      void clearButtonhandler(html);
+    }
+  })
+  setClearDisabled(html);
+}
+
+async function clearButtonhandler(html: JQuery<HTMLElement>) {
+  const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
+  if (!confirmed) return;
+  html.find("#transition-step-list").children().remove();
+  await updateTotalDuration(html);
+  setClearDisabled(html);
+}
+
+function setClearDisabled(html: JQuery<HTMLElement>) {
+  const sequence = buildTransitionFromForm(html);
+  if (!sequence.length) html.find("#clear-steps").attr("disabled", "true");
+  else html.find("#clear-steps").removeAttr("disabled");
 }
 
 async function uploadHandler(dialog: Dialog, html: JQuery<HTMLElement>) {
@@ -115,6 +137,12 @@ async function addStep(dialog: Dialog, html: JQuery<HTMLElement>) {
 }
 
 
+async function updateTotalDuration(html: JQuery<HTMLElement>) {
+  const sequence = buildTransitionFromForm(html);
+  const totalDuration = await sequenceDuration(sequence);
+  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+}
+
 async function upsertStepButton(dialog: Dialog, html: JQuery<HTMLElement>, config: TransitionConfiguration) {
   const step = getStepClassByKey(config.type);
   if (!step) throw new InvalidTransitionError(config.type);
@@ -123,8 +151,7 @@ async function upsertStepButton(dialog: Dialog, html: JQuery<HTMLElement>, confi
   const durationRes = step.getDuration(config, sequence);
   const duration = (durationRes instanceof Promise) ? (await durationRes) : durationRes;
 
-  const totalDuration = await sequenceDuration(sequence);
-  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+  await updateTotalDuration(html);
 
   const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
     ...step.DefaultSettings,
