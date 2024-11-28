@@ -27,6 +27,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
   public static key = "spiralshutter";
   public static name = "SPIRALSHUTTER";
   public static template = "spiralshutter-config";
+  public static reversible: boolean = true;
 
   // #endregion Properties (7)
 
@@ -70,6 +71,11 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
 
   // #region Public Methods (1)
 
+  #filter: SpiralShutterFilter | null = null;
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof SpiralShutterFilter) await this.simpleReverse(this.#filter);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
     const config: SpiralShutterConfiguration = {
@@ -78,6 +84,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
     };
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new SpiralShutterFilter(config.direction, config.radial, background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
