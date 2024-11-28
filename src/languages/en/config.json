@@ -93,13 +93,6 @@
         }
       },
       "COMMON": {
-        "DUALSTYLE": {
-          "LABEL": "Apply effect to",
-          "HINT": "This effect can be applied to the transition overlay, the new scene, or both.",
-          "SCENE": "Apply to New Scene",
-          "OVERLAY": "Apply To Overlay",
-          "BOTH": "Apply To Both"
-        },
         "ACTOR": {
           "HINT": "",
           "LABEL": "Actor"
@@ -119,17 +112,24 @@
           "HINT": "Direction from which to start",
           "LABEL": "Direction"
         },
+        "DUALSTYLE": {
+          "BOTH": "Apply To Both",
+          "HINT": "This effect can be applied to the transition overlay, the new scene, or both.",
+          "LABEL": "Apply effect to",
+          "OVERLAY": "Apply To Overlay",
+          "SCENE": "Apply to New Scene"
+        },
         "DURATION": {
           "HINT": "Duration in milliseconds",
           "LABEL": "Duration"
         },
         "FONT": {
-          "LABEL": "Font",
-          "HINT": "Select a font family."
+          "HINT": "Select a font family.",
+          "LABEL": "Font"
         },
         "FONTSIZE": {
-          "LABEL": "Font Size",
-          "HINT": "Size of the font, in pixels."
+          "HINT": "Size of the font, in pixels.",
+          "LABEL": "Font Size"
         },
         "LABEL": {
           "FORMAT": "({label})",
@@ -167,6 +167,47 @@
           "LABEL": "Shift Amount"
         }
       },
+      "LOADINGTIP": {
+        "FONTCOLOR": {
+          "HINT": "Color of the loading tip text.",
+          "LABEL": "Font Color"
+        },
+        "LOCATION": {
+          "BOTTOMCENTER": "Bottom Center",
+          "BOTTOMLEFT": "Bottom Left",
+          "BOTTOMRIGHT": "Bottom Right",
+          "CENTER": "Center",
+          "HINT": "Section of the screen to display the loading tip.",
+          "LABEL": "Screen Location",
+          "TOPCENTER": "Top Center",
+          "TOPLEFT": "Top Left",
+          "TOPRIGHT": "Top Right"
+        },
+        "MESSAGE": {
+          "HINT": "Loading tip message to display.",
+          "LABEL": "Message"
+        },
+        "ROLLTABLE": {
+          "HINT": "RollTable from which to select message.",
+          "LABEL": "RollTable"
+        },
+        "SOURCETYPE": {
+          "HINT": "The source from the loading tip will come.",
+          "LABEL": "Source",
+          "ROLLTABLE": {
+            "HINT": "Select a random message from a RollTable.",
+            "LABEL": "RollTable"
+          },
+          "STRING": {
+            "HINT": "Specify a message.",
+            "LABEL": "String"
+          }
+        },
+        "TABS": {
+          "BASICS": "Basics",
+          "FONT": "Font Settings"
+        }
+      },
       "PARALLEL": {
         "ADDSEQUENCE": "Add Sequence",
         "SEQUENCE": "Sequence {index}"
@@ -198,6 +239,12 @@
           "LABEL": "Repeat Style"
         }
       },
+      "REVERSE": {
+        "DELAY": {
+          "HINT": "Time to delay before reversing the previous effect.",
+          "LABEL": "Delay"
+        }
+      },
       "SOUND": {
         "FILE": {
           "HINT": "Sound file to play",
@@ -211,47 +258,6 @@
           "LABEL": "Texture"
         }
       },
-      "LOADINGTIP": {
-        "TABS": {
-          "BASICS": "Basics",
-          "FONT": "Font Settings"
-        },
-        "FONTCOLOR": {
-          "LABEL": "Font Color",
-          "HINT": "Color of the loading tip text."
-        },
-        "LOCATION": {
-          "LABEL": "Screen Location",
-          "HINT": "Section of the screen to display the loading tip.",
-          "TOPLEFT": "Top Left",
-          "TOPCENTER": "Top Center",
-          "TOPRIGHT": "Top Right",
-          "BOTTOMLEFT": "Bottom Left",
-          "BOTTOMRIGHT": "Bottom Right",
-          "BOTTOMCENTER": "Bottom Center",
-          "CENTER": "Center"
-        },
-        "MESSAGE": {
-          "LABEL": "Message",
-          "HINT": "Loading tip message to display."
-        },
-        "ROLLTABLE": {
-          "LABEL": "RollTable",
-          "HINT": "RollTable from which to select message."
-        },
-        "SOURCETYPE": {
-          "LABEL": "Source",
-          "HINT": "The source from the loading tip will come.",
-          "STRING": {
-            "LABEL": "String",
-            "HINT": "Specify a message."
-          },
-          "ROLLTABLE": {
-            "LABEL": "RollTable",
-            "HINT": "Select a random message from a RollTable."
-          }
-        }
-      },
       "TOTALDURATION": "Total duration: {duration}",
       "TRANSITIONCONFIG": {
         "LABEL": "Transition Steps"
@@ -263,9 +269,6 @@
         }
       },
       "ZOOM": {
-        "TARGETDIALOG": {
-          "TITLE": "Zoom Target"
-        },
         "AMOUNT": {
           "HINT": "Amount by which to multiply overlay UVs.  1 = normal size, <1 = closer, >1 = further away.",
           "LABEL": "Zoom Amount"
@@ -278,11 +281,10 @@
           "HINT": "Screen point or scene element on which to center the zoom effect.",
           "LABEL": "Target"
         },
+        "TARGETDIALOG": {
+          "TITLE": "Zoom Target"
+        },
         "TARGETTYPE": {
-          "PROMPT": {
-            "LABEL": "Ask Before Transition",
-            "HINT": "Prompt the target of this zoom effect at the start of the transition."
-          },
           "DRAWING": {
             "HINT": "Zoom based on the mid point of a drawing in the current scene.",
             "LABEL": "Drawing in Current Scene",
@@ -311,6 +313,10 @@
             "LABEL": "Screen Point",
             "X": "X",
             "Y": "Y"
+          },
+          "PROMPT": {
+            "HINT": "Prompt the target of this zoom effect at the start of the transition.",
+            "LABEL": "Ask Before Transition"
           },
           "TILE": {
             "HINT": "Zoom based on the mid point of a tile in the current scene.",

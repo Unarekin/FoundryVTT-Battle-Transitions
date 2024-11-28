@@ -136,7 +136,9 @@ export interface MacroConfiguration extends TransitionConfiguration {
 // //   keyColor: string;
 // // }
 
-export type ReverseConfiguration = TransitionConfiguration;
+export type ReverseConfiguration = TransitionConfiguration & ({
+  delay: number;
+});
 export type RemoveOverlayConfiguration = TransitionConfiguration;
 export type RestoreOverlayConfiguration = TransitionConfiguration;
 export type ClearEffectsConfiguration = TransitionConfiguration & DualTransition;

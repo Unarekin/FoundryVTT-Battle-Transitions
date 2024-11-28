@@ -82,7 +82,6 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
     this.#sceneFilter = null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): void {
     const config: TextureSwapConfiguration = {
       ...TextureSwapStep.DefaultSettings,

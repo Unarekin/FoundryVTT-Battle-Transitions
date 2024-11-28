@@ -2,11 +2,11 @@ import { coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, serializeTexture, shouldUseAppV2 } from "./utils";
+import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, log, serializeTexture, shouldUseAppV2 } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { transitionBuilderDialog } from "./dialogs";
 
@@ -141,7 +141,6 @@ export class BattleTransition {
       BattleTransition.SuppressSoundUpdates = true;
       // Execute
       for (const step of prepared.prepared.sequence) {
-
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if ((step.config as any).backgroundType === "overlay" || (step.config as any).serializedTexture === "overlay") {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -245,23 +244,6 @@ export class BattleTransition {
     }
   }
 
-  /**
-   * Executes the previous step, but in reverse.
-   * @returns 
-   */
-  public reverse(): this {
-    const step = getStepClassByKey("reverse");
-    if (!step) throw new InvalidTransitionError("reverse");
-    if (!step.reversible) throw new StepNotReversibleError(step.key);
-
-    this.#sequence.push({
-      ...step.DefaultSettings,
-      id: foundry.utils.randomID()
-    });
-
-    return this;
-  }
-
   public static async teardownSequence(container: PIXI.Container, sequence: PreparedTransitionSequence) {
     for (const step of sequence.sequence) {
       await step.teardown(container);
@@ -276,7 +258,6 @@ export class BattleTransition {
         // const handler = BattleTransition.StepTypes[step.type];
         if (!handler) throw new InvalidTransitionError(step.type);
 
-
         const valid = await handler.validate(step, sequence);
         if (valid instanceof Error) return valid;
         validated.push(valid);
@@ -289,7 +270,7 @@ export class BattleTransition {
 
   // #endregion Public Static Methods (7)
 
-  // #region Public Methods (46)
+  // #region Public Methods (52)
 
   /**
    * Adds an angular wipe, mimicking the battle with Brock in Pokemon Fire Red
@@ -495,6 +476,15 @@ export class BattleTransition {
   }
 
   /**
+   * Sets the transition overlay to invisible, but will still allow for playing transition effects.
+   * @returns 
+   */
+  public hideOverlay(): this {
+    this.#sequence.push({ id: foundry.utils.randomID(), type: "removeoverlay", version: "1.1.0" });
+    return this;
+  }
+
+  /**
    * 
    * @param {number} amount - Amount by which to shift the hue
    * @param {number} [duration=0] - Duration, in milliseconds, the shift should take to complete
@@ -544,6 +534,52 @@ export class BattleTransition {
       backgroundType: backgroundType(background),
       easing
     } as LinearWipeConfiguration)
+    return this;
+  }
+
+  public loadingTip(message: string, location?: LoadingTipLocation, duration?: number, style?: PIXI.HTMLTextStyle): this
+  public loadingTip(rollTable: string, location?: LoadingTipLocation, style?: PIXI.HTMLTextStyle): this
+  public loadingTip(source: string, location: LoadingTipLocation = "bottomcenter", ...others: unknown[]): this {
+    const step = getStepClassByKey("loadingtip");
+    if (!step) throw new InvalidTransitionError("loadingtip");
+
+    // Parse arguments
+    const duration: number = typeof others[0] === "number" ? others[0] : 0;
+
+    let style: PIXI.HTMLTextStyle | null = null;
+    if (others[1] instanceof PIXI.HTMLTextStyle) {
+      style = others[1];
+    } else if (others[0] instanceof PIXI.HTMLTextStyle) {
+      style = others[0];
+    } else {
+      style = new PIXI.HTMLTextStyle();
+      deepCopy(style, PIXI.HTMLTextStyle.defaultStyle);
+      deepCopy(style, (step.DefaultSettings as LoadingTipConfiguration).style);
+    }
+
+    // Check for UUID
+    const parsed = typeof foundry.utils.parseUuid === "function" ? foundry.utils.parseUuid(source) : parseUuid(source);
+
+    const config: LoadingTipConfiguration = {
+      ...step.DefaultSettings as LoadingTipConfiguration,
+      duration,
+      location
+    }
+
+    if (parsed && parsed.type === RollTable.documentName) {
+      const table: RollTable | undefined = fromUuidSync(source) as RollTable | undefined;
+      if (table instanceof RollTable) {
+        config.source = "rolltable";
+        config.table = table.uuid;
+      }
+    } else {
+      config.source = "string";
+      config.message = source;
+    }
+    config.style = JSON.parse(JSON.stringify(style)) as object;
+
+    this.#sequence.push(config);
+
     return this;
   }
 
@@ -658,15 +694,6 @@ export class BattleTransition {
   }
 
   /**
-   * Sets the transition overlay to invisible, but will still allow for playing transition effects.
-   * @returns 
-   */
-  public hideOverlay(): this {
-    this.#sequence.push({ id: foundry.utils.randomID(), type: "removeoverlay", version: "1.1.0" });
-    return this;
-  }
-
-  /**
    * Repeats the previous transition step a specified number of times
    * @param {number} iterations - Number of times to repeat
    */
@@ -732,6 +759,27 @@ export class BattleTransition {
   public restoreOverlay(): this {
     ui.notifications?.warn("BATTLETRANSITIONS.WARNINGS.RESTOREOVERLAYDEPRECATION", { localize: true });
     return this.showOverlay();
+  }
+
+  /**
+   * Executes the previous step, but in reverse.
+   * @param {number} [delay=0] - Duration, in milliseconds, to wait before reversing the previous step.
+   */
+  public reverse(delay: number = 0): this {
+    const step = getStepClassByKey("reverse");
+    if (!step) throw new InvalidTransitionError("reverse");
+    if (!step.reversible) throw new StepNotReversibleError(step.key);
+
+    const config: ReverseConfiguration = {
+      ...step.DefaultSettings,
+      delay,
+      id: foundry.utils.randomID()
+    }
+
+    log("Adding reverse:", config);
+    this.#sequence.push(config);
+
+    return this;
   }
 
   /**
@@ -982,56 +1030,7 @@ export class BattleTransition {
     return this;
   }
 
-
-  public loadingTip(message: string, location?: LoadingTipLocation, duration?: number, style?: PIXI.HTMLTextStyle): this
-  public loadingTip(rollTable: string, location?: LoadingTipLocation, style?: PIXI.HTMLTextStyle): this
-  public loadingTip(source: string, location: LoadingTipLocation = "bottomcenter", ...others: unknown[]): this {
-    const step = getStepClassByKey("loadingtip");
-    if (!step) throw new InvalidTransitionError("loadingtip");
-
-    // Parse arguments
-    const duration: number = typeof others[0] === "number" ? others[0] : 0;
-
-    let style: PIXI.HTMLTextStyle | null = null;
-    if (others[1] instanceof PIXI.HTMLTextStyle) {
-      style = others[1];
-    } else if (others[0] instanceof PIXI.HTMLTextStyle) {
-      style = others[0];
-    } else {
-      style = new PIXI.HTMLTextStyle();
-      deepCopy(style, PIXI.HTMLTextStyle.defaultStyle);
-      deepCopy(style, (step.DefaultSettings as LoadingTipConfiguration).style);
-    }
-
-
-    // Check for UUID
-    const parsed = typeof foundry.utils.parseUuid === "function" ? foundry.utils.parseUuid(source) : parseUuid(source);
-
-    const config: LoadingTipConfiguration = {
-      ...step.DefaultSettings as LoadingTipConfiguration,
-      duration,
-      location
-    }
-
-    if (parsed && parsed.type === RollTable.documentName) {
-      const table: RollTable | undefined = fromUuidSync(source) as RollTable | undefined;
-      if (table instanceof RollTable) {
-        config.source = "rolltable";
-        config.table = table.uuid;
-      }
-    } else {
-      config.source = "string";
-      config.message = source;
-    }
-    config.style = JSON.parse(JSON.stringify(style)) as object;
-
-    this.#sequence.push(config);
-
-    return this;
-  }
-
-
-  // #endregion Public Methods (46)
+  // #endregion Public Methods (52)
 }
 
 // #endregion Classes (1)
