@@ -23,6 +23,7 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
   public static key: string = "pixelate";
   public static name: string = "PIXELATE";
   public static template: string = "pixelate-config";
+  public static reversible: boolean = true;
 
   // #endregion Properties (7)
 
@@ -72,6 +73,20 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
 
   #sceneFilter: PIXI.Filter | null = null;
 
+  #filters: PIXI.Filter[] = [];
+
+  public async reverse(): Promise<void> {
+    const config: PixelateConfiguration = {
+      ...PixelateStep.DefaultSettings,
+      ...this.config
+    }
+
+    await Promise.all(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      this.#filters.map(filter => TweenMax.to(filter.uniforms.size, { 0: 1, 1: 1, duration: config.duration / 1000, ease: config.easing }))
+    );
+  }
+
   public teardown(): Promise<void> | void {
     if (this.#sceneFilter) removeFilterFromScene(this.#sceneFilter);
     this.#sceneFilter = null;
@@ -100,7 +115,7 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
       this.#sceneFilter = filter;
     }
 
-
+    this.#filters = [...filters];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms.size, { 0: config.maxSize, 1: config.maxSize, duration: config.duration / 1000, ease: config.easing }) as Promise<void>));
