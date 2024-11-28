@@ -26,6 +26,7 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
   public static key = "spiralwipe";
   public static name = "SPIRALWIPE";
   public static template = "spiralwipe-config";
+  public static reversible: boolean = true;
 
   // #endregion Properties (7)
 
@@ -73,6 +74,11 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
 
   // #endregion Public Static Methods (7)
 
+  #filter: SpiralWipeFilter | null = null;
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof SpiralWipeFilter) await this.simpleReverse(this.#filter);
+  }
+
   // #region Public Methods (1)
 
   public async execute(container: PIXI.Container): Promise<void> {
@@ -83,6 +89,7 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
 
     const background = config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new SpiralWipeFilter(config.clockDirection, config.radial, config.direction, background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
