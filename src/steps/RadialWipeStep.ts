@@ -32,6 +32,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   public static key = "radialwipe";
   public static name = "RADIALWIPE";
   public static template = "radialwipe-config";
+  public static reversible: boolean = true;
 
   // #endregion Properties (8)
 
@@ -73,6 +74,11 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
 
   // #region Public Methods (1)
 
+  #filter: RadialWipeFilter | null = null;
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof RadialWipeFilter) await this.simpleReverse(this.#filter);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
     const config: RadialWipeConfiguration = {
@@ -82,6 +88,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     const background = config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new RadialWipeFilter(config.radial, background.baseTexture);
     this.addFilter(container, filter);
+    this.#filter = filter;
     await this.simpleTween(filter);
   }
 
