@@ -79,19 +79,46 @@ function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQue
       e.preventDefault();
       void uploadHandler(dialog, html);
     }
+  });
+
+  html.find("[data-action='clear-steps']").on("click", e => {
+    if ($(e.currentTarget).is(":visible")) {
+      e.preventDefault();
+      void clearButtonhandler(html);
+    }
   })
+  setClearDisabled(html);
+}
+
+async function clearButtonhandler(html: JQuery<HTMLElement>) {
+  const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
+  if (!confirmed) return;
+  html.find("#transition-step-list").children().remove();
+  await updateTotalDuration(html);
+  setClearDisabled(html);
+}
+
+function setClearDisabled(html: JQuery<HTMLElement>) {
+  const sequence = buildTransitionFromForm(html);
+  if (!sequence.length) html.find("#clear-steps").attr("disabled", "true");
+  else html.find("#clear-steps").removeAttr("disabled");
 }
 
 async function uploadHandler(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>) {
-  const current = buildTransitionFromForm(html);
-  if (current.length) {
-    const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
-    if (!confirmation) return;
+  try {
+    const current = buildTransitionFromForm(html);
+    if (current.length) {
+      const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
+      if (!confirmation) return;
+    }
+    const sequence = await uploadJSON<TransitionConfiguration[]>();
+    html.find("#transition-step-list").children().remove();
+    for (const step of sequence)
+      await upsertStepButton(dialog, html, step);
+  } catch (err) {
+    ui.notifications?.error((err as Error).message, { console: false });
+    console.error(err);
   }
-  const sequence = await uploadJSON<TransitionConfiguration[]>();
-  html.find("#transition-step-list").children().remove();
-  for (const step of sequence)
-    await upsertStepButton(dialog, html, step);
 }
 
 async function addStep(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>) {
@@ -118,6 +145,12 @@ async function addStep(dialog: foundry.applications.api.DialogV2, html: JQuery<H
   if (!config) return;
 
   await upsertStepButton(dialog, html, config);
+}
+
+async function updateTotalDuration(html: JQuery<HTMLElement>) {
+  const sequence = buildTransitionFromForm(html);
+  const totalDuration = await sequenceDuration(sequence);
+  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
 }
 
 async function upsertStepButton(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>, config: TransitionConfiguration) {
@@ -153,6 +186,7 @@ async function upsertStepButton(dialog: foundry.applications.api.DialogV2, html:
   if (extant.length) extant.replaceWith(button);
   else html.find("#transition-step-list").append(button);
 
+  setClearDisabled(html);
   addStepEventListeners(dialog, html, button, config);
 }
 
@@ -165,8 +199,10 @@ function addStepEventListeners(dialog: foundry.applications.api.DialogV2, html: 
       localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) })
     )
       .then(confirm => {
-        if (confirm)
+        if (confirm) {
           button.remove();
+          setClearDisabled(html);
+        }
       }).catch((err: Error) => {
         ui.notifications?.error(err.message, { console: false });
         console.error(err);

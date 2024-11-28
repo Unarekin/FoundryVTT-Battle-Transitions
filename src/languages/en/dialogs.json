@@ -11,6 +11,10 @@
         "CLEARSEARCH": "Clear search",
         "TRANSITION": "Transition"
       },
+      "CLEARSTEPS": {
+        "TITLE": "Clear Transition Sequence",
+        "MESSAGE": "Are you sure you wish to remove all transition steps?"
+      },
       "ADDSTEP": {
         "TITLE": "Add Transition Step",
         "SEARCH": {

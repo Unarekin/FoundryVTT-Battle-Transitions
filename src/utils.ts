@@ -1,11 +1,11 @@
 import { coerceTexture } from "./coercion";
 import { LOG_ICON } from "./constants";
-import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidObjectError, InvalidTextureError, NoFileError } from "./errors";
+import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidImportError, InvalidObjectError, InvalidTextureError, NoFileError } from "./errors";
 import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 import { bytesToBase64 } from "./lib/base64Utils";
-import { TransitionStep, BackgroundTransition } from "./steps";
+import { TransitionStep, BackgroundTransition, TransitionConfiguration } from "./steps";
 import * as steps from "./steps"
 import { BackgroundType, TextureLike } from "./types";
 
@@ -595,6 +595,22 @@ export function downloadJSON(json: object, name: string) {
   link.download = name.endsWith(".json") ? name : `${name}.json`;
   link.click();
   URL.revokeObjectURL(objUrl);
+}
+
+export async function importSequence(): Promise<TransitionConfiguration[] | null> {
+  const json = await uploadJSON<TransitionConfiguration[]>();
+  const sequence: TransitionConfiguration[] = [];
+  if (!json) return null;
+  if (!Array.isArray(json)) throw new InvalidImportError();
+  for (const config of json) {
+    const step = getStepClassByKey(config.type);
+    if (!step) throw new InvalidImportError();
+    const res = step.validate(config, json);
+    const actual = (res instanceof Promise) ? await res : res;
+    if (actual instanceof Error) throw actual;
+    sequence.push(actual);
+  }
+  return sequence;
 }
 
 export function uploadJSON<t = any>(): Promise<t> {

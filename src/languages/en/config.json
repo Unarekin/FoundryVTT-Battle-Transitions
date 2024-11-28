@@ -78,7 +78,8 @@
       "BUTTONS": {
         "ADDSTEP": "Add Step",
         "CONFIGURE": "Configure {name}",
-        "REMOVE": "Remove {name}"
+        "REMOVE": "Remove {name}",
+        "CLEARSTEPS": "Clear Steps"
       },
       "CHROMAKEY": {
         "KEYCOLOR": {
