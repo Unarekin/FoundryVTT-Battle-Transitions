@@ -32,6 +32,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
   public static key = "spotlightwipe";
   public static name = "SPOTLIGHTWIPE";
   public static template = "spotlightwipe-config";
+  public static reversible: boolean = true;
 
   // #endregion Properties (8)
 
@@ -78,7 +79,13 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
 
   // #endregion Public Static Methods (7)
 
+
   // #region Public Methods (1)
+
+  #filter: SpotlightWipeFilter | null = null;
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof SpotlightWipeFilter) await this.simpleReverse(this.#filter);
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
@@ -88,6 +95,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
     };
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new SpotlightWipeFilter(config.direction, config.radial, background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
