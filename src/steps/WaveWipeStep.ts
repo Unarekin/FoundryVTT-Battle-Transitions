@@ -26,6 +26,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
   public static key = "wavewipe";
   public static name: string = "WAVEWIPE";
   public static template = "wavewipe-config";
+  public static reversible: boolean = true;
 
   // #endregion Properties (7)
 
@@ -68,6 +69,11 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
 
   // #region Public Methods (1)
 
+  #filter: WaveWipeFilter | null = null;
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof WaveWipeFilter) await this.simpleReverse(this.#filter);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
     const config: WaveWipeConfiguration = {
@@ -76,6 +82,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new WaveWipeFilter(config.direction, background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
