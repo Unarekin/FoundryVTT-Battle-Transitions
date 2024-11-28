@@ -3,6 +3,7 @@ export * from './CanvasNotFoundError';
 export * from './FileNotFoundError';
 export * from './InvalidDirectionError';
 export * from './InvalidElementError';
+export * from './InvalidImportError';
 export * from './InvalidMacroError';
 export * from './InvalidObjectError';
 export * from './InvalidRollTableError';

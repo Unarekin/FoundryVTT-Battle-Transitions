@@ -105,15 +105,20 @@ function setClearDisabled(html: JQuery<HTMLElement>) {
 }
 
 async function uploadHandler(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>) {
-  const current = buildTransitionFromForm(html);
-  if (current.length) {
-    const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
-    if (!confirmation) return;
+  try {
+    const current = buildTransitionFromForm(html);
+    if (current.length) {
+      const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
+      if (!confirmation) return;
+    }
+    const sequence = await uploadJSON<TransitionConfiguration[]>();
+    html.find("#transition-step-list").children().remove();
+    for (const step of sequence)
+      await upsertStepButton(dialog, html, step);
+  } catch (err) {
+    ui.notifications?.error((err as Error).message, { console: false });
+    console.error(err);
   }
-  const sequence = await uploadJSON<TransitionConfiguration[]>();
-  html.find("#transition-step-list").children().remove();
-  for (const step of sequence)
-    await upsertStepButton(dialog, html, step);
 }
 
 async function addStep(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>) {

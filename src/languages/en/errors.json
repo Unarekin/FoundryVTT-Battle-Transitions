@@ -8,6 +8,7 @@
       "FILENOTFOUND": "File not found: {file}",
       "INVALIDDIRECTION": "Invalid direction provided: {direction}",
       "INVALIDELEMENT": "Unable to locate HTML element",
+      "INVALIDIMPORT": "Invalid import data.",
       "INVALIDMARO": "Invalid macro: {macro}",
       "INVALIDOBJECT": "Invalid object specified: {object}",
       "INVALIDROLLTABLE": "Invalid RollTable provided: {table}",
