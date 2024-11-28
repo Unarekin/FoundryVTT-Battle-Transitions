@@ -25,6 +25,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
   public static key = "zoomblur";
   public static name = "ZOOMBLUR";
   public static template = "zoomblur-config";
+  public static reversible: boolean = true;
 
   // #endregion Properties (7)
 
@@ -85,6 +86,19 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
   }
 
 
+  #filters: PIXI.Filter[] = [];
+
+  public async reverse(): Promise<void> {
+    const config: ZoomBlurConfiguration = {
+      ...ZoomBlurStep.DefaultSettings,
+      ...this.config
+    };
+
+    await Promise.all(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+      this.#filters.map(filter => TweenMax.to(filter.uniforms, { uStrength: 0, duration: config.duration / 1000, ease: config.easing }))
+    )
+  }
 
   public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
     const config: ZoomBlurConfiguration = {
@@ -122,6 +136,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
       filters.push(filter);
     }
 
+    this.#filters = [...filters];
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
     await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms, { uStrength: config.maxStrength, duration: config.duration / 1000, ease: config.easing || "none" })));
   }
