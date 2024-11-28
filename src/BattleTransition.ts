@@ -9,6 +9,7 @@ import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike
 import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, log, serializeTexture, shouldUseAppV2 } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { transitionBuilderDialog } from "./dialogs";
+import { filters } from "./filters";
 
 // #region Type aliases (1)
 
@@ -24,15 +25,16 @@ type TransitionSequenceCallback = (transition: BattleTransition) => BattleTransi
  * Primary class that handles queueing, synchronizing, and executing transition sequences.
  */
 export class BattleTransition {
-  // #region Properties (2)
+  // #region Properties (3)
 
   #sequence: TransitionConfiguration[] = [];
 
+  public static Filters = filters;
   // // eslint-disable-next-line no-unused-private-class-members
   // #transitionOverlay: PIXI.DisplayObject[] = [];
   public static SuppressSoundUpdates: boolean = false;
 
-  // #endregion Properties (2)
+  // #endregion Properties (3)
 
   // #region Constructors (6)
 
