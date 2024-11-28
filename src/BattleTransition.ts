@@ -768,7 +768,11 @@ export class BattleTransition {
   public reverse(delay: number = 0): this {
     const step = getStepClassByKey("reverse");
     if (!step) throw new InvalidTransitionError("reverse");
-    if (!step.reversible) throw new StepNotReversibleError(step.key);
+
+    if (this.#sequence.length === 0) throw new InvalidTransitionError("reverse");
+    const prevStep = getStepClassByKey(this.#sequence[this.#sequence.length - 1].type);
+    if (!prevStep) throw new InvalidTransitionError("reverse");
+    if (!prevStep.reversible) throw new StepNotReversibleError(prevStep.key);
 
     const config: ReverseConfiguration = {
       ...step.DefaultSettings,
