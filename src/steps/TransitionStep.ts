@@ -106,6 +106,11 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
     if (index !== -1) container.filters?.splice(index, 1);
   }
 
+  protected async simpleReverse(filter: CustomFilter<any>): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    await TweenMax.to(filter.uniforms, { progress: 0, duration: (this.config as unknown as AnimatedTransition).duration / 1000, ease: (this.config as unknown as AnimatedTransition).easing || "none" });
+  }
+
   protected async simpleTween(filter: CustomFilter<any>): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     await TweenMax.to(filter.uniforms, { progress: 1, duration: (this.config as unknown as AnimatedTransition).duration / 1000, ease: (this.config as unknown as AnimatedTransition).easing || "none" });

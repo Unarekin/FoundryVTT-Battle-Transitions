@@ -5,7 +5,9 @@ import { TransitionStep } from "./TransitionStep";
 import { BarWipeConfiguration } from "./types";
 
 export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
-  // #region Properties (7)
+  // #region Properties (9)
+
+  #filter: BarWipeFilter | null = null;
 
   public static DefaultSettings: BarWipeConfiguration = {
     id: "",
@@ -26,10 +28,10 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
   public static icon: string = `<i class="fas fa-fw fa-bars"></i>`;
   public static key: string = "barwipe";
   public static name: string = "BARWIPE";
-  public static template: string = "barwipe-config";
   public static reversible: boolean = true;
+  public static template: string = "barwipe-config";
 
-  // #endregion Properties (7)
+  // #endregion Properties (9)
 
   // #region Public Static Methods (7)
 
@@ -70,21 +72,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
 
   // #endregion Public Static Methods (7)
 
-  // #region Public Methods (1)
-
-
-  #filter: BarWipeFilter | null = null;
-
-  public async reverse(): Promise<void> {
-    if (this.#filter instanceof BarWipeFilter) {
-      const config: BarWipeConfiguration = {
-        ...BarWipeStep.DefaultSettings,
-        ...this.config
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      await TweenMax.to(this.#filter.uniforms, { progress: 0, duration: config.duration / 1000, ease: config.easing });
-    }
-  }
+  // #region Public Methods (2)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence, preparedSequence: PreparedTransitionHash): Promise<void> {
@@ -92,7 +80,6 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
       ...BarWipeStep.DefaultSettings,
       ...this.config
     }
-
 
     const background = config.deserializedTexture ?? createColorTexture("transparent");
 
@@ -102,5 +89,9 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     await this.simpleTween(filter);
   }
 
-  // #endregion Public Methods (1)
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof BarWipeFilter) await this.simpleReverse(this.#filter);
+  }
+
+  // #endregion Public Methods (2)
 }

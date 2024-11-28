@@ -3,9 +3,10 @@ import { TransitionStep } from './TransitionStep';
 import { createColorTexture, generateEasingSelectOptions, parseConfigurationFormElements } from '../utils';
 import { AngularWipeFilter } from '../filters';
 
-
 export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
-  // #region Properties (5)
+  // #region Properties (9)
+
+  #filter: AngularWipeFilter | null = null;
 
   public static DefaultSettings: AngularWipeConfiguration = {
     id: "",
@@ -19,17 +20,17 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon angular-wipe fa-fw fas'></i>"
   public static key = "angularwipe";
   public static name = "ANGULARWIPE";
-  public static template = "angularwipe-config";
-  public static icon = "<i class='bt-icon angular-wipe fa-fw fas'></i>"
-  public static category = "wipe";
   public static reversible = true;
+  public static template = "angularwipe-config";
 
-  // #endregion Properties (5)
+  // #endregion Properties (9)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: AngularWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${AngularWipeStep.template}.hbs`, {
@@ -39,8 +40,6 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
       easingSelect: generateEasingSelectOptions()
     });
   }
-
-  public static getDuration(config: AngularWipeConfiguration): number { return { ...AngularWipeStep.DefaultSettings, ...config }.duration }
 
   public static from(config: AngularWipeConfiguration): AngularWipeStep
   public static from(form: HTMLFormElement): AngularWipeStep
@@ -62,19 +61,11 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     });
   }
 
-  public async reverse(): Promise<void> {
-    const config = {
-      ...AngularWipeStep.DefaultSettings,
-      ...this.config
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(this.#filter?.uniforms, { progress: 0, duration: config.duration / 1000, ease: config.easing });
-  }
+  public static getDuration(config: AngularWipeConfiguration): number { return { ...AngularWipeStep.DefaultSettings, ...config }.duration }
 
-  // #endregion Public Static Methods (6)
+  // #endregion Public Static Methods (7)
 
-  // #region Public Methods (1)
-  #filter: AngularWipeFilter | null = null;
+  // #region Public Methods (2)
 
   public async execute(container: PIXI.Container): Promise<void> {
     const config = {
@@ -89,5 +80,9 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     await this.simpleTween(filter);
   }
 
-  // #endregion Public Methods (1)
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof AngularWipeFilter) await this.simpleReverse(this.#filter);
+  }
+
+  // #endregion Public Methods (2)
 }
