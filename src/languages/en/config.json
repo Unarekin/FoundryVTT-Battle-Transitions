@@ -155,6 +155,10 @@
         "HINT": "The easing function to use when animating this transition.",
         "LABEL": "Easing"
       },
+      "EXPORT": {
+        "HINT": "Download a copy of this sequence as a .json file.",
+        "LABEL": "Export Sequence"
+      },
       "FIREDISSOLVE": {
         "BURNSIZE": {
           "HINT": "Size of the burn holes during transiton",
@@ -166,6 +170,10 @@
           "HINT": "Amount by which to shift the hue.  1 will wrap back around to the original hue.",
           "LABEL": "Shift Amount"
         }
+      },
+      "IMPORT": {
+        "HINT": "Import a transition sequence previously exported as a .json file.",
+        "LABEL": "Import Sequence"
       },
       "LOADINGTIP": {
         "FONTCOLOR": {
