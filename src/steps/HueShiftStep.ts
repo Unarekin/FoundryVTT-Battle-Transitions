@@ -82,9 +82,9 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
     this.#sceneFilter = null;
   }
 
-  #filter: HueShiftFilter | null = null;
+  #filters: HueShiftFilter[] = [];
   public async reverse(): Promise<void> {
-    if (this.#filter instanceof HueShiftFilter) await this.simpleReverse(this.#filter);
+    await Promise.all(this.#filters.map(filter => this.simpleReverse(filter)));
   }
 
   public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
@@ -93,13 +93,12 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
       ...this.config
     };
 
-    const filters: PIXI.Filter[] = [];
+    const filters: HueShiftFilter[] = [];
 
     if (config.applyToOverlay) {
       const filter = new HueShiftFilter(0);
       this.addFilter(container, filter);
       filters.push(filter);
-      this.#filter = filter;
     }
 
     if (config.applyToScene && canvas?.stage) {
@@ -111,7 +110,7 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
     }
 
 
-
+    this.#filters = [...filters];
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
     await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms, { shift: config.maxShift, duration: config.duration / 1000, ease: config.easing ?? "none" })));
   }
