@@ -27,6 +27,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
   public static key: string = "barwipe";
   public static name: string = "BARWIPE";
   public static template: string = "barwipe-config";
+  public static reversible: boolean = true;
 
   // #endregion Properties (7)
 
@@ -71,6 +72,20 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
 
   // #region Public Methods (1)
 
+
+  #filter: BarWipeFilter | null = null;
+
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof BarWipeFilter) {
+      const config: BarWipeConfiguration = {
+        ...BarWipeStep.DefaultSettings,
+        ...this.config
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await TweenMax.to(this.#filter.uniforms, { progress: 0, duration: config.duration / 1000, ease: config.easing });
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence, preparedSequence: PreparedTransitionHash): Promise<void> {
     const config: BarWipeConfiguration = {
@@ -82,6 +97,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     const background = config.deserializedTexture ?? createColorTexture("transparent");
 
     const filter = new BarWipeFilter(config.direction, config.bars, background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
