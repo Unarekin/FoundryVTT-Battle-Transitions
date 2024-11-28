@@ -24,6 +24,7 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
   public static key: string = "hueshift";
   public static name: string = "HUESHIFT";
   public static template: string = "hueshift-config";
+  public static reversible: boolean = true;
 
   // #endregion Properties (7)
 
@@ -81,6 +82,11 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
     this.#sceneFilter = null;
   }
 
+  #filter: HueShiftFilter | null = null;
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof HueShiftFilter) await this.simpleReverse(this.#filter);
+  }
+
   public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
     const config: HueShiftConfiguration = {
       ...HueShiftStep.DefaultSettings,
@@ -93,6 +99,7 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
       const filter = new HueShiftFilter(0);
       this.addFilter(container, filter);
       filters.push(filter);
+      this.#filter = filter;
     }
 
     if (config.applyToScene && canvas?.stage) {
