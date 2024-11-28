@@ -3,7 +3,7 @@ import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
-import { formatDuration, getStepClassByKey, localize } from "../utils";
+import { downloadJSON, formatDuration, getStepClassByKey, localize } from "../utils";
 import { addStepDialog, buildTransitionFromForm, confirm, editStepDialog } from "./functions";
 
 export class SceneConfigV11 extends SceneConfig {
@@ -33,7 +33,13 @@ function addEventListeners(app: SceneConfig, html: JQuery<HTMLElement>) {
     axis: "y"
   });
 
-  // Save button
+
+  // Download
+  html.find(`button[data-action="export-json"]`).on("click", e => {
+    e.preventDefault();
+    const sequence = buildTransitionFromForm(html);
+    downloadJSON(sequence, `${app.document.name}.json`);
+  });
 
   // Save button
   html.find("button[type='submit']").on("click", () => {

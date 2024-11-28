@@ -5,3 +5,13 @@
 </div>
   <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.HINT" }}</p>
 {{> "/modules/battle-transitions/templates/transition-steps.hbs" this}}
+<div class="form-group">
+  <button data-action="import-json">
+    <i class="fas fa-fw fa-upload"></i>
+    {{localize "BATTLETRANSITIONS.DIALOGS.BUTTONS.IMPORTSEQUENCE"}}
+  </button>
+  <button data-action="export-json">
+    <i class="fas fa-fw fa-download"></i>
+    {{localize "BATTLETRANSITIONS.DIALOGS.BUTTONS.EXPORTSEQUENCE"}}
+  </button>
+</div>

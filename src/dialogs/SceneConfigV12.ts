@@ -3,7 +3,7 @@ import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
-import { formatDuration, getStepClassByKey, localize } from "../utils";
+import { downloadJSON, formatDuration, getStepClassByKey, localize } from "../utils";
 
 import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from "./functions";
 
@@ -34,12 +34,20 @@ function addEventListeners(app: SceneConfig, html: JQuery<HTMLElement>) {
     }
   });
 
+
   // Drag reorder
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   (html.find("#transition-step-list") as any).sortable({
     handle: ".drag-handle",
     containment: "parent",
     axis: "y"
+  });
+
+  // Download
+  html.find(`button[data-action="export-json"]`).on("click", e => {
+    e.preventDefault();
+    const sequence = buildTransitionFromForm(html);
+    downloadJSON(sequence, `${app.document.name}.json`);
   });
 
   // Save button

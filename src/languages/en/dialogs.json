@@ -5,7 +5,9 @@
         "CANCEL": "Cancel",
         "OK": "Ok",
         "CLEARSEARCH": "Clear search",
-        "TRANSITION": "Transition"
+        "TRANSITION": "Transition",
+        "IMPORTSEQUENCE": "Import Sequence",
+        "EXPORTSEQUENCE": "Export Sequence"
       },
       "ADDSTEP": {
         "TITLE": "Add Transition Step",
