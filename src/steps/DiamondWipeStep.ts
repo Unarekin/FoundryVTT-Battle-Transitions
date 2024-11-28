@@ -25,6 +25,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
   public static key = "diamondwipe";
   public static name = "DIAMONDWIPE";
   public static template = "diamondwipe-config";
+  public static reversible: boolean = true;
 
   // #endregion Properties (7)
 
@@ -65,6 +66,11 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
 
   // #region Public Methods (1)
 
+  #filter: DiamondTransitionFilter | null = null;
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof DiamondTransitionFilter) await this.simpleReverse(this.#filter);
+  }
+
   public async execute(container: PIXI.Container): Promise<void> {
     const config: DiamondWipeConfiguration = {
       ...DiamondWipeStep.DefaultSettings,
@@ -72,6 +78,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
     }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new DiamondTransitionFilter(config.size, background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
