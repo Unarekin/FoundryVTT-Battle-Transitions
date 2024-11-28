@@ -23,6 +23,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
   public static key = "twist";
   public static name = "TWIST";
   public static template = "twist-config";
+  public static reversible: boolean = true;
 
   // #endregion Properties (7)
 
@@ -79,6 +80,25 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
     this.#sceneFilter = null;
   }
 
+  #filters: PIXI.Filter[] = [];
+
+
+  public async reverse(): Promise<void> {
+    const config: TwistConfiguration = {
+      ...TwistStep.DefaultSettings,
+      ...this.config
+    }
+    await Promise.all(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+      this.#filters.map(filter => TweenMax.to(filter.uniforms, { angle: 0, duration: config.duration / 1000, ease: config.easing }))
+    )
+  }
+
+  // #filter: RadialWipeFilter | null = null;
+  // public async reverse(): Promise<void> {
+  //   if (this.#filter instanceof RadialWipeFilter) await this.simpleReverse(this.#filter);
+  // }
+
   public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
     const config: TwistConfiguration = {
       ...TwistStep.DefaultSettings,
@@ -109,9 +129,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
       filters.push(filter);
     }
 
-
-
-
+    this.#filters = [...filters];
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
     await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms, { angle: this.config.direction === "clockwise" ? config.maxAngle * -1 : this.config.maxAngle, duration: config.duration / 1000, ease: this.config.easing || "none" })));
