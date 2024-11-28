@@ -5,7 +5,9 @@ import { TransitionStep } from "./TransitionStep";
 import { MeltConfiguration } from "./types";
 
 export class MeltStep extends TransitionStep<MeltConfiguration> {
-  // #region Properties (7)
+  // #region Properties (9)
+
+  #filter: MeltFilter | null = null;
 
   public static DefaultSettings: MeltConfiguration = {
     id: "",
@@ -24,9 +26,10 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
   public static icon = "<i class='bt-icon melt fa-fw fas'></i>"
   public static key = "melt";
   public static name = "MELT";
+  public static reversible: boolean = true;
   public static template = "melt-config";
 
-  // #endregion Properties (7)
+  // #endregion Properties (9)
 
   // #region Public Static Methods (7)
 
@@ -63,15 +66,20 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
 
   // #endregion Public Static Methods (7)
 
-  // #region Public Methods (1)
+  // #region Public Methods (2)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new MeltFilter(background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
 
-  // #endregion Public Methods (1)
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof MeltFilter) await this.simpleReverse(this.#filter);
+  }
+
+  // #endregion Public Methods (2)
 }
