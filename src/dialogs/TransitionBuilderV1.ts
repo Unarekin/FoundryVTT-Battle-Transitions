@@ -1,5 +1,5 @@
 import { SceneChangeConfiguration, TransitionConfiguration } from "../steps";
-import { formatDuration, getStepClassByKey, localize } from "../utils";
+import { formatDuration, getStepClassByKey, localize, uploadJSON } from "../utils";
 import { InvalidSceneError, InvalidTransitionError } from "../errors";
 import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from "./functions";
 import { sequenceDuration } from "../transitionUtils";
@@ -68,6 +68,25 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
     containment: "parent",
     axis: "y"
   });
+
+  html.find(`[data-action="import-json"]`).on("click", e => {
+    if ($(e.currentTarget).is(":visible")) {
+      e.preventDefault();
+      void uploadHandler(dialog, html);
+    }
+  })
+}
+
+async function uploadHandler(dialog: Dialog, html: JQuery<HTMLElement>) {
+  const current = buildTransitionFromForm(html);
+  if (current.length) {
+    const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
+    if (!confirmation) return;
+  }
+  const sequence = await uploadJSON<TransitionConfiguration[]>();
+  html.find("#transition-step-list").children().remove();
+  for (const step of sequence)
+    await upsertStepButton(dialog, html, step);
 }
 
 
