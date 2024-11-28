@@ -28,6 +28,8 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
   public static name = "BILINEARWIPE";
   public static template = "bilinearwipe-config";
 
+  public static reversible: boolean = true;
+
   // #endregion Properties (7)
 
   // #region Public Static Methods (7)
@@ -69,6 +71,18 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
 
   // #region Public Methods (1)
 
+  #filter: BilinearWipeFilter | null = null;
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof BilinearWipeFilter) {
+      const config: BilinearWipeConfiguration = {
+        ...BilinearWipeStep.DefaultSettings,
+        ...this.config
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await TweenMax.to(this.#filter.uniforms, { progress: 0, duration: config.duration / 1000, ease: config.easing });
+    }
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, _sequence: TransitionSequence): Promise<void> {
     const config: BilinearWipeConfiguration = {
@@ -77,6 +91,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new BilinearWipeFilter(config.direction, config.radial, background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter)
   }
