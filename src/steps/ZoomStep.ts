@@ -36,6 +36,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
   public static key: string = "zoom";
   public static name: string = "ZOOM";
   public static template: string = "zoom-config";
+  public static reversible: boolean = true
 
   // #endregion Properties (8)
 
@@ -182,6 +183,21 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
 
   #sceneFilter: PIXI.Filter | null = null;
 
+  #filters: PIXI.Filter[] = [];
+
+  public async reverse(): Promise<void> {
+
+    const config: ZoomConfiguration = {
+      ...ZoomStep.DefaultSettings,
+      ...this.config
+    };
+
+    await Promise.all(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      this.#filters.map(filter => TweenMax.to(filter.uniforms, { amount: 1, duration: config.duration / 1000, ease: config.easing }))
+    )
+  }
+
 
   public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
     const config: ZoomConfiguration = {
@@ -207,6 +223,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     }
 
     if (config.duration) {
+      this.#filters = [...filters];
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
       await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms, { amount: config.amount, duration: config.duration / 1000, ease: config.easing })))
     }
@@ -216,6 +233,8 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     if (this.#sceneFilter) removeFilterFromScene(this.#sceneFilter);
     this.#sceneFilter = null;
   }
+
+
 
   public async prepare(): Promise<void> {
     // Cache actual screen space location to which to zoom
