@@ -3,7 +3,7 @@ import { addStepDialog, confirm, editStepDialog } from "../dialogs";
 import { InvalidTransitionError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { formatDuration, getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
+import { formatDuration, getStepClassByKey, localize, log, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration, TransitionConfiguration } from './types';
 
@@ -33,11 +33,14 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
   // #region Public Static Methods (6)
 
-  public static RenderTemplate(config?: ParallelConfiguration): Promise<string> {
+  public static RenderTemplate(config?: ParallelConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
+    log("Rendering parallel:", oldScene, newScene);
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ParallelStep.template}.hbs`, {
       ...ParallelStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      ...(config ? config : {})
+      ...(config ? config : {}),
+      oldScene: oldScene?.id ?? "",
+      newScene: newScene?.id ?? ""
     });
   }
 
@@ -216,7 +219,10 @@ async function addStep(html: JQuery<HTMLElement>) {
   const step = getStepClassByKey(key);
   if (!step) throw new InvalidTransitionError(key);
 
-  const config = step.skipConfig ? step.DefaultSettings : await editStepDialog(step.DefaultSettings);
+  const oldScene = html.find("#oldScene").val() as string ?? "";
+  const newScene = html.find("#newScene").val() as string ?? "";
+
+  const config = step.skipConfig ? step.DefaultSettings : await editStepDialog(step.DefaultSettings, game.scenes?.get(oldScene), game.scenes?.get(newScene));
   if (!config) return;
 
   void upsertStepButton(html, config);
@@ -243,7 +249,9 @@ function addStepEventListeners(html: JQuery<HTMLElement>, button: JQuery<HTMLEle
 
   // Configure button
   button.find("[data-action='configure']").on("click", () => {
-    editStepDialog(config)
+    const oldScene = html.find("#oldScene").val() as string ?? "";
+    const newScene = html.find("#newScene").val() as string ?? "";
+    editStepDialog(config, game.scenes?.get(oldScene), game.scenes?.get(newScene))
       .then(newConfig => {
         if (newConfig) {
           // Replace button

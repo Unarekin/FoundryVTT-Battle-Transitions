@@ -43,12 +43,14 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
 
   // #region Public Static Methods (7)
 
-  public static RenderTemplate(config?: RepeatConfiguration): Promise<string> {
+  public static RenderTemplate(config?: RepeatConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${RepeatStep.template}.hbs`, {
       ...RepeatStep.DefaultSettings,
       id: foundry.utils.randomID(),
 
       ...(config ? config : {}),
+      oldScene: oldScene?.id ?? "",
+      newScene: newScene?.id ?? "",
       styleSelect: {
         sequence: "BATTLETRANSITIONS.SCENECONFIG.REPEAT.SEQUENCE.LABEL",
         previous: "BATTLETRANSITIONS.SCENECONFIG.REPEAT.PREVIOUS.LABEL"
@@ -68,8 +70,20 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
     html.find("[data-action='add-step']").on("click", e => {
       e.preventDefault();
       void addStep(html);
+    });
+
+
+    html.find("[data-action='clear-steps']").on("click", e => {
+      if ($(e.currentTarget).is(":visible")) {
+        e.preventDefault();
+        void clearButtonhandler(html);
+      }
     })
+    setClearDisabled(html);
   }
+
+
+
 
   public static from(config: RepeatConfiguration): RepeatStep
   public static from(form: JQuery<HTMLFormElement>): RepeatStep
@@ -179,7 +193,10 @@ async function addStep(html: JQuery<HTMLElement>) {
   const step = getStepClassByKey(key);
   if (!step) throw new InvalidTransitionError(key);
 
-  const config = step.skipConfig ? step.DefaultSettings : await editStepDialog(step.DefaultSettings);
+  const oldScene = html.find("#oldScene").val() as string ?? "";
+  const newScene = html.find("#newScene").val() as string ?? "";
+
+  const config = step.skipConfig ? step.DefaultSettings : await editStepDialog(step.DefaultSettings, game.scenes?.get(oldScene), game.scenes?.get(newScene));
   if (!config) return;
 
   void upsertStepButton(html, config);
@@ -277,6 +294,27 @@ async function upsertStepButton(html: JQuery<HTMLElement>, config: TransitionCon
 
   const sequence = buildTransition(html);
   html.find(`#sequence-list [data-index="${index}"]`).attr("data-sequence", JSON.stringify(sequence));
+  setClearDisabled(html);
 }
 
 // #endregion Functions (5)
+
+async function clearButtonhandler(html: JQuery<HTMLElement>) {
+  const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
+  if (!confirmed) return;
+  html.find("#transition-step-list").children().remove();
+  await updateTotalDuration(html);
+  setClearDisabled(html);
+}
+
+function setClearDisabled(html: JQuery<HTMLElement>) {
+  const sequence = buildTransitionFromForm(html);
+  if (!sequence.length) html.find("#clear-steps").attr("disabled", "true");
+  else html.find("#clear-steps").removeAttr("disabled");
+}
+
+async function updateTotalDuration(html: JQuery<HTMLElement>) {
+  const sequence = buildTransitionFromForm(html);
+  const totalDuration = await sequenceDuration(sequence);
+  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+}
