@@ -31,6 +31,8 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
   public static name = "REPEAT";
   public static template = "repeat-config";
 
+  public get preparedSequence() { return this.#preparedSequence; }
+
   public async teardown(container: PIXI.Container): Promise<void> {
     for (const step of this.#preparedSequence) {
       await step.teardown(container);

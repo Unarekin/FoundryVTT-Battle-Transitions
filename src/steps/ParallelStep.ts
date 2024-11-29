@@ -27,6 +27,8 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
   public static name = "PARALLEL";
   public static template = "parallel-config";
 
+  public get preparedSequences() { return this.#preparedSequences; }
+
   // #endregion Properties (8)
 
   // #region Public Static Methods (6)

@@ -1,6 +1,7 @@
 import { InvalidTransitionError, StepNotReversibleError } from "../errors";
 import { TransitionSequence, PreparedTransitionHash } from "../interfaces";
 import { getStepClassByKey, parseConfigurationFormElements, wait } from "../utils";
+import { getPreviousStep } from "./functions";
 import { TransitionStep } from "./TransitionStep";
 import { ReverseConfiguration, TransitionConfiguration } from "./types";
 
@@ -45,9 +46,9 @@ export class ReverseStep extends TransitionStep<ReverseConfiguration> {
   }
 
   public static validate(config: TransitionConfiguration, sequence: TransitionConfiguration[]): TransitionConfiguration | Error {
-    const index = sequence.findIndex(step => step.id === config.id);
-    if (index < 1) return new InvalidTransitionError("reverse");
-    const prev = sequence[index - 1];
+    const prev = getPreviousStep(config.id, sequence);
+    if (!prev) throw new InvalidTransitionError("reverse");
+
     const step = getStepClassByKey(prev.type);
     if (!step) throw new InvalidTransitionError(typeof prev.type === "string" ? prev.type : typeof prev.type);
     if (!step.reversible) throw new StepNotReversibleError(step.key);
@@ -59,9 +60,9 @@ export class ReverseStep extends TransitionStep<ReverseConfiguration> {
       ...ReverseStep.DefaultSettings,
       ...this.config
     }
-    const current = prepared.prepared.sequence.findIndex(step => step.config.id === config.id);
-    if (current < 1) throw new InvalidTransitionError("reverse");
-    const prev = prepared.prepared.sequence[current - 1];
+
+    const prev = getPreviousStep(config.id, prepared.prepared.sequence);
+    if (!prev) throw new InvalidTransitionError("reverse");
     if (config.delay) return wait(config.delay).then(() => prev.reverse());
     else return prev.reverse();
   }

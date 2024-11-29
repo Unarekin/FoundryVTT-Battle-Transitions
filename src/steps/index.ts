@@ -35,6 +35,4 @@ export * from './WaitStep';
 export * from './WaveWipeStep';
 export * from './ZoomBlurStep';
 export * from './ZoomStep';
-export * from './functions';
-export * from './selectOptions';
 export * from './types';
