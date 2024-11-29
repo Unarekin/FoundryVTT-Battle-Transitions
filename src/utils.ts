@@ -300,31 +300,32 @@ export function log(...args: unknown[]) {
   console.log(LOG_ICON, __MODULE_TITLE__, "|", ...args);
 }
 
-export function logImage(url: string, size: number = 256) {
+export function logImage(url: string, width: number = 256, height: number = 256) {
   const image = new Image();
 
   image.onload = function () {
     const style = [
       `font-size: 1px`,
-      `padding: ${size}px`,
+      `padding-left: ${width}px`,
+      `padding-bottom: ${height}px`,
       // `padding: ${this.height / 100 * size}px ${this.width / 100 * size}px`,
       `background: url(${url}) no-repeat`,
       `background-size:contain`,
       `border:1px solid black`
     ].join(";")
-    console.log('%c ', style);;
+    console.log('%c ', style);
   }
 
   image.src = url;
 }
 
-export function logTexture(texture: PIXI.Texture, size: number = 256) {
+export function logTexture(texture: PIXI.Texture, width: number = 256, height: number = 256) {
   const renderTexture = PIXI.RenderTexture.create({ width: texture.width, height: texture.height });
   const sprite = PIXI.Sprite.from(texture);
   canvas?.app?.renderer.render(sprite, { renderTexture });
   canvas?.app?.renderer.extract.base64(renderTexture)
     .then(base64 => {
-      logImage(base64, size);
+      logImage(base64, width, height);
     }).catch(console.error);
 }
 
@@ -639,4 +640,51 @@ export function uploadJSON<t = any>(): Promise<t> {
     file.click();
   })
 
+}
+
+export interface ColorStop { point: number, color: string };
+export function createGradientTexture(width: number, height: number, x1: number, y1: number, x2: number, y2: number, stops: ColorStop[]): PIXI.Texture {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new CanvasNotFoundError();
+  canvas.width = width;
+  canvas.height = height;
+
+  const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+  for (const stop of stops) {
+    gradient.addColorStop(stop.point, stop.color);
+  }
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  return PIXI.Texture.from(canvas);
+}
+
+export function createConicGradientTexture(width: number, height: number, angle: number, x: number, y: number, stops: ColorStop[]): PIXI.Texture {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new CanvasNotFoundError();
+  canvas.width = width;
+  canvas.height = height;
+
+  const gradient = ctx.createConicGradient(angle, x, y);
+
+  for (const stop of stops) {
+    gradient.addColorStop(stop.point, stop.color);
+  }
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  return PIXI.Texture.from(canvas);
+}
+
+/**
+ * Returns the angle between two points, in radians
+ */
+export function angleBetween(x1: number, y1: number, x2: number, y2: number): number {
+  return Math.atan2(y2 - y1, x2 - x1);
+}
+
+export function slope(x1: number, y1: number, x2: number, y2: number): number {
+  if (x1 === x2) return Infinity;
+  return (y2 - y1) / (x2 - x1);
 }

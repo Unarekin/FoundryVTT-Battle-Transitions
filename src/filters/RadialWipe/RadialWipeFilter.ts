@@ -2,20 +2,51 @@ import { TextureWipeFilter } from '../TextureWipe/TextureWipeFilter';
 import { RadialDirection } from "../../types";
 import { coerceTexture } from "../../coercion";
 import { createColorTexture } from "../../utils";
-import { InvalidDirectionError } from '../../errors';
+import { CanvasNotFoundError } from '../../errors';
 
-const TextureHash = {
-  inside: "radial-inside.webp",
-  outside: "radial-outside.webp"
+function inside(x: number, y: number): PIXI.Texture {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new CanvasNotFoundError();
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const gradient = ctx.createRadialGradient(
+    x, y, 0,
+    x, y, Math.max(canvas.width, canvas.height)
+  );
+
+  gradient.addColorStop(0, "black");
+  gradient.addColorStop(1, "white");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  return PIXI.Texture.from(canvas);
+}
+
+function outside(x: number, y: number): PIXI.Texture {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new CanvasNotFoundError();
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const gradient = ctx.createRadialGradient(
+    x, y, 0,
+    x, y, Math.max(canvas.width, canvas.height)
+  );
+
+  gradient.addColorStop(0, "white");
+  gradient.addColorStop(1, "black");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  return PIXI.Texture.from(canvas);
 }
 
 
 export class RadialWipeFilter extends TextureWipeFilter {
-  constructor(direction: RadialDirection, bg: PIXI.TextureSource | PIXI.ColorSource) {
+  constructor(direction: RadialDirection, x: number, y: number, bg: PIXI.TextureSource | PIXI.ColorSource) {
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
-    const texture = TextureHash[direction];
-    if (!texture) throw new InvalidDirectionError(direction);
-    const wipeTexture = PIXI.Texture.from(`/modules/${__MODULE_ID__}/assets/wipes/${texture}`);
+    const wipeTexture = direction === "inside" ? inside(x, y) : outside(x, y);
     super(wipeTexture, bgTexture);
   }
 }
