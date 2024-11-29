@@ -374,11 +374,6 @@ export async function validateTarget(config: TargetedTransition): Promise<[numbe
       if (!item) return new InvalidTargetError(config.target);
       const parsed = (typeof foundry.utils.parseUuid === "function" ? foundry.utils.parseUuid(config.target) : parseUuid(config.target));
       if (parsed.primaryType === Scene.documentName && parsed.primaryId !== canvas?.scene?.id) return new InvalidTargetError(config.target);
-      if (parsed.type === Actor.documentName) {
-        const actor = game.actors?.get(parsed.id);
-        if (!actor) return new InvalidTargetError(config.target);
-        if (!(actor.token instanceof Token || actor.token instanceof TokenDocument)) return new InvalidTargetError(config.target);
-      }
     }
     return config.target;
   } catch (err) {

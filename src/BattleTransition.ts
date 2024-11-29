@@ -664,26 +664,76 @@ export class BattleTransition {
     return this;
   }
 
+
   /**
-   * Queues up a radial wipe
-   * @param {RadialDirection} direction - {@link RadialDirection}
-   * @param {number} [duration=1000] - Duration, in milliseconds, that the wipe should take to complete
+   * Queues up a radial wipe.
+   * @param {RadialDirection} directon - {@link RadialDirection} representing where the wipe should start
+   * @param {number} [duration=1000] - Duration, in milliseconds, that the wipe should take to complete.
+   * @param {ZoomArg} [target=[0.5, 0.5]] - {@link ZoomArg} target on which to center the effect.
    * @param {TextureLike} [background="transparent"] - {@link TextureLike}
    * @param {Easing} [easing="none"] - {@link Easing}
-   * @returns 
    */
-  public radialWipe(direction: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+  public radialWipe(direction: RadialDirection, duration?: number, target?: ZoomArg, background?: TextureLike, easing?: Easing): this
+  /**
+   * Queues up a radial wipe
+   * @param {RadialDirection} directon - {@link RadialDirection} representing where the wipe should start
+   * @param {number} [duration=1000] - Duration, in milliseconds, that the wipe should take to complete.
+   * @param {TextureLike} [background="transparent"] - {@link TextureLike}
+   * @param {Easing} [easing="none"] - {@link Easing}
+   */
+  public radialWipe(direction: RadialDirection, duration?: number, background?: TextureLike, easing?: Easing): this
+  public radialWipe(direction: RadialDirection, duration: number = 1000, ...args: unknown[]): this {
+    const step = getStepClassByKey("radialwipe");
+    if (!step) throw new InvalidTransitionError("radialwipe");
+
+
+    let background: TextureLike = "transparent";
+    let easing: Easing = "none";
+    let target: ZoomArg = [0.5, 0.5];
+
+    if (Array.isArray(args[0])) {
+      target = args[0] as [number, number];
+      background = args[1] as TextureLike ?? "transparent";
+      easing = args[2] as Easing ?? "none";
+    } else if (typeof args[0] === "string" && fromUuidSync(args[0])) {
+      // It's a UUID
+      target = args[0];
+      background = args[1] as TextureLike ?? "transparent";
+      easing = args[2] as Easing ?? "none";
+    } else if (typeof args[0] === "string") {
+      background = args[0] as TextureLike ?? "transparent";
+      easing = args[1] as Easing ?? "none";
+    }
+
+    log("Target:", target);
+
     const serializedTexture = serializeTexture(background);
-    this.#sequence.push({
-      type: "radialwipe",
+
+    const config: RadialWipeConfiguration = {
+      ...step.DefaultSettings as RadialWipeConfiguration,
       serializedTexture,
       radial: direction,
       duration,
       easing
-    } as RadialWipeConfiguration);
+    };
+
+    if (Array.isArray(target)) {
+      config.target = target;
+    } else if (typeof target === "string" && fromUuidSync(target)) {
+      config.target = target;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    } else if (typeof (target as any).uuid === "string") {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      config.target = (target as any).uuid as string;
+    } else {
+      throw new InvalidTargetError(target);
+    }
+
+    this.#sequence.push(config);
 
     return this;
   }
+
 
   /**
    * Sets the transition overlay to invisible, but will still allow for playing transition effects.
