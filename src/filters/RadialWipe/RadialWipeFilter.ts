@@ -4,7 +4,7 @@ import { coerceTexture } from "../../coercion";
 import { createColorTexture } from "../../utils";
 import { CanvasNotFoundError } from '../../errors';
 
-function inside(): PIXI.Texture {
+function inside(x: number, y: number): PIXI.Texture {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new CanvasNotFoundError();
@@ -12,8 +12,8 @@ function inside(): PIXI.Texture {
   canvas.height = window.innerHeight;
 
   const gradient = ctx.createRadialGradient(
-    canvas.width / 2, canvas.height / 2, 0,
-    canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height)
+    x, y, 0,
+    x, y, Math.max(canvas.width, canvas.height)
   );
 
   gradient.addColorStop(0, "black");
@@ -23,7 +23,7 @@ function inside(): PIXI.Texture {
   return PIXI.Texture.from(canvas);
 }
 
-function outside(): PIXI.Texture {
+function outside(x: number, y: number): PIXI.Texture {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new CanvasNotFoundError();
@@ -31,8 +31,8 @@ function outside(): PIXI.Texture {
   canvas.height = window.innerHeight;
 
   const gradient = ctx.createRadialGradient(
-    canvas.width / 2, canvas.height / 2, 0,
-    canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height)
+    x, y, 0,
+    x, y, Math.max(canvas.width, canvas.height)
   );
 
   gradient.addColorStop(0, "white");
@@ -44,9 +44,9 @@ function outside(): PIXI.Texture {
 
 
 export class RadialWipeFilter extends TextureWipeFilter {
-  constructor(direction: RadialDirection, bg: PIXI.TextureSource | PIXI.ColorSource) {
+  constructor(direction: RadialDirection, x: number, y: number, bg: PIXI.TextureSource | PIXI.ColorSource) {
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
-    const wipeTexture = direction === "inside" ? inside() : outside();
+    const wipeTexture = direction === "inside" ? inside(x, y) : outside(x, y);
     super(wipeTexture, bgTexture);
   }
 }

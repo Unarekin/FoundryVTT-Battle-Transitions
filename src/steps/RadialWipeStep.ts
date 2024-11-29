@@ -86,7 +86,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
       ...this.config
     }
     const background = config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new RadialWipeFilter(config.radial, background.baseTexture);
+    const filter = new RadialWipeFilter(config.radial, .5, .5, background.baseTexture);
     this.addFilter(container, filter);
     this.#filter = filter;
     await this.simpleTween(filter);
