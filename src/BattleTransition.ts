@@ -705,8 +705,6 @@ export class BattleTransition {
       easing = args[1] as Easing ?? "none";
     }
 
-    log("Target:", target);
-
     const serializedTexture = serializeTexture(background);
 
     const config: RadialWipeConfiguration = {
