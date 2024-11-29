@@ -640,3 +640,20 @@ export function uploadJSON<t = any>(): Promise<t> {
   })
 
 }
+
+export interface ColorStop { point: number, color: string };
+export function createGradientTexture(width: number, height: number, x1: number, y1: number, x2: number, y2: number, stops: ColorStop[]): PIXI.Texture {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new CanvasNotFoundError();
+  canvas.width = width;
+  canvas.height = height;
+
+  const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+  for (const stop of stops) {
+    gradient.addColorStop(stop.point, stop.color);
+  }
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  return PIXI.Texture.from(canvas);
+}
