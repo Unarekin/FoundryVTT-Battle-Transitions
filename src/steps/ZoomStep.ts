@@ -25,7 +25,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     backgroundColor: "#00000000",
     version: "1.1.0",
     easing: "none",
-    amount: 1,
+    amount: 0,
     clampBounds: false,
     target: [0.5, 0.5],
     applyToOverlay: true,
