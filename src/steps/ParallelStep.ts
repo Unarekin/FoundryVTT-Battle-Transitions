@@ -222,7 +222,7 @@ async function addStep(html: JQuery<HTMLElement>) {
   const oldScene = html.find("#oldScene").val() as string ?? "";
   const newScene = html.find("#newScene").val() as string ?? "";
 
-  const config = step.skipConfig ? step.DefaultSettings : await editStepDialog(step.DefaultSettings, game.scenes?.get(oldScene), game.scenes?.get(newScene));
+  const config = step.skipConfig ? { ...step.DefaultSettings, id: foundry.utils.randomID() } : await editStepDialog(step.DefaultSettings, game.scenes?.get(oldScene), game.scenes?.get(newScene));
   if (!config) return;
 
   void upsertStepButton(html, config);
@@ -310,7 +310,6 @@ async function selectSequence(html: JQuery<HTMLElement>, index: number) {
 async function upsertStepButton(html: JQuery<HTMLElement>, config: TransitionConfiguration) {
   const step = getStepClassByKey(config.type);
   if (!step) throw new InvalidTransitionError(config.type);
-
 
 
   const outerSequence = [...buildTransition(html), config];

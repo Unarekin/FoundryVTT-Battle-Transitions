@@ -638,6 +638,7 @@ export class BattleTransition {
 
     const config: ParallelConfiguration = {
       ...step?.DefaultSettings,
+      id: foundry.utils.randomID(),
       sequences
     };
 
@@ -785,6 +786,7 @@ export class BattleTransition {
 
       this.#sequence.push({
         ...step.DefaultSettings,
+        id: foundry.utils.randomID(),
         iterations,
         delay,
         style: "sequence",

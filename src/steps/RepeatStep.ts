@@ -47,7 +47,6 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${RepeatStep.template}.hbs`, {
       ...RepeatStep.DefaultSettings,
       id: foundry.utils.randomID(),
-
       ...(config ? config : {}),
       oldScene: oldScene?.id ?? "",
       newScene: newScene?.id ?? "",
@@ -196,7 +195,7 @@ async function addStep(html: JQuery<HTMLElement>) {
   const oldScene = html.find("#oldScene").val() as string ?? "";
   const newScene = html.find("#newScene").val() as string ?? "";
 
-  const config = step.skipConfig ? step.DefaultSettings : await editStepDialog(step.DefaultSettings, game.scenes?.get(oldScene), game.scenes?.get(newScene));
+  const config = step.skipConfig ? { ...step.DefaultSettings, id: foundry.utils.randomID() } : await editStepDialog(step.DefaultSettings, game.scenes?.get(oldScene), game.scenes?.get(newScene));
   if (!config) return;
 
   void upsertStepButton(html, config);
