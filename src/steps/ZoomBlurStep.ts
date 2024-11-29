@@ -1,6 +1,7 @@
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
-import { generateEasingSelectOptions, parseConfigurationFormElements } from '../utils';
+import { parseConfigurationFormElements } from '../utils';
+import { generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
 import { TransitionStep } from './TransitionStep';
 import { ZoomBlurConfiguration } from './types';
 
@@ -37,11 +38,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
-      dualStyleSelect: {
-        "overlay": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.OVERLAY`,
-        "scene": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.SCENE`,
-        "both": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.BOTH`
-      },
+      dualStyleSelect: generateDualStyleSelectOptions(),
       dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
     });
   }

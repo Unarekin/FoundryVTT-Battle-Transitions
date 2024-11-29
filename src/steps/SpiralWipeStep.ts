@@ -1,7 +1,8 @@
 import { SpiralWipeFilter } from '../filters';
-import { createColorTexture, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, parseConfigurationFormElements } from '../utils';
+import { createColorTexture, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { SpiralWipeConfiguration } from './types';
+import { generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
 
 export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
   // #region Properties (7)

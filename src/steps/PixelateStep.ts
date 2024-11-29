@@ -1,6 +1,7 @@
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
 import { parseConfigurationFormElements } from '../utils';
+import { generateDualStyleSelectOptions } from './selectOptions';
 import { TransitionStep } from './TransitionStep';
 import { PixelateConfiguration } from './types';
 
@@ -34,11 +35,7 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
       ...PixelateStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
-      dualStyleSelect: {
-        "overlay": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.OVERLAY`,
-        "scene": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.SCENE`,
-        "both": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.BOTH`
-      },
+      dualStyleSelect: generateDualStyleSelectOptions(),
       dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
     });
   }

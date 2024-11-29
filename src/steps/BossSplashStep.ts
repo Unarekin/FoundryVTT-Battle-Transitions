@@ -1,5 +1,6 @@
 import { TransitionSequence } from '../interfaces';
-import { generateFontSelectOptions, getActors, getCompendiumFromUUID, parseConfigurationFormElements, wait } from '../utils';
+import { getActors, getCompendiumFromUUID, parseConfigurationFormElements, wait } from '../utils';
+import { generateFontSelectOptions } from './selectOptions';
 import { TransitionStep } from './TransitionStep';
 import { BossSplashConfiguration } from './types';
 

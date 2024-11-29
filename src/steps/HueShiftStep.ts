@@ -1,9 +1,10 @@
 import { HueShiftConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
 import { HueShiftFilter } from '../filters';
-import { generateEasingSelectOptions, parseConfigurationFormElements } from '../utils';
+import { parseConfigurationFormElements } from '../utils';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
+import { generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
 
 export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
   // #region Properties (7)
@@ -36,11 +37,7 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
-      dualStyleSelect: {
-        "overlay": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.OVERLAY`,
-        "scene": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.SCENE`,
-        "both": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.BOTH`
-      },
+      dualStyleSelect: generateDualStyleSelectOptions(),
       dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
     });
   }

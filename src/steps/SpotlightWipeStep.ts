@@ -1,8 +1,10 @@
 import { SpotlightWipeFilter } from "../filters";
 import { TransitionSequence } from '../interfaces';
-import { createColorTexture, generateEasingSelectOptions, generateRadialDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SpotlightWipeConfiguration } from "./types";
+import { generateEasingSelectOptions, generateLinearDirectionSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
+
 
 export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration> {
   // #region Properties (8)
@@ -44,12 +46,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
-      directionSelect: {
-        top: "BATTLETRANSITIONS.DIRECTIONS.TOP",
-        left: "BATTLETRANSITIONS.DIRECTIONS.LEFT",
-        right: "BATTLETRANSITIONS.DIRECTIONS.RIGHT",
-        bottom: "BATTLETRANSITIONS.DIRECTIONS.BOTTOM"
-      },
+      directionSelect: generateLinearDirectionSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions()
     });
   }

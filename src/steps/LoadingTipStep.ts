@@ -1,8 +1,8 @@
 import { TransitionStep } from './TransitionStep';
 import { LoadingTipConfiguration, LoadingTipSource } from './types';
-import { deepCopy, generateFontSelectOptions, log, parseConfigurationFormElements } from '../utils';
+import { deepCopy, log, parseConfigurationFormElements } from '../utils';
 import { InvalidRollTableError, InvalidTipLocationError } from '../errors';
-
+import { generateFontSelectOptions } from './selectOptions';
 
 let ACTIVE_TEXT_ELEMENT: PIXI.HTMLText | null = null;
 

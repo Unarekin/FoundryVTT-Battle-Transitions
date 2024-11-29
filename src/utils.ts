@@ -5,7 +5,7 @@ import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 import { bytesToBase64 } from "./lib/base64Utils";
-import { TransitionStep, BackgroundTransition, TransitionConfiguration } from "./steps";
+import { TransitionStep, BackgroundTransition, TransitionConfiguration, TargetedTransition } from "./steps";
 import * as steps from "./steps"
 import { BackgroundType, TextureLike } from "./types";
 
@@ -165,81 +165,7 @@ export function formatBackgroundSummary(flag: any): string {
   // return (flag.backgroundType === "image" ? flag.backgroundImage?.split("/").splice(-1)[0] : flag.backgroundColor) ?? "";
 }
 
-export function generateBilinearDirectionSelectOptions(): { [x: string]: string } {
-  return {
-    "horizontal": "BATTLETRANSITIONS.DIRECTIONS.HORIZONTAL",
-    "vertical": "BATTLETRANSITIONS.DIRECTIONS.VERTICAL",
-    "topleft": "BATTLETRANSITIONS.DIRECTIONS.TOPLEFT",
-    "topright": "BATTLETRANSITIONS.DIRECTIONS.TOPRIGHT"
-  }
-}
 
-export function generateClockDirectionSelectOptions(): { [x: string]: string } {
-  return {
-    "clockwise": "BATTLETRANSITIONS.DIRECTIONS.CLOCKWISE",
-    "counterclockwise": "BATTLETRANSITIONS.DIRECTIONS.COUNTERCLOCKWISE"
-  }
-}
-
-export function generateEasingSelectOptions(): { [x: string]: string } {
-  return {
-    "none": "BATTLETRANSITIONS.EASINGS.NONE",
-    "power1in": "BATTLETRANSITIONS.EASINGS.POWER1IN",
-    "power1out": "BATTLETRANSITIONS.EASINGS.POWER1OUT",
-    "power1inout": "BATTLETRANSITIONS.EASINGS.POWER1INOUT",
-    "power2in": "BATTLETRANSITIONS.EASINGS.POWER2IN",
-    "power2out": "BATTLETRANSITIONS.EASINGS.POWER2OUT",
-    "power2inout": "BATTLETRANSITIONS.EASINGS.POWER2INOUT",
-    "power3in": "BATTLETRANSITIONS.EASINGS.POWER3IN",
-    "power3out": "BATTLETRANSITIONS.EASINGS.POWER3OUT",
-    "power3inout": "BATTLETRANSITIONS.EASINGS.POWER3INOUT",
-    "power4in": "BATTLETRANSITIONS.EASINGS.POWER4IN",
-    "power4out": "BATTLETRANSITIONS.EASINGS.POWER4OUT",
-    "power4inout": "BATTLETRANSITIONS.EASINGS.POWER4INOUT",
-    "backin": "BATTLETRANSITIONS.EASINGS.BACKIN",
-    "backout": "BATTLETRANSITIONS.EASINGS.BACKOUT",
-    "backinout": "BATTLETRANSITIONS.EASINGS.BACKINOUT",
-    "bouncein": "BATTLETRANSITIONS.EASINGS.BOUNCEIN",
-    "bounceout": "BATTLETRANSITIONS.EASINGS.BOUNCEOUT",
-    "bounceinout": "BATTLETRANSITIONS.EASINGS.BOUNCEINOUT",
-    "circin": "BATTLETRANSITIONS.EASINGS.CIRCIN",
-    "circout": "BATTLETRANSITIONS.EASINGS.CIRCOUT",
-    "circinout": "BATTLETRANSITIONS.EASINGS.CIRCINOUT",
-    "elasticin": "BATTLETRANSITIONS.EASINGS.ELASTICIN",
-    "elasticout": "BATTLETRANSITIONS.EASINGS.ELASTICOUT",
-    "elasticinout": "BATTLETRANSITIONS.EASINGS.ELASTICINOUT",
-    "expoin": "BATTLETRANSITIONS.EASINGS.EXPOIN",
-    "expoout": "BATTLETRANSITIONS.EASINGS.EXPOOUT",
-    "expoinout": "BATTLETRANSITIONS.EASINGS.EXPOINOUT",
-    "sinein": "BATTLETRANSITIONS.EASINGS.SINEIN",
-    "sineout": "BATTLETRANSITIONS.EASINGS.SINEOUT",
-    "sineinout": "BATTLETRANSITIONS.EASINGS.SINEINOUT"
-  }
-}
-
-export function generateLinearDirectionSelectOptions(): { [x: string]: string } {
-  return {
-    "top": "BATTLETRANSITIONS.DIRECTIONS.TOP",
-    "left": "BATTLETRANSITIONS.DIRECTIONS.LEFT",
-    "right": "BATTLETRANSITIONS.DIRECTIONS.RIGHT",
-    "bottom": "BATTLETRANSITIONS.DIRECTIONS.BOTTOM",
-    "topleft": "BATTLETRANSITIONS.DIRECTIONS.TOPLEFT",
-    "topright": "BATTLETRANSITIONS.DIRECTIONS.TOPRIGHT",
-    "bottomleft": "BATTLETRANSITIONS.DIRECTIONS.BOTTOMLEFT",
-    "bottomright": "BATTLETRANSITIONS.DIRECTIONS.BOTTOMRIGHT"
-  }
-}
-
-export function generateRadialDirectionSelectOptions(): { [x: string]: string } {
-  return {
-    "inside": "BATTLETRANSITIONS.DIRECTIONS.INSIDE",
-    "outside": "BATTLETRANSITIONS.DIRECTIONS.OUTSIDE"
-  }
-}
-
-export function generateFontSelectOptions(): { [x: string]: string } {
-  return Object.fromEntries(FontConfig.getAvailableFonts().map(font => [font, font]));
-}
 
 export function getCanvasGroup(): ScreenSpaceCanvasGroup | undefined {
   return canvas?.stage?.children.find(child => child instanceof ScreenSpaceCanvasGroup);
@@ -687,4 +613,18 @@ export function angleBetween(x1: number, y1: number, x2: number, y2: number): nu
 export function slope(x1: number, y1: number, x2: number, y2: number): number {
   if (x1 === x2) return Infinity;
   return (y2 - y1) / (x2 - x1);
+}
+
+export function getTargetType(config: TargetedTransition): string {
+  if (config && typeof config.target === "string" && config.target) {
+    const parsed = foundry.utils.parseUuid ? foundry.utils.parseUuid(config.target) : parseUuid(config.target);
+    if (Array.isArray(parsed.embedded)) return parsed.embedded[0].toLowerCase();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else return ((parsed as any).type as string ?? "").toLowerCase()
+  } else if (config && Array.isArray(config.target)) {
+    return "point";
+  } else if (config && typeof config.target === "string" && !config.target) {
+    return "prompt";
+  }
+  return "point";
 }

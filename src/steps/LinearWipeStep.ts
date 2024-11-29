@@ -1,8 +1,9 @@
 import { LinearWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, generateEasingSelectOptions, generateLinearDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { LinearWipeConfiguration } from "./types";
+import { generateEasingSelectOptions, generateLinearDirectionSelectOptions } from './selectOptions';
 
 export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   // #region Properties (10)

@@ -1,8 +1,9 @@
 import { FadeTransitionFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { FadeConfiguration } from "./types";
+import { generateEasingSelectOptions } from './selectOptions';
 
 export class FadeStep extends TransitionStep<FadeConfiguration> {
   // #region Properties (9)

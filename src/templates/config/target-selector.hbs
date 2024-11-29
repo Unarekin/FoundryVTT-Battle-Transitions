@@ -1,6 +1,13 @@
-<label>{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGET.LABEL"}}</label>
+<input
+  type="hidden"
+  data-select-hint=""
+  data-select-mode=""
+  data-select-hook=""
+  id="select-data"
+/>
+<label>{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGET.LABEL"}}</label>
 <p class="notes">{{localize
-    "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGET.HINT"
+    "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGET.HINT"
   }}</p>
 
 <select name="targetType" id="targetType" value="{{targetType}}">
@@ -9,11 +16,11 @@
 
 <section data-target-type="point">
   <p class="notes">{{localize
-      "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.POINT.HINT"
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.HINT"
     }}</p>
   <div class="form-group">
     <label for="pointX">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.POINT.X"
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.X"
       }}</label>
     <input
       type="number"
@@ -26,7 +33,7 @@
       required
     />
     <label for="pointY">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.POINT.Y"
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.Y"
       }}</label>
     <input
       type="number"
@@ -42,12 +49,12 @@
 </section>
 <section data-target-type="prompt">
   <p class="notes">{{localize
-      "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.PROMPT.HINT"
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.PROMPT.HINT"
     }}</p>
 </section>
 <section data-target-type="token">
   <p class="notes">{{localize
-      "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TOKEN.HINT"
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.HINT"
     }}</p>
   {{#if oldScene}}
     <select name="selectedToken" id="selectedToken">
@@ -56,7 +63,9 @@
     </select>
     <button data-action="select-token">
       <i class="fas fa-fw fa-spinner fa-spin-pulse" style="display:none"></i>
-      {{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TOKEN.SELECT"}}
+      {{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.SELECT"
+      }}
     </button>
   {{/if}}
 </section>
@@ -71,13 +80,13 @@
     </select>
     <button data-action="select-tile">
       <i class="fas fa-fw fa-spinner fa-spin-pulse" style="display:none"></i>
-      {{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TILE.SELECT"}}
+      {{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.SELECT"}}
     </button>
   {{/if}}
 </section>
 <section data-target-type="drawing">
   <p class="notes">{{localize
-      "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.HINT"
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.HINT"
     }}</p>
   {{#if oldScene}}
     <select name="selectedDrawing" id="selectedDrawing">
@@ -87,14 +96,14 @@
     <button data-action="select-drawing">
       <i class="fas fa-fw fa-spinner fa-spin-pulse" style="display:none"></i>
       {{localize
-        "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.SELECT"
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.SELECT"
       }}
     </button>
   {{/if}}
 </section>
 <section data-target-type="note">
   <p class="notes">{{localize
-      "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.NOTE.HINT"
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.HINT"
     }}</p>
   {{#if oldScene}}
     <select name="selectedNote" id="selectedNote">
@@ -103,7 +112,7 @@
     </select>
     <button data-action="select-note">
       <i class="fas fa-fw fa-spinner fa-spin-pulse" style="display:none"></i>
-      {{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.NOTE.SELECT"}}
+      {{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.SELECT"}}
     </button>
   {{/if}}
 </section>

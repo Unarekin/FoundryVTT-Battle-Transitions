@@ -1,7 +1,8 @@
 import { DiamondTransitionFilter } from "../filters";
-import { createColorTexture, generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { DiamondWipeConfiguration } from "./types";
+import { generateEasingSelectOptions } from './selectOptions';
 
 export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
   // #region Properties (7)

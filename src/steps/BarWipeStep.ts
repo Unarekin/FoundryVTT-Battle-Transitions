@@ -1,8 +1,9 @@
 import { BarWipeFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
-import { createColorTexture, generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { BarWipeConfiguration } from "./types";
+import { generateEasingSelectOptions } from './selectOptions';
 
 export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
   // #region Properties (9)

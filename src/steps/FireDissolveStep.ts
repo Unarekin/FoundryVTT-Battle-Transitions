@@ -1,8 +1,9 @@
 import { FireDissolveFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { FireDissolveConfiguration } from "./types";
+import { generateEasingSelectOptions } from './selectOptions';
 
 export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> {
   // #region Properties (7)

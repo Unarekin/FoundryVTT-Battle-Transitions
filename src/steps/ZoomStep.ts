@@ -1,17 +1,19 @@
-import { customDialog } from "../dialogs";
-import { InvalidTargetError } from "../errors";
 import { ZoomFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
-import { createColorTexture, generateEasingSelectOptions, localize, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, getTargetType, parseConfigurationFormElements } from "../utils";
+import { addTargetSelectEventListeners, getTargetFromForm, normalizeLocation, onTargetSelectDialogClosed, swapTargetType, validateTarget } from "./functions";
+import { generateDrawingSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions, generateNoteSelectOptions, generateTargetTypeSelectOptions, generateTileSelectOptions, generateTokenSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { ZoomConfiguration } from "./types";
 
 // #region Classes (1)
 
 export class ZoomStep extends TransitionStep<ZoomConfiguration> {
-  // #region Properties (8)
+  // #region Properties (11)
 
+  #filters: PIXI.Filter[] = [];
+  #sceneFilter: PIXI.Filter | null = null;
   #screenLocation: [number, number] = [0.5, 0.5];
 
   public static DefaultSettings: ZoomConfiguration = {
@@ -35,26 +37,19 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
   public static icon: string = `<i class="fas fa-fw fa-magnifying-glass"></i>`
   public static key: string = "zoom";
   public static name: string = "ZOOM";
-  public static template: string = "zoom-config";
   public static reversible: boolean = true
+  public static template: string = "zoom-config";
 
-  // #endregion Properties (8)
+  // #endregion Properties (11)
 
-  // #region Public Static Methods (9)
+  // #region Public Static Methods (10)
 
   // // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static async RenderTemplate(config?: ZoomConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    let targetType: string = "point";
-    if (config && typeof config.target === "string" && config.target) {
-      const parsed = foundry.utils.parseUuid ? foundry.utils.parseUuid(config.target) : parseUuid(config.target);
-      if (Array.isArray(parsed.embedded)) targetType = parsed.embedded[0].toLowerCase();
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      else targetType = ((parsed as any).type as string ?? "").toLowerCase()
-    } else if (config && Array.isArray(config.target)) {
-      targetType = "point";
-    } else if (config && typeof config.target === "string" && !config.target) {
-      targetType = "prompt";
-    }
+    const targetType = getTargetType({
+      ...ZoomStep.DefaultSettings,
+      ...(config ? config : {})
+    });
 
     const hasTokens = !!oldScene?.tokens.contents.length;
     const hasTiles = !!oldScene?.tiles.contents.length;
@@ -69,29 +64,18 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       newScene,
       easingSelect: generateEasingSelectOptions(),
       targetType,
-      targetTypeSelect: {
-        point: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.POINT.LABEL",
-        prompt: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.PROMPT.LABEL",
-        ...(hasTokens ? { token: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TOKEN.LABEL" } : {}),
-        ...(hasTiles ? { tile: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TILE.LABEL" } : {}),
-        ...(hasNotes ? { note: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.NOTE.LABEL" } : {}),
-        ...(hasDrawings ? { drawing: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.LABEL" } : {}),
-      },
+      targetTypeSelect: generateTargetTypeSelectOptions(oldScene),
       hasTokens,
       hasTiles,
       hasNotes,
       hasDrawings,
-      tokenSelect: oldScene ? Object.fromEntries(oldScene.tokens.contents.map(token => [token.uuid, token.name])) : {},
-      tileSelect: oldScene ? Object.fromEntries(oldScene.tiles.contents.map(tile => [tile.uuid, tile.texture.src])) : {},
-      noteSelect: oldScene ? Object.fromEntries(oldScene.notes.contents.map(note => [note.uuid, note.entry?.name])) : {},
-      drawingSelect: oldScene ? Object.fromEntries(oldScene.drawings.contents.map(drawing => [drawing.uuid, localize(`BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.SHAPES.${drawingType(drawing)}`)])) : {},
+      tokenSelect: oldScene ? generateTokenSelectOptions(oldScene) : {},
+      tileSelect: oldScene ? generateTileSelectOptions(oldScene) : {},
+      noteSelect: oldScene ? generateNoteSelectOptions(oldScene) : {},
+      drawingSelect: oldScene ? generateDrawingSelectOptions(oldScene) : {},
       pointX: Array.isArray(config?.target) ? config.target[0] : 0.5,
       pointY: Array.isArray(config?.target) ? config.target[1] : 0.5,
-      dualStyleSelect: {
-        "overlay": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.OVERLAY`,
-        "scene": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.SCENE`,
-        "both": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.BOTH`
-      },
+      dualStyleSelect: generateDualStyleSelectOptions(),
       dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
     });
   }
@@ -99,50 +83,16 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
   // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
   public static async addEventListeners(html: JQuery<HTMLElement>, config?: ZoomConfiguration) {
     swapTargetType(html);
+    addTargetSelectEventListeners(html);
+
     setBackgroundSelector(html);
-    html.find("#targetType").on("input", () => {
-      swapTargetType(html);
-      unhighlightAll();
-    });
+
     html.find("#clampBounds").on("change", () => { setBackgroundSelector(html); })
-    html.find(`[data-action="select-token"]`).on("click", () => { selectTokenHandler(html); });
-    html.find(`[data-action="select-tile"]`).on("click", () => { selectTileHandler(html); });
-    html.find(`[data-action="select-note"]`).on("click", () => { selectNoteHandler(html); });
-    html.find(`[data-action="select-drawing"]`).on("click", () => { selectDrawingHandler(html); });
-
-    html.find("#selectedToken").on("input", () => {
-      unhighlightAll();
-      const val = html.find("#selectedToken").val() as string ?? "";
-      if (val) void highlightObject(val);
-    });
-
-    html.find("#selectedTile").on("input", () => {
-      unhighlightAll();
-      const val = html.find("#selectedTile").val() as string ?? "";
-      if (val) void highlightObject(val);
-    });
-
-    html.find("#selectedNote").on("input", () => {
-      unhighlightAll();
-      const val = html.find("#selectedNote").val() as string ?? "";
-      if (val) void highlightObject(val);
-    });
-
-    html.find("#selectedDrawing").on("input", () => {
-      unhighlightAll();
-      const val = html.find("#selectedDrawing").val() as string ?? "";
-      if (val) void highlightObject(val);
-    })
   }
 
   //public static editDialogClosed(element: HTMLElement | JQuery<HTMLElement>, config?: TransitionConfiguration): void { }
   public static editDialogClosed(element: HTMLElement | JQuery<HTMLElement>): void {
-    const html = $(element);
-
-    disableTileSelect(html);
-    disableTokenSelect(html);
-    disableNoteSelect(html);
-    unhighlightAll();
+    onTargetSelectDialogClosed($(element));
   }
 
   public static from(config: ZoomConfiguration): ZoomStep
@@ -177,34 +127,32 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
 
   public static getDuration(config: ZoomConfiguration): number { return { ...ZoomStep.DefaultSettings, ...config }.duration }
 
-  // #endregion Public Static Methods (9)
+  public static async validate(config: ZoomConfiguration): Promise<ZoomConfiguration | Error> {
+    try {
+      const target = await validateTarget({
+        ...ZoomStep.DefaultSettings,
+        ...config
+      });
+      if (target instanceof Error) throw target;
 
-  // #region Public Methods (3)
-
-  #sceneFilter: PIXI.Filter | null = null;
-
-  #filters: PIXI.Filter[] = [];
-
-  public async reverse(): Promise<void> {
-
-    const config: ZoomConfiguration = {
-      ...ZoomStep.DefaultSettings,
-      ...this.config
-    };
-
-    await Promise.all(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      this.#filters.map(filter => TweenMax.to(filter.uniforms, { amount: 1, duration: config.duration / 1000, ease: config.easing }))
-    )
+      return {
+        ...config,
+        target
+      };
+    } catch (err) {
+      return err as Error;
+    }
   }
 
+  // #endregion Public Static Methods (10)
+
+  // #region Public Methods (4)
 
   public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
     const config: ZoomConfiguration = {
       ...ZoomStep.DefaultSettings,
       ...this.config
     };
-
 
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filters: PIXI.Filter[] = [];
@@ -229,13 +177,6 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     }
   }
 
-  public teardown(): Promise<void> | void {
-    if (this.#sceneFilter) removeFilterFromScene(this.#sceneFilter);
-    this.#sceneFilter = null;
-  }
-
-
-
   public async prepare(): Promise<void> {
     // Cache actual screen space location to which to zoom
     const config: ZoomConfiguration = {
@@ -247,341 +188,33 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     const target = config.target as any;
 
     if (Array.isArray(target)) this.#screenLocation = target as [number, number];
-    else if (typeof target === "string") this.#screenLocation = this.normalizeLocation(await fromUuid(target));
-    else this.#screenLocation = this.normalizeLocation(target);
+    else if (typeof target === "string") this.#screenLocation = normalizeLocation(await fromUuid(target));
+    else this.#screenLocation = normalizeLocation(target);
   }
 
-  static async validate(config: ZoomConfiguration): Promise<ZoomConfiguration | Error> {
-    try {
+  public async reverse(): Promise<void> {
+    const config: ZoomConfiguration = {
+      ...ZoomStep.DefaultSettings,
+      ...this.config
+    };
 
-      if (typeof config.target === "string" && !config.target) {
-        // Prompt
-        const scene = canvas?.scene;
-
-        const hasTokens = !!scene?.tokens.contents.length;
-        const hasTiles = !!scene?.tiles.contents.length;
-        const hasNotes = !!scene?.notes.contents.length;
-        const hasDrawings = !!scene?.drawings.contents.length;
-
-
-        const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/zoom-target-selector.hbs`,
-          {
-            ...ZoomStep.DefaultSettings,
-            ...config,
-            targetTypeSelect: {
-              point: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.POINT.LABEL",
-              ...(hasTokens ? { token: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TOKEN.LABEL" } : {}),
-              ...(hasTiles ? { tile: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TILE.LABEL" } : {}),
-              ...(hasNotes ? { note: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.NOTE.LABEL" } : {}),
-              ...(hasDrawings ? { drawing: "BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.LABEL" } : {}),
-            },
-            oldScene: canvas?.scene,
-            hasTokens,
-            hasTiles,
-            hasNotes,
-            hasDrawings,
-            tokenSelect: hasTokens ? Object.fromEntries(scene.tokens.contents.map(token => [token.uuid, token.name])) : {},
-            tileSelect: hasTiles ? Object.fromEntries(scene.tiles.contents.map(tile => [tile.uuid, tile.texture.src])) : {},
-            noteSelect: hasNotes ? Object.fromEntries(scene.notes.contents.map(note => [note.uuid, note.entry?.name])) : {},
-            drawingSelect: hasDrawings ? Object.fromEntries(scene.drawings.contents.map(drawing => [drawing.uuid, localize(`BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.SHAPES.${drawingType(drawing)}`)])) : {},
-            pointX: Array.isArray(config.target) ? config.target[0] as number : 0.5,
-            pointY: Array.isArray(config.target) ? config.target[1] as number : 0.5,
-            dualStyleSelect: {
-              "overlay": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.OVERLAY`,
-              "scene": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.SCENE`,
-              "both": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.BOTH`
-            },
-            dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
-          }
-        );
-
-
-
-        const elem = await customDialog("BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETDIALOG.TITLE", content, {
-          ok: {
-            icon: `<i class="fas fa-check"></i>`,
-            label: "BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"
-          },
-          cancel: {
-            icon: `<i class="fas fa-times"></i>`,
-            label: "BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL",
-            callback: () => { throw new InvalidTargetError(undefined); }
-          }
-        },
-          elem => { void ZoomStep.addEventListeners(elem, config); }
-        );
-
-
-        const target = getTargetFromForm(elem);
-        unhighlightAll();
-        if (!target) throw new InvalidTargetError(target);
-        return {
-          ...config,
-          target
-        }
-      } else if (typeof config.target === "string") {
-        const item = await fromUuid(config.target);
-        if (!item) return new InvalidTargetError(config.target);
-        const parsed = (typeof foundry.utils.parseUuid === "function" ? foundry.utils.parseUuid(config.target) : parseUuid(config.target));
-        // If it's embedded in a scene other than this one
-        if (parsed.primaryType === Scene.documentName && parsed.primaryId !== canvas?.scene?.id) return new InvalidTargetError(config.target);
-        // if it's an actor, locate its token
-        if (parsed.type === Actor.documentName) {
-          const actor = game.actors?.get(parsed.id);
-          if (!actor) return new InvalidTargetError(config.target);
-          if (!(actor.token instanceof Token || actor.token instanceof TokenDocument)) return new InvalidTargetError(config.target);
-        }
-      }
-
-      return config;
-    } catch (err) {
-      return err as Error;
-    }
+    await Promise.all(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      this.#filters.map(filter => TweenMax.to(filter.uniforms, { amount: 1, duration: config.duration / 1000, ease: config.easing }))
+    )
   }
 
-  // #endregion Public Methods (3)
-
-  // #region Private Methods (3)
-
-  private getObjectSize(item: unknown): [number, number] {
-    if (item instanceof Token) return [item.mesh.width, item.mesh.height]
-    else if (item instanceof TokenDocument && item.object instanceof Token) return [item.object.mesh.width, item.object.mesh.height];
-    else if (item instanceof Tile) return [item.document.width, item.document.height];
-    else if (item instanceof TileDocument) return [item.width, item.height];
-    else if (item instanceof Note || item instanceof NoteDocument) return [0, 0];
-    else if (item instanceof Drawing) return [item.width, item.height];
-    else if (item instanceof DrawingDocument) return [item.object?.width ?? 0, item.object?.height ?? 0];
-    else throw new InvalidTargetError(item);
+  public teardown(): Promise<void> | void {
+    if (this.#sceneFilter) removeFilterFromScene(this.#sceneFilter);
+    this.#sceneFilter = null;
   }
 
-  private normalizeLocation(target: unknown): [number, number] {
-    if (target instanceof Token || target instanceof Tile || target instanceof Note) {
-      const { x, y } = target.getGlobalPosition();
-      const [width, height] = this.getObjectSize(target);
-      return this.normalizePoint(x + (width / 2), y + (height / 2));
-    } else if (target instanceof TokenDocument || target instanceof TileDocument || target instanceof NoteDocument) {
-      if (!target.object) throw new InvalidTargetError(target);
-      const { x, y } = target.object.getGlobalPosition();
-      const [width, height] = this.getObjectSize(target);
-      return this.normalizePoint(x + (width / 2), y + (height / 2));
-    } else if (target instanceof Drawing) {
-      const { x, y } = target.getGlobalPosition();
-      const [width, height] = this.getObjectSize(target);
-      return this.normalizePoint(
-        x + (width / 2),
-        y + (height / 2)
-      );
-    } else if (target instanceof DrawingDocument) {
-      if (!target.object) throw new InvalidTargetError(target);
-      const { x, y } = target.object.getGlobalPosition();
-      const [width, height] = this.getObjectSize(target);
-      return this.normalizePoint(
-        x + (width / 2),
-        y + (height / 2)
-      );
-    } else if (target instanceof Actor) {
-      if (!target.token) throw new InvalidTargetError(target);
-      return this.normalizeLocation(target.token);
-    }
-    throw new InvalidTargetError(target);
-  }
-
-  private normalizePoint(x: number, y: number): [number, number] {
-    return [
-      x / window.innerWidth,
-      y / window.innerHeight
-    ]
-  }
-
-  // #endregion Private Methods (3)
+  // #endregion Public Methods (4)
 }
 
 // #endregion Classes (1)
 
-// #region Functions (15)
-
-function disableDrawingSelect(html: JQuery<HTMLElement>) {
-  removeSelectHint();
-  removeSelectHook("controlDrawing");
-
-  SELECTING_DRAWING = false;
-  html.find(`[data-action="select-drawing"] i`).css("display", "none");
-}
-
-function disableNoteSelect(html: JQuery<HTMLElement>) {
-  removeSelectHint();
-  removeSelectHook("activateNote");
-
-  SELECTING_NOTE = false;
-  html.find(`[data-action="select-note"] i`).css("display", "none");
-}
-
-function disableTileSelect(html: JQuery<HTMLElement>) {
-  removeSelectHint();
-  removeSelectHook("controlTile");
-
-  SELECTING_TILE = false;
-  html.find(`[data-action="select-tile"] i`).css("display", "none");
-}
-
-function disableTokenSelect(html: JQuery<HTMLElement>) {
-  removeSelectHint();
-  removeSelectHook("controlToken");
-
-  SELECTING_TOKEN = false;
-  html.find(`[data-action="select-token"] i`).css("display", "none");
-}
-
-function drawingType(drawing: DrawingDocument) {
-  switch (drawing.shape.type) {
-    case "r":
-      return "RECTANGLE";
-    case "c":
-      return "CIRCLE";
-    case "p":
-      return "POLYGON";
-    case "e":
-      return "ELLIPSE";
-    default:
-      return "UNKNOWN";
-  }
-}
-
-function highlightObject(uuid: string): void {
-  const parsed = (typeof foundry.utils.parseUuid === "function") ? foundry.utils.parseUuid(uuid) : parseUuid(uuid);
-
-  // Not a document embedded in a scene, cannot highlight
-  if (parsed.primaryType !== Scene.documentName) return;
-  // Scene in which this object lies is not the current, cannot highlight
-  if (game.scenes?.current?.id !== parsed.primaryId) return
-
-  if (Array.isArray(parsed.embedded)) {
-    switch (parsed.embedded[0]) {
-      case Token.embeddedName: {
-        const token = canvas?.scene?.tokens.get(parsed.embedded[1]);
-        if (!token || !token.object) return;
-        token.object.hover = true;
-        void token.object.draw();
-        break;
-      }
-      case Tile.embeddedName: {
-        const tile = canvas?.scene?.tiles.get(parsed.embedded[1]);
-        if (!tile || !tile.object) return;
-        tile.object.hover = true;
-        void tile.object.draw();
-        break;
-      }
-      case Note.embeddedName: {
-        const note = canvas?.scene?.notes.get(parsed.embedded[1]);
-        if (!note || !note.object) return;
-        note.object.hover = true;
-        void note.object.draw();
-        break;
-      }
-      case Drawing.embeddedName: {
-        const drawing = canvas?.scene?.drawings.get(parsed.embedded[1]);
-        if (!drawing || !drawing.object) return;
-        drawing.object.hover = true;
-        void drawing.object.draw();
-        break;
-      }
-      default:
-        throw new InvalidTargetError(uuid);
-    }
-  }
-}
-
-function removeSelectHint() {
-  if (ui.notifications && SELECT_HINT_ID) {
-    ui.notifications.remove(SELECT_HINT_ID);
-    SELECT_HINT_ID = 0;
-  }
-}
-
-function removeSelectHook(hook: string) {
-  if (SELECT_HOOK_ID) {
-    Hooks.off(hook, SELECT_HOOK_ID);
-    SELECT_HOOK_ID = 0;
-  }
-}
-
-function selectDrawingHandler(html: JQuery<HTMLElement>) {
-  if (SELECTING_TILE) disableTileSelect(html);
-  if (SELECTING_TOKEN) disableTokenSelect(html);
-  if (SELECTING_NOTE) disableNoteSelect(html);
-
-  if (SELECTING_DRAWING) {
-    disableDrawingSelect(html);
-  } else {
-    SELECTING_DRAWING = true;
-    if (ui.notifications) SELECT_HINT_ID = ui.notifications.info("BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.DRAWING.SELECTHINT", { console: false, permanent: true, localize: true });
-    html.find(`[data-action="select-drawing"] i`).css("display", "block");
-    SELECT_HOOK_ID = Hooks.on("controlDrawing", (drawing: Drawing, controlled: boolean) => {
-      if (controlled) {
-        disableDrawingSelect(html);
-        html.find("#selectedDrawing").val(drawing.document.uuid);
-      }
-    })
-  }
-}
-
-function selectNoteHandler(html: JQuery<HTMLElement>) {
-  if (SELECTING_TILE) disableTileSelect(html);
-  if (SELECTING_TOKEN) disableTokenSelect(html);
-  if (SELECTING_DRAWING) disableDrawingSelect(html);
-
-  if (SELECTING_NOTE) {
-    disableNoteSelect(html);
-  } else {
-    SELECTING_NOTE = true;
-    if (ui.notifications) SELECT_HINT_ID = ui.notifications.info("BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.NOTE.SELECTHINT", { console: false, permanent: true, localize: true });
-    html.find(`[data-action="select-note"] i`).css("display", "block");
-    SELECT_HOOK_ID = Hooks.on("activateNote", (note: Note) => {
-      disableNoteSelect(html);
-      html.find("#selectedNote").val(note.document.uuid);
-    })
-  }
-}
-
-function selectTileHandler(html: JQuery<HTMLElement>) {
-  if (SELECTING_TOKEN) disableTokenSelect(html);
-  if (SELECTING_NOTE) disableNoteSelect(html);
-  if (SELECTING_DRAWING) disableDrawingSelect(html);
-
-  if (SELECTING_TILE) {
-    disableTileSelect(html);
-  } else {
-    SELECTING_TILE = true;
-    if (ui.notifications) SELECT_HINT_ID = ui.notifications.info("BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TILE.SELECTHINT", { console: false, permanent: true, localize: true });
-    html.find(`[data-action="select-tile"] i`).css("display", "block");
-    SELECT_HOOK_ID = Hooks.on("controlTile", (tile: Tile, controlled: boolean) => {
-      if (controlled) {
-        disableTileSelect(html);
-        html.find("#selectedTile").val(tile.document.uuid);
-      }
-    })
-  }
-}
-
-function selectTokenHandler(html: JQuery<HTMLElement>) {
-  if (SELECTING_TILE) disableTileSelect(html);
-  if (SELECTING_NOTE) disableNoteSelect(html);
-  if (SELECTING_DRAWING) disableDrawingSelect(html);
-
-  if (SELECTING_TOKEN) {
-    disableTokenSelect(html);
-  } else {
-    SELECTING_TOKEN = true;
-    if (ui.notifications) SELECT_HINT_ID = ui.notifications.info("BATTLETRANSITIONS.SCENECONFIG.ZOOM.TARGETTYPE.TOKEN.SELECTHINT", { console: false, permanent: true, localize: true });
-    html.find(`[data-action="select-token"] i`).css("display", "block");
-    SELECT_HOOK_ID = Hooks.on("controlToken", (token: Token, controlled: boolean) => {
-      if (controlled) {
-        disableTokenSelect(html);
-        html.find("#selectedToken").val(token.document.uuid);
-      }
-    })
-  }
-}
+// #region Functions (1)
 
 function setBackgroundSelector(html: JQuery<HTMLElement>) {
   const clamp = html.find("#clampBounds").is(":checked");
@@ -589,63 +222,4 @@ function setBackgroundSelector(html: JQuery<HTMLElement>) {
   else html.find(".background-selector").css("display", "none");
 }
 
-function swapTargetType(html: JQuery<HTMLElement>) {
-  const targetType = html.find("#targetType").val() as string ?? "";
-  html.find("section[data-target-type]").css("display", "none");
-  html.find(`section[data-target-type="${targetType}"]`).css("display", "block");
-  unhighlightAll();
-}
-
-function unhighlightAll() {
-  if (canvas?.scene) {
-    const elems = [
-      ...canvas.scene.tokens.contents,
-      ...canvas.scene.tiles.contents,
-      ...canvas.scene.notes.contents,
-      ...canvas.scene.drawings.contents
-    ]
-
-    for (const elem of elems) {
-      if (elem.object?.hover) {
-        elem.object.hover = false;
-        void elem.object.draw();
-      }
-    }
-  }
-}
-
-// #endregion Functions (15)
-
-// #region Variables (6)
-
-let SELECTING_TOKEN: boolean = false;
-let SELECT_HINT_ID: number = 0;
-let SELECT_HOOK_ID: number = 0;
-let SELECTING_NOTE: boolean = false;
-let SELECTING_DRAWING: boolean = false;
-let SELECTING_TILE: boolean = false;
-
-// #endregion Variables (6)
-
-function getTargetFromForm(elem: JQuery<HTMLElement>) {
-  const targetType = elem.find("#targetType").val() as string ?? "";
-  let targetElem: string = "";
-  switch (targetType) {
-    case "token":
-      targetElem = "selectedToken";
-      break;
-    case "tile":
-      targetElem = "selectedTile";
-      break;
-    case "note":
-      targetElem = "selectedNote";
-      break;
-    case "drawing":
-      targetElem = "selectedDrawing";
-      break;
-    case "point":
-      break;
-  }
-
-  return targetType === "point" ? [parseFloat(elem.find("#pointX").val() as string), parseFloat(elem.find("#pointY").val() as string)] as [number, number] : targetElem ? elem.find(`#${targetElem}`).val() as string : "";
-}
+// #endregion Functions (1)

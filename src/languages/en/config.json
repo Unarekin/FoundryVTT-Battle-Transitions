@@ -98,6 +98,60 @@
           "HINT": "",
           "LABEL": "Actor"
         },
+        "TARGET": {
+          "HINT": "Screen point or scene element on which to center this effect.",
+          "LABEL": "Target"
+        },
+        "TARGETDIALOG": {
+          "TITLE": "Effect Target"
+        },
+        "TARGETTYPE": {
+          "DRAWING": {
+            "HINT": "Center this effect on the mid point of a drawing in the current scene.",
+            "LABEL": "Drawing in Current Scene",
+            "NOTE": "Select Drawing",
+            "SELECT": "Select Drawing",
+            "SELECTHINT": "Please select a drawing to use for the target of this effect.",
+            "SHAPES": {
+              "CIRCLE": "Circle",
+              "ELLIPSE": "Ellipse",
+              "FREEHAND": "Freehand",
+              "POLYGON": "Polygon",
+              "RECTANGLE": "Rectangle",
+              "TEXT": "Text",
+              "UNKNOWN": "Unknown"
+            }
+          },
+          "LABEL": "Target Type",
+          "NOTE": {
+            "HINT": "Center this effect on the location of a journal note in the current scene.",
+            "LABEL": "Journal Note in Current Scene",
+            "SELECT": "Select Map Note",
+            "SELECTHINT": "Please select a map note to use for the target of this effect."
+          },
+          "POINT": {
+            "HINT": "A normalized point on the screen.  (0,0) is the top left, (1,1) is the top right.  (0.5,0.5) is the center.",
+            "LABEL": "Screen Point",
+            "X": "X",
+            "Y": "Y"
+          },
+          "PROMPT": {
+            "HINT": "Prompt for the target of this effect at the start of the transition.",
+            "LABEL": "Ask Before Transition"
+          },
+          "TILE": {
+            "HINT": "Center this effect on the mid point of a tile in the current scene.",
+            "LABEL": "Tile in Current Scene",
+            "SELECT": "Select Tile",
+            "SELECTHINT": "Please select a tile to use for the target of this effect."
+          },
+          "TOKEN": {
+            "HINT": "Center this effect on the mid point of a token in the current scene.",
+            "LABEL": "Token in Current Scene",
+            "SELECT": "Select Token",
+            "SELECTHINT": "Please select a token to use for the target of this effect."
+          }
+        },
         "BACKGROUND": {
           "COLOR": "Color",
           "HINT": "Background color or image to show behind this step",
@@ -285,60 +339,6 @@
         "CLAMPBOUNDS": {
           "HINT": "Clamp the edges of the overlay texture to the edge of the screen when zooming out.",
           "LABEL": "Clamp Bounds"
-        },
-        "TARGET": {
-          "HINT": "Screen point or scene element on which to center the zoom effect.",
-          "LABEL": "Target"
-        },
-        "TARGETDIALOG": {
-          "TITLE": "Zoom Target"
-        },
-        "TARGETTYPE": {
-          "DRAWING": {
-            "HINT": "Zoom based on the mid point of a drawing in the current scene.",
-            "LABEL": "Drawing in Current Scene",
-            "NOTE": "Select Drawing",
-            "SELECT": "Select Drawing",
-            "SELECTHINT": "Please select a drawing to use for the target of this effect.",
-            "SHAPES": {
-              "CIRCLE": "Circle",
-              "ELLIPSE": "Ellipse",
-              "FREEHAND": "Freehand",
-              "POLYGON": "Polygon",
-              "RECTANGLE": "Rectangle",
-              "TEXT": "Text",
-              "UNKNOWN": "Unknown"
-            }
-          },
-          "LABEL": "Target Type",
-          "NOTE": {
-            "HINT": "Zoom based on the location of a journal note in the current scene",
-            "LABEL": "Journal Note in Current Scene",
-            "SELECT": "Select Map Note",
-            "SELECTHINT": "Please select a map note to use for the target of this effect."
-          },
-          "POINT": {
-            "HINT": "A normalized point on the screen.  (0,0) is the top left, (1,1) is the top right.  (0.5,0.5) is the center.",
-            "LABEL": "Screen Point",
-            "X": "X",
-            "Y": "Y"
-          },
-          "PROMPT": {
-            "HINT": "Prompt the target of this zoom effect at the start of the transition.",
-            "LABEL": "Ask Before Transition"
-          },
-          "TILE": {
-            "HINT": "Zoom based on the mid point of a tile in the current scene.",
-            "LABEL": "Tile in Current Scene",
-            "SELECT": "Select Tile",
-            "SELECTHINT": "Please select a tile to use for the target of this effect."
-          },
-          "TOKEN": {
-            "HINT": "Zoom based on the mid point of a token in the current scene.",
-            "LABEL": "Token in Current Scene",
-            "SELECT": "Select Token",
-            "SELECTHINT": "Please select a token to use for the target of this effect."
-          }
         }
       },
       "ZOOMBLUR": {

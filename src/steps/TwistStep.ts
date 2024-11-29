@@ -1,8 +1,10 @@
 import { TransitionSequence, PreparedTransitionHash } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
-import { generateClockDirectionSelectOptions, generateEasingSelectOptions, parseConfigurationFormElements } from '../utils';
+import { parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { TwistConfiguration } from './types';
+import { generateClockDirectionSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
+
 export class TwistStep extends TransitionStep<TwistConfiguration> {
   // #region Properties (7)
 
@@ -37,11 +39,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
 
       directionSelect: generateClockDirectionSelectOptions(),
       easingSelect: generateEasingSelectOptions(),
-      dualStyleSelect: {
-        "overlay": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.OVERLAY`,
-        "scene": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.SCENE`,
-        "both": `BATTLETRANSITIONS.SCENECONFIG.COMMON.DUALSTYLE.BOTH`
-      },
+      dualStyleSelect: generateDualStyleSelectOptions(),
       dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
     });
   }

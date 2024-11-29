@@ -1,7 +1,8 @@
 import { AngularWipeConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
-import { createColorTexture, generateEasingSelectOptions, parseConfigurationFormElements } from '../utils';
+import { createColorTexture, parseConfigurationFormElements } from '../utils';
 import { AngularWipeFilter } from '../filters';
+import { generateEasingSelectOptions } from './selectOptions';
 
 export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
   // #region Properties (9)

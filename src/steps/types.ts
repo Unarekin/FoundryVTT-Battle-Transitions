@@ -60,7 +60,7 @@ export type LinearWipeConfiguration = WipeTransition & ({
   direction: WipeDirection;
 });
 
-export type RadialWipeConfiguration = WipeTransition & ({
+export type RadialWipeConfiguration = WipeTransition & TargetedTransition & ({
   radial: RadialDirection;
 });
 
@@ -192,14 +192,15 @@ export type BarWipeConfiguration = WipeTransition & ({
   bars: number;
 })
 
-
+export type TargetedTransition = {
+  target: [number, number] | string;
+}
 
 export type ZoomArg = [number, number] | string | Token | TokenDocument | Tile | TileDocument | Note | NoteDocument | Drawing | DrawingDocument;
 
-export type ZoomConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & BackgroundTransition & DualTransition & ({
+export type ZoomConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & BackgroundTransition & DualTransition & TargetedTransition & ({
   amount: number;
   clampBounds: boolean;
-  target: [number, number] | string;
 });
 
 

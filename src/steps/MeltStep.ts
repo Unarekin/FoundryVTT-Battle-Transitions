@@ -1,8 +1,9 @@
 import { MeltFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { MeltConfiguration } from "./types";
+import { generateEasingSelectOptions } from './selectOptions';
 
 export class MeltStep extends TransitionStep<MeltConfiguration> {
   // #region Properties (9)
