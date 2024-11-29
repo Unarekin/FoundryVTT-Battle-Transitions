@@ -659,10 +659,32 @@ export function createGradientTexture(width: number, height: number, x1: number,
   return PIXI.Texture.from(canvas);
 }
 
+export function createConicGradientTexture(width: number, height: number, angle: number, x: number, y: number, stops: ColorStop[]): PIXI.Texture {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new CanvasNotFoundError();
+  canvas.width = width;
+  canvas.height = height;
+
+  const gradient = ctx.createConicGradient(angle, x, y);
+
+  for (const stop of stops) {
+    gradient.addColorStop(stop.point, stop.color);
+  }
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  return PIXI.Texture.from(canvas);
+}
+
 /**
  * Returns the angle between two points, in radians
  */
 export function angleBetween(x1: number, y1: number, x2: number, y2: number): number {
-
   return Math.atan2(y2 - y1, x2 - x1);
+}
+
+export function slope(x1: number, y1: number, x2: number, y2: number): number {
+  if (x1 === x2) return Infinity;
+  return (y2 - y1) / (x2 - x1);
 }
