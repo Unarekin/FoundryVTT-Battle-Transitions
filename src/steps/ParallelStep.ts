@@ -3,7 +3,7 @@ import { addStepDialog, confirm, editStepDialog } from "../dialogs";
 import { InvalidTransitionError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { formatDuration, getStepClassByKey, localize, log, parseConfigurationFormElements } from "../utils";
+import { formatDuration, getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration, TransitionConfiguration } from './types';
 
@@ -34,7 +34,6 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
   // #region Public Static Methods (6)
 
   public static RenderTemplate(config?: ParallelConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    log("Rendering parallel:", oldScene, newScene);
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ParallelStep.template}.hbs`, {
       ...ParallelStep.DefaultSettings,
       id: foundry.utils.randomID(),

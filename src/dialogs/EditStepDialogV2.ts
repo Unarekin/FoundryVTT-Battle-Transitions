@@ -1,6 +1,6 @@
 import { InvalidTransitionError } from "../errors";
 import { TransitionConfiguration } from "../steps";
-import { getStepClassByKey, localize, log } from "../utils";
+import { getStepClassByKey, localize } from "../utils";
 
 export class EditStepDialogV2 {
   static async prompt(config: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<TransitionConfiguration | null> {
@@ -60,8 +60,6 @@ function checkFormValidity(html: JQuery<HTMLElement>) {
   const step = getStepClassByKey(stepType);
   if (!step) throw new InvalidTransitionError(stepType);
   const valid = step.validateForm(html) && (html.find("form")[0])?.checkValidity();
-
-  log(html.find("form :invalid"));
 
   if (valid) html.find("button[data-action='ok']").removeAttr("disabled");
   else html.find("button[data-action='ok']").attr("disabled", "true");

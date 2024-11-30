@@ -1,6 +1,6 @@
 import { TransitionStep } from './TransitionStep';
 import { LoadingTipConfiguration, LoadingTipSource } from './types';
-import { deepCopy, log, parseConfigurationFormElements } from '../utils';
+import { deepCopy, parseConfigurationFormElements } from '../utils';
 import { InvalidRollTableError, InvalidTipLocationError } from '../errors';
 import { generateFontSelectOptions } from './selectOptions';
 
@@ -37,7 +37,6 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
       ...LoadingTipStep.DefaultSettings,
       ...(config ? config : {})
     }.style);
-    log("rendering style:", style);
 
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${LoadingTipStep.template}.hbs`, {
       ...LoadingTipStep.DefaultSettings,
@@ -126,7 +125,6 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
     const [x, y] = positionFromConfig(config);
     const anchor = anchorFromConfig(config);
 
-    log("Position:", x, y, anchor);
 
     ACTIVE_TEXT_ELEMENT.anchor.x = anchor[0];
     ACTIVE_TEXT_ELEMENT.anchor.y = anchor[1];
@@ -211,7 +209,6 @@ function anchorFromConfig(config: LoadingTipConfiguration): [number, number] {
 
 function positionFromConfig(config: LoadingTipConfiguration): [number, number] {
   const viewBox = getVisualRectangle();
-  log("Getting position:", viewBox);
   switch (config.location) {
     case "topleft":
       return [viewBox.x, viewBox.y];
