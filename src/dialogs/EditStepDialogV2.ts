@@ -40,13 +40,14 @@ export class EditStepDialogV2 {
       void dialog.render(true)
         .then(dialog => {
           dialog.position.width = 500;
-          addEventListeners(dialog, $(dialog.element));
-          step.addEventListeners($(dialog.element), config);
+          const elem = $(dialog.element);
+          addEventListeners(dialog, elem);
+          step.addEventListeners(elem, config);
 
           const CLOSE_HOOK_ID = Hooks.on("closeDialogV2", (closedDialog: foundry.applications.api.DialogV2) => {
             if (closedDialog.id === dialog.id) {
               Hooks.off("closeDialogV2", CLOSE_HOOK_ID);
-              step.editDialogClosed($(dialog.element));
+              step.editDialogClosed(elem);
             }
           });
         })

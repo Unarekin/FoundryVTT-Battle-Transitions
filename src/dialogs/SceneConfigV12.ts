@@ -100,7 +100,7 @@ async function addStep(app: SceneConfig, html: JQuery<HTMLElement>) {
   let config: TransitionConfiguration | null = null;
   if (!step.skipConfig) {
     // Edit form
-    config = await editStepDialog(step.DefaultSettings)
+    config = await editStepDialog(step.DefaultSettings, undefined, app.document)
   } else {
     config = {
       ...step.DefaultSettings,
@@ -137,7 +137,7 @@ function addStepEventListeners(app: SceneConfig, html: JQuery<HTMLElement>, butt
 
   // Configure button
   button.find("[data-action='configure']").on("click", () => {
-    editStepDialog(config)
+    editStepDialog(config, undefined, app.document)
       .then(newConfig => {
         if (newConfig) {
           // Replace button
@@ -208,6 +208,7 @@ async function upsertStepButton(app: SceneConfig, html: JQuery<HTMLElement>, con
     type: step.key,
     calculatedDuration,
     skipConfig: step.skipConfig,
+    newScene: app.document.uuid,
     flag: JSON.stringify({
       ...step.DefaultSettings,
       ...config

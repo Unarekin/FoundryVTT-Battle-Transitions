@@ -1,6 +1,8 @@
 import { SerializedAsset } from "../interfaces";
 import { Easing, BilinearDirection, RadialDirection, ClockDirection, WipeDirection, SizingMode, BackgroundType } from "../types";
 
+export type TargetType = "prompt" | "point" | "oldtoken" | "newtoken" | "oldtile" | "newtile" | "oldnote" | "newnote" | "olddrawing" | "newdrawing";
+
 export interface TransitionConfiguration {
   type: string;
   label?: string;

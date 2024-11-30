@@ -1,6 +1,6 @@
 import { coerceTexture } from "./coercion";
 import { LOG_ICON } from "./constants";
-import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidImportError, InvalidObjectError, InvalidTextureError, NoFileError } from "./errors";
+import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidImportError, InvalidObjectError, InvalidTargetError, InvalidTextureError, NoFileError } from "./errors";
 import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
@@ -610,15 +610,12 @@ export function angleBetween(x1: number, y1: number, x2: number, y2: number): nu
   return Math.atan2(y2 - y1, x2 - x1);
 }
 
-export function slope(x1: number, y1: number, x2: number, y2: number): number {
-  if (x1 === x2) return Infinity;
-  return (y2 - y1) / (x2 - x1);
-}
-
-export function getTargetType(config: TargetedTransition): string {
+export function getTargetType(config: TargetedTransition, oldScene?: Scene, newScene?: Scene): string {
   if (config && typeof config.target === "string" && config.target) {
-    const parsed = foundry.utils.parseUuid ? foundry.utils.parseUuid(config.target) : parseUuid(config.target);
-    if (Array.isArray(parsed.embedded)) return parsed.embedded[0].toLowerCase();
+    const parsed = foundry.utils.parseUuid(config.target);
+    if (parsed.primaryType !== "Scene") throw new InvalidTargetError(config.target);
+    const age = parsed.primaryId === oldScene?.id ? "old" : parsed.primaryId === newScene?.id ? "new" : "";
+    if (Array.isArray(parsed.embedded)) return `${age}${parsed.embedded[0].toLowerCase()}`;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     else return ((parsed as any).type as string ?? "").toLowerCase()
   } else if (config && Array.isArray(config.target)) {
@@ -628,3 +625,4 @@ export function getTargetType(config: TargetedTransition): string {
   }
   return "point";
 }
+

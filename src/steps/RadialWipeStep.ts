@@ -1,21 +1,16 @@
 import { RadialWipeFilter } from "../filters";
-import { Easing } from "../types";
 import { createColorTexture, getTargetType, parseConfigurationFormElements } from "../utils";
-import { addTargetSelectEventListeners, getTargetFromForm, normalizeLocation, swapTargetType, validateTarget } from "./functions";
-import { generateDrawingSelectOptions, generateEasingSelectOptions, generateNoteSelectOptions, generateRadialDirectionSelectOptions, generateTargetTypeSelectOptions, generateTileSelectOptions, generateTokenSelectOptions } from "./selectOptions";
+import { generateEasingSelectOptions, generateRadialDirectionSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
-import { RadialWipeConfiguration } from "./types";
+import { RadialWipeConfiguration, SceneChangeConfiguration, TransitionConfiguration } from "./types";
+import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTargetSelectEventListeners, validateTarget } from "./targetSelectFunctions";
+import { InvalidSceneError, InvalidTargetError } from "../errors";
 
 export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
-  // #region Properties (11)
+  // #region Properties (10)
 
   #filter: RadialWipeFilter | null = null;
   #screenLocation: [number, number] = [0.5, 0.5];
-
-  public readonly defaultSettings: Partial<RadialWipeConfiguration> = {
-    duration: 1000,
-    easing: "none" as Easing
-  }
 
   public static DefaultSettings: RadialWipeConfiguration = {
     id: "",
@@ -39,20 +34,15 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   public static reversible: boolean = true;
   public static template = "radialwipe-config";
 
-  // #endregion Properties (11)
+  // #endregion Properties (10)
 
-  // #region Public Static Methods (8)
+  // #region Public Static Methods (10)
 
   public static RenderTemplate(config?: RadialWipeConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
     const targetType = getTargetType({
       ...RadialWipeStep.DefaultSettings,
       ...(config ? config : {})
-    });
-
-    const hasTokens = !!oldScene?.tokens.contents.length;
-    const hasTiles = !!oldScene?.tiles.contents.length;
-    const hasNotes = !!oldScene?.notes.contents.length;
-    const hasDrawings = !!oldScene?.drawings.contents.length;
+    }, oldScene, newScene);
 
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${RadialWipeStep.template}.hbs`, {
       ...RadialWipeStep.DefaultSettings,
@@ -61,17 +51,10 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
       easingSelect: generateEasingSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),
       targetType,
-      oldScene,
-      newScene,
-      targetTypeSelect: generateTargetTypeSelectOptions(oldScene),
-      hasTokens,
-      hasTiles,
-      hasNotes,
-      hasDrawings,
-      tokenSelect: oldScene ? generateTokenSelectOptions(oldScene) : {},
-      tileSelect: oldScene ? generateTileSelectOptions(oldScene) : {},
-      noteSelect: oldScene ? generateNoteSelectOptions(oldScene) : {},
-      drawingSelect: oldScene ? generateDrawingSelectOptions(oldScene) : {},
+      oldScene: oldScene?.id ?? "",
+      newScene: newScene?.id ?? "",
+      selectedTarget: config ? config.target : "",
+      ...generateTargetTypeSelectOptions(oldScene, newScene),
       pointX: Array.isArray(config?.target) ? config.target[0] : 0.5,
       pointY: Array.isArray(config?.target) ? config.target[1] : 0.5,
     });
@@ -79,8 +62,11 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
   public static async addEventListeners(html: JQuery<HTMLElement>, config?: RadialWipeConfiguration) {
-    swapTargetType(html);
-    addTargetSelectEventListeners(html);
+    setTargetSelectEventListeners(html);
+  }
+
+  public static editDialogClosed(element: HTMLElement | JQuery<HTMLElement>): void {
+    onTargetSelectDialogClosed($(element));
   }
 
   public static from(config: RadialWipeConfiguration): RadialWipeStep
@@ -91,23 +77,6 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     else if (((arg as any)[0]) instanceof HTMLFormElement) return RadialWipeStep.fromFormElement((arg as any)[0] as HTMLFormElement);
     else return new RadialWipeStep(arg as RadialWipeConfiguration);
-  }
-
-  public static async validate(config: RadialWipeConfiguration): Promise<RadialWipeConfiguration | Error> {
-    try {
-      const target = await validateTarget({
-        ...RadialWipeStep.DefaultSettings,
-        ...config
-      });
-      if (target instanceof Error) throw target;
-
-      return {
-        ...config,
-        ...(target ? { target } : {})
-      };
-    } catch (err) {
-      return err as Error;
-    }
   }
 
   public static fromFormElement(form: HTMLFormElement): RadialWipeStep {
@@ -124,7 +93,31 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
 
   public static getDuration(config: RadialWipeConfiguration): number { return { ...RadialWipeStep.DefaultSettings, ...config }.duration }
 
-  // #endregion Public Static Methods (8)
+  public static async validate(config: RadialWipeConfiguration, sequence: TransitionConfiguration[]): Promise<RadialWipeConfiguration | Error> {
+    try {
+      const newSceneId = sequence.reduce((prev, curr) => curr.type === "scenechange" ? (curr as SceneChangeConfiguration).scene : prev, null as string | null);
+      if (!newSceneId) throw new InvalidSceneError(typeof newSceneId === "string" ? newSceneId : typeof newSceneId);
+      const newScene = game.scenes?.get(newSceneId);
+      if (!newScene) throw new InvalidSceneError(typeof newSceneId === "string" ? newSceneId : typeof newSceneId);
+
+      const target = await validateTarget({
+        ...RadialWipeStep.DefaultSettings,
+        ...config
+      },
+        canvas?.scene as Scene,
+        newScene
+      );
+      return {
+        ...RadialWipeStep.DefaultSettings,
+        ...config,
+        target
+      };
+    } catch (err) {
+      return err as Error;
+    }
+  }
+
+  // #endregion Public Static Methods (10)
 
   // #region Public Methods (3)
 
@@ -133,6 +126,15 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
       ...RadialWipeStep.DefaultSettings,
       ...this.config
     }
+    // Check for our target in the current (new) scene
+    if (!Array.isArray(config.target)) {
+      const obj = await fromUuid(config.target);
+      if (!obj) throw new InvalidTargetError(config.target);
+      const parsed = foundry.utils.parseUuid(config.target);
+      if (parsed?.primaryType !== "Scene") throw new InvalidTargetError(config.target);
+      if (parsed.primaryId === canvas?.scene?.id) this.#screenLocation = normalizePosition(obj);
+    }
+
     const background = config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new RadialWipeFilter(config.radial, this.#screenLocation[0], this.#screenLocation[1], background.baseTexture);
     this.addFilter(container, filter);
@@ -145,10 +147,16 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
       ...RadialWipeStep.DefaultSettings,
       ...this.config
     };
-
-    if (Array.isArray(config.target)) this.#screenLocation = config.target;
-    else if (typeof config.target === "string") this.#screenLocation = normalizeLocation(await fromUuid(config.target));
-    else this.#screenLocation = normalizeLocation(config.target);
+    if (Array.isArray(config.target)) {
+      this.#screenLocation = config.target;
+    } else {
+      // Check if the target is in our current (old) scene
+      const obj = await fromUuid(config.target);
+      if (!obj) throw new InvalidTargetError(config.target);
+      const parsed = foundry.utils.parseUuid(config.target);
+      if (parsed?.primaryType !== "Scene") throw new InvalidTargetError(config.target);
+      if (parsed.primaryId === canvas?.scene?.id) this.#screenLocation = normalizePosition(obj);
+    }
   }
 
   public async reverse(): Promise<void> {
