@@ -25,7 +25,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
 
   // #endregion Properties (8)
 
-  // #region Public Static Methods (7)
+  // #region Public Static Methods (8)
 
   public static async RenderTemplate(config?: SoundConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SoundStep.template}.hbs`, {
@@ -33,6 +33,12 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
       id: foundry.utils.randomID(),
       ...(config ? config : {})
     });
+  }
+
+  public static addEventListeners(element: HTMLElement | JQuery<HTMLElement>): void {
+    const html = $(element);
+    html.find("#file input").attr("required", "true");
+    html.find("form input").trigger("input");
   }
 
   public static from(config: SoundConfiguration): SoundStep
@@ -73,7 +79,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
     })
   }
 
-  // #endregion Public Static Methods (7)
+  // #endregion Public Static Methods (8)
 
   // #region Public Methods (3)
 

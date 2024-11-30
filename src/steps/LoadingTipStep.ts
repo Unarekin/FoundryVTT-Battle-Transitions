@@ -107,6 +107,7 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
     });
   }
 
+
   public execute(container: PIXI.Container): void | Promise<void> {
     const config: LoadingTipConfiguration = {
       ...LoadingTipStep.DefaultSettings,
@@ -146,8 +147,12 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
   public static addEventListeners(element: HTMLElement | JQuery<HTMLElement>): void {
     const elem = $(element);
     setMessageSource(elem, elem.find("#sourceType").val() as LoadingTipSource);
-    elem.find("#sourceType").on("input", () => { setMessageSource(elem, elem.find("#sourceType").val() as LoadingTipSource) });
-
+    elem.find("#sourceType").on("input", () => {
+      const source = elem.find("#sourceType").val() as LoadingTipSource;
+      setMessageSource(elem, source);
+      if (source === "string") elem.find("#table").removeAttr("required");
+      else if (source === "rolltable") elem.find("#table").attr("required", "true");
+    });
   }
 
   public teardown(): void {

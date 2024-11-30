@@ -50,3 +50,4 @@ function getPreviousStepByStep(id: string, sequence: TransitionStep[]): Transiti
   }
   return undefined;
 }
+
