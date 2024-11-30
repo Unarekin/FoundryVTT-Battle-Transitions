@@ -21,7 +21,12 @@
       <label for="file">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.SOUND.FILE.LABEL"
         }}</label>
-      <file-picker name="file" id="file" value="{{file}}"></file-picker>
+      <file-picker
+        name="file"
+        id="file"
+        value="{{file}}"
+        required
+      ></file-picker>
     </div>
     <p class="notes">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.SOUND.FILE.HINT"

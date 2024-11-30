@@ -1,6 +1,6 @@
 <div class="form-group">
   <label for="actor">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.ACTOR.LABEL"}}</label>
-  <select name="actor" id="actor">
+  <select name="actor" id="actor" required>
     <option value=""></option>
     {{#group actors by="type"}}
       <optgroup label="{{value}}">

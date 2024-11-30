@@ -54,6 +54,12 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
     else return new VideoStep(arg as VideoConfiguration);
   }
 
+  public static addEventListeners(element: HTMLElement | JQuery<HTMLElement>): void {
+    const html = $(element);
+    html.find("#file input").attr("required", "true");
+    html.find("form input").trigger("input");
+  }
+
   public static fromFormElement(form: HTMLFormElement): VideoStep {
     const file = $(form).find("#file").val() as string ?? "";
     const volume = $(form).find("#volume input[type='number']").val() as number;

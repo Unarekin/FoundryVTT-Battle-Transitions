@@ -379,29 +379,6 @@ export async function wait(duration: number) {
 // #endregion Functions (33)
 
 
-// export async function confirmDialog(title: string, content: string): Promise<boolean> {
-//   if (shouldUseAppV2() && foundry.applications.api.DialogV2) return confirmV2(title, content);
-//   else return confirmV1(title, content);
-
-// }
-
-// async function confirmV1(title: string, content: string): Promise<boolean> {
-//   return Dialog.confirm({
-//     title: localize(title),
-//     content: localize(content),
-//     rejectClose: false
-//   }).then(val => !!val)
-// }
-
-// async function confirmV2(title: string, content: string): Promise<boolean> {
-//   return foundry.applications.api.DialogV2.confirm({
-//     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-//     window: { title: localize(title) } as any,
-//     content: localize(content),
-//     rejectClose: false
-//   }).then(val => !!val);
-// }
-
 export function isColor(data: string): boolean {
   return CSS.supports("color", data);
 }
@@ -466,28 +443,6 @@ export function formatDuration(duration: number): string {
   return localize(`BATTLETRANSITIONS.FORMATTERS.MILLISECONDS`, { value: duration.toLocaleString() });
 }
 
-// function parseDuration(duration: number) {
-//   return {
-//     days: Math.trunc(duration / 86400000),
-//     hours: Math.trunc(duration / 3600000) % 24,
-//     minutes: Math.trunc(duration / 60000) % 60,
-//     seconds: Math.trunc(duration / 1000) % 60,
-//     ms: Math.trunc(duration) % 1000
-//   }
-// }
-
-// export function formatDuration(duration: number): string {
-//   const parsed = parseDuration(duration);
-
-//   const output: number[] = [
-//     ...(parsed.days ? [parsed.days] : []),
-//     ...(parsed.hours || parsed.days ? [parsed.hours] : []),
-//     parsed.minutes,
-//     parsed.seconds
-//   ];
-
-//   return `${output.map(item => item.toString().padStart(2, "0")).join(":")}${parsed.ms ? `.${parsed.ms.toString().padEnd(3, "0")}` : ''}`;
-// }
 
 export function deepCopy(target: any, source: any): void {
   if (typeof target !== "object") throw new InvalidObjectError(target);
@@ -624,5 +579,18 @@ export function getTargetType(config: TargetedTransition, oldScene?: Scene, newS
     return "prompt";
   }
   return "point";
+}
+
+export function parseFontSize(input: string): string {
+  // It is a number with no unit of measure, assume pixels
+  if (parseInt(input).toString() == input) return `${input}px`;
+  return input;
+}
+
+export function isValidFontSize(input: string): boolean {
+  const size = parseFontSize(input);
+  const temp = document.createElement("div");
+  temp.style.fontSize = size;
+  return temp.style.fontSize !== "";
 }
 

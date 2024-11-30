@@ -289,14 +289,33 @@ export function setTargetSelectEventListeners(html: JQuery<HTMLElement>) {
   });
 }
 
+
+const requiredFields = {
+  "prompt": "",
+  "point": "#pointX, #pointY",
+  "oldtoken": "#selectedOldToken",
+  "newtoken": "#selectedNewToken",
+  "oldtile": "#selectedOldTile",
+  "newtile": "#selectedNewTile",
+  "olddrawing": "#selectedOldDrawing",
+  "newdrawing": "#selectedNewDrawing",
+  "oldnote": "#selectedOldNote",
+  "newnote": "#selectedNewNote"
+}
+
+
 /**
  * Sets the correct HTML section for the current target type
  * @param {JQuery<HTMLElement>} html - JQuery<HTMLElement>
  */
 function swapTargetSection(html: JQuery<HTMLElement>) {
   html.find(`section[data-target-type]`).css("display", "none");
+  html.find("section[data-target-type] input, section[data-target-type] select").removeAttr("required");
   const targetType = getTargetType(html);
   html.find(`section[data-target-type="${targetType}"]`).css("display", "block");
+  if (requiredFields[targetType]) {
+    html.find(requiredFields[targetType]).attr("required", "true");
+  }
 }
 
 export async function validateTarget(config: TransitionConfiguration & TargetedTransition, oldScene?: Scene, newScene?: Scene): Promise<[number, number] | string> {

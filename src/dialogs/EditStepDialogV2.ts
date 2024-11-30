@@ -63,6 +63,7 @@ function checkFormValidity(html: JQuery<HTMLElement>) {
 
   if (valid) html.find("button[data-action='ok']").removeAttr("disabled");
   else html.find("button[data-action='ok']").attr("disabled", "true");
+
 }
 
 function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>) {
@@ -94,7 +95,12 @@ function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQue
   html.find("[data-font-select] option").each((index, element) => {
     if (element instanceof HTMLOptionElement)
       element.style.fontFamily = element.value;
-  })
+  });
+
+  html.find("[data-font-select]").css("font-family", html.find("[data-font-select]").val() as string);
+  html.find("[data-font-select]").on("input", e => {
+    $(e.currentTarget).css("font-family", $(e.currentTarget).val() as string);
+  });
 
   // Set up tabs
   const tabs = new Tabs({
