@@ -1,0 +1,26 @@
+<div class="flexcol step-config-item" data-transition-type="angularwipe" data-id="{{id}}">
+  <form>
+    <input type="hidden" name="id" id="id" value="{{id}}">
+    <p>{{localize "BATTLETRANSITIONS.ANGULARWIPE.DESCRIPTION"}}</p>
+
+    <div class="form-group">
+      <label for="label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
+      <input type="text" name="label" id="label" value="{{label}}">
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+
+    {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
+    {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
+    <div class="form-group">
+      <label for="easing">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL"
+        }}</label>
+      <select name="easing" id="easing">
+        {{selectOptions easingSelect selected=easing localize=true}}
+      </select>
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.EASING.HINT"
+      }}</p>
+  </form>
+</div>

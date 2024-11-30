@@ -1,0 +1,48 @@
+<div
+  class="flexcol step-config-item"
+  data-transition-type="video"
+  data-id="{{id}}"
+>
+  <form>
+    <input type="hidden" name="id" id="id" value="{{id}}" />
+    <p>{{localize "BATTLETRANSITIONS.VIDEO.DESCRIPTION"}}</p>
+
+    <div class="form-group">
+      <label for="label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
+      <input type="text" name="label" id="label" value="{{label}}">
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+
+    <div class="form-group">
+      <label for="file">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.VIDEO.FILE.LABEL"
+        }}</label>
+      <file-picker
+        name="file"
+        id="file"
+        value="{{file}}"
+        type="video"
+      ></file-picker>
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.VIDEO.FILE.HINT"
+      }}</p>
+    <div class="form-group">
+      <label for="volume">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.LABEL"
+        }}</label>
+      <range-picker
+        value="{{volume}}"
+        min="0"
+        max="100"
+        step="1"
+        id="volume"
+        name="volume"
+      ></range-picker>
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.HINT"
+      }}</p>
+{{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
+  </form>
+</div>
