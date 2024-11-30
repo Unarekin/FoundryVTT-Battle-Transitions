@@ -1,0 +1,83 @@
+{
+  "id": "battle-transitions",
+  "title": "Battle Transitions",
+  "description": "Add automated JRPG-inspired transition sequences when activating scenes.",
+  "version": "#{VERSION}#",
+  "library": "false",
+  "compatibility": {
+    "minimum": 11,
+    "verified": 12,
+    "maximum": 13
+  },
+  "authors": [
+    {
+      "name": "Unarekin",
+      "url": "https://github.com/Unarekin",
+      "discord": "unarekin"
+    }
+  ],
+  "relationships": {
+    "systems": [],
+    "recommends": [
+      {
+        "id": "lib-wrapper",
+        "type": "module",
+        "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/download/v1.13.2.0/module.json",
+        "compatibility": {
+          "verified": "1.13.2.0"
+        }
+      }
+    ],
+    "requires": [
+      {
+        "id": "color-picker",
+        "type": "module",
+        "manifest": "https://github.com/Larkinabout/fvtt-color-picker/releases/latest/download/module.json",
+        "compatibility": {
+          "verified": "1.3"
+        }
+      },
+      {
+        "id": "socketlib",
+        "type": "module",
+        "manifest": "https://raw.githubusercontent.com/manuelVo/foundryvtt-socketlib/master/module.json",
+        "compatibility": {
+          "verified": "1.1.0"
+        }
+      }
+    ]
+  },
+  "esmodules": ["module.js"],
+  "styles": ["styles/module.css", "vendor/jquery-ui.min.css"],
+  "scripts": [
+    "greensock/dist/gsap.min.js",
+    "greensock/dist/PixiPlugin.min.js",
+    "greensock/dist/ScrollToPlugin.min.js",
+    "greensock/dist/SplitText.min.js",
+    "vendor/pixi-filters.js",
+    "vendor/jquery-ui.min.js",
+    "vendor/lunr.min.js"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "languages/en.json"
+    }
+  ],
+  "url": "#{URL}#",
+  "manifest": "#{MANIFEST}#",
+  "download": "#{DOWNLOAD}#",
+  "license": "LICENSE",
+  "readme": "README.md",
+  "socket": true,
+  "packs": [
+    {
+      "name": "bt-sample-macros",
+      "label": "Battle Transitions",
+      "path": "./packs/bt-sample-macros",
+      "type": "Macro"
+    }
+  ],
+  "media": []
+}

@@ -29,6 +29,7 @@ function v10Migration(old: V10Config): RadialWipeConfiguration {
     radial: old.radial,
     duration: old.duration,
     type: "radialwipe",
+    target: [0.5, 0.5],
     ...migratev10XBackground(old)
   }
 }

@@ -75,7 +75,7 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
     hideTransitionCover();
   }
 
-  public override async validate(): Promise<boolean | Error> {
+  public async validate(): Promise<boolean | Error> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const scene = (game.scenes as any).get(this.config.scene);
     if (!(scene instanceof Scene)) return Promise.resolve(new InvalidSceneError({

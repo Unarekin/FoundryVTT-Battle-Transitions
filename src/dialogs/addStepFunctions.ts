@@ -1,4 +1,5 @@
 // import lunr from "lunr";
+import lunr from "lunr";
 import { TransitionStep } from "../steps";
 import { getSortedSteps, getStepClassByKey, localize } from "../utils";
 
