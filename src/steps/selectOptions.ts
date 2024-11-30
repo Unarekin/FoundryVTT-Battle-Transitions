@@ -1,4 +1,4 @@
-import { localize, log } from "../utils"
+import { localize } from "../utils";
 
 // #region Functions (13)
 
@@ -109,32 +109,51 @@ export function generateRadialDirectionSelectOptions(): { [x: string]: string } 
   }
 }
 
-export function generateTargetTypeSelectOptions(scene?: Scene): { [x: string]: string } {
-  const hasTokens = !!scene?.tokens.contents.length;
-  const hasTiles = !!scene?.tiles.contents.length;
-  const hasNotes = !!scene?.notes.contents.length;
-  const hasDrawings = !!scene?.drawings.contents.length;
+export function generateTargetTypeSelectOptions(oldScene?: Scene, newScene?: Scene) {
 
+  const oldHasTokens = !!oldScene?.tokens.contents.length;
+  const oldHasTiles = !!oldScene?.tiles.contents.length;
+  const oldHasNotes = !!oldScene?.notes.contents.length;
+  const oldHasDrawings = !!oldScene?.drawings.contents.length;
+
+  const newHasTokens = !!newScene?.tokens.contents.length;
+  const newHasTiles = !!newScene?.tiles.contents.length;
+  const newHasNotes = !!newScene?.notes.contents.length;
+  const newHasDrawings = !!newScene?.drawings.contents.length;
 
   return {
-    point: "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.LABEL",
-    ...(scene ? {} : { prompt: "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.PROMPT.LABEL" }),
-    ...(hasTokens ? { token: "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.LABEL" } : {}),
-    ...(hasTiles ? { tile: "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.LABEL" } : {}),
-    ...(hasNotes ? { note: "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.LABEL" } : {}),
-    ...(hasDrawings ? { drawing: "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.LABEL" } : {}),
+    targetTypeSelect: {
+      point: "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.LABEL",
+      ...(oldScene ? {} : { prompt: "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.PROMPT.LABEL" }),
+      ...(oldHasTokens ? { oldtoken: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.CURRENTSCENE.LABEL", { scene: oldScene.name }) } : {}),
+      ...(oldHasTiles ? { oldtile: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.CURRENTSCENE.LABEL", { scene: oldScene.name }) } : {}),
+      ...(oldHasNotes ? { oldnote: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.CURRENTSCENE.LABEL", { scene: oldScene.name }) } : {}),
+      ...(oldHasDrawings ? { olddrawing: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.CURRENTSCENE.LABEL", { scene: oldScene.name }) } : {}),
+      ...(newHasTokens ? { newtoken: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.NEWSCENE.LABEL", { scene: newScene.name }) } : {}),
+      ...(newHasTiles ? { newtile: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.NEWSCENE.LABEL", { scene: newScene.name }) } : {}),
+      ...(newHasNotes ? { newnote: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.NEWSCENE.LABEL", { scene: newScene.name }) } : {}),
+      ...(newHasDrawings ? { newdrawing: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.NEWSCENE.LABEL", { scene: newScene.name }) } : {})
+    },
+    oldTokenSelect: oldScene ? generateTokenSelectOptions(oldScene) : {},
+    oldTileSelect: oldScene ? generateTileSelectOptions(oldScene) : {},
+    oldNoteSelect: oldScene ? generateNoteSelectOptions(oldScene) : {},
+    oldDrawingSelect: oldScene ? generateDrawingSelectOptions(oldScene) : {},
+    newTokenSelect: newScene ? generateTokenSelectOptions(newScene) : {},
+    newTileSelect: newScene ? generateTileSelectOptions(newScene) : {},
+    newNoteSelect: newScene ? generateNoteSelectOptions(newScene) : {},
+    newDrawingSelect: newScene ? generateDrawingSelectOptions(newScene) : {},
+    oldHasTokens, oldHasTiles, oldHasNotes, oldHasDrawings,
+    newHasTokens, newHasTiles, newHasNotes, newHasDrawings
   }
 }
+
 
 export function generateTileSelectOptions(scene: Scene): { [x: string]: string } {
   return scene ? Object.fromEntries(scene.tiles.contents.map(tile => [tile.uuid, tile.texture.src as string])) : {};
 }
 
 export function generateTokenSelectOptions(scene: Scene): { [x: string]: string } {
-
-  const opts = scene ? Object.fromEntries(scene.tokens.contents.map(token => [token.uuid, token.name])) : {};
-  log("Token select:", opts);
-  return opts;
+  return scene ? Object.fromEntries(scene.tokens.contents.map(token => [token.uuid, token.name])) : {};
 }
 
 // #endregion Functions (13)

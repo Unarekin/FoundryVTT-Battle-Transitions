@@ -107,8 +107,15 @@
         },
         "TARGETTYPE": {
           "DRAWING": {
-            "HINT": "Center this effect on the mid point of a drawing in the current scene.",
-            "LABEL": "Drawing in Current Scene",
+            "CURRENTSCENE": {
+              "LABEL": "Drawing in {scene}",
+              "HINT": "Center this effect on the mid point of a drawing in the current scene."
+            },
+            "NEWSCENE": {
+              "LABEL": "Drawing in {scene}",
+              "HINT": "Center this effect on a mid point of a drawing in the next scene."
+            },
+            "LABEL": "Drawing",
             "NOTE": "Select Drawing",
             "SELECT": "Select Drawing",
             "SELECTHINT": "Please select a drawing to use for the target of this effect.",
@@ -124,10 +131,17 @@
           },
           "LABEL": "Target Type",
           "NOTE": {
-            "HINT": "Center this effect on the location of a journal note in the current scene.",
-            "LABEL": "Journal Note in Current Scene",
-            "SELECT": "Select Map Note",
-            "SELECTHINT": "Please select a map note to use for the target of this effect."
+            "CURRENTSCENE": {
+              "LABEL": "Journal Note in {scene}",
+              "HINT": "Center this effect on the location of a journal note in the current scene."
+            },
+            "NEWSCENE": {
+              "LABEL": "Journal Note in {scene}",
+              "HINT": "Center this effect on the location of a journal note in the next scene."
+            },
+            "LABEL": "Note",
+            "SELECT": "Select Journal Note",
+            "SELECTHINT": "Please select a journal note to use for the target of this effect."
           },
           "POINT": {
             "HINT": "A normalized point on the screen.  (0,0) is the top left, (1,1) is the top right.  (0.5,0.5) is the center.",
@@ -140,14 +154,28 @@
             "LABEL": "Ask Before Transition"
           },
           "TILE": {
-            "HINT": "Center this effect on the mid point of a tile in the current scene.",
-            "LABEL": "Tile in Current Scene",
+            "CURRENTSCENE": {
+              "LABEL": "Tile in {scene}",
+              "HINT": "Center this effect on the mid point of a tile in the current scene."
+            },
+            "NEWSCENE": {
+              "LABEL": "Tile in {scene}",
+              "HINT": "Center this effect on the mid point of a tile in the next scene."
+            },
+            "LABEL": "Tile",
             "SELECT": "Select Tile",
             "SELECTHINT": "Please select a tile to use for the target of this effect."
           },
           "TOKEN": {
-            "HINT": "Center this effect on the mid point of a token in the current scene.",
-            "LABEL": "Token in Current Scene",
+            "CURRENTSCENE": {
+              "LABEL": "Token in {scene}",
+              "HINT": "Center this effect on the mid point of a token in the current scene."
+            },
+            "NEWSCENE": {
+              "LABEL": "Token in {scene}",
+              "HINT": "Center this effect on the mid point of a token in the next scene."
+            },
+            "LABEL": "Token",
             "SELECT": "Select Token",
             "SELECTHINT": "Please select a token to use for the target of this effect."
           }

@@ -2,10 +2,10 @@ import { ZoomFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
 import { createColorTexture, getTargetType, parseConfigurationFormElements } from "../utils";
-import { addTargetSelectEventListeners, getTargetFromForm, normalizeLocation, onTargetSelectDialogClosed, swapTargetType, validateTarget } from "./functions";
-import { generateDrawingSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions, generateNoteSelectOptions, generateTargetTypeSelectOptions, generateTileSelectOptions, generateTokenSelectOptions } from "./selectOptions";
+import { generateDualStyleSelectOptions, generateEasingSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { ZoomConfiguration } from "./types";
+import { getTargetFromForm, onTargetSelectDialogClosed, setTargetSelectEventListeners } from "./targetSelectFunctions";
 
 // #region Classes (1)
 
@@ -51,11 +51,6 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       ...(config ? config : {})
     });
 
-    const hasTokens = !!oldScene?.tokens.contents.length;
-    const hasTiles = !!oldScene?.tiles.contents.length;
-    const hasNotes = !!oldScene?.notes.contents.length;
-    const hasDrawings = !!oldScene?.drawings.contents.length;
-
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ZoomStep.template}.hbs`, {
       ...ZoomStep.DefaultSettings,
       id: foundry.utils.randomID(),
@@ -64,15 +59,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       newScene: newScene?.id ?? "",
       easingSelect: generateEasingSelectOptions(),
       targetType,
-      targetTypeSelect: generateTargetTypeSelectOptions(oldScene),
-      hasTokens,
-      hasTiles,
-      hasNotes,
-      hasDrawings,
-      tokenSelect: oldScene ? generateTokenSelectOptions(oldScene) : {},
-      tileSelect: oldScene ? generateTileSelectOptions(oldScene) : {},
-      noteSelect: oldScene ? generateNoteSelectOptions(oldScene) : {},
-      drawingSelect: oldScene ? generateDrawingSelectOptions(oldScene) : {},
+      ...generateTargetTypeSelectOptions(oldScene, newScene),
       pointX: Array.isArray(config?.target) ? config.target[0] : 0.5,
       pointY: Array.isArray(config?.target) ? config.target[1] : 0.5,
       dualStyleSelect: generateDualStyleSelectOptions(),
@@ -82,9 +69,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
   public static async addEventListeners(html: JQuery<HTMLElement>, config?: ZoomConfiguration) {
-    swapTargetType(html);
-    addTargetSelectEventListeners(html);
-
+    setTargetSelectEventListeners(html);
     setBackgroundSelector(html);
 
     html.find("#clampBounds").on("change", () => { setBackgroundSelector(html); })
@@ -127,22 +112,22 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
 
   public static getDuration(config: ZoomConfiguration): number { return { ...ZoomStep.DefaultSettings, ...config }.duration }
 
-  public static async validate(config: ZoomConfiguration): Promise<ZoomConfiguration | Error> {
-    try {
-      const target = await validateTarget({
-        ...ZoomStep.DefaultSettings,
-        ...config
-      });
-      if (target instanceof Error) throw target;
+  // public static async validate(config: ZoomConfiguration): Promise<ZoomConfiguration | Error> {
+  //   try {
+  //     const target = await validateTarget({
+  //       ...ZoomStep.DefaultSettings,
+  //       ...config
+  //     });
+  //     if (target instanceof Error) throw target;
 
-      return {
-        ...config,
-        target
-      };
-    } catch (err) {
-      return err as Error;
-    }
-  }
+  //     return {
+  //       ...config,
+  //       target
+  //     };
+  //   } catch (err) {
+  //     return err as Error;
+  //   }
+  // }
 
   // #endregion Public Static Methods (10)
 
@@ -177,20 +162,20 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     }
   }
 
-  public async prepare(): Promise<void> {
-    // Cache actual screen space location to which to zoom
-    const config: ZoomConfiguration = {
-      ...ZoomStep.DefaultSettings,
-      ...this.config
-    };
+  // public async prepare(): Promise<void> {
+  //   // Cache actual screen space location to which to zoom
+  //   const config: ZoomConfiguration = {
+  //     ...ZoomStep.DefaultSettings,
+  //     ...this.config
+  //   };
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const target = config.target as any;
+  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //   const target = config.target as any;
 
-    if (Array.isArray(target)) this.#screenLocation = target as [number, number];
-    else if (typeof target === "string") this.#screenLocation = normalizeLocation(await fromUuid(target));
-    else this.#screenLocation = normalizeLocation(target);
-  }
+  //   if (Array.isArray(target)) this.#screenLocation = target as [number, number];
+  //   else if (typeof target === "string") this.#screenLocation = normalizeLocation(await fromUuid(target));
+  //   else this.#screenLocation = normalizeLocation(target);
+  // }
 
   public async reverse(): Promise<void> {
     const config: ZoomConfiguration = {
