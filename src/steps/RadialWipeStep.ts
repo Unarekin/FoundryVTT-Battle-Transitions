@@ -1,19 +1,19 @@
 import { RadialWipeFilter } from "../filters";
-import { TransitionSequence } from "../interfaces";
-import { Easing } from "../types";
-import { createColorTexture, generateEasingSelectOptions, generateRadialDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, getTargetType, parseConfigurationFormElements } from "../utils";
+import { generateEasingSelectOptions, generateRadialDirectionSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
-import { RadialWipeConfiguration } from "./types";
+import { RadialWipeConfiguration, SceneChangeConfiguration, TransitionConfiguration } from "./types";
+import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTargetSelectEventListeners, validateTarget } from "./targetSelectFunctions";
+import { InvalidSceneError, InvalidTargetError } from "../errors";
 
 export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
-  // #region Properties (6)
+  // #region Properties (10)
 
-  public readonly defaultSettings: Partial<RadialWipeConfiguration> = {
-    duration: 1000,
-    easing: "none" as Easing
-  }
+  #filter: RadialWipeFilter | null = null;
+  #screenLocation: [number, number] = [0.5, 0.5];
 
   public static DefaultSettings: RadialWipeConfiguration = {
+    id: "",
     type: "radialwipe",
     easing: "none",
     radial: "inside",
@@ -22,28 +22,51 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     version: "1.1.0",
     backgroundType: "color",
     backgroundImage: "",
-    backgroundColor: "#00000000"
+    backgroundColor: "#00000000",
+    target: [0.5, 0.5]
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon radial-wipe fa-fw fas'></i>"
   public static key = "radialwipe";
   public static name = "RADIALWIPE";
+  public static reversible: boolean = true;
   public static template = "radialwipe-config";
-  public static icon = "<i class='bt-icon radial-wipe fa-fw fas'></i>"
-  public static category = "wipe";
 
-  // #endregion Properties (6)
+  // #endregion Properties (10)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (10)
 
-  public static RenderTemplate(config?: RadialWipeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${RadialWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
+  public static RenderTemplate(config?: RadialWipeConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
+    const targetType = getTargetType({
       ...RadialWipeStep.DefaultSettings,
+      ...(config ? config : {})
+    }, oldScene, newScene);
+
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${RadialWipeStep.template}.hbs`, {
+      ...RadialWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
-      radialSelect: generateRadialDirectionSelectOptions()
+      radialSelect: generateRadialDirectionSelectOptions(),
+      targetType,
+      oldScene: oldScene?.id ?? "",
+      newScene: newScene?.id ?? "",
+      selectedTarget: config ? config.target : "",
+      ...generateTargetTypeSelectOptions(oldScene, newScene),
+      pointX: Array.isArray(config?.target) ? config.target[0] : 0.5,
+      pointY: Array.isArray(config?.target) ? config.target[1] : 0.5,
     });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
+  public static async addEventListeners(html: JQuery<HTMLElement>, config?: RadialWipeConfiguration) {
+    setTargetSelectEventListeners(html);
+  }
+
+  public static editDialogClosed(element: HTMLElement | JQuery<HTMLElement>): void {
+    onTargetSelectDialogClosed($(element));
   }
 
   public static from(config: RadialWipeConfiguration): RadialWipeStep
@@ -59,28 +82,86 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   public static fromFormElement(form: HTMLFormElement): RadialWipeStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
     const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";
+    const target = getTargetFromForm(elem);
     return new RadialWipeStep({
       ...RadialWipeStep.DefaultSettings,
       serializedTexture,
-      ...parseConfigurationFormElements(elem, "id", "duration", "radial", "backgroundType", "backgroundColor", "easing")
+      target,
+      ...parseConfigurationFormElements(elem, "id", "duration", "radial", "backgroundType", "backgroundColor", "easing", "label")
     });
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: RadialWipeConfiguration): number { return { ...RadialWipeStep.DefaultSettings, ...config }.duration }
 
-  // #region Public Methods (1)
+  public static async validate(config: RadialWipeConfiguration, sequence: TransitionConfiguration[]): Promise<RadialWipeConfiguration | Error> {
+    try {
+      const newSceneId = sequence.reduce((prev, curr) => curr.type === "scenechange" ? (curr as SceneChangeConfiguration).scene : prev, null as string | null);
+      if (!newSceneId) throw new InvalidSceneError(typeof newSceneId === "string" ? newSceneId : typeof newSceneId);
+      const newScene = game.scenes?.get(newSceneId);
+      if (!newScene) throw new InvalidSceneError(typeof newSceneId === "string" ? newSceneId : typeof newSceneId);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
+      const target = await validateTarget({
+        ...RadialWipeStep.DefaultSettings,
+        ...config
+      },
+        canvas?.scene as Scene,
+        newScene
+      );
+      return {
+        ...RadialWipeStep.DefaultSettings,
+        ...config,
+        target
+      };
+    } catch (err) {
+      return err as Error;
+    }
+  }
+
+  // #endregion Public Static Methods (10)
+
+  // #region Public Methods (3)
+
+  public async execute(container: PIXI.Container): Promise<void> {
     const config: RadialWipeConfiguration = {
       ...RadialWipeStep.DefaultSettings,
       ...this.config
     }
+    // Check for our target in the current (new) scene
+    if (!Array.isArray(config.target)) {
+      const obj = await fromUuid(config.target);
+      if (!obj) throw new InvalidTargetError(config.target);
+      const parsed = foundry.utils.parseUuid(config.target);
+      if (parsed?.primaryType !== "Scene") throw new InvalidTargetError(config.target);
+      if (parsed.primaryId === canvas?.scene?.id) this.#screenLocation = normalizePosition(obj);
+    }
+
     const background = config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new RadialWipeFilter(config.radial, background.baseTexture);
+    const filter = new RadialWipeFilter(config.radial, this.#screenLocation[0], this.#screenLocation[1], background.baseTexture);
     this.addFilter(container, filter);
+    this.#filter = filter;
     await this.simpleTween(filter);
   }
 
-  // #endregion Public Methods (1)
+  public async prepare(): Promise<void> {
+    const config: RadialWipeConfiguration = {
+      ...RadialWipeStep.DefaultSettings,
+      ...this.config
+    };
+    if (Array.isArray(config.target)) {
+      this.#screenLocation = config.target;
+    } else {
+      // Check if the target is in our current (old) scene
+      const obj = await fromUuid(config.target);
+      if (!obj) throw new InvalidTargetError(config.target);
+      const parsed = foundry.utils.parseUuid(config.target);
+      if (parsed?.primaryType !== "Scene") throw new InvalidTargetError(config.target);
+      if (parsed.primaryId === canvas?.scene?.id) this.#screenLocation = normalizePosition(obj);
+    }
+  }
+
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof RadialWipeFilter) await this.simpleReverse(this.#filter);
+  }
+
+  // #endregion Public Methods (3)
 }

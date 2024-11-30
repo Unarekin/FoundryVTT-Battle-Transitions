@@ -21,11 +21,14 @@ interface V10Config {
 
 function v10X(old: V10Config): TextureSwapConfiguration {
   return {
+    id: old.id ?? foundry.utils.randomID(),
     version: "1.1.0",
     type: "textureswap",
     bgSizingMode: "stretch",
     backgroundImage: old.texture && !(isColor(old.texture)) ? old.texture : "",
     backgroundColor: old.texture && !(isColor(old.texture)) ? "" : old.texture,
-    backgroundType: old.texture && !isColor(old.texture) ? "image" : "color"
+    backgroundType: old.texture && !isColor(old.texture) ? "image" : "color",
+    applyToOverlay: true,
+    applyToScene: false
   }
 }

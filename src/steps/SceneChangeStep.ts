@@ -10,6 +10,7 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
   // #region Properties (5)
 
   public static DefaultSettings = {
+    id: "",
     type: "scenechange",
     scene: "",
     version: "1.1.0"
@@ -28,8 +29,8 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
 
   public static RenderTemplate(config?: SceneChangeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SceneChangeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...SceneChangeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {})
     });
   }
@@ -74,7 +75,7 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
     hideTransitionCover();
   }
 
-  public override async validate(): Promise<boolean | Error> {
+  public async validate(): Promise<boolean | Error> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const scene = (game.scenes as any).get(this.config.scene);
     if (!(scene instanceof Scene)) return Promise.resolve(new InvalidSceneError({

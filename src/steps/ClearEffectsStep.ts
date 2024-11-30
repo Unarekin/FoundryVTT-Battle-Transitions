@@ -1,4 +1,5 @@
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
+import { removeFilterFromScene } from '../transitionUtils';
 import { TransitionStep } from './TransitionStep';
 import { ClearEffectsConfiguration } from './types';
 
@@ -7,6 +8,8 @@ export class ClearEffectsStep extends TransitionStep<ClearEffectsConfiguration> 
     id: "",
     type: "cleareffects",
     version: "1.1.0",
+    applyToOverlay: true,
+    applyToScene: false
   }
 
   public static hidden: boolean = false;
@@ -24,22 +27,42 @@ export class ClearEffectsStep extends TransitionStep<ClearEffectsConfiguration> 
     });
   }
 
+  #sceneFilter: PIXI.Filter | null = null;
+
+  public teardown(): void {
+    if (this.#sceneFilter) {
+      if (Array.isArray(canvas?.stage?.filters) && canvas.stage.filters.includes(this.#sceneFilter)) canvas.stage.filters.splice(canvas.stage.filters.indexOf(this.#sceneFilter), 1);
+      this.#sceneFilter.destroy();
+      this.#sceneFilter = null;
+    }
+  }
+
   public execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): void {
-    const nonOverlayChildren = container.children.filter(child => !prepared.overlay.includes(child));
 
-    for (const child of nonOverlayChildren) child.destroy();
-    for (const child of container.children) {
-      if (Array.isArray(child.filters) && child.filters.length) {
-        const filters = [...child.filters];
-        child.filters = [];
+    const config: ClearEffectsConfiguration = {
+      ...ClearEffectsStep.DefaultSettings,
+      ...this.config
+    }
 
-        for (const filter of filters) filter.destroy();
+    // Apply to overlay
+    if (config.applyToOverlay) {
+      const overlayChildren = [...prepared.overlay];
+      for (const child of overlayChildren) {
+        if (Array.isArray(child.filters)) {
+          for (const filter of child.filters) {
+            if (child.filters.includes(filter)) child.filters.splice(child.filters.indexOf(filter), 1);
+            filter.destroy();
+          }
+        }
       }
     }
-    if (Array.isArray(container.filters) && container.filters.length) {
-      const filters = [...container.filters];
-      for (const filter of filters) filter.destroy();
-      container.filters = [];
+
+    // Apply to scene
+    if (config.applyToScene && canvas?.environment) {
+      const filters = prepared.prepared.sceneFilters;
+      for (const filter of filters) {
+        removeFilterFromScene(filter);
+      }
     }
   }
 }

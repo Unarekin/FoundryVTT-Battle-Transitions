@@ -24,7 +24,7 @@ interface V10XConfig {
 
 function V10X(old: V10XConfig): DiamondWipeConfiguration {
   return {
-    id: old.id,
+    id: old.id ?? foundry.utils.randomID(),
     type: "diamondwipe",
     version: "1.1.0",
     duration: old.duration,

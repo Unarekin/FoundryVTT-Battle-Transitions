@@ -1,13 +1,15 @@
 import { FireDissolveFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { FireDissolveConfiguration } from "./types";
+import { generateEasingSelectOptions } from './selectOptions';
 
 export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> {
-  // #region Properties (5)
+  // #region Properties (7)
 
   public static DefaultSettings: FireDissolveConfiguration = {
+    id: "",
     type: "firedissolve",
     duration: 1000,
     easing: "none",
@@ -15,21 +17,22 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
     version: "1.1.0"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon fire-dissolve fa-fw fas'></i>"
   public static key = "firedissolve";
   public static name = "FIREDISSOLVE";
   public static template = "firedissolve-config";
-  public static icon = "<i class='bt-icon fire-dissolve fa-fw fas'></i>"
-  public static category = "wipe";
+  public static reversible: boolean = true;
 
-  // #endregion Properties (5)
+  // #endregion Properties (7)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: FireDissolveConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${FireDissolveStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...FireDissolveStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions()
     });
@@ -46,20 +49,29 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
   }
 
   public static fromFormElement(form: HTMLFormElement): FireDissolveStep {
-    const elem = parseConfigurationFormElements<FireDissolveConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "easing", "burnSize");
+    const elem = parseConfigurationFormElements<FireDissolveConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "easing", "burnSize", "label");
     return new FireDissolveStep({
       ...FireDissolveStep.DefaultSettings,
       ...elem,
     });
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: FireDissolveConfiguration): number { return { ...FireDissolveStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
+
+  #filter: FireDissolveFilter | null = null;
+
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof FireDissolveFilter) await this.simpleReverse(this.#filter);
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
     const filter = new FireDissolveFilter(this.config.burnSize);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }

@@ -1,15 +1,18 @@
+
 import { InvalidTransitionError } from '../errors';
 import { TransitionConfiguration } from '../steps/types';
 import { getStepClassByKey, localize } from '../utils';
 
 export class EditStepDialogV1 {
-  static async prompt(config: TransitionConfiguration): Promise<TransitionConfiguration | null> {
+  static async prompt(config: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<TransitionConfiguration | null> {
     const step = getStepClassByKey(config.type);
     if (!step) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
 
-    const content = await step.RenderTemplate(config);
+    const content = await step.RenderTemplate(config, oldScene, newScene);
 
     return new Promise<TransitionConfiguration | null>(resolve => {
+
+
       const dialog = new Dialog({
         title: localize(`BATTLETRANSITIONS.DIALOGS.EDITSTEP.TITLE`, { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) }),
         content,
@@ -35,6 +38,13 @@ export class EditStepDialogV1 {
         render: (html: HTMLElement | JQuery<HTMLElement>) => {
           addEventListeners(dialog, $(html));
           step.addEventListeners($(html), config);
+          const CLOSE_HOOK_ID = Hooks.on("closeDialog", (closed: Dialog) => {
+            if (closed.id === dialog.id) {
+              Hooks.off("closeDialog", CLOSE_HOOK_ID);
+              step.editDialogClosed(html);
+            }
+          })
+
         }
       });
 
@@ -43,10 +53,51 @@ export class EditStepDialogV1 {
   }
 }
 
+function checkFormValidity(html: JQuery<HTMLElement>) {
+  const stepType = html.find("[data-transition-type]").data("transition-type") as string;
+  const step = getStepClassByKey(stepType);
+  if (!step) throw new InvalidTransitionError(stepType);
+  const valid = step.validateForm(html) && (html.find("form")[0])?.checkValidity();
+
+  if (valid) html.find("button[data-action='ok']").removeAttr("disabled");
+  else html.find("button[data-action='ok']").attr("disabled", "true");
+}
 
 function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
   // Select number and text fields on focus
   html.find("input[type='number'],input[type='text']").on("focus", e => { (e.currentTarget as HTMLInputElement).select(); })
+
+  // Disable ok button
+  checkFormValidity(html);
+  html.find("input").on("input", () => { checkFormValidity(html); });
+
+  // Font selector
+  html.find("[data-font-select] option").each((index, element) => {
+    if (element instanceof HTMLOptionElement)
+      element.style.fontFamily = element.value;
+  });
+
+  html.find("[data-font-select]").css("font-family", html.find("[data-font-select]").val() as string);
+  html.find("[data-font-select]").on("input", e => {
+    $(e.currentTarget).css("font-family", $(e.currentTarget).val() as string);
+  });
+
+  // log("Background image:", html.find("#backgroundImage"));
+
+  html.find("#backgroundImage").on("input", () => {
+    const val = (html.find("#backgroundImage").val() as string) ?? "";
+
+    if (val) {
+      const tag = document.createElement("img");
+      const img = $(tag);
+      img.addClass("bg-image-preview");
+      img.attr("src", val);
+      html.find("#backgroundImagePreview img").remove();
+      html.find("#backgroundImagePreview").append(img);
+    } else {
+      html.find("#backgroundImagePreview img").remove();
+    }
+  });
 
   // Set up tabs
   const tabs = new Tabs({
@@ -67,11 +118,7 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
 
 function setBackgroundType(html: JQuery<HTMLElement>) {
   const bgType = html.find("#backgroundType").val() as string;
-  if (bgType === "color") {
-    html.find("#backgroundColor").css("display", "block");
-    html.find("#backgroundImage").css("display", "none");
-  } else if (bgType === "image") {
-    html.find("#backgroundImage").css("display", "");
-    html.find("#backgroundColor").css("display", "none");
-  }
+
+  html.find(`[data-background-type]`).css("display", "none");
+  html.find(`[data-background-type="${bgType}"]`).css("display", "block");
 }

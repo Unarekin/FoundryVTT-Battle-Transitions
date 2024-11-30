@@ -1,14 +1,18 @@
 import { ClockWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
 import { Easing } from "../types";
-import { createColorTexture, generateClockDirectionSelectOptions, generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ClockWipeConfiguration } from "./types";
+import { generateClockDirectionSelectOptions, generateEasingSelectOptions } from './selectOptions';
 
 export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
-  // #region Properties (5)
+  // #region Properties (9)
+
+  #filter: ClockWipeFilter | null = null;
 
   public static DefaultSettings: ClockWipeConfiguration = {
+    id: "",
     type: "clockwipe",
     duration: 1000,
     easing: "none" as Easing,
@@ -21,21 +25,22 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon clock-wipe fa-fw fas'></i>"
   public static key = "clockwipe"
   public static name = "CLOCKWIPE";
+  public static reversible: boolean = true;
   public static template = "clockwipe-config";
-  public static icon = "<i class='bt-icon clock-wipe fa-fw fas'></i>"
-  public static category = "wipe";
 
-  // #endregion Properties (5)
+  // #endregion Properties (9)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: ClockWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ClockWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...ClockWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       clockDirectionSelect: generateClockDirectionSelectOptions(),
@@ -60,7 +65,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): ClockWipeStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "clockdirection", "easing", "backgroundType", "backgroundColor");
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "clockdirection", "easing", "backgroundType", "backgroundColor", "label");
 
     return new ClockWipeStep({
       ...ClockWipeStep.DefaultSettings,
@@ -69,9 +74,11 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     })
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: ClockWipeConfiguration): number { return { ...ClockWipeStep.DefaultSettings, ...config }.duration }
 
-  // #region Public Methods (1)
+  // #endregion Public Static Methods (7)
+
+  // #region Public Methods (2)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
@@ -81,9 +88,14 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new ClockWipeFilter(config.clockDirection, config.direction, background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
 
-  // #endregion Public Methods (1)
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof ClockWipeFilter) await this.simpleReverse(this.#filter);
+  }
+
+  // #endregion Public Methods (2)
 }

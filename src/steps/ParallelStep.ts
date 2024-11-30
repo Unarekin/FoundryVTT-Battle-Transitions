@@ -1,8 +1,9 @@
 import { BattleTransition } from "../BattleTransition";
 import { addStepDialog, confirm, editStepDialog } from "../dialogs";
 import { InvalidTransitionError } from "../errors";
-import { TransitionSequence } from "../interfaces";
-import { getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
+import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
+import { sequenceDuration } from "../transitionUtils";
+import { formatDuration, getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration, TransitionConfiguration } from './types';
 
@@ -14,6 +15,7 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
   #preparedSequences: TransitionStep[][] = [];
 
   public static DefaultSettings: ParallelConfiguration = {
+    id: "",
     type: "parallel",
     version: "1.1.0",
     sequences: []
@@ -25,15 +27,19 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
   public static name = "PARALLEL";
   public static template = "parallel-config";
 
+  public get preparedSequences() { return this.#preparedSequences; }
+
   // #endregion Properties (8)
 
   // #region Public Static Methods (6)
 
-  public static RenderTemplate(config?: ParallelConfiguration): Promise<string> {
+  public static RenderTemplate(config?: ParallelConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ParallelStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...ParallelStep.DefaultSettings,
-      ...(config ? config : {})
+      id: foundry.utils.randomID(),
+      ...(config ? config : {}),
+      oldScene: oldScene?.id ?? "",
+      newScene: newScene?.id ?? ""
     });
   }
 
@@ -82,6 +88,15 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
     else return new ParallelStep(arg as ParallelConfiguration);
   }
 
+  public static async getDuration(config: ParallelConfiguration): Promise<number> {
+    let highest: number = 0;
+    for (const sequence of config.sequences) {
+      const duration = await sequenceDuration(sequence);
+      if (duration > highest) highest = duration;
+    }
+    return highest;
+  }
+
   public static fromFormElement(form: HTMLFormElement): ParallelStep {
     const sequences: TransitionConfiguration[][] = [];
 
@@ -95,7 +110,7 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
     const config: ParallelConfiguration = {
       ...ParallelStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id"),
+      ...parseConfigurationFormElements(elem, "id", "label"),
       sequences
     };
 
@@ -106,8 +121,8 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
   // #region Public Methods (2)
 
-  public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
-    await Promise.all(this.#preparedSequences.map(prepared => this.executeSequence(container, sequence, prepared)));
+  public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
+    await Promise.all(this.#preparedSequences.map(seq => this.executeSequence(container, sequence, seq, prepared)));
   }
 
   public async prepare(sequence: TransitionSequence): Promise<void> {
@@ -130,9 +145,17 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
   // #region Private Methods (1)
 
-  private async executeSequence(container: PIXI.Container, sequence: TransitionSequence, steps: TransitionStep[]): Promise<void> {
+  public async teardown(container: PIXI.Container): Promise<void> {
+    for (const sequence of this.#preparedSequences) {
+      for (const step of sequence) {
+        await step.teardown(container);
+      }
+    }
+  }
+
+  private async executeSequence(container: PIXI.Container, sequence: TransitionSequence, steps: TransitionStep[], prepared: PreparedTransitionHash): Promise<void> {
     for (const step of steps) {
-      const res = step.execute(container, sequence);
+      const res = step.execute(container, sequence, prepared);
       if (res instanceof Promise) await res;
     }
   }
@@ -195,7 +218,10 @@ async function addStep(html: JQuery<HTMLElement>) {
   const step = getStepClassByKey(key);
   if (!step) throw new InvalidTransitionError(key);
 
-  const config = step.skipConfig ? step.DefaultSettings : await editStepDialog(step.DefaultSettings);
+  const oldScene = html.find("#oldScene").val() as string ?? "";
+  const newScene = html.find("#newScene").val() as string ?? "";
+
+  const config = step.skipConfig ? { ...step.DefaultSettings, id: foundry.utils.randomID() } : await editStepDialog(step.DefaultSettings, game.scenes?.get(oldScene), game.scenes?.get(newScene));
   if (!config) return;
 
   void upsertStepButton(html, config);
@@ -222,7 +248,9 @@ function addStepEventListeners(html: JQuery<HTMLElement>, button: JQuery<HTMLEle
 
   // Configure button
   button.find("[data-action='configure']").on("click", () => {
-    editStepDialog(config)
+    const oldScene = html.find("#oldScene").val() as string ?? "";
+    const newScene = html.find("#newScene").val() as string ?? "";
+    editStepDialog(config, game.scenes?.get(oldScene), game.scenes?.get(newScene))
       .then(newConfig => {
         if (newConfig) {
           // Replace button
@@ -282,12 +310,21 @@ async function upsertStepButton(html: JQuery<HTMLElement>, config: TransitionCon
   const step = getStepClassByKey(config.type);
   if (!step) throw new InvalidTransitionError(config.type);
 
+
+  const outerSequence = [...buildTransition(html), config];
+  const durationRes = step.getDuration(config, outerSequence);
+  const calculatedDuration = (durationRes instanceof Promise) ? (await durationRes) : durationRes;
+
+  const totalDuration = await sequenceDuration(outerSequence);
+  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+
   const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
     ...step.DefaultSettings,
     ...config,
     name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
     description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
     type: step.key,
+    calculatedDuration,
     flag: JSON.stringify({
       ...step.DefaultSettings,
       ...config

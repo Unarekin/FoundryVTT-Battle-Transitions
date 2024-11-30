@@ -18,6 +18,7 @@ interface v10Config {
 
 function v10Migration(old: v10Config): RemoveOverlayConfiguration {
   return {
+    id: foundry.utils.randomID(),
     type: old.type,
     version: "1.1.0"
   }

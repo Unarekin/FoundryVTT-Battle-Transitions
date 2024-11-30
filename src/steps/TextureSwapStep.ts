@@ -1,6 +1,8 @@
 import { TextureSwapFilter } from "../filters";
-import { TransitionSequence } from '../interfaces';
+import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
+import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { generateDualStyleSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { TextureSwapConfiguration } from "./types";
 
@@ -10,12 +12,15 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
   public readonly defaultSettings: Partial<TextureSwapConfiguration> = {};
 
   public static DefaultSettings: TextureSwapConfiguration = {
+    id: "",
     type: "textureswap",
     version: "1.1.0",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
-    backgroundColor: "#00000000"
+    backgroundColor: "#00000000",
+    applyToScene: false,
+    applyToOverlay: true
   };
   public static hidden: boolean = false;
   public static key: string = "textureswap";
@@ -30,9 +35,11 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
 
   public static async RenderTemplate(config?: TextureSwapConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${TextureSwapStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...TextureSwapStep.DefaultSettings,
-      ...(config ? config : {})
+      id: foundry.utils.randomID(),
+      ...(config ? config : {}),
+      dualStyleSelect: generateDualStyleSelectOptions(),
+      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
     })
   }
 
@@ -50,10 +57,14 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
     const elem = $(form) as JQuery<HTMLFormElement>;
     const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";
 
+    const dualStyle = elem.find("#dualStyle").val() as string;
+
     return new TextureSwapStep({
       ...TextureSwapStep.DefaultSettings,
       serializedTexture,
-      ...parseConfigurationFormElements(elem, "id", "backgroundType", "backgroundColor")
+      ...parseConfigurationFormElements(elem, "id", "backgroundType", "backgroundColor", "label"),
+      applyToOverlay: dualStyle === "overlay" || dualStyle === "both",
+      applyToScene: dualStyle === "scene" || dualStyle === "both"
     });
   }
 
@@ -61,16 +72,31 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
 
   // #region Public Methods (1)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public execute(container: PIXI.Container, sequence: TransitionSequence): void {
+  #sceneFilter: PIXI.Filter | null = null;
+
+  public teardown(): Promise<void> | void {
+    if (this.#sceneFilter) removeFilterFromScene(this.#sceneFilter);
+    this.#sceneFilter = null;
+  }
+
+  public execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): void {
     const config: TextureSwapConfiguration = {
       ...TextureSwapStep.DefaultSettings,
       ...this.config
     };
 
-    const background = config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new TextureSwapFilter(background.baseTexture);
-    this.addFilter(container, filter);
+    if (config.applyToOverlay) {
+      const background = config.deserializedTexture ?? createColorTexture("transparent");
+      const filter = new TextureSwapFilter(background.baseTexture);
+      this.addFilter(container, filter);
+    }
+
+    if (config.applyToScene && canvas?.stage) {
+      const background = config.deserializedTexture ?? createColorTexture("transparent");
+      const filter = new TextureSwapFilter(background.baseTexture);
+      addFilterToScene(filter, prepared.prepared);
+      this.#sceneFilter = filter;
+    }
   }
 
   // #endregion Public Methods (1)

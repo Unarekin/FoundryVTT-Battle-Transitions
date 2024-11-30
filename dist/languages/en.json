@@ -11,27 +11,6 @@
           "LABEL": "Number of Bars"
         }
       },
-      "REPEAT": {
-        "ITERATIONS": {
-          "LABEL": "Iterations",
-          "HINT": "Number of times to repeat."
-        },
-        "DELAY": {
-          "LABEL": "Delay",
-          "HINT": "Time to delay between repetitions"
-        },
-        "PREVIOUS": {
-          "LABEL": "Previous",
-          "HINT": "Repeat the step prior to this one."
-        },
-        "SEQUENCE": {
-          "LABEL": "Sequence",
-          "HINT": "Repeat the specified sequence."
-        },
-        "STYLE": {
-          "LABEL": "Repeat Style"
-        }
-      },
       "BOSSSPLASH": {
         "ANIMATIONDELAY": {
           "HINT": "Time, in milliseconds, to wait before beginning the animation.",
@@ -99,7 +78,8 @@
       "BUTTONS": {
         "ADDSTEP": "Add Step",
         "CONFIGURE": "Configure {name}",
-        "REMOVE": "Remove {name}"
+        "REMOVE": "Remove {name}",
+        "CLEARSTEPS": "Clear Steps"
       },
       "CHROMAKEY": {
         "KEYCOLOR": {
@@ -118,11 +98,94 @@
           "HINT": "",
           "LABEL": "Actor"
         },
+        "TARGET": {
+          "HINT": "Screen point or scene element on which to center this effect.",
+          "LABEL": "Target"
+        },
+        "TARGETDIALOG": {
+          "TITLE": "Effect Target"
+        },
+        "TARGETTYPE": {
+          "DRAWING": {
+            "CURRENTSCENE": {
+              "LABEL": "Drawing in {scene}",
+              "HINT": "Center this effect on the mid point of a drawing in the current scene."
+            },
+            "NEWSCENE": {
+              "LABEL": "Drawing in {scene}",
+              "HINT": "Center this effect on a mid point of a drawing in the next scene."
+            },
+            "LABEL": "Drawing",
+            "NOTE": "Select Drawing",
+            "SELECT": "Select Drawing",
+            "SELECTHINT": "Please select a drawing to use for the target of this effect.",
+            "SHAPES": {
+              "CIRCLE": "Circle",
+              "ELLIPSE": "Ellipse",
+              "FREEHAND": "Freehand",
+              "POLYGON": "Polygon",
+              "RECTANGLE": "Rectangle",
+              "TEXT": "Text",
+              "UNKNOWN": "Unknown"
+            }
+          },
+          "LABEL": "Target Type",
+          "NOTE": {
+            "CURRENTSCENE": {
+              "LABEL": "Journal Note in {scene}",
+              "HINT": "Center this effect on the location of a journal note in the current scene."
+            },
+            "NEWSCENE": {
+              "LABEL": "Journal Note in {scene}",
+              "HINT": "Center this effect on the location of a journal note in the next scene."
+            },
+            "LABEL": "Note",
+            "SELECT": "Select Journal Note",
+            "SELECTHINT": "Please select a journal note to use for the target of this effect."
+          },
+          "POINT": {
+            "HINT": "A normalized point on the screen.  (0,0) is the top left, (1,1) is the top right.  (0.5,0.5) is the center.",
+            "LABEL": "Screen Point",
+            "X": "X",
+            "Y": "Y"
+          },
+          "PROMPT": {
+            "HINT": "Prompt for the target of this effect at the start of the transition.",
+            "LABEL": "Ask Before Transition"
+          },
+          "TILE": {
+            "CURRENTSCENE": {
+              "LABEL": "Tile in {scene}",
+              "HINT": "Center this effect on the mid point of a tile in the current scene."
+            },
+            "NEWSCENE": {
+              "LABEL": "Tile in {scene}",
+              "HINT": "Center this effect on the mid point of a tile in the next scene."
+            },
+            "LABEL": "Tile",
+            "SELECT": "Select Tile",
+            "SELECTHINT": "Please select a tile to use for the target of this effect."
+          },
+          "TOKEN": {
+            "CURRENTSCENE": {
+              "LABEL": "Token in {scene}",
+              "HINT": "Center this effect on the mid point of a token in the current scene."
+            },
+            "NEWSCENE": {
+              "LABEL": "Token in {scene}",
+              "HINT": "Center this effect on the mid point of a token in the next scene."
+            },
+            "LABEL": "Token",
+            "SELECT": "Select Token",
+            "SELECTHINT": "Please select a token to use for the target of this effect."
+          }
+        },
         "BACKGROUND": {
           "COLOR": "Color",
           "HINT": "Background color or image to show behind this step",
           "IMAGE": "Image",
-          "LABEL": "Background"
+          "LABEL": "Background",
+          "OVERLAY": "Original overlay texture"
         },
         "CLOCKDIRECTION": {
           "HINT": "Clockwise or counterclockwise",
@@ -132,9 +195,29 @@
           "HINT": "Direction from which to start",
           "LABEL": "Direction"
         },
+        "DUALSTYLE": {
+          "BOTH": "Apply To Both",
+          "HINT": "This effect can be applied to the transition overlay, the new scene, or both.",
+          "LABEL": "Apply effect to",
+          "OVERLAY": "Apply To Overlay",
+          "SCENE": "Apply to New Scene"
+        },
         "DURATION": {
           "HINT": "Duration in milliseconds",
           "LABEL": "Duration"
+        },
+        "FONT": {
+          "HINT": "Select a font family.",
+          "LABEL": "Font"
+        },
+        "FONTSIZE": {
+          "HINT": "Size of the font, in pixels.",
+          "LABEL": "Font Size"
+        },
+        "LABEL": {
+          "FORMAT": "({label})",
+          "HINT": "",
+          "LABEL": "Label"
         },
         "RADIAL": {
           "HINT": "Start from inside or outside",
@@ -155,6 +238,10 @@
         "HINT": "The easing function to use when animating this transition.",
         "LABEL": "Easing"
       },
+      "EXPORT": {
+        "HINT": "Download a copy of this sequence as a .json file.",
+        "LABEL": "Export Sequence"
+      },
       "FIREDISSOLVE": {
         "BURNSIZE": {
           "HINT": "Size of the burn holes during transiton",
@@ -167,6 +254,51 @@
           "LABEL": "Shift Amount"
         }
       },
+      "IMPORT": {
+        "HINT": "Import a transition sequence previously exported as a .json file.",
+        "LABEL": "Import Sequence"
+      },
+      "LOADINGTIP": {
+        "FONTCOLOR": {
+          "HINT": "Color of the loading tip text.",
+          "LABEL": "Font Color"
+        },
+        "LOCATION": {
+          "BOTTOMCENTER": "Bottom Center",
+          "BOTTOMLEFT": "Bottom Left",
+          "BOTTOMRIGHT": "Bottom Right",
+          "CENTER": "Center",
+          "HINT": "Section of the screen to display the loading tip.",
+          "LABEL": "Screen Location",
+          "TOPCENTER": "Top Center",
+          "TOPLEFT": "Top Left",
+          "TOPRIGHT": "Top Right"
+        },
+        "MESSAGE": {
+          "HINT": "Loading tip message to display.",
+          "LABEL": "Message"
+        },
+        "ROLLTABLE": {
+          "HINT": "RollTable from which to select message.",
+          "LABEL": "RollTable"
+        },
+        "SOURCETYPE": {
+          "HINT": "The source from the loading tip will come.",
+          "LABEL": "Source",
+          "ROLLTABLE": {
+            "HINT": "Select a random message from a RollTable.",
+            "LABEL": "RollTable"
+          },
+          "STRING": {
+            "HINT": "Specify a message.",
+            "LABEL": "String"
+          }
+        },
+        "TABS": {
+          "BASICS": "Basics",
+          "FONT": "Font Settings"
+        }
+      },
       "PARALLEL": {
         "ADDSEQUENCE": "Add Sequence",
         "SEQUENCE": "Sequence {index}"
@@ -175,6 +307,33 @@
         "MAXSIZE": {
           "HINT": "Maximum relative size of pixels.",
           "LABEL": "Maximum Pixel Size"
+        }
+      },
+      "REPEAT": {
+        "DELAY": {
+          "HINT": "Time to delay between repetitions",
+          "LABEL": "Delay"
+        },
+        "ITERATIONS": {
+          "HINT": "Number of times to repeat.",
+          "LABEL": "Iterations"
+        },
+        "PREVIOUS": {
+          "HINT": "Repeat the step prior to this one.",
+          "LABEL": "Previous"
+        },
+        "SEQUENCE": {
+          "HINT": "Repeat the specified sequence.",
+          "LABEL": "Sequence"
+        },
+        "STYLE": {
+          "LABEL": "Repeat Style"
+        }
+      },
+      "REVERSE": {
+        "DELAY": {
+          "HINT": "Time to delay before reversing the previous effect.",
+          "LABEL": "Delay"
         }
       },
       "SOUND": {
@@ -190,6 +349,7 @@
           "LABEL": "Texture"
         }
       },
+      "TOTALDURATION": "Total duration: {duration}",
       "TRANSITIONCONFIG": {
         "LABEL": "Transition Steps"
       },
@@ -197,6 +357,16 @@
         "FILE": {
           "HINT": "Video to play",
           "LABEL": "File"
+        }
+      },
+      "ZOOM": {
+        "AMOUNT": {
+          "HINT": "Amount by which to multiply overlay UVs.  1 = normal size, <1 = closer, >1 = further away.",
+          "LABEL": "Zoom Amount"
+        },
+        "CLAMPBOUNDS": {
+          "HINT": "Clamp the edges of the overlay texture to the edge of the screen when zooming out.",
+          "LABEL": "Clamp Bounds"
         }
       },
       "ZOOMBLUR": {
@@ -211,11 +381,19 @@
       }
     },
     "DIALOGS": {
+      "IMPORTCONFIRM": {
+        "TITLE": "Import Sequence",
+        "MESSAGE": "Importing a sequence will overwrite the existing one, are you sure you want to do this?"
+      },
       "BUTTONS": {
         "CANCEL": "Cancel",
         "OK": "Ok",
         "CLEARSEARCH": "Clear search",
         "TRANSITION": "Transition"
+      },
+      "CLEARSTEPS": {
+        "TITLE": "Clear Transition Sequence",
+        "MESSAGE": "Are you sure you wish to remove all transition steps?"
       },
       "ADDSTEP": {
         "TITLE": "Add Transition Step",
@@ -246,7 +424,10 @@
     },
     "WARNINGS": {
       "TRANSITIONCANCELED": "Transition canceled.",
-      "PREPARETIMEOUT": "One or more clients timed out waiting for a response."
+      "PREPARETIMEOUT": "One or more clients timed out waiting for a response.",
+      "INVALIDFORM": "Invalid form data.",
+      "REMOVEOVERLAYDEPRECATION": "The 'removeOverlay' function is deprecated, and will be removed in a future update.  Please use 'hideOverlay' instead.",
+      "RESTOREOVERLAYDEPRECATION": "The 'restoreOverlay' function is deprecated, and will be removed in a future update.  Please use 'showOverlay' instead."
     },
     "DIRECTIONS": {
       "BOTTOM": "Bottom",
@@ -307,33 +488,40 @@
       "TRIGGER": "Transition"
     },
     "ERRORS": {
-      "INVALIDSCENE": "Invalid scene: {name}",
       "CANNOTINITIALIZECANVAS": "Unable to initialize canvas",
       "CANVASNOTFOUND": "Canvas not found",
-      "NOAPPLICATION": "No PIXI Application",
-      "NOCOVERELEMENT": "Unable to locate transition cover facade",
-      "NOTINITIALIZED": "Not initialized",
-      "INVALIDDIRECTION": "Invalid direction provided: {direction}",
-      "INVALIDMARO": "Invalid macro: {macro}",
-      "INVALIDTEXTURE": "Invalid texture provided.",
-      "INVALIDTRANSITION": "Invalid transition: {name}",
-      "INVALIDELEMENT": "Unable to locate HTML element",
-      "PERMISSIONDENIED": "Permision denied.",
       "EXECUTECALLEDPARALLEL": "Do not call execute function when creating parallel transition chains.",
       "EXECUTECALLEDREPEAT": "Do not call execute function when creating repeated transition sequences",
-      "TRANSITIONTOSELF": "Attempting to transition to the current scene.",
       "FILENOTFOUND": "File not found: {file}",
-      "NOBACKGROUNDPROVIDED": "No background image or color provided.",
-      "NOVIDEOPROVIDED": "No video provided.",
-      "NOIMAGEPROVIDED": "No image provided.",
-      "NOTIMPLEMENTED": "Not implemented.",
-      "SEQUENCETIMEDOUT": "Transition sequence timed out.",
+      "INVALIDDIRECTION": "Invalid direction provided: {direction}",
+      "INVALIDELEMENT": "Unable to locate HTML element",
+      "INVALIDIMPORT": "Invalid import data.",
+      "INVALIDMARO": "Invalid macro: {macro}",
+      "INVALIDOBJECT": "Invalid object specified: {object}",
+      "INVALIDROLLTABLE": "Invalid RollTable provided: {table}",
+      "INVALIDSCENE": "Invalid scene: {name}",
       "INVALIDSOUND": "Invalid sound: {sound}",
-      "NEWERVERSION": "Data appears to be from a newer version: {version}",
+      "INVALIDTARGET": "Invalid target: {item}",
+      "INVALIDTEXTURE": "Invalid texture provided.",
+      "INVALIDTIPLOCATION": "Invalid loading tip location: {location}",
+      "INVALIDTRANSITION": "Invalid transition: {name}",
       "INVALIDVERSION": "Invalid data version: {version}",
-      "UNABLETOMIGRATE": "Unable to migrate data from {old} to {current}",
+      "NEWERVERSION": "Data appears to be from a newer version: {version}",
+      "NOAPPLICATION": "No PIXI Application",
+      "NOBACKGROUNDPROVIDED": "No background image or color provided.",
+      "NOCOVERELEMENT": "Unable to locate transition cover facade",
+      "NOFILE": "No file loaded.",
+      "NOIMAGEPROVIDED": "No image provided.",
+      "NOPREVIOUSSTEP": "No previous step to repeat.",
+      "NOTIMPLEMENTED": "Not implemented.",
+      "NOTINITIALIZED": "Not initialized",
+      "NOVIDEOPROVIDED": "No video provided.",
+      "PERMISSIONDENIED": "Permision denied.",
       "PREPARETIMEDOUT": "Timed out waiting for users to signal they're ready to transition.",
-      "NOPREVIOUSSTEP": "No previous step to repeat."
+      "SEQUENCETIMEDOUT": "Transition sequence timed out.",
+      "STEPNOTREVERSIBLE": "Transition step not reversible: {type}",
+      "TRANSITIONTOSELF": "Attempting to transition to the current scene.",
+      "UNABLETOMIGRATE": "Unable to migrate data from {old} to {current}"
     },
     "ANGULARWIPE": {
       "DESCRIPTION": "A wipe that clears angled sections of the screen progressively closer to the center.",
@@ -363,10 +551,6 @@
       "DESCRIPTION": "Wipe the screen around the center point in either a clockwise or counterclockwise direction.",
       "NAME": "Clock Wipe"
     },
-    "REPEAT": {
-      "NAME": "Repeat",
-      "DESCRIPTION": "Repeat either the previous step or a specified sequence of steps."
-    },
     "DIAMONDWIPE": {
       "DESCRIPTION": "Break the screen into diamond shapes that shrink over time, starting from the left to the right.",
       "NAME": "Diamond Wipe"
@@ -383,6 +567,14 @@
       "DESCRIPTION": "Flashes the screen a given color or texture.",
       "NAME": "Flash"
     },
+    "HIDEOVERLAY": {
+      "DESCRIPTION": "Sets the transition overlay to invisible, exposing the new scene underneath.",
+      "NAME": "Hide Overlay"
+    },
+    "HUESHIFT": {
+      "DESCRIPTION": "Shift the screen's hue.",
+      "NAME": "Hue Shift"
+    },
     "INVERT": {
       "DESCRIPTION": "Invert the current screen texture/color.",
       "NAME": "Invert"
@@ -391,6 +583,10 @@
       "DESCRIPTION": "A linear wipe from one side of the screen to the other, exposing a given background color along the way.",
       "NAME": "Linear Wipe"
     },
+    "LOADINGTIP": {
+      "DESCRIPTION": "Show text-based loading screen tips.",
+      "NAME": "Loading Tip"
+    },
     "MACRO": {
       "DESCRIPTION": "Execute a macro.  This will execute for each user with their own permissions, so please be sure they have permission at all.",
       "NAME": "Macro"
@@ -398,10 +594,6 @@
     "MELT": {
       "DESCRIPTION": "Melt the screen like you may have seen in a certain demon-killing FPS.",
       "NAME": "Melt"
-    },
-    "HUESHIFT": {
-      "NAME": "Hue Shift",
-      "DESCRIPTION": "Shift the screen's hue."
     },
     "PARALLEL": {
       "DESCRIPTION": "Run multiple sequences of transition effects simultaneously.",
@@ -415,17 +607,21 @@
       "DESCRIPTION": "Circular wipe, starting either from the inside or outside of the screen.",
       "NAME": "Radial Wipe (Shutter)"
     },
-    "REMOVEOVERLAY": {
-      "DESCRIPTION": "Remove the transition overlay, exposing the new scene.",
-      "NAME": "Remove Overlay"
+    "REPEAT": {
+      "DESCRIPTION": "Repeat either the previous step or a specified sequence of steps.",
+      "NAME": "Repeat"
     },
-    "RESTOREOVERLAY": {
-      "DESCRIPTION": "Restore the transition overlay, covering the new scene again.",
-      "NAME": "Restore Overlay"
+    "REVERSE": {
+      "DESCRIPTION": "Play the previous step in reverse, if available.",
+      "NAME": "Reverse"
     },
     "SCENECHANGE": {
       "DESCRIPTION": "Change the active scene.",
       "NAME": "Change Scene"
+    },
+    "SHOWOVERLAY": {
+      "DESCRIPTION": "Set the transition overlay to visible again.",
+      "NAME": "Show Overlay"
     },
     "SOUND": {
       "DESCRIPTION": "Play a sound during the transition.  Unlike most transition steps, this one will NOT wait until the sound is finished to continue to the next.",
@@ -466,6 +662,10 @@
     "WAVEWIPE": {
       "DESCRIPTION": "A wavy bilinear wipe.",
       "NAME": "Wave Wipe"
+    },
+    "ZOOM": {
+      "DESCRIPTION": "Zoom in on some point on the screen.",
+      "NAME": "Zoom"
     },
     "ZOOMBLUR": {
       "DESCRIPTION": "Simultaneously zoom in on and blur the screen.",

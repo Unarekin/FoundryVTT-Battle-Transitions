@@ -3,6 +3,7 @@
 import { BattleTransition } from "./BattleTransition";
 import { TransitionSequence } from "./interfaces";
 import { StartPlaylistConfiguration, StartPlaylistStep, TransitionConfiguration } from "./steps";
+import { sequenceDuration } from "./transitionUtils";
 import { localize, log, wait } from "./utils";
 
 const TIMEOUT_PERIOD = 3000;
@@ -22,10 +23,14 @@ class SocketHandler {
   public async execute(sequence: TransitionConfiguration[]): Promise<void> {
     try {
       const id = foundry.utils.randomID();
+
+      const validated = await BattleTransition.validateSequence(sequence);
+      if (validated instanceof Error) throw validated;
+
       const actual: TransitionSequence = {
         caller: game.user?.id ?? "",
         id,
-        sequence: sequence.map(step => typeof step.id === "undefined" ? ({ ...step, id: foundry.utils.randomID() }) : step)
+        sequence: validated.map(step => typeof step.id === "undefined" ? ({ ...step, id: foundry.utils.randomID() }) : step)
       };
 
       // Ensure we have a StartPlaylist step in our sequence
@@ -37,20 +42,7 @@ class SocketHandler {
         actual.sequence.push(step);
       }
 
-      const expectedDuration = sequence.reduce((prev, curr) => {
-
-        switch (typeof (curr as any).duration) {
-          case "string": {
-            const duration = parseFloat((curr as any).duration as string);
-            if (!isNaN(duration)) return prev + duration;
-            break;
-          }
-          case "number": {
-            return prev + (curr as any).duration as number;
-          }
-        }
-        return prev;
-      }, 0);
+      const expectedDuration = await sequenceDuration(actual.sequence);
 
       const users = (game.users?.contents.filter(user => user.active) as User[]) ?? []
 

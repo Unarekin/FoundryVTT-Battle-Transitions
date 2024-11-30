@@ -1,8 +1,10 @@
 import { COVER_ID } from "./constants";
 import { ScreenSpaceCanvasGroup } from './ScreenSpaceCanvasGroup';
-import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError } from './errors';
-import { awaitHook, createColorTexture } from "./utils";
+import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError, InvalidTransitionError } from './errors';
+import { awaitHook, getStepClassByKey } from "./utils";
 import { coerceScene } from "./coercion";
+import { TransitionConfiguration } from "./steps";
+import { PreparedTransitionSequence } from "./interfaces";
 
 
 
@@ -35,6 +37,11 @@ export async function createSnapshot() {
   const renderer = canvas.app.renderer;
 
   const rt = PIXI.RenderTexture.create({ width: sceneWidth, height: sceneHeight });
+  // const bgTexture = createColorTexture(renderer.background.backgroundColor.toHex());
+  // const bgSprite = new PIXI.Sprite(bgTexture);
+  // bgSprite.width = sceneWidth;
+  // bgSprite.height = sceneHeight;
+  // renderer.render(bgSprite, { renderTexture: rt, skipUpdateTransform: true, clear: false })
   renderer.render(canvas.stage, { renderTexture: rt, skipUpdateTransform: true, clear: true });
 
   const transitionCover = document.getElementById(COVER_ID) as HTMLImageElement | null;
@@ -65,27 +72,29 @@ export async function createSnapshot() {
   return sprite;
 }
 
+export function removeFiltersFromScene(sequence: PreparedTransitionSequence) {
+  sequence.sceneFilters.forEach(filter => removeFilterFromScene(filter));
+}
+
+export function addFilterToScene(filter: PIXI.Filter, sequence: PreparedTransitionSequence) {
+  if (Array.isArray(canvas?.environment?.filters)) canvas.environment.filters.push(filter);
+  else if (canvas?.environment) canvas.environment.filters = [filter];
+  sequence.sceneFilters.push(filter);
+}
+
+export function removeFilterFromScene(filter: PIXI.Filter) {
+  if (Array.isArray(canvas?.environment?.filters) && canvas.environment.filters.includes(filter)) canvas.environment?.filters?.splice(canvas.environment.filters.indexOf(filter), 1);
+  filter.destroy();
+}
+
 export async function setupTransition(): Promise<PIXI.Container> {
   if (!canvasGroup) throw new CannotInitializeCanvasError();
   const snapshot = await createSnapshot();
   const container = new PIXI.Container();
   container.width = window.innerWidth;
   container.height = window.innerHeight;
-
-  const bgTexture = createColorTexture(canvas?.app?.renderer.background.backgroundColor ?? "white");
-  const sprite = new PIXI.Sprite(bgTexture);
-  sprite.width = window.innerWidth;
-  sprite.height = window.innerHeight;
-  container.addChild(sprite);
   container.addChild(snapshot);
-
-  const outerContainer = new PIXI.Container();
-  outerContainer.width = window.innerWidth;
-  outerContainer.height = window.innerHeight;
-
-  outerContainer.addChild(container);
-  canvasGroup.addChild(outerContainer);
-
+  canvasGroup.addChild(container);
   return container;
 }
 
@@ -94,9 +103,12 @@ export function cleanupTransition(container?: PIXI.DisplayObject) {
   transitionCover.style.display = "none";
   transitionCover.style.backgroundImage = "";
   if (container) {
-    if (Array.isArray(container.children) && container.children.length)
+    if (Array.isArray(container.children) && container.children.length) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const children = [...(container.children ?? [])];
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      for (let i = container.children.length - 1; i >= 0; i--) container.children[i].destroy();
+      for (const child of children) child.destroy();
+    }
     container.destroy();
   }
 
@@ -151,4 +163,15 @@ export function removeFilter(element: PIXI.DisplayObject, filter: PIXI.Filter) {
     const index = element.filters.indexOf(filter);
     if (index !== -1) element.filters.splice(index, 1);
   }
+}
+
+export async function sequenceDuration(sequence: TransitionConfiguration[]): Promise<number> {
+  let duration: number = 0;
+  for (const config of sequence) {
+    const step = getStepClassByKey(config.type);
+    if (!step) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
+    const res = step.getDuration(config, sequence);
+    duration += res instanceof Promise ? await res : res;
+  }
+  return duration;
 }

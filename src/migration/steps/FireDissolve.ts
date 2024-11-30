@@ -23,7 +23,7 @@ interface v10XConfig {
 
 function v10XMigration(old: v10XConfig): FireDissolveConfiguration {
   return {
-    id: old.id,
+    id: old.id ?? foundry.utils.randomID(),
     easing: old.easing,
     duration: old.duration,
     burnSize: old.burnSize,

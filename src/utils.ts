@@ -1,12 +1,13 @@
 import { coerceTexture } from "./coercion";
 import { LOG_ICON } from "./constants";
-import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidTextureError } from "./errors";
+import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidImportError, InvalidObjectError, InvalidTargetError, InvalidTextureError, NoFileError } from "./errors";
 import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 import { bytesToBase64 } from "./lib/base64Utils";
-import { TransitionStep, BackgroundTransition } from "./steps";
+import { TransitionStep, BackgroundTransition, TransitionConfiguration, TargetedTransition } from "./steps";
 import * as steps from "./steps"
+import { BackgroundType, TextureLike } from "./types";
 
 // #region Functions (33)
 
@@ -164,81 +165,7 @@ export function formatBackgroundSummary(flag: any): string {
   // return (flag.backgroundType === "image" ? flag.backgroundImage?.split("/").splice(-1)[0] : flag.backgroundColor) ?? "";
 }
 
-export function generateBilinearDirectionSelectOptions(): { [x: string]: string } {
-  return {
-    "horizontal": "BATTLETRANSITIONS.DIRECTIONS.HORIZONTAL",
-    "vertical": "BATTLETRANSITIONS.DIRECTIONS.VERTICAL",
-    "topleft": "BATTLETRANSITIONS.DIRECTIONS.TOPLEFT",
-    "topright": "BATTLETRANSITIONS.DIRECTIONS.TOPRIGHT"
-  }
-}
 
-export function generateClockDirectionSelectOptions(): { [x: string]: string } {
-  return {
-    "clockwise": "BATTLETRANSITIONS.DIRECTIONS.CLOCKWISE",
-    "counterclockwise": "BATTLETRANSITIONS.DIRECTIONS.COUNTERCLOCKWISE"
-  }
-}
-
-export function generateEasingSelectOptions(): { [x: string]: string } {
-  return {
-    "none": "BATTLETRANSITIONS.EASINGS.NONE",
-    "power1in": "BATTLETRANSITIONS.EASINGS.POWER1IN",
-    "power1out": "BATTLETRANSITIONS.EASINGS.POWER1OUT",
-    "power1inout": "BATTLETRANSITIONS.EASINGS.POWER1INOUT",
-    "power2in": "BATTLETRANSITIONS.EASINGS.POWER2IN",
-    "power2out": "BATTLETRANSITIONS.EASINGS.POWER2OUT",
-    "power2inout": "BATTLETRANSITIONS.EASINGS.POWER2INOUT",
-    "power3in": "BATTLETRANSITIONS.EASINGS.POWER3IN",
-    "power3out": "BATTLETRANSITIONS.EASINGS.POWER3OUT",
-    "power3inout": "BATTLETRANSITIONS.EASINGS.POWER3INOUT",
-    "power4in": "BATTLETRANSITIONS.EASINGS.POWER4IN",
-    "power4out": "BATTLETRANSITIONS.EASINGS.POWER4OUT",
-    "power4inout": "BATTLETRANSITIONS.EASINGS.POWER4INOUT",
-    "backin": "BATTLETRANSITIONS.EASINGS.BACKIN",
-    "backout": "BATTLETRANSITIONS.EASINGS.BACKOUT",
-    "backinout": "BATTLETRANSITIONS.EASINGS.BACKINOUT",
-    "bouncein": "BATTLETRANSITIONS.EASINGS.BOUNCEIN",
-    "bounceout": "BATTLETRANSITIONS.EASINGS.BOUNCEOUT",
-    "bounceinout": "BATTLETRANSITIONS.EASINGS.BOUNCEINOUT",
-    "circin": "BATTLETRANSITIONS.EASINGS.CIRCIN",
-    "circout": "BATTLETRANSITIONS.EASINGS.CIRCOUT",
-    "circinout": "BATTLETRANSITIONS.EASINGS.CIRCINOUT",
-    "elasticin": "BATTLETRANSITIONS.EASINGS.ELASTICIN",
-    "elasticout": "BATTLETRANSITIONS.EASINGS.ELASTICOUT",
-    "elasticinout": "BATTLETRANSITIONS.EASINGS.ELASTICINOUT",
-    "expoin": "BATTLETRANSITIONS.EASINGS.EXPOIN",
-    "expoout": "BATTLETRANSITIONS.EASINGS.EXPOOUT",
-    "expoinout": "BATTLETRANSITIONS.EASINGS.EXPOINOUT",
-    "sinein": "BATTLETRANSITIONS.EASINGS.SINEIN",
-    "sineout": "BATTLETRANSITIONS.EASINGS.SINEOUT",
-    "sineinout": "BATTLETRANSITIONS.EASINGS.SINEINOUT"
-  }
-}
-
-export function generateLinearDirectionSelectOptions(): { [x: string]: string } {
-  return {
-    "top": "BATTLETRANSITIONS.DIRECTIONS.TOP",
-    "left": "BATTLETRANSITIONS.DIRECTIONS.LEFT",
-    "right": "BATTLETRANSITIONS.DIRECTIONS.RIGHT",
-    "bottom": "BATTLETRANSITIONS.DIRECTIONS.BOTTOM",
-    "topleft": "BATTLETRANSITIONS.DIRECTIONS.TOPLEFT",
-    "topright": "BATTLETRANSITIONS.DIRECTIONS.TOPRIGHT",
-    "bottomleft": "BATTLETRANSITIONS.DIRECTIONS.BOTTOMLEFT",
-    "bottomright": "BATTLETRANSITIONS.DIRECTIONS.BOTTOMRIGHT"
-  }
-}
-
-export function generateRadialDirectionSelectOptions(): { [x: string]: string } {
-  return {
-    "inside": "BATTLETRANSITIONS.DIRECTIONS.INSIDE",
-    "outside": "BATTLETRANSITIONS.DIRECTIONS.OUTSIDE"
-  }
-}
-
-export function generateFontSelectOptions(): { [x: string]: string } {
-  return Object.fromEntries(FontConfig.getAvailableFonts().map(font => [font, font]));
-}
 
 export function getCanvasGroup(): ScreenSpaceCanvasGroup | undefined {
   return canvas?.stage?.children.find(child => child instanceof ScreenSpaceCanvasGroup);
@@ -299,31 +226,32 @@ export function log(...args: unknown[]) {
   console.log(LOG_ICON, __MODULE_TITLE__, "|", ...args);
 }
 
-export function logImage(url: string, size: number = 256) {
+export function logImage(url: string, width: number = 256, height: number = 256) {
   const image = new Image();
 
   image.onload = function () {
     const style = [
       `font-size: 1px`,
-      `padding: ${size}px`,
+      `padding-left: ${width}px`,
+      `padding-bottom: ${height}px`,
       // `padding: ${this.height / 100 * size}px ${this.width / 100 * size}px`,
       `background: url(${url}) no-repeat`,
       `background-size:contain`,
       `border:1px solid black`
     ].join(";")
-    console.log('%c ', style);;
+    console.log('%c ', style);
   }
 
   image.src = url;
 }
 
-export function logTexture(texture: PIXI.Texture, size: number = 256) {
+export function logTexture(texture: PIXI.Texture, width: number = 256, height: number = 256) {
   const renderTexture = PIXI.RenderTexture.create({ width: texture.width, height: texture.height });
   const sprite = PIXI.Sprite.from(texture);
   canvas?.app?.renderer.render(sprite, { renderTexture });
   canvas?.app?.renderer.extract.base64(renderTexture)
     .then(base64 => {
-      logImage(base64, size);
+      logImage(base64, width, height);
     }).catch(console.error);
 }
 
@@ -380,6 +308,7 @@ function serializeDataURL(url: string): DataURLBuffer {
 }
 
 export function serializeTexture(texture: any): string | TextureBuffer | DataURLBuffer {
+  if (typeof texture === "string" && texture === "overlay") return "overlay";
   if (typeof texture === "string" && texture.startsWith("data:")) return serializeDataURL(texture);
   if (typeof texture === "string") return texture;
 
@@ -450,29 +379,6 @@ export async function wait(duration: number) {
 // #endregion Functions (33)
 
 
-export async function confirmDialog(title: string, content: string): Promise<boolean> {
-  if (shouldUseAppV2() && foundry.applications.api.DialogV2) return confirmV2(title, content);
-  else return confirmV1(title, content);
-
-}
-
-async function confirmV1(title: string, content: string): Promise<boolean> {
-  return Dialog.confirm({
-    title: localize(title),
-    content: localize(content),
-    rejectClose: false
-  }).then(val => !!val)
-}
-
-async function confirmV2(title: string, content: string): Promise<boolean> {
-  return foundry.applications.api.DialogV2.confirm({
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    window: { title: localize(title) } as any,
-    content: localize(content),
-    rejectClose: false
-  }).then(val => !!val);
-}
-
 export function isColor(data: string): boolean {
   return CSS.supports("color", data);
 }
@@ -532,3 +438,159 @@ export async function timeout(time: number, err?: Error): Promise<void> {
     }, time)
   });
 }
+
+export function formatDuration(duration: number): string {
+  return localize(`BATTLETRANSITIONS.FORMATTERS.MILLISECONDS`, { value: duration.toLocaleString() });
+}
+
+
+export function deepCopy(target: any, source: any): void {
+  if (typeof target !== "object") throw new InvalidObjectError(target);
+  if (typeof source !== "object") throw new InvalidObjectError(source);
+
+  for (const prop in source) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (Array.isArray(source[prop]))
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      target[prop] = source[prop].slice();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else if (typeof source[prop] === "object")
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      deepCopy(target[prop], source[prop]);
+    else
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+      target[prop] = source[prop];
+  }
+}
+
+export function backgroundType(background: TextureLike): BackgroundType {
+  if (typeof background === "string" && background === "overlay") return "overlay";
+  else if (typeof background === "string" && isColor(background)) return "color";
+  else return "image";
+}
+
+export function downloadJSON(json: object, name: string) {
+  const blob = new Blob([JSON.stringify(json, null, 2)], { type: "application/json" });
+  const objUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = objUrl;
+  link.download = name.endsWith(".json") ? name : `${name}.json`;
+  link.click();
+  URL.revokeObjectURL(objUrl);
+}
+
+export async function importSequence(): Promise<TransitionConfiguration[] | null> {
+  const json = await uploadJSON<TransitionConfiguration[]>();
+  const sequence: TransitionConfiguration[] = [];
+  if (!json) return null;
+  if (!Array.isArray(json)) throw new InvalidImportError();
+  for (const config of json) {
+    const step = getStepClassByKey(config.type);
+    if (!step) throw new InvalidImportError();
+    const res = step.validate(config, json);
+    const actual = (res instanceof Promise) ? await res : res;
+    if (actual instanceof Error) throw actual;
+    sequence.push(actual);
+  }
+  return sequence;
+}
+
+export function uploadJSON<t = any>(): Promise<t> {
+  return new Promise<t>((resolve, reject) => {
+    const file = document.createElement("input");
+    file.setAttribute("type", "file");
+    file.setAttribute("accept", "application/json");
+    file.onchange = e => {
+      const file = (e.currentTarget as HTMLInputElement).files?.[0];
+      if (!file) {
+        reject(new NoFileError());
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = e => {
+        if (!e.target?.result) throw new NoFileError();
+        if (typeof e.target.result === "string") resolve(JSON.parse(e.target.result) as t);
+      }
+      reader.readAsText(file);
+    }
+    file.onerror = (event, source, line, col, error) => {
+      if (error) reject(error);
+      else reject(new Error(typeof event === "string" ? event : typeof undefined));
+    }
+
+    file.click();
+  })
+
+}
+
+export interface ColorStop { point: number, color: string };
+export function createGradientTexture(width: number, height: number, x1: number, y1: number, x2: number, y2: number, stops: ColorStop[]): PIXI.Texture {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new CanvasNotFoundError();
+  canvas.width = width;
+  canvas.height = height;
+
+  const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+  for (const stop of stops) {
+    gradient.addColorStop(stop.point, stop.color);
+  }
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  return PIXI.Texture.from(canvas);
+}
+
+export function createConicGradientTexture(width: number, height: number, angle: number, x: number, y: number, stops: ColorStop[]): PIXI.Texture {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new CanvasNotFoundError();
+  canvas.width = width;
+  canvas.height = height;
+
+  const gradient = ctx.createConicGradient(angle, x, y);
+
+  for (const stop of stops) {
+    gradient.addColorStop(stop.point, stop.color);
+  }
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  return PIXI.Texture.from(canvas);
+}
+
+/**
+ * Returns the angle between two points, in radians
+ */
+export function angleBetween(x1: number, y1: number, x2: number, y2: number): number {
+  return Math.atan2(y2 - y1, x2 - x1);
+}
+
+export function getTargetType(config: TargetedTransition, oldScene?: Scene, newScene?: Scene): string {
+  if (config && typeof config.target === "string" && config.target) {
+    const parsed = foundry.utils.parseUuid(config.target);
+    if (parsed.primaryType !== "Scene") throw new InvalidTargetError(config.target);
+    const age = parsed.primaryId === oldScene?.id ? "old" : parsed.primaryId === newScene?.id ? "new" : "";
+    if (Array.isArray(parsed.embedded)) return `${age}${parsed.embedded[0].toLowerCase()}`;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    else return ((parsed as any).type as string ?? "").toLowerCase()
+  } else if (config && Array.isArray(config.target)) {
+    return "point";
+  } else if (config && typeof config.target === "string" && !config.target) {
+    return "prompt";
+  }
+  return "point";
+}
+
+export function parseFontSize(input: string): string {
+  // It is a number with no unit of measure, assume pixels
+  if (parseInt(input).toString() == input) return `${input}px`;
+  return input;
+}
+
+export function isValidFontSize(input: string): boolean {
+  const size = parseFontSize(input);
+  const temp = document.createElement("div");
+  temp.style.fontSize = size;
+  return temp.style.fontSize !== "";
+}
+

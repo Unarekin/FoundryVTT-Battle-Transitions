@@ -1,12 +1,14 @@
 import { DiamondTransitionFilter } from "../filters";
-import { createColorTexture, generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { DiamondWipeConfiguration } from "./types";
+import { generateEasingSelectOptions } from './selectOptions';
 
 export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
-  // #region Properties (5)
+  // #region Properties (7)
 
   public static DefaultSettings: DiamondWipeConfiguration = {
+    id: "",
     type: "diamondwipe",
     size: 40,
     duration: 1000,
@@ -18,21 +20,22 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon diamond-wipe fa-fw fas'></i>"
   public static key = "diamondwipe";
   public static name = "DIAMONDWIPE";
   public static template = "diamondwipe-config";
-  public static icon = "<i class='bt-icon diamond-wipe fa-fw fas'></i>"
-  public static category = "wipe";
+  public static reversible: boolean = true;
 
-  // #endregion Properties (5)
+  // #endregion Properties (7)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: DiamondWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${DiamondWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...DiamondWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions()
     });
@@ -50,7 +53,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): DiamondWipeStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements<DiamondWipeConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "easing", "backgroundType", "backgroundColor");
+    const elem = parseConfigurationFormElements<DiamondWipeConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "easing", "backgroundType", "backgroundColor", "label");
     return new DiamondWipeStep({
       ...DiamondWipeStep.DefaultSettings,
       ...elem,
@@ -58,9 +61,16 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
     })
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: DiamondWipeConfiguration): number { return { ...DiamondWipeStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
+
+  #filter: DiamondTransitionFilter | null = null;
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof DiamondTransitionFilter) await this.simpleReverse(this.#filter);
+  }
 
   public async execute(container: PIXI.Container): Promise<void> {
     const config: DiamondWipeConfiguration = {
@@ -69,6 +79,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
     }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new DiamondTransitionFilter(config.size, background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }

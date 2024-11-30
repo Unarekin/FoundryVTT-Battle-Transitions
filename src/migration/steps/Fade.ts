@@ -22,7 +22,7 @@ interface V10XConfig {
 
 function V10X(old: V10XConfig): FadeConfiguration {
   return {
-    id: old.id,
+    id: old.id ?? foundry.utils.randomID(),
     easing: old.easing,
     duration: old.duration,
     type: "fade",

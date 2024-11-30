@@ -1,8 +1,10 @@
 import { TransitionSequence } from '../interfaces';
-import { generateFontSelectOptions, getActors, getCompendiumFromUUID, log, parseConfigurationFormElements, wait } from '../utils';
+import { getActors, getCompendiumFromUUID, isValidFontSize, parseConfigurationFormElements, parseFontSize, wait } from '../utils';
+import { generateFontSelectOptions } from './selectOptions';
 import { TransitionStep } from './TransitionStep';
 import { BossSplashConfiguration } from './types';
 
+type InputEvent = JQuery.TriggeredEvent<HTMLElement, undefined, HTMLElement, HTMLElement>;
 
 function getSplashSetting<t>(key: string): t {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
@@ -13,6 +15,7 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
 
   public static get DefaultSettings(): BossSplashConfiguration {
     return {
+      id: "",
       type: "bosssplash",
       version: "1.1.0",
       duration: 5000,
@@ -55,6 +58,7 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
     }));
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${BossSplashStep.template}.hbs`, {
       ...BossSplashStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
 
       fontSelect: generateFontSelectOptions(),
@@ -75,16 +79,52 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
     });
   }
 
+
+  // public static validateForm(elem: HTMLElement | JQuery<HTMLElement>): boolean { return true; }
+  public static validateForm(elem: HTMLElement | JQuery<HTMLElement>): boolean {
+    const html = $(elem);
+    if (!isValidFontSize(html.find("#fontSize").val() as string)) return false;
+    if (!isValidFontSize(html.find("#subSize").val() as string)) return false;
+    return true;
+  }
+
+
+  public static addEventListeners(element: HTMLElement | JQuery<HTMLElement>): void {
+    const html = $(element);
+
+    html.find("#fontSize").on("input", foundry.utils.debounce((e: InputEvent) => {
+      $(e.currentTarget).val(parseFontSize($(e.currentTarget).val() as string || ""));
+    }, 250));
+
+    html.find("#subSize").on("input", foundry.utils.debounce((e: InputEvent) => {
+      $(e.currentTarget).val(parseFontSize($(e.currentTarget).val() as string || ""));
+    }, 250));
+
+    // Set font faces
+    html.find("#font option").each((index, element) => {
+      const val = $(element).val() as string;
+      $(element).css("font-family", val);
+    });
+
+    html.find("#font").on("input", e => {
+      $(e.currentTarget).css("font-family", $(e.currentTarget).val() as string);
+    })
+
+  }
+
   public static fromFormElement(form: HTMLFormElement): BossSplashStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
     const sound = elem.find("#sound").val() as string ?? "";
 
-    log("Form:", elem.serializeArray())
+    const fontSize = parseFontSize(elem.find("#fontSize").val() as string);
+    const subSize = parseFontSize(elem.find("#subSize").val() as string);
 
     return new BossSplashStep({
       ...BossSplashStep.DefaultSettings,
       sound,
-      ...parseConfigurationFormElements(elem, "id", "actor", "message", "subText", "duration", "animationDelay", "animationDuration", "topColor", "midColor", "botColor", "fontColor", "fontShadow", "subColor", "subShadow", "font", "fontSize", "subSize")
+      ...parseConfigurationFormElements(elem, "id", "actor", "message", "subText", "duration", "animationDelay", "animationDuration", "topColor", "midColor", "botColor", "fontColor", "fontShadow", "subColor", "subShadow", "font", "label"),
+      fontSize: isValidFontSize(fontSize) ? fontSize : BossSplashStep.DefaultSettings.fontSize,
+      subSize: isValidFontSize(subSize) ? subSize : BossSplashStep.DefaultSettings.subSize
     });
   }
 
@@ -100,7 +140,6 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
       void (game as any).bossSplash.splashBoss(coerceConfig(config));
     }
 
-    console.log("Waiting:", config.duration + config.animationDelay)
     await wait(config.duration + config.animationDelay);
   }
 }

@@ -1,8 +1,11 @@
 import { SerializedAsset } from "../interfaces";
 import { Easing, BilinearDirection, RadialDirection, ClockDirection, WipeDirection, SizingMode, BackgroundType } from "../types";
 
+export type TargetType = "prompt" | "point" | "oldtoken" | "newtoken" | "oldtile" | "newtile" | "oldnote" | "newnote" | "olddrawing" | "newdrawing";
+
 export interface TransitionConfiguration {
   type: string;
+  label?: string;
   id: string;
   version: string;
 }
@@ -15,6 +18,11 @@ export interface BackgroundTransition {
   backgroundType: BackgroundType;
   backgroundImage?: string;
   backgroundColor?: string;
+}
+
+export interface DualTransition {
+  applyToScene: boolean;
+  applyToOverlay: boolean;
 }
 
 
@@ -54,7 +62,7 @@ export type LinearWipeConfiguration = WipeTransition & ({
   direction: WipeDirection;
 });
 
-export type RadialWipeConfiguration = WipeTransition & ({
+export type RadialWipeConfiguration = WipeTransition & TargetedTransition & ({
   radial: RadialDirection;
 });
 
@@ -68,7 +76,7 @@ export type SpotlightWipeConfiguration = WipeTransition & ({
   radial: RadialDirection;
 });
 
-export type TextureSwapConfiguration = TransitionConfiguration & BackgroundTransition;
+export type TextureSwapConfiguration = TransitionConfiguration & BackgroundTransition & DualTransition;
 
 
 export type VideoConfiguration = BackgroundTransition & TransitionConfiguration & ({
@@ -105,11 +113,11 @@ export type SpiralWipeConfiguration = WipeTransition & ({
 
 })
 
-export type InvertConfiguration = TransitionConfiguration
+export type InvertConfiguration = TransitionConfiguration & DualTransition;
 
 export type AngularWipeConfiguration = WipeTransition;
 
-export type FlashConfiguration = TransitionConfiguration & BackgroundTransition & DurationTransition;
+export type FlashConfiguration = TransitionConfiguration & BackgroundTransition & DurationTransition & DualTransition;
 
 export type RepeatConfiguration = TransitionConfiguration & ({
   iterations: number;
@@ -130,18 +138,21 @@ export interface MacroConfiguration extends TransitionConfiguration {
 // //   keyColor: string;
 // // }
 
+export type ReverseConfiguration = TransitionConfiguration & ({
+  delay: number;
+});
 export type RemoveOverlayConfiguration = TransitionConfiguration;
 export type RestoreOverlayConfiguration = TransitionConfiguration;
-export type ClearEffectsConfiguration = TransitionConfiguration;
+export type ClearEffectsConfiguration = TransitionConfiguration & DualTransition;
 
 export type StartPlaylistConfiguration = TransitionConfiguration;
-export type ZoomBlurConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
+export type ZoomBlurConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & DualTransition & ({
   maxStrength: number;
   innerRadius: number;
 
 });
 
-export type TwistConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
+export type TwistConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & DualTransition & ({
   maxAngle: number;
   direction: ClockDirection;
 });
@@ -170,11 +181,11 @@ export type BossSplashConfiguration = TransitionConfiguration & DurationTransiti
 
 });
 
-export type PixelateConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
+export type PixelateConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & DualTransition & ({
   maxSize: number;
 })
 
-export type HueShiftConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & ({
+export type HueShiftConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & DualTransition & ({
   maxShift: number;
 })
 
@@ -182,3 +193,28 @@ export type BarWipeConfiguration = WipeTransition & ({
   direction: "vertical" | "horizontal";
   bars: number;
 })
+
+export type TargetedTransition = {
+  target: [number, number] | string;
+}
+
+export type ZoomArg = [number, number] | string | Token | TokenDocument | Tile | TileDocument | Note | NoteDocument | Drawing | DrawingDocument;
+
+export type ZoomConfiguration = TransitionConfiguration & DurationTransition & AnimatedTransition & BackgroundTransition & DualTransition & TargetedTransition & ({
+  amount: number;
+  clampBounds: boolean;
+});
+
+
+
+export type LoadingTipSource = "string" | "rolltable";
+export type LoadingTipLocation = "topleft" | "topcenter" | "topright" | "center" | "bottomright" | "bottomcenter" | "bottomleft";
+
+export type LoadingTipConfiguration = TransitionConfiguration & ({
+  message?: string;
+  source: LoadingTipSource;
+  table?: string;
+  duration: number;
+  location: LoadingTipLocation;
+  style: object;
+});

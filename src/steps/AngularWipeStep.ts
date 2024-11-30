@@ -1,13 +1,16 @@
 import { AngularWipeConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
-import { createColorTexture, generateEasingSelectOptions, parseConfigurationFormElements } from '../utils';
+import { createColorTexture, parseConfigurationFormElements } from '../utils';
 import { AngularWipeFilter } from '../filters';
-
+import { generateEasingSelectOptions } from './selectOptions';
 
 export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
-  // #region Properties (5)
+  // #region Properties (9)
+
+  #filter: AngularWipeFilter | null = null;
 
   public static DefaultSettings: AngularWipeConfiguration = {
+    id: "",
     type: "angularwipe",
     duration: 1000,
     easing: "none",
@@ -18,21 +21,22 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon angular-wipe fa-fw fas'></i>"
   public static key = "angularwipe";
   public static name = "ANGULARWIPE";
+  public static reversible = true;
   public static template = "angularwipe-config";
-  public static icon = "<i class='bt-icon angular-wipe fa-fw fas'></i>"
-  public static category = "wipe";
 
-  // #endregion Properties (5)
+  // #endregion Properties (9)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: AngularWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${AngularWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...AngularWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions()
     });
@@ -50,7 +54,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
 
   public static fromFormElement(formElement: HTMLFormElement): AngularWipeStep {
     const backgroundImage = $(formElement).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements($(formElement) as JQuery<HTMLFormElement>, "id", "duration", "easing", "backgroundType", "backgroundColor");
+    const elem = parseConfigurationFormElements($(formElement) as JQuery<HTMLFormElement>, "id", "duration", "easing", "backgroundType", "backgroundColor", "label");
     return new AngularWipeStep({
       ...AngularWipeStep.DefaultSettings,
       ...elem,
@@ -58,17 +62,28 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     });
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: AngularWipeConfiguration): number { return { ...AngularWipeStep.DefaultSettings, ...config }.duration }
 
-  // #region Public Methods (1)
+  // #endregion Public Static Methods (7)
+
+  // #region Public Methods (2)
 
   public async execute(container: PIXI.Container): Promise<void> {
-    const background = this.config.deserializedTexture ?? createColorTexture("transparent");
+    const config = {
+      ...AngularWipeStep.DefaultSettings,
+      ...this.config
+    }
+    const background = config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new AngularWipeFilter(background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
 
     await this.simpleTween(filter);
   }
 
-  // #endregion Public Methods (1)
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof AngularWipeFilter) await this.simpleReverse(this.#filter);
+  }
+
+  // #endregion Public Methods (2)
 }

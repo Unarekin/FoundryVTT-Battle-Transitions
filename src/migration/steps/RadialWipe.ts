@@ -23,12 +23,13 @@ interface V10Config {
 
 function v10Migration(old: V10Config): RadialWipeConfiguration {
   return {
-    id: old.id,
+    id: old.id ?? foundry.utils.randomID(),
     easing: (old.easing ?? "none") as Easing,
     version: "1.1.0",
     radial: old.radial,
     duration: old.duration,
     type: "radialwipe",
+    target: [0.5, 0.5],
     ...migratev10XBackground(old)
   }
 }

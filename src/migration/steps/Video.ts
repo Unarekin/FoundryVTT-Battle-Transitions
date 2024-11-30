@@ -26,7 +26,7 @@ function v10X(old: v10Configuration): VideoConfiguration {
   return {
     version: "1.1.0",
     type: "video",
-    id: old.id,
+    id: old.id ?? foundry.utils.randomID(),
     file: old.file,
     volume: old.volume,
     clear: old.clear,

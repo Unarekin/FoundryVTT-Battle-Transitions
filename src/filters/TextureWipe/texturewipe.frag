@@ -1,3 +1,5 @@
+#version 300 es
+
 precision highp float;
 
 uniform sampler2D uSampler;
@@ -10,8 +12,8 @@ uniform sampler2D bgSampler;
 
 void main() {
     vec4 wipe = texture(wipeSampler, vTextureCoord);
-    
-    if (wipe.b < progress) {
+
+    if (wipe.b <= progress) {
         color = texture(bgSampler, vTextureCoord);
     } else {
         color = texture(uSampler, vTextureCoord);

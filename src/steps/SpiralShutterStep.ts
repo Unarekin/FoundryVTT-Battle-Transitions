@@ -1,13 +1,16 @@
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SpiralShutterConfiguration } from "./types";
 import { SpiralShutterFilter } from "../filters";
+import { generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
+
 
 export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration> {
-  // #region Properties (5)
+  // #region Properties (7)
 
   public static DefaultSettings: SpiralShutterConfiguration = {
+    id: "",
     type: "spiralshutter",
     duration: 1000,
     direction: "clockwise",
@@ -20,21 +23,22 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon spiral-shutter fa-fw fas'></i>"
   public static key = "spiralshutter";
   public static name = "SPIRALSHUTTER";
   public static template = "spiralshutter-config";
-  public static category = "wipe";
-  public static icon = "<i class='bt-icon spiral-shutter fa-fw fas'></i>"
+  public static reversible: boolean = true;
 
-  // #endregion Properties (5)
+  // #endregion Properties (7)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: SpiralShutterConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpiralShutterStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...SpiralShutterStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),
@@ -59,13 +63,20 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
     return new SpiralShutterStep({
       ...SpiralShutterStep.DefaultSettings,
       backgroundImage,
-      ...parseConfigurationFormElements(elem, "id", "duration", "easing", "backgroundType", "backgroundColor", "direction", "radial")
+      ...parseConfigurationFormElements(elem, "id", "duration", "easing", "backgroundType", "backgroundColor", "direction", "radial", "label")
     })
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: SpiralShutterConfiguration): number { return { ...SpiralShutterStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
+
+  #filter: SpiralShutterFilter | null = null;
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof SpiralShutterFilter) await this.simpleReverse(this.#filter);
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
@@ -75,6 +86,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
     };
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new SpiralShutterFilter(config.direction, config.radial, background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }

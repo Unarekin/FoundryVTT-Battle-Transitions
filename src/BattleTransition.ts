@@ -1,14 +1,15 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
-import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, TransitionToSelfError } from "./errors";
+import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
-import { cleanupTransition, hideLoadingBar, setupTransition, showLoadingBar } from "./transitionUtils";
+import { cleanupTransition, hideLoadingBar, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { deserializeTexture, getStepClassByKey, isColor, localize, serializeTexture, shouldUseAppV2 } from "./utils";
+import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, log, serializeTexture, shouldUseAppV2 } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { transitionBuilderDialog } from "./dialogs";
+import { filters } from "./filters";
 
 // #region Type aliases (1)
 
@@ -24,15 +25,16 @@ type TransitionSequenceCallback = (transition: BattleTransition) => BattleTransi
  * Primary class that handles queueing, synchronizing, and executing transition sequences.
  */
 export class BattleTransition {
-  // #region Properties (2)
+  // #region Properties (3)
 
   #sequence: TransitionConfiguration[] = [];
 
+  public static Filters = filters;
   // // eslint-disable-next-line no-unused-private-class-members
   // #transitionOverlay: PIXI.DisplayObject[] = [];
   public static SuppressSoundUpdates: boolean = false;
 
-  // #endregion Properties (2)
+  // #endregion Properties (3)
 
   // #region Constructors (6)
 
@@ -141,6 +143,12 @@ export class BattleTransition {
       BattleTransition.SuppressSoundUpdates = true;
       // Execute
       for (const step of prepared.prepared.sequence) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if ((step.config as any).backgroundType === "overlay" || (step.config as any).serializedTexture === "overlay") {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          (step.config as any).deserializedTexture = (container.children[0] as PIXI.Sprite).texture
+        }
+
         const exec = step.execute(container, prepared.original, prepared);
         if (exec instanceof Promise) await exec;
       }
@@ -152,6 +160,10 @@ export class BattleTransition {
         await step.teardown(container);
       }
 
+      removeFiltersFromScene(prepared.prepared);
+    } catch (err) {
+      ui.notifications?.error((err as Error).message, { console: false });
+      console.error(err);
     } finally {
       setTimeout(() => { showLoadingBar(); }, 250);
       if (container) cleanupTransition(container);
@@ -221,6 +233,7 @@ export class BattleTransition {
         prepared: {
           ...sequence,
           sequence: steps,
+          sceneFilters: []
         },
         overlay: []
       }
@@ -239,24 +252,27 @@ export class BattleTransition {
     }
   }
 
-  public static async validateSequence(sequence: TransitionConfiguration[]): Promise<boolean | Error> {
+  public static async validateSequence(sequence: TransitionConfiguration[]): Promise<TransitionConfiguration[] | Error> {
     try {
+      const validated: TransitionConfiguration[] = [];
       for (const step of sequence) {
         const handler = getStepClassByKey(step.type);
         // const handler = BattleTransition.StepTypes[step.type];
         if (!handler) throw new InvalidTransitionError(step.type);
-        const valid = await handler.validate(step);
+
+        const valid = await handler.validate(step, sequence);
         if (valid instanceof Error) return valid;
+        validated.push(valid);
       }
-      return true;
+      return validated;
     } catch (err) {
-      throw err as Error;
+      return err as Error;
     }
   }
 
   // #endregion Public Static Methods (7)
 
-  // #region Public Methods (44)
+  // #region Public Methods (52)
 
   /**
    * Adds an angular wipe, mimicking the battle with Brock in Pokemon Fire Red
@@ -358,6 +374,19 @@ export class BattleTransition {
   }
 
   /**
+   * Removes any active transition effects from the overlay.
+   */
+  public clearEffects(): this {
+    const step = getStepClassByKey("cleareffects");
+    if (!step) throw new InvalidTransitionError("cleareffects");
+    this.#sequence.push({
+      ...step.DefaultSettings,
+      id: foundry.utils.randomID()
+    });
+    return this;
+  }
+
+  /**
    * Adds a clock wipe to the queue
    * @param {ClockDirection} clockDirection - {@link ClockDirection}
    * @param {WipeDirection} direction - {@link WipeDirection}
@@ -449,6 +478,15 @@ export class BattleTransition {
   }
 
   /**
+   * Sets the transition overlay to invisible, but will still allow for playing transition effects.
+   * @returns 
+   */
+  public hideOverlay(): this {
+    this.#sequence.push({ id: foundry.utils.randomID(), type: "removeoverlay", version: "1.1.0" });
+    return this;
+  }
+
+  /**
    * 
    * @param {number} amount - Amount by which to shift the hue
    * @param {number} [duration=0] - Duration, in milliseconds, the shift should take to complete
@@ -495,8 +533,55 @@ export class BattleTransition {
       serializedTexture,
       direction,
       duration,
+      backgroundType: backgroundType(background),
       easing
     } as LinearWipeConfiguration)
+    return this;
+  }
+
+  public loadingTip(message: string, location?: LoadingTipLocation, duration?: number, style?: PIXI.HTMLTextStyle): this
+  public loadingTip(rollTable: string, location?: LoadingTipLocation, style?: PIXI.HTMLTextStyle): this
+  public loadingTip(source: string, location: LoadingTipLocation = "bottomcenter", ...others: unknown[]): this {
+    const step = getStepClassByKey("loadingtip");
+    if (!step) throw new InvalidTransitionError("loadingtip");
+
+    // Parse arguments
+    const duration: number = typeof others[0] === "number" ? others[0] : 0;
+
+    let style: PIXI.HTMLTextStyle | null = null;
+    if (others[1] instanceof PIXI.HTMLTextStyle) {
+      style = others[1];
+    } else if (others[0] instanceof PIXI.HTMLTextStyle) {
+      style = others[0];
+    } else {
+      style = new PIXI.HTMLTextStyle();
+      deepCopy(style, PIXI.HTMLTextStyle.defaultStyle);
+      deepCopy(style, (step.DefaultSettings as LoadingTipConfiguration).style);
+    }
+
+    // Check for UUID
+    const parsed = typeof foundry.utils.parseUuid === "function" ? foundry.utils.parseUuid(source) : parseUuid(source);
+
+    const config: LoadingTipConfiguration = {
+      ...step.DefaultSettings as LoadingTipConfiguration,
+      duration,
+      location
+    }
+
+    if (parsed && parsed.type === RollTable.documentName) {
+      const table: RollTable | undefined = fromUuidSync(source) as RollTable | undefined;
+      if (table instanceof RollTable) {
+        config.source = "rolltable";
+        config.table = table.uuid;
+      }
+    } else {
+      config.source = "string";
+      config.message = source;
+    }
+    config.style = JSON.parse(JSON.stringify(style)) as object;
+
+    this.#sequence.push(config);
+
     return this;
   }
 
@@ -535,9 +620,9 @@ export class BattleTransition {
     return this;
   }
 
-  /**
+  /*
    * Queues up a set of sequences to run in parallel
-   * @param callbacks 
+   * @param {TransitionSequenceCallback[]} callbacks - Set of {@link TransitionSequenceCallback}s to build sequences to be run in parallel.  Do NOT call `.execute` at the end of these sequences.
    * @returns 
    */
   public parallel(...callbacks: TransitionSequenceCallback[]): this {
@@ -553,6 +638,7 @@ export class BattleTransition {
 
     const config: ParallelConfiguration = {
       ...step?.DefaultSettings,
+      id: foundry.utils.randomID(),
       sequences
     };
 
@@ -579,46 +665,83 @@ export class BattleTransition {
     return this;
   }
 
+
   /**
-   * Queues up a radial wipe
-   * @param {RadialDirection} direction - {@link RadialDirection}
-   * @param {number} [duration=1000] - Duration, in milliseconds, that the wipe should take to complete
+   * Queues up a radial wipe.
+   * @param {RadialDirection} directon - {@link RadialDirection} representing where the wipe should start
+   * @param {number} [duration=1000] - Duration, in milliseconds, that the wipe should take to complete.
+   * @param {ZoomArg} [target=[0.5, 0.5]] - {@link ZoomArg} target on which to center the effect.
    * @param {TextureLike} [background="transparent"] - {@link TextureLike}
    * @param {Easing} [easing="none"] - {@link Easing}
-   * @returns 
    */
-  public radialWipe(direction: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+  public radialWipe(direction: RadialDirection, duration?: number, target?: ZoomArg, background?: TextureLike, easing?: Easing): this
+  /**
+   * Queues up a radial wipe
+   * @param {RadialDirection} directon - {@link RadialDirection} representing where the wipe should start
+   * @param {number} [duration=1000] - Duration, in milliseconds, that the wipe should take to complete.
+   * @param {TextureLike} [background="transparent"] - {@link TextureLike}
+   * @param {Easing} [easing="none"] - {@link Easing}
+   */
+  public radialWipe(direction: RadialDirection, duration?: number, background?: TextureLike, easing?: Easing): this
+  public radialWipe(direction: RadialDirection, duration: number = 1000, ...args: unknown[]): this {
+    const step = getStepClassByKey("radialwipe");
+    if (!step) throw new InvalidTransitionError("radialwipe");
+
+
+    let background: TextureLike = "transparent";
+    let easing: Easing = "none";
+    let target: ZoomArg = [0.5, 0.5];
+
+    if (Array.isArray(args[0])) {
+      target = args[0] as [number, number];
+      background = args[1] as TextureLike ?? "transparent";
+      easing = args[2] as Easing ?? "none";
+    } else if (typeof args[0] === "string" && fromUuidSync(args[0])) {
+      // It's a UUID
+      target = args[0];
+      background = args[1] as TextureLike ?? "transparent";
+      easing = args[2] as Easing ?? "none";
+    } else if (typeof args[0] === "string") {
+      background = args[0] as TextureLike ?? "transparent";
+      easing = args[1] as Easing ?? "none";
+    }
+
     const serializedTexture = serializeTexture(background);
-    this.#sequence.push({
-      type: "radialwipe",
+
+    const config: RadialWipeConfiguration = {
+      ...step.DefaultSettings as RadialWipeConfiguration,
       serializedTexture,
       radial: direction,
       duration,
       easing
-    } as RadialWipeConfiguration);
+    };
+
+    if (Array.isArray(target)) {
+      config.target = target;
+    } else if (typeof target === "string" && fromUuidSync(target)) {
+      config.target = target;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    } else if (typeof (target as any).uuid === "string") {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      config.target = (target as any).uuid as string;
+    } else {
+      throw new InvalidTargetError(target);
+    }
+
+    this.#sequence.push(config);
 
     return this;
   }
 
+
   /**
-   * Will remove the current transition overlay, exposing the new scene
+   * Sets the transition overlay to invisible, but will still allow for playing transition effects.
+   * @deprecated since 1.1.0 please use {@link hideOverlay} instead.
+   * @see {@link hideOverlay}
    */
   public removeOverlay(): this {
-    this.#sequence.push({ id: foundry.utils.randomID(), type: "removeoverlay", version: "1.1.0" });
-    return this;
-  }
-
-  /**
-   * Removes any active transition effects from the overlay.
-   */
-  public clearEffects(): this {
-    const step = getStepClassByKey("cleareffects");
-    if (!step) throw new InvalidTransitionError("cleareffects");
-    this.#sequence.push({
-      ...step.DefaultSettings,
-      id: foundry.utils.randomID()
-    });
-    return this;
+    ui.notifications?.warn("BATTLETRANSITIONS.WARNINGS.REMOVEOVERLAYDEPRECATION", { localize: true });
+    return this.hideOverlay();
   }
 
   /**
@@ -656,7 +779,6 @@ export class BattleTransition {
     const step = getStepClassByKey("repeat");
     if (!step) throw new InvalidTransitionError("repeat");
 
-
     if (callback) {
       const transition = new BattleTransition();
       const res = callback(transition);
@@ -664,6 +786,7 @@ export class BattleTransition {
 
       this.#sequence.push({
         ...step.DefaultSettings,
+        id: foundry.utils.randomID(),
         iterations,
         delay,
         style: "sequence",
@@ -680,7 +803,45 @@ export class BattleTransition {
     return this;
   }
 
+  /**
+   * Sets the transition overlay to visible again.
+   * @deprecated since version 1.1.0 please use {@link showOverlay} instead.
+   * @see {@link showOverlay}
+   */
   public restoreOverlay(): this {
+    ui.notifications?.warn("BATTLETRANSITIONS.WARNINGS.RESTOREOVERLAYDEPRECATION", { localize: true });
+    return this.showOverlay();
+  }
+
+  /**
+   * Executes the previous step, but in reverse.
+   * @param {number} [delay=0] - Duration, in milliseconds, to wait before reversing the previous step.
+   */
+  public reverse(delay: number = 0): this {
+    const step = getStepClassByKey("reverse");
+    if (!step) throw new InvalidTransitionError("reverse");
+
+    if (this.#sequence.length === 0) throw new InvalidTransitionError("reverse");
+    const prevStep = getStepClassByKey(this.#sequence[this.#sequence.length - 1].type);
+    if (!prevStep) throw new InvalidTransitionError("reverse");
+    if (!prevStep.reversible) throw new StepNotReversibleError(prevStep.key);
+
+    const config: ReverseConfiguration = {
+      ...step.DefaultSettings,
+      delay,
+      id: foundry.utils.randomID()
+    }
+
+    log("Adding reverse:", config);
+    this.#sequence.push(config);
+
+    return this;
+  }
+
+  /**
+   * Sets the transition overlay to visible again.
+   */
+  public showOverlay(): this {
     this.#sequence.push({ id: foundry.utils.randomID(), type: "restoreoverlay", version: "1.1.0" });
     return this;
   }
@@ -864,6 +1025,56 @@ export class BattleTransition {
     return this;
   }
 
+  /**
+   * Zoom into a location on the overlay
+   * 
+   * @remarks This effect does not scale the overlay but instead it multiplies the UV coordinates of the overlying texture.
+   * As such, the actual values for zoom amount operates in reverse fo what you may expect.
+   * 
+   * A zoom value of 1 retains the original size.  Values less than one will zoom in, and greater than 1 will zoom out.
+   * The maximum distance the overlay can zoom out before the displayed size is 0x0 is dependent on the screen resolution
+   * of the viewer, so it is recommended to choose a value that looks "close enough" and possibly fade it out at the end
+   * to make its disappearance smoother.
+   * @param {number} amount - Relative amount to zoom.  See remarks.
+   * @param {number} [duration=1000] - Duration, in milliseconds, that the effect should take to complete
+   * @param {ZoomArg} [arg=[0.5, 0.5]] - {@link ZoomArg} representing the location to center the zoom.
+   * @param {boolean} [clampBounds=false] - If true, will prevent the texture from leaving the boundaries of its containing sprite when zooming out.
+   * @param {TextureLike} [bg="transparent"] - {@link TextureLike} for the background displayed when zooming out if clampBounds is false.
+   * @param {Easing} [easing="none"] - {@link Easing} to use when animating the transition.
+   * @returns 
+   */
+  public zoom(amount: number, duration: number = 1000, arg: ZoomArg = [0.5, 0.5], clampBounds: boolean = false, bg: TextureLike = "transparent", easing: Easing = "none"): this {
+    const step = getStepClassByKey("zoom");
+    if (!step) throw new InvalidTransitionError("zoom");
+
+    const serializedTexture = serializeTexture(bg);
+    const config: ZoomConfiguration = {
+      ...(step.DefaultSettings as ZoomConfiguration),
+      amount,
+      duration,
+      clampBounds,
+      serializedTexture,
+      easing
+    };
+
+    if (Array.isArray(arg)) {
+      config.target = arg;
+    } else if (typeof arg === "string" && fromUuidSync(arg)) {
+      config.target = arg;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    } else if (typeof (arg as any).uuid === "string") {
+      // A UUID directly
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      config.target = (arg as any).uuid as string;
+    } else {
+      throw new InvalidTargetError(arg);
+    }
+
+    this.#sequence.push(config);
+
+    return this;
+  }
+
   public zoomBlur(duration: number = 1000, maxStrength: number = 0.5, innerRadius: number = 0): this {
     this.#sequence.push({
       type: "zoomblur",
@@ -875,7 +1086,7 @@ export class BattleTransition {
     return this;
   }
 
-  // #endregion Public Methods (44)
+  // #endregion Public Methods (52)
 }
 
 // #endregion Classes (1)

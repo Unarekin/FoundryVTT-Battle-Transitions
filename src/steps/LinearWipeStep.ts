@@ -1,17 +1,21 @@
 import { LinearWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, generateEasingSelectOptions, generateLinearDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { LinearWipeConfiguration } from "./types";
+import { generateEasingSelectOptions, generateLinearDirectionSelectOptions } from './selectOptions';
 
 export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
-  // #region Properties (6)
+  // #region Properties (10)
+
+  #filter: LinearWipeFilter | null = null;
 
   public readonly defaultSettings: Partial<LinearWipeConfiguration> = {
     duration: 1000
   }
 
   public static DefaultSettings: LinearWipeConfiguration = {
+    id: "",
     type: "linearwipe",
     duration: 1000,
     easing: "none",
@@ -23,21 +27,22 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = `<i class="fas fa-fw fa-arrow-right"></i>`
   public static key = "linearwipe";
   public static name = "LINEARWIPE";
+  public static reversible: boolean = true;
   public static template = "linearwipe-config";
-  public static category = "wipe";
-  public static icon = `<i class="fas fa-fw fa-arrow-right"></i>`
 
-  // #endregion Properties (6)
+  // #endregion Properties (10)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: LinearWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${LinearWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...LinearWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       directionSelect: generateLinearDirectionSelectOptions()
@@ -56,7 +61,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): LinearWipeStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "easing", "backgroundType", "backgroundColor");
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "easing", "backgroundType", "backgroundColor", "label");
     return new LinearWipeStep({
       ...LinearWipeStep.DefaultSettings,
       ...elem,
@@ -64,9 +69,11 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
     });
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: LinearWipeConfiguration): number { return { ...LinearWipeStep.DefaultSettings, ...config }.duration }
 
-  // #region Public Methods (1)
+  // #endregion Public Static Methods (7)
+
+  // #region Public Methods (2)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence) {
@@ -76,9 +83,14 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
     }
     const background = config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new LinearWipeFilter(config.direction, background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
 
-  // #endregion Public Methods (1)
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof LinearWipeFilter) await this.simpleReverse(this.#filter);
+  }
+
+  // #endregion Public Methods (2)
 }

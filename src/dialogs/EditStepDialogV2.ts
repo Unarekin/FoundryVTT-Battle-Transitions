@@ -3,11 +3,11 @@ import { TransitionConfiguration } from "../steps";
 import { getStepClassByKey, localize } from "../utils";
 
 export class EditStepDialogV2 {
-  static async prompt(config: TransitionConfiguration): Promise<TransitionConfiguration | null> {
+  static async prompt(config: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<TransitionConfiguration | null> {
     const step = getStepClassByKey(config.type);
     if (!step) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
+    const content = await step.RenderTemplate(config, oldScene, newScene);
 
-    const content = await step.RenderTemplate(config);
     return new Promise<TransitionConfiguration | null>(resolve => {
       const dialog = new foundry.applications.api.DialogV2({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -40,16 +40,67 @@ export class EditStepDialogV2 {
       void dialog.render(true)
         .then(dialog => {
           dialog.position.width = 500;
-          addEventListeners(dialog, $(dialog.element));
-          step.addEventListeners($(dialog.element), config);
+          const elem = $(dialog.element);
+          addEventListeners(dialog, elem);
+          step.addEventListeners(elem, config);
+
+          const CLOSE_HOOK_ID = Hooks.on("closeDialogV2", (closedDialog: foundry.applications.api.DialogV2) => {
+            if (closedDialog.id === dialog.id) {
+              Hooks.off("closeDialogV2", CLOSE_HOOK_ID);
+              step.editDialogClosed(elem);
+            }
+          });
         })
     });
   }
 }
 
+function checkFormValidity(html: JQuery<HTMLElement>) {
+  const stepType = html.find("[data-transition-type]").data("transition-type") as string;
+  const step = getStepClassByKey(stepType);
+  if (!step) throw new InvalidTransitionError(stepType);
+  const valid = step.validateForm(html) && (html.find("form")[0])?.checkValidity();
+
+  if (valid) html.find("button[data-action='ok']").removeAttr("disabled");
+  else html.find("button[data-action='ok']").attr("disabled", "true");
+
+}
+
 function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>) {
   // Select number and text fields on focus
   html.find("input[type='number'],input[type='text']").on("focus", e => { (e.currentTarget as HTMLInputElement).select(); })
+
+  checkFormValidity(html);
+  html.find("input,select").on("input", () => { checkFormValidity(html); });
+
+  // log("Background image:", html.find("#backgroundImage"));
+
+  html.find("#backgroundImage").on("input", () => {
+    const val = (html.find("#backgroundImage").val() as string) ?? "";
+
+    if (val) {
+      const tag = document.createElement("img");
+      const img = $(tag);
+      img.addClass("bg-image-preview");
+      img.attr("src", val);
+      html.find("#backgroundImagePreview img").remove();
+      html.find("#backgroundImagePreview").append(img);
+    } else {
+      html.find("#backgroundImagePreview img").remove();
+    }
+
+  });
+
+  // Font selector
+  html.find("[data-font-select] option").each((index, element) => {
+    if (element instanceof HTMLOptionElement)
+      element.style.fontFamily = element.value;
+  });
+
+  html.find("[data-font-select]").css("font-family", html.find("[data-font-select]").val() as string);
+  html.find("[data-font-select]").on("input", e => {
+    $(e.currentTarget).css("font-family", $(e.currentTarget).val() as string);
+  });
 
   // Set up tabs
   const tabs = new Tabs({
@@ -70,11 +121,7 @@ function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQue
 
 function setBackgroundType(html: JQuery<HTMLElement>) {
   const bgType = html.find("#backgroundType").val() as string;
-  if (bgType === "color") {
-    html.find("#backgroundColor").css("display", "block");
-    html.find("#backgroundImage").css("display", "none");
-  } else if (bgType === "image") {
-    html.find("#backgroundImage").css("display", "");
-    html.find("#backgroundColor").css("display", "none");
-  }
+
+  html.find(`[data-background-type]`).css("display", "none");
+  html.find(`[data-background-type="${bgType}"]`).css("display", "block");
 }

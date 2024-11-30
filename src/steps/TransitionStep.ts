@@ -19,6 +19,12 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   public static icon: string = "";
   public static category: string = "";
 
+  public static reversible = false;
+
+  public reverse(): Promise<void> | void {
+    throw new NotImplementedError();
+  }
+
   // #endregion Properties (6)
 
   // #region Constructors (1)
@@ -32,12 +38,8 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   // #region Public Static Methods (7)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/require-await
-  public static async RenderTemplate(config?: TransitionConfiguration): Promise<string> {
+  public static async RenderTemplate(config?: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
     throw new NotImplementedError();
-    // return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${TransitionStep.template}.hbs`, {
-    //   ...TransitionStep.DefaultSettings,
-    //   ...(config ? config : {})
-    // });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -52,9 +54,12 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public static validate(config: TransitionConfiguration): Promise<boolean | Error> | boolean | Error {
-    return true;
+  public static validate(config: TransitionConfiguration, sequence: TransitionConfiguration[]): Promise<TransitionConfiguration | Error> | TransitionConfiguration | Error {
+    return config;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static validateForm(elem: HTMLElement | JQuery<HTMLElement>): boolean { return true; }
 
   // #endregion Public Static Methods (7)
 
@@ -62,6 +67,8 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static addEventListeners(element: HTMLElement | JQuery<HTMLElement>, config?: TransitionConfiguration): void { }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static editDialogClosed(element: HTMLElement | JQuery<HTMLElement>): void { }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public prepare(sequence?: TransitionSequence): Promise<void> | void { }
@@ -72,8 +79,6 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public teardown(container: PIXI.Container): Promise<void> | void { }
-
-  public validate(): Promise<boolean | Error> | boolean | Error { return true }
 
   // #endregion Public Methods (5)
 
@@ -101,10 +106,18 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
     if (index !== -1) container.filters?.splice(index, 1);
   }
 
+  protected async simpleReverse(filter: CustomFilter<any>): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    await TweenMax.to(filter.uniforms, { progress: 0, duration: (this.config as unknown as AnimatedTransition).duration / 1000, ease: (this.config as unknown as AnimatedTransition).easing || "none" });
+  }
+
   protected async simpleTween(filter: CustomFilter<any>): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     await TweenMax.to(filter.uniforms, { progress: 1, duration: (this.config as unknown as AnimatedTransition).duration / 1000, ease: (this.config as unknown as AnimatedTransition).easing || "none" });
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static getDuration(config: TransitionConfiguration, sequence: TransitionConfiguration[]): number | Promise<number> { return 0; }
 
   // #endregion Protected Methods (4)
 }

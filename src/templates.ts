@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import groupBy from "./lib/groupBy";
+import { formatDuration } from "./utils";
 
 export function registerHelpers() {
   Handlebars.registerHelper("switch", function (this: any, value, options) {
@@ -19,6 +20,29 @@ export function registerHelpers() {
   });
 
   groupBy.register(Handlebars)
+
+  Handlebars.registerHelper("formatDuration", function (this: any, value: number) {
+    if (typeof value === "number") return formatDuration(value);
+    else if (typeof value === "string" && !isNaN(parseFloat(value))) return formatDuration(parseFloat(value));
+    else return "NaN";
+  });
+
+  Handlebars.registerHelper("when", function (this: any, operand_1: any, operator: any, operand_2: any, options) {
+    const operators = {
+      'eq': function (l: any, r: any) { return l == r; },
+      'noteq': function (l: any, r: any) { return l != r; },
+      'gt': function (l: any, r: any) { return Number(l) > Number(r); },
+      'or': function (l: any, r: any) { return l || r; },
+      'and': function (l: any, r: any) { return l && r; },
+      '%': function (l: number, r: number) { return (l % r) === 0; }
+    }
+      , result = (operators as any)[operator](operand_1, operand_2);
+
+    if (result) return options.fn(this);
+    else return options.inverse(this);
+  });
+
+
 }
 
 export async function registerTemplates() {
@@ -33,10 +57,13 @@ export async function registerTemplates() {
       "background-selector",
       "duration-selector",
       "add-step-button",
-      "sequence-item"
+      "sequence-item",
+      "target-selector",
+      "dualtransition-selector"
     ].map(name => `/modules/${__MODULE_ID__}/templates/config/${name}.hbs`),
     `/modules/${__MODULE_ID__}/templates/scene-selector.hbs`,
     `/modules/${__MODULE_ID__}/templates/transition-steps.hbs`,
+    `/modules/${__MODULE_ID__}/templates/font-selector.hbs`,
     `/modules/${__MODULE_ID__}/templates/actor-selector.hbs`
   ]);
 }

@@ -1,13 +1,17 @@
 import { MeltFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, generateEasingSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { MeltConfiguration } from "./types";
+import { generateEasingSelectOptions } from './selectOptions';
 
 export class MeltStep extends TransitionStep<MeltConfiguration> {
-  // #region Properties (5)
+  // #region Properties (9)
+
+  #filter: MeltFilter | null = null;
 
   public static DefaultSettings: MeltConfiguration = {
+    id: "",
     type: "melt",
     duration: 1000,
     version: "1.1.0",
@@ -18,21 +22,22 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
     backgroundColor: "#00000000"
   }
 
+  public static category = "warp";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon melt fa-fw fas'></i>"
   public static key = "melt";
   public static name = "MELT";
+  public static reversible: boolean = true;
   public static template = "melt-config";
-  public static icon = "<i class='bt-icon melt fa-fw fas'></i>"
-  public static category = "warp";
 
-  // #endregion Properties (5)
+  // #endregion Properties (9)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: MeltConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${MeltStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...MeltStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions()
     });
@@ -50,7 +55,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
 
   public static fromFormElement(form: HTMLElement): MeltStep {
     const backgroundImage = $(form).find("#backgroudnimage").val() as string ?? "";
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "easing", "backgroundType", "backgroundColor");
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "easing", "backgroundType", "backgroundColor", "label");
     return new MeltStep({
       ...MeltStep.DefaultSettings,
       ...elem,
@@ -58,17 +63,24 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
     });
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: MeltConfiguration): number { return { ...MeltStep.DefaultSettings, ...config }.duration }
 
-  // #region Public Methods (1)
+  // #endregion Public Static Methods (7)
+
+  // #region Public Methods (2)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new MeltFilter(background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }
 
-  // #endregion Public Methods (1)
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof MeltFilter) await this.simpleReverse(this.#filter);
+  }
+
+  // #endregion Public Methods (2)
 }

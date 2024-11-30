@@ -23,7 +23,8 @@ export interface TransitionSequence {
 export interface PreparedTransitionSequence {
   caller: string;
   remote?: boolean;
-  sequence: TransitionStep<any>[];
+  sequence: TransitionStep<TransitionConfiguration>[];
+  sceneFilters: PIXI.Filter[];
 }
 
 export interface SceneConfiguration {
@@ -49,4 +50,22 @@ export interface ExportedTransition {
   description?: string;
   version: number;
   sequence: TransitionConfiguration[]
+}
+
+export interface vec2 {
+  x: number;
+  y: number;
+}
+
+export interface vec3 {
+  x: number;
+  y: number;
+  z: number;
+}
+
+export interface vec4 {
+  r: number;
+  g: number;
+  b: number;
+  a: number;
 }

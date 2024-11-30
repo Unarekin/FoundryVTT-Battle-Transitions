@@ -1,8 +1,21 @@
 <fieldset>
-  <legend>{{localize "BATTLETRANSITIONS.SCENECONFIG.TRANSITIONCONFIG.LABEL" }}</legend>
-    <section id="transition-step-list">
+  <legend>{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.TRANSITIONCONFIG.LABEL"
+    }}</legend>
+  <section id="transition-step-list">
 
-    </section>
+  </section>
 
-  <button data-action="add-step" id="add-step" name="add-step"><i class="fas fa-plus"></i>{{localize "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.ADDSTEP"}}</button>
+  <div class="right-align" id="total-duration"></div>
+  <div class="flexrow">
+    <button data-action="clear-steps" id="clear-steps" name="clear-steps">
+      <i class="fas fa-fw fa-trash-can"></i>
+      {{localize "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.CLEARSTEPS"}}
+    </button>
+    <button data-action="add-step" id="add-step" name="add-step">
+      <i class="fas fa-fw fa-plus"></i>
+      {{localize "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.ADDSTEP"}}
+    </button>
+  </div>
+
 </fieldset>

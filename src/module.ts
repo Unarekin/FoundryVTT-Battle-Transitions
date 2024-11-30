@@ -11,7 +11,6 @@ import { awaitHook, log } from './utils';
 import { libWrapper } from "./vendor/libwrapper.shim";
 import { SceneChangeStep } from './steps';
 
-
 (window as any).semver = semver;
 (window as any).BattleTransition = BattleTransition;
 
@@ -38,8 +37,8 @@ Hooks.once("init", async () => {
         const sceneChangeStep = new SceneChangeStep({ scene: this.id ?? "" });
         void BattleTransition.executeSequence([
           {
-            id: foundry.utils.randomID(),
             ...SceneChangeStep.DefaultSettings,
+            id: foundry.utils.randomID(),
             ...sceneChangeStep.config
           },
           ...config.sequence

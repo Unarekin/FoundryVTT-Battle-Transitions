@@ -1,7 +1,8 @@
-import { NotImplementedError } from "../errors";
 import { InvertFilter } from "../filters";
-import { TransitionSequence } from "../interfaces";
+import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
+import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
 import { parseConfigurationFormElements } from "../utils";
+import { generateDualStyleSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { InvertConfiguration } from "./types";
 
@@ -9,15 +10,17 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
   // #region Properties (6)
 
   public static DefaultSettings: InvertConfiguration = {
+    id: "",
     type: "invert",
-    version: "1.1.0"
+    version: "1.1.0",
+    applyToOverlay: true,
+    applyToScene: false
   }
 
   public static hidden: boolean = false;
   public static key = "invert";
   public static name = "INVERT";
-  public static skipConfig = true;
-  public static template = "";
+  public static template = "invert-config";
   public static category = "effect";
   public static icon = "<i class='bt-icon invert fa-fw fas'></i>"
 
@@ -25,9 +28,13 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
 
   // #region Public Static Methods (6)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static RenderTemplate(config?: InvertConfiguration): Promise<string> {
-    throw new NotImplementedError();
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${InvertStep.template}.hbs`, {
+      ...InvertStep.DefaultSettings,
+      ...(config ? config : {}),
+      dualStyleSelect: generateDualStyleSelectOptions(),
+      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
+    })
   }
 
   public static from(config: InvertConfiguration): InvertStep
@@ -41,11 +48,15 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
   }
 
   public static fromFormElement(form: HTMLFormElement): InvertStep {
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id");
+    const elem = $(form) as JQuery<HTMLFormElement>;
+
+    const dualStyle = elem.find("#dualStyle").val() as string;
     return new InvertStep({
-      id: foundry.utils.randomID(),
       ...InvertStep.DefaultSettings,
-      ...elem
+      id: foundry.utils.randomID(),
+      ...parseConfigurationFormElements(elem, "id"),
+      applyToOverlay: dualStyle === "overlay" || dualStyle === "both",
+      applyToScene: dualStyle === "scene" || dualStyle === "both"
     })
   }
 
@@ -53,10 +64,31 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
 
   // #region Public Methods (1)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public execute(container: PIXI.Container, sequence: TransitionSequence): void {
-    const filter = new InvertFilter();
-    this.addFilter(container, filter);
+  #sceneFilter: PIXI.Filter | null = null;
+
+  public teardown(): Promise<void> | void {
+    if (this.#sceneFilter) removeFilterFromScene(this.#sceneFilter);
+    this.#sceneFilter = null;
+  }
+
+  public execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): void {
+    const config = {
+      ...InvertStep.DefaultSettings,
+      ...this.config
+    };
+
+    if (config.applyToOverlay) {
+      const filter = new InvertFilter();
+      this.addFilter(container, filter);
+    }
+
+    if (config.applyToScene && canvas?.stage) {
+      const filter = new InvertFilter();
+      addFilterToScene(filter, prepared.prepared);
+      this.#sceneFilter = filter;
+    }
+
+
   }
 
   // #endregion Public Methods (1)

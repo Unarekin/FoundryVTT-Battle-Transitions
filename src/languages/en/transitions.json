@@ -28,10 +28,6 @@
       "DESCRIPTION": "Wipe the screen around the center point in either a clockwise or counterclockwise direction.",
       "NAME": "Clock Wipe"
     },
-    "REPEAT": {
-      "NAME": "Repeat",
-      "DESCRIPTION": "Repeat either the previous step or a specified sequence of steps."
-    },
     "DIAMONDWIPE": {
       "DESCRIPTION": "Break the screen into diamond shapes that shrink over time, starting from the left to the right.",
       "NAME": "Diamond Wipe"
@@ -48,6 +44,14 @@
       "DESCRIPTION": "Flashes the screen a given color or texture.",
       "NAME": "Flash"
     },
+    "HIDEOVERLAY": {
+      "DESCRIPTION": "Sets the transition overlay to invisible, exposing the new scene underneath.",
+      "NAME": "Hide Overlay"
+    },
+    "HUESHIFT": {
+      "DESCRIPTION": "Shift the screen's hue.",
+      "NAME": "Hue Shift"
+    },
     "INVERT": {
       "DESCRIPTION": "Invert the current screen texture/color.",
       "NAME": "Invert"
@@ -56,6 +60,10 @@
       "DESCRIPTION": "A linear wipe from one side of the screen to the other, exposing a given background color along the way.",
       "NAME": "Linear Wipe"
     },
+    "LOADINGTIP": {
+      "DESCRIPTION": "Show text-based loading screen tips.",
+      "NAME": "Loading Tip"
+    },
     "MACRO": {
       "DESCRIPTION": "Execute a macro.  This will execute for each user with their own permissions, so please be sure they have permission at all.",
       "NAME": "Macro"
@@ -63,10 +71,6 @@
     "MELT": {
       "DESCRIPTION": "Melt the screen like you may have seen in a certain demon-killing FPS.",
       "NAME": "Melt"
-    },
-    "HUESHIFT": {
-      "NAME": "Hue Shift",
-      "DESCRIPTION": "Shift the screen's hue."
     },
     "PARALLEL": {
       "DESCRIPTION": "Run multiple sequences of transition effects simultaneously.",
@@ -80,17 +84,21 @@
       "DESCRIPTION": "Circular wipe, starting either from the inside or outside of the screen.",
       "NAME": "Radial Wipe (Shutter)"
     },
-    "REMOVEOVERLAY": {
-      "DESCRIPTION": "Remove the transition overlay, exposing the new scene.",
-      "NAME": "Remove Overlay"
+    "REPEAT": {
+      "DESCRIPTION": "Repeat either the previous step or a specified sequence of steps.",
+      "NAME": "Repeat"
     },
-    "RESTOREOVERLAY": {
-      "DESCRIPTION": "Restore the transition overlay, covering the new scene again.",
-      "NAME": "Restore Overlay"
+    "REVERSE": {
+      "DESCRIPTION": "Play the previous step in reverse, if available.",
+      "NAME": "Reverse"
     },
     "SCENECHANGE": {
       "DESCRIPTION": "Change the active scene.",
       "NAME": "Change Scene"
+    },
+    "SHOWOVERLAY": {
+      "DESCRIPTION": "Set the transition overlay to visible again.",
+      "NAME": "Show Overlay"
     },
     "SOUND": {
       "DESCRIPTION": "Play a sound during the transition.  Unlike most transition steps, this one will NOT wait until the sound is finished to continue to the next.",
@@ -131,6 +139,10 @@
     "WAVEWIPE": {
       "DESCRIPTION": "A wavy bilinear wipe.",
       "NAME": "Wave Wipe"
+    },
+    "ZOOM": {
+      "DESCRIPTION": "Zoom in on some point on the screen.",
+      "NAME": "Zoom"
     },
     "ZOOMBLUR": {
       "DESCRIPTION": "Simultaneously zoom in on and blur the screen.",

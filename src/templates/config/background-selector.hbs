@@ -1,14 +1,43 @@
 <fieldset class="background-selector">
-  <legend>{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.LABEL"}}</legend>
-  <span class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.HINT"}}</span>
+  <legend>{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.LABEL"
+    }}</legend>
+  <span class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.HINT"
+    }}</span>
   <div class="form-group">
     <select name="backgroundType" id="backgroundType">
-      <option value="color">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.COLOR"}}</option>
-      <option value="image">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.IMAGE"}}</option>
+      <option value="color">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.COLOR"
+        }}</option>
+      <option value="image">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.IMAGE"
+        }}</option>
+      <option value="overlay">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.OVERLAY"
+        }}</option>
     </select>
-    <div>
-      <input type="text" data-color-picker="{alphaChannel: true}" value="{{backgroundColor}}" id="backgroundColor" name="backgroundColor">
-      <file-picker id="backgroundImage" name="backgroundImage" type="imagevideo" value="{{backgroundImage}}"></file-picker>
-    </div>
+
+    <section data-background-type="color">
+      <input
+        type="text"
+        data-color-picker="{alphaChannel: true}"
+        value="{{backgroundColor}}"
+        id="backgroundColor"
+        name="backgroundColor"
+      />
+    </section>
+    <section data-background-type="image">
+      <file-picker
+        id="backgroundImage"
+        name="backgroundImage"
+        type="imagevideo"
+        value="{{backgroundImage}}"
+      ></file-picker>
+      <section id="backgroundImagePreview"></section>
+    </section>
+    <section data-background-type="overlay">
+
+    </section>
   </div>
 </fieldset>

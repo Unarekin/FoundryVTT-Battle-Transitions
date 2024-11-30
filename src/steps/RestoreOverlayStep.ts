@@ -1,5 +1,5 @@
 import { NotImplementedError } from '../errors';
-import { TransitionSequence } from '../interfaces';
+import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { RestoreOverlayConfiguration } from './types';
@@ -10,14 +10,15 @@ export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfigurati
   public static readonly template = "";
 
   public static DefaultSettings: RestoreOverlayConfiguration = {
+    id: "",
     type: "restoreoverlay",
     version: "1.1.0"
   };
   public static hidden: boolean = false;
   public static key = "restoreoverlay";
-  public static name = "RESTOREOVERLAY";
+  public static name = "SHOWOVERLAY";
   public static skipConfig = true;
-  public static icon = "<i class='bt-icon restore-overlay fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon show-overlay fa-fw fas'></i>"
   public static category = "technical";
 
   // #endregion Properties (6)
@@ -42,6 +43,7 @@ export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfigurati
   public static fromFormElement(form: HTMLFormElement): RestoreOverlayStep {
     return new RestoreOverlayStep({
       ...RestoreOverlayStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id")
     });
   }
@@ -50,9 +52,8 @@ export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfigurati
 
   // #region Public Methods (1)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public execute(container: PIXI.Container, sequence: TransitionSequence): void {
-    container.alpha = 1;
+  public execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> | void {
+    prepared.overlay.forEach(child => child.alpha = 1);
   }
 
   // #endregion Public Methods (1)

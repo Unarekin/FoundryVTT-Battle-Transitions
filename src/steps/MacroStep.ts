@@ -8,6 +8,7 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
   // #region Properties (5)
 
   public static DefaultSettings: MacroConfiguration = {
+    id: "",
     type: "macro",
     macro: "",
     version: "1.1.0"
@@ -26,8 +27,8 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
 
   public static RenderTemplate(config?: MacroConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${MacroStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...MacroStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       macros: getMacros().sort(sortMacro).map(formatMacro)
     });
@@ -45,7 +46,7 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
   }
 
   public static fromFormElement(form: HTMLFormElement): MacroStep {
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "macro");
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "macro", "label");
     return new MacroStep({
       ...MacroStep.DefaultSettings,
       ...elem

@@ -1,12 +1,14 @@
 import { InvalidSceneError, InvalidTransitionError } from "../errors";
 import { SceneChangeConfiguration, TransitionConfiguration } from "../steps";
-import { getStepClassByKey, localize } from "../utils";
+import { sequenceDuration } from "../transitionUtils";
+import { formatDuration, getStepClassByKey, localize, uploadJSON } from "../utils";
 import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from "./functions";
 
 export class TransitionBuilderV2 {
   static async prompt(scene?: Scene): Promise<TransitionConfiguration[] | null> {
     const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/dialogs/TransitionBuilder.hbs`, {
-      scene: scene?.id,
+      newScene: scene?.id,
+      oldScene: game.scenes?.current?.id ?? "",
       scenes: game.scenes?.contents.map(scene => ({ id: scene.id, name: scene.name })) ?? []
     });
 
@@ -70,6 +72,53 @@ function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQue
     containment: "parent",
     axis: "y"
   });
+
+
+  html.find(`[data-action="import-json"]`).on("click", e => {
+    if ($(e.currentTarget).is(":visible")) {
+      e.preventDefault();
+      void uploadHandler(dialog, html);
+    }
+  });
+
+  html.find("[data-action='clear-steps']").on("click", e => {
+    if ($(e.currentTarget).is(":visible")) {
+      e.preventDefault();
+      void clearButtonhandler(html);
+    }
+  })
+  setClearDisabled(html);
+}
+
+async function clearButtonhandler(html: JQuery<HTMLElement>) {
+  const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
+  if (!confirmed) return;
+  html.find("#transition-step-list").children().remove();
+  await updateTotalDuration(html);
+  setClearDisabled(html);
+}
+
+function setClearDisabled(html: JQuery<HTMLElement>) {
+  const sequence = buildTransitionFromForm(html);
+  if (!sequence.length) html.find("#clear-steps").attr("disabled", "true");
+  else html.find("#clear-steps").removeAttr("disabled");
+}
+
+async function uploadHandler(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>) {
+  try {
+    const current = buildTransitionFromForm(html);
+    if (current.length) {
+      const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
+      if (!confirmation) return;
+    }
+    const sequence = await uploadJSON<TransitionConfiguration[]>();
+    html.find("#transition-step-list").children().remove();
+    for (const step of sequence)
+      await upsertStepButton(dialog, html, step);
+  } catch (err) {
+    ui.notifications?.error((err as Error).message, { console: false });
+    console.error(err);
+  }
 }
 
 async function addStep(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>) {
@@ -81,8 +130,11 @@ async function addStep(dialog: foundry.applications.api.DialogV2, html: JQuery<H
 
   let config: TransitionConfiguration | null = null;
 
+  const oldScene = html.find("#oldScene").val() as string ?? "";
+  const newScene = html.find("#newScene").val() as string ?? "";
+
   if (!step.skipConfig) {
-    config = await editStepDialog(step.DefaultSettings);
+    config = await editStepDialog(step.DefaultSettings, game.scenes?.get(oldScene), game.scenes?.get(newScene));
   } else {
     config = {
       ...step.DefaultSettings,
@@ -95,21 +147,38 @@ async function addStep(dialog: foundry.applications.api.DialogV2, html: JQuery<H
   await upsertStepButton(dialog, html, config);
 }
 
+async function updateTotalDuration(html: JQuery<HTMLElement>) {
+  const sequence = buildTransitionFromForm(html);
+  const totalDuration = await sequenceDuration(sequence);
+  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+}
+
 async function upsertStepButton(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>, config: TransitionConfiguration) {
   const step = getStepClassByKey(config.type);
   if (!step) throw new InvalidTransitionError(config.type);
 
-  const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
-    ...step.DefaultSettings,
-    ...config,
-    name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
-    description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
-    type: step.key,
-    flag: JSON.stringify({
+  const sequence = [...buildTransitionFromForm(html), config];
+  const durationRes = step.getDuration(config, sequence);
+  const duration = (durationRes instanceof Promise) ? (await durationRes) : durationRes;
+
+  const totalDuration = await sequenceDuration(sequence);
+  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+
+  const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`,
+    {
       ...step.DefaultSettings,
-      ...config
-    })
-  });
+      ...config,
+      name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
+      description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
+      type: step.key,
+      calculatedDuration: duration,
+      skipConfig: step.skipConfig,
+      flag: JSON.stringify({
+        ...step.DefaultSettings,
+        ...config
+      })
+    }
+  );
 
   const button = $(buttonContent);
 
@@ -117,6 +186,7 @@ async function upsertStepButton(dialog: foundry.applications.api.DialogV2, html:
   if (extant.length) extant.replaceWith(button);
   else html.find("#transition-step-list").append(button);
 
+  setClearDisabled(html);
   addStepEventListeners(dialog, html, button, config);
 }
 
@@ -129,8 +199,10 @@ function addStepEventListeners(dialog: foundry.applications.api.DialogV2, html: 
       localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) })
     )
       .then(confirm => {
-        if (confirm)
+        if (confirm) {
           button.remove();
+          setClearDisabled(html);
+        }
       }).catch((err: Error) => {
         ui.notifications?.error(err.message, { console: false });
         console.error(err);
@@ -138,7 +210,11 @@ function addStepEventListeners(dialog: foundry.applications.api.DialogV2, html: 
   });
 
   button.find("[data-action='configure']").on("click", () => {
-    editStepDialog(config)
+
+    const oldScene = html.find("#oldScene").val() as string ?? "";
+    const newScene = html.find("#newScene").val() as string ?? "";
+
+    editStepDialog(config, game.scenes?.get(oldScene), game.scenes?.get(newScene))
       .then(newConfig => {
         if (newConfig) return upsertStepButton(dialog, html, newConfig);
       }).catch((err: Error) => {

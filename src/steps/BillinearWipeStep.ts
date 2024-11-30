@@ -1,13 +1,17 @@
 import { BilinearWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, generateBilinearDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { BilinearWipeConfiguration } from "./types";
+import { generateBilinearDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
 
 export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> {
-  // #region Properties (5)
+  // #region Properties (9)
+
+  #filter: BilinearWipeFilter | null = null;
 
   public static DefaultSettings: BilinearWipeConfiguration = {
+    id: "",
     type: "bilinearwipe",
     duration: 1000,
     easing: "none",
@@ -20,20 +24,22 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = `<i class="fas fa-fw fa-arrows-left-right-to-line"></i>`
   public static key = "bilinearwipe";
   public static name = "BILINEARWIPE";
+  public static reversible: boolean = true;
   public static template = "bilinearwipe-config";
-  public static category = "wipe";
-  public static icon = `<i class="fas fa-fw fa-arrows-left-right-to-line"></i>`
-  // #endregion Properties (5)
 
-  // #region Public Static Methods (6)
+  // #endregion Properties (9)
+
+  // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: BilinearWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${BilinearWipeStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...BilinearWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       directionSelect: generateBilinearDirectionSelectOptions(),
@@ -53,7 +59,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
 
   public static fromFormElement(form: HTMLFormElement): BilinearWipeStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements<BilinearWipeConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "radial", "easing", "backgroundType", "backgroundColor")
+    const elem = parseConfigurationFormElements<BilinearWipeConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "radial", "easing", "backgroundType", "backgroundColor", "label")
     return new BilinearWipeStep({
       ...BilinearWipeStep.DefaultSettings,
       ...elem,
@@ -61,9 +67,11 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     });
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: BilinearWipeConfiguration): number { return { ...BilinearWipeStep.DefaultSettings, ...config }.duration }
 
-  // #region Public Methods (1)
+  // #endregion Public Static Methods (7)
+
+  // #region Public Methods (2)
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, _sequence: TransitionSequence): Promise<void> {
@@ -73,9 +81,14 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new BilinearWipeFilter(config.direction, config.radial, background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter)
   }
 
-  // #endregion Public Methods (1)
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof BilinearWipeFilter) await this.simpleReverse(this.#filter);
+  }
+
+  // #endregion Public Methods (2)
 }

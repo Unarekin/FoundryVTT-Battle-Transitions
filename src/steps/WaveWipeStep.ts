@@ -1,15 +1,15 @@
 import { WaveWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, generateEasingSelectOptions, generateRadialDirectionSelectOptions, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { WaveWipeConfiguration } from "./types";
+import { generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
 
 export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
-  // #region Properties (5)
-
-  public static template = "wavewipe-config";
+  // #region Properties (7)
 
   public static DefaultSettings: WaveWipeConfiguration = {
+    id: "",
     type: "wavewipe",
     duration: 1000,
     easing: "none",
@@ -21,20 +21,22 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     backgroundColor: "#00000000"
   }
 
+  public static category = "wipe";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon wave-wipe fa-fw fas'></i>"
   public static key = "wavewipe";
   public static name: string = "WAVEWIPE";
-  public static icon = "<i class='bt-icon wave-wipe fa-fw fas'></i>"
-  public static category = "wipe";
+  public static template = "wavewipe-config";
+  public static reversible: boolean = true;
 
-  // #endregion Properties (5)
+  // #endregion Properties (7)
 
-  // #region Public Static Methods (5)
-
+  // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: WaveWipeConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${WaveWipeStep.template}.hbs`, {
       ...WaveWipeStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {}),
       radialSelect: generateRadialDirectionSelectOptions(),
       easingSelect: generateEasingSelectOptions()
@@ -58,14 +60,20 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     return new WaveWipeStep({
       ...WaveWipeStep.DefaultSettings,
       serializedTexture,
-      ...parseConfigurationFormElements(elem, "id", "duration", "backgroundType", "backgroundColor", "easing", "direction")
+      ...parseConfigurationFormElements(elem, "id", "label", "duration", "backgroundType", "backgroundColor", "easing", "direction")
     })
-
   }
 
-  // #endregion Public Static Methods (5)
+  public static getDuration(config: WaveWipeConfiguration): number { return { ...WaveWipeStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
+
+  #filter: WaveWipeFilter | null = null;
+  public async reverse(): Promise<void> {
+    if (this.#filter instanceof WaveWipeFilter) await this.simpleReverse(this.#filter);
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
@@ -75,6 +83,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new WaveWipeFilter(config.direction, background.baseTexture);
+    this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
   }

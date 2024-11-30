@@ -12,6 +12,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
   #videoContainer: PIXI.Container | null = null;
 
   public static DefaultSettings: VideoConfiguration = {
+    id: "",
     type: "video",
     volume: 100,
     clear: false,
@@ -37,8 +38,8 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
 
   public static async RenderTemplate(config?: VideoConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${VideoStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...VideoStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {})
     });
   }
@@ -53,6 +54,12 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
     else return new VideoStep(arg as VideoConfiguration);
   }
 
+  public static addEventListeners(element: HTMLElement | JQuery<HTMLElement>): void {
+    const html = $(element);
+    html.find("#file input").attr("required", "true");
+    html.find("form input").trigger("input");
+  }
+
   public static fromFormElement(form: HTMLFormElement): VideoStep {
     const file = $(form).find("#file").val() as string ?? "";
     const volume = $(form).find("#volume input[type='number']").val() as number;
@@ -62,11 +69,26 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
       ...(file ? { file } : {}),
       ...(volume ? { volume: volume / 100 } : {}),
       serializedTexture: backgroundImage,
-      ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor")
+      ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor", "label")
     })
   }
 
+
   // #endregion Public Static Methods (6)
+
+  public static getDuration(config: VideoConfiguration): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      const vid = document.createElement("video");
+      vid.onloadedmetadata = () => { resolve(Math.round(vid.duration * 1000)); };
+      vid.onerror = (e, src, line, col, err) => {
+        if (err) reject(err);
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        else reject(new Error(e.toString()));
+      };
+
+      vid.src = config.file;
+    });
+  }
 
   // #region Public Methods (3)
 
@@ -100,7 +122,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
       source.currentTime = 0;
 
       this.#videoContainer = videoContainer;
-      container.parent.addChild(videoContainer);
+      container.addChild(videoContainer);
 
       source.addEventListener("ended", () => {
         if (config.clear) setTimeout(() => { sprite.destroy(); }, 500);

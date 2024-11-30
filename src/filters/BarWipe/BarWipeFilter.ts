@@ -1,7 +1,7 @@
 import { coerceTexture } from '../../coercion';
 import { CanvasNotFoundError, InvalidDirectionError } from '../../errors';
 import { TextureLike } from '../../types';
-import { createColorTexture, logTexture } from '../../utils';
+import { createColorTexture } from '../../utils';
 import { TextureWipeFilter } from '../TextureWipe/TextureWipeFilter';
 
 
@@ -62,7 +62,6 @@ export class BarWipeFilter extends TextureWipeFilter {
     if (!(direction === "horizontal" || direction === "vertical")) throw new InvalidDirectionError(direction);
 
     const wipeTexture = (direction === "horizontal") ? createHorizontalTexture(bars) : createVerticalTexture(bars);
-    logTexture(wipeTexture);
     super(wipeTexture, bgTexture);
   }
 }

@@ -1,13 +1,15 @@
 import { SceneChangeConfiguration, TransitionConfiguration } from "../steps";
-import { getStepClassByKey, localize } from "../utils";
+import { formatDuration, getStepClassByKey, localize, uploadJSON } from "../utils";
 import { InvalidSceneError, InvalidTransitionError } from "../errors";
 import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from "./functions";
+import { sequenceDuration } from "../transitionUtils";
 
 export class TransitionBuilderV1 {
   static async prompt(scene?: Scene): Promise<TransitionConfiguration[] | null> {
 
     const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/dialogs/TransitionBuilder.hbs`, {
-      scene: scene?.id,
+      newScene: scene?.id,
+      oldScene: game.scenes?.current?.id ?? "",
       scenes: game.scenes?.contents.map(scene => ({ id: scene.id, name: scene.name })) ?? []
     });
 
@@ -27,7 +29,7 @@ export class TransitionBuilderV1 {
               const elem = $(html);
               const sequence = buildTransitionFromForm(elem);
 
-              const sceneId = scene ? scene.id : elem.find("#scene").val() as string;
+              const sceneId = scene ? scene.id : elem.find("#newScene").val() as string;
               if (!sceneId) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
               const step = getStepClassByKey("scenechange");
               if (!step) throw new InvalidTransitionError("scenechange");
@@ -66,6 +68,52 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
     containment: "parent",
     axis: "y"
   });
+
+  html.find(`[data-action="import-json"]`).on("click", e => {
+    if ($(e.currentTarget).is(":visible")) {
+      e.preventDefault();
+      void uploadHandler(dialog, html);
+    }
+  })
+
+  html.find("[data-action='clear-steps']").on("click", e => {
+    if ($(e.currentTarget).is(":visible")) {
+      e.preventDefault();
+      void clearButtonhandler(html);
+    }
+  })
+  setClearDisabled(html);
+}
+
+async function clearButtonhandler(html: JQuery<HTMLElement>) {
+  const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
+  if (!confirmed) return;
+  html.find("#transition-step-list").children().remove();
+  await updateTotalDuration(html);
+  setClearDisabled(html);
+}
+
+function setClearDisabled(html: JQuery<HTMLElement>) {
+  const sequence = buildTransitionFromForm(html);
+  if (!sequence.length) html.find("#clear-steps").attr("disabled", "true");
+  else html.find("#clear-steps").removeAttr("disabled");
+}
+
+async function uploadHandler(dialog: Dialog, html: JQuery<HTMLElement>) {
+  try {
+    const current = buildTransitionFromForm(html);
+    if (current.length) {
+      const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
+      if (!confirmation) return;
+    }
+    const sequence = await uploadJSON<TransitionConfiguration[]>();
+    html.find("#transition-step-list").children().remove();
+    for (const step of sequence)
+      await upsertStepButton(dialog, html, step);
+  } catch (err) {
+    ui.notifications?.error((err as Error).message, { console: false });
+    console.error(err);
+  }
 }
 
 
@@ -94,9 +142,21 @@ async function addStep(dialog: Dialog, html: JQuery<HTMLElement>) {
 }
 
 
+async function updateTotalDuration(html: JQuery<HTMLElement>) {
+  const sequence = buildTransitionFromForm(html);
+  const totalDuration = await sequenceDuration(sequence);
+  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+}
+
 async function upsertStepButton(dialog: Dialog, html: JQuery<HTMLElement>, config: TransitionConfiguration) {
   const step = getStepClassByKey(config.type);
   if (!step) throw new InvalidTransitionError(config.type);
+
+  const sequence = [...buildTransitionFromForm(html), config];
+  const durationRes = step.getDuration(config, sequence);
+  const duration = (durationRes instanceof Promise) ? (await durationRes) : durationRes;
+
+  await updateTotalDuration(html);
 
   const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
     ...step.DefaultSettings,
@@ -104,6 +164,8 @@ async function upsertStepButton(dialog: Dialog, html: JQuery<HTMLElement>, confi
     name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
     description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
     type: step.key,
+    calculatedDuration: duration,
+    skipConfig: step.skipConfig,
     flag: JSON.stringify({
       ...step.DefaultSettings,
       ...config
@@ -141,7 +203,10 @@ function addStepEventListeners(dialog: Dialog, html: JQuery<HTMLElement>, button
 
   // Configure button
   button.find("[data-action='configure']").on("click", () => {
-    editStepDialog(config)
+    const oldScene = html.find("#oldScene").val() as string ?? "";
+    const newScene = html.find("#newScene").val() as string ?? "";
+
+    editStepDialog(config, game.scenes?.get(oldScene), game.scenes?.get(newScene))
       .then(newConfig => {
         if (newConfig) {
           // Replace button

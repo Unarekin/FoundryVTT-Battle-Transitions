@@ -5,29 +5,30 @@ import { parseConfigurationFormElements } from "../utils";
 const CURRENT_VERSION = "1.1.0";
 
 export class WaitStep extends TransitionStep<WaitConfiguration> {
-  // #region Properties (5)
+  // #region Properties (7)
 
   public static DefaultSettings: WaitConfiguration = {
+    id: "",
     type: "wait",
     duration: 0,
     version: CURRENT_VERSION
   }
 
+  public static category = "technical";
   public static hidden: boolean = false;
+  public static icon = "<i class='bt-icon wait fa-fw fas'></i>"
   public static key = "wait";
   public static name = "WAIT";
   public static template = "wait-config";
-  public static icon = "<i class='bt-icon wait fa-fw fas'></i>"
-  public static category = "technical";
 
-  // #endregion Properties (5)
+  // #endregion Properties (7)
 
-  // #region Public Static Methods (6)
+  // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: WaitConfiguration): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${WaitStep.template}.hbs`, {
-      id: foundry.utils.randomID(),
       ...WaitStep.DefaultSettings,
+      id: foundry.utils.randomID(),
       ...(config ? config : {})
     });
   }
@@ -46,11 +47,13 @@ export class WaitStep extends TransitionStep<WaitConfiguration> {
     const elem = $(form) as JQuery<HTMLFormElement>;
     return new WaitStep({
       ...WaitStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "duration")
+      ...parseConfigurationFormElements(elem, "id", "duration", "label")
     });
   }
 
-  // #endregion Public Static Methods (6)
+  public static getDuration(config: WaitConfiguration): number | Promise<number> { return { ...WaitStep.DefaultSettings, ...config }.duration }
+
+  // #endregion Public Static Methods (7)
 
   // #region Public Methods (1)
 

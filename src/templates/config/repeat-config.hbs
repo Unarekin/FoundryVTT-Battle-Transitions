@@ -1,7 +1,15 @@
 <div class="flexcol step-config-item" data-transition-type="repeat" data-id="{{id}}">
   <form>
     <input type="hidden" id="id" name="id" value="{{id}}">
+    <input type="hidden" name="oldScene" id="oldScene" value="{{oldScene}}" />
+    <input type="hidden" name="newScene" id="newScene" value="{{newScene}}" />
     <p>{{localize "BATTLETRANSITIONS.REPEAT.DESCRIPTION"}}</p>
+
+    <div class="form-group">
+      <label for="label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
+      <input type="text" name="label" id="label" value="{{label}}">
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
 
     <div class="form-group">
       <label for="iterations">{{localize "BATTLETRANSITIONS.SCENECONFIG.REPEAT.ITERATIONS.LABEL"}}</label>

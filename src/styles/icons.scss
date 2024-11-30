@@ -159,12 +159,12 @@ button .bt-icon {
     @include mask-icon("../assets/icons/radial-wipe.svg");
   }
 
-  &.remove-overlay {
-    @include mask-icon("../assets/icons/remove-overlay.svg");
+  &.hide-overlay {
+    @include mask-icon("../assets/icons/hide-overlay.svg");
   }
 
-  &.restore-overlay {
-    @include mask-icon("../assets/icons/restore-overlay.svg");
+  &.show-overlay {
+    @include mask-icon("../assets/icons/show-overlay.svg");
   }
 
   &.scene-change {

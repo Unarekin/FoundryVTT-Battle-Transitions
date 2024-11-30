@@ -27,10 +27,6 @@
     margin-bottom: 5px;
   }
 
-  .link {
-    cursor: pointer;
-  }
-
   .ui-sortable-helper {
     background-image: url("/ui/parchment.jpg");
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
@@ -132,10 +128,6 @@ button[data-transition] {
 .step-button {
   padding-bottom: 5px;
   margin-left: 3px;
-
-  &.link {
-    cursor: pointer;
-  }
 }
 
 .ui-sortable-helper {
@@ -151,4 +143,19 @@ button[data-transition] {
 .drag-handle {
   margin-right: 2px;
   cursor: grab;
+}
+
+.right-align {
+  text-align: right;
+}
+#backgroundImagePreview {
+  text-align: center;
+}
+
+.bg-image-preview {
+  width: 256px;
+}
+
+.link {
+  cursor: pointer;
 }

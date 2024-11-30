@@ -5,6 +5,20 @@
 >
   <form>
     <input type="hidden" name="id" id="id" value="{{id}}" />
+    <input type="hidden" name="oldScene" id="oldScene" value="{{oldScene}}" />
+    <input type="hidden" name="newScene" id="newScene" value="{{newScene}}" />
+    <p class="notes">{{localize "BATTLETRANSITIONS.PARALLEL.DESCRIPTION"}}</p>
+
+    <div class="form-group">
+      <label for="label">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"
+        }}</label>
+      <input type="text" name="label" id="label" value="{{label}}" />
+    </div>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"
+      }}</p>
+
     <table class="no-margins">
       <tr>
         <td id="sequence-list">
@@ -19,6 +33,7 @@
           <div id="selected-sequence-steps" class="flex1">
 
           </div>
+          <div class="right-align" id="total-duration"></div>
           <div class="flex0">
             <button data-action="add-step" id="add-step" name="add-step"><i
                 class="fas fa-plus"

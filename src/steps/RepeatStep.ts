@@ -1,8 +1,9 @@
 import { BattleTransition } from "../BattleTransition";
-import { addStepDialog, editStepDialog, confirm } from "../dialogs";
-import { InvalidTransitionError } from "../errors";
-import { TransitionSequence } from "../interfaces";
-import { getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
+import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from "../dialogs";
+import { InvalidTransitionError, NoPreviousStepError } from "../errors";
+import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
+import { sequenceDuration } from "../transitionUtils";
+import { formatDuration, getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { RepeatConfiguration, TransitionConfiguration, WaitConfiguration } from './types';
 import { WaitStep } from "./WaitStep";
@@ -30,16 +31,25 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
   public static name = "REPEAT";
   public static template = "repeat-config";
 
+  public get preparedSequence() { return this.#preparedSequence; }
+
+  public async teardown(container: PIXI.Container): Promise<void> {
+    for (const step of this.#preparedSequence) {
+      await step.teardown(container);
+    }
+  }
+
   // #endregion Properties (8)
 
   // #region Public Static Methods (7)
 
-  public static RenderTemplate(config?: RepeatConfiguration): Promise<string> {
+  public static RenderTemplate(config?: RepeatConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${RepeatStep.template}.hbs`, {
       ...RepeatStep.DefaultSettings,
       id: foundry.utils.randomID(),
-
       ...(config ? config : {}),
+      oldScene: oldScene?.id ?? "",
+      newScene: newScene?.id ?? "",
       styleSelect: {
         sequence: "BATTLETRANSITIONS.SCENECONFIG.REPEAT.SEQUENCE.LABEL",
         previous: "BATTLETRANSITIONS.SCENECONFIG.REPEAT.PREVIOUS.LABEL"
@@ -59,8 +69,20 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
     html.find("[data-action='add-step']").on("click", e => {
       e.preventDefault();
       void addStep(html);
+    });
+
+
+    html.find("[data-action='clear-steps']").on("click", e => {
+      if ($(e.currentTarget).is(":visible")) {
+        e.preventDefault();
+        void clearButtonhandler(html);
+      }
     })
+    setClearDisabled(html);
   }
+
+
+
 
   public static from(config: RepeatConfiguration): RepeatStep
   public static from(form: JQuery<HTMLFormElement>): RepeatStep
@@ -78,7 +100,7 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
     const sequence = buildTransition(elem);
     return new RepeatStep({
       ...RepeatStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "iterations", "style", "delay"),
+      ...parseConfigurationFormElements(elem, "id", "iterations", "style", "delay", "label"),
       id: foundry.utils.randomID(),
       sequence
     })
@@ -86,11 +108,31 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
 
   // #endregion Public Static Methods (7)
 
+  public static async getDuration(config: RepeatConfiguration, sequence: TransitionConfiguration[]): Promise<number> {
+    if (config.style === "previous") {
+      const index = sequence.findIndex(item => item.id === config.id);
+      if (index === -1) throw new InvalidTransitionError(RepeatStep.key);
+      else if (index === 0) throw new NoPreviousStepError();
+
+      const prev = sequence[index - 1];
+      const step = getStepClassByKey(prev.type);
+      if (!step) throw new InvalidTransitionError(typeof prev.type === "string" ? prev.type : typeof prev.type);
+      const res = step.getDuration(prev, sequence);
+      const duration = res instanceof Promise ? await res : res;
+      return ((duration + config.delay) * (config.iterations - 1)) + config.delay;
+
+    } else {
+      const duration = await sequenceDuration(config.sequence ?? []);
+      return duration + (config.delay * config.iterations);
+    }
+  }
+
+
   // #region Public Methods (2)
 
-  public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
+  public async execute(container: PIXI.Container, sequence: TransitionSequence, prepared: PreparedTransitionHash): Promise<void> {
     for (const step of this.#preparedSequence) {
-      const res = step.execute(container, sequence);
+      const res = step.execute(container, sequence, prepared);
       if (res instanceof Promise) await res;
     }
   }
@@ -150,7 +192,10 @@ async function addStep(html: JQuery<HTMLElement>) {
   const step = getStepClassByKey(key);
   if (!step) throw new InvalidTransitionError(key);
 
-  const config = step.skipConfig ? step.DefaultSettings : await editStepDialog(step.DefaultSettings);
+  const oldScene = html.find("#oldScene").val() as string ?? "";
+  const newScene = html.find("#newScene").val() as string ?? "";
+
+  const config = step.skipConfig ? { ...step.DefaultSettings, id: foundry.utils.randomID() } : await editStepDialog(step.DefaultSettings, game.scenes?.get(oldScene), game.scenes?.get(newScene));
   if (!config) return;
 
   void upsertStepButton(html, config);
@@ -215,11 +260,19 @@ async function upsertStepButton(html: JQuery<HTMLElement>, config: TransitionCon
   const step = getStepClassByKey(config.type);
   if (!step) throw new InvalidTransitionError(config.type);
 
+  const outerSequence = [...buildTransitionFromForm(html), config];
+  const durationRes = step.getDuration(config, outerSequence);
+  const calculatedDuration = (durationRes instanceof Promise) ? (await durationRes) : durationRes;
+
+  const totalDuration = await sequenceDuration(outerSequence);
+  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+
   const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
     ...step.DefaultSettings,
     ...config,
     name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
     description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
+    calculatedDuration,
     type: step.key,
     flag: JSON.stringify({
       ...step.DefaultSettings,
@@ -240,6 +293,27 @@ async function upsertStepButton(html: JQuery<HTMLElement>, config: TransitionCon
 
   const sequence = buildTransition(html);
   html.find(`#sequence-list [data-index="${index}"]`).attr("data-sequence", JSON.stringify(sequence));
+  setClearDisabled(html);
 }
 
 // #endregion Functions (5)
+
+async function clearButtonhandler(html: JQuery<HTMLElement>) {
+  const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
+  if (!confirmed) return;
+  html.find("#transition-step-list").children().remove();
+  await updateTotalDuration(html);
+  setClearDisabled(html);
+}
+
+function setClearDisabled(html: JQuery<HTMLElement>) {
+  const sequence = buildTransitionFromForm(html);
+  if (!sequence.length) html.find("#clear-steps").attr("disabled", "true");
+  else html.find("#clear-steps").removeAttr("disabled");
+}
+
+async function updateTotalDuration(html: JQuery<HTMLElement>) {
+  const sequence = buildTransitionFromForm(html);
+  const totalDuration = await sequenceDuration(sequence);
+  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+}
