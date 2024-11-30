@@ -1,6 +1,5 @@
 import { RadialWipeFilter } from "../filters";
-import { Easing } from "../types";
-import { createColorTexture, getTargetType, log, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, getTargetType, parseConfigurationFormElements } from "../utils";
 import { generateEasingSelectOptions, generateRadialDirectionSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { RadialWipeConfiguration, SceneChangeConfiguration, TransitionConfiguration } from "./types";
@@ -8,15 +7,10 @@ import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTa
 import { InvalidSceneError, InvalidTargetError } from "../errors";
 
 export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
-  // #region Properties (11)
+  // #region Properties (10)
 
   #filter: RadialWipeFilter | null = null;
   #screenLocation: [number, number] = [0.5, 0.5];
-
-  public readonly defaultSettings: Partial<RadialWipeConfiguration> = {
-    duration: 1000,
-    easing: "none" as Easing
-  }
 
   public static DefaultSettings: RadialWipeConfiguration = {
     id: "",
@@ -40,7 +34,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   public static reversible: boolean = true;
   public static template = "radialwipe-config";
 
-  // #endregion Properties (11)
+  // #endregion Properties (10)
 
   // #region Public Static Methods (10)
 
@@ -57,8 +51,8 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
       easingSelect: generateEasingSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),
       targetType,
-      oldScene,
-      newScene,
+      oldScene: oldScene?.id ?? "",
+      newScene: newScene?.id ?? "",
       selectedTarget: config ? config.target : "",
       ...generateTargetTypeSelectOptions(oldScene, newScene),
       pointX: Array.isArray(config?.target) ? config.target[0] : 0.5,
@@ -141,7 +135,6 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
       if (parsed.primaryId === canvas?.scene?.id) this.#screenLocation = normalizePosition(obj);
     }
 
-    log("Target:", this.#screenLocation)
     const background = config.deserializedTexture ?? createColorTexture("transparent");
     const filter = new RadialWipeFilter(config.radial, this.#screenLocation[0], this.#screenLocation[1], background.baseTexture);
     this.addFilter(container, filter);
@@ -166,16 +159,6 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     }
   }
 
-  // public async prepare(): Promise<void> {
-  //   const config: RadialWipeConfiguration = {
-  //     ...RadialWipeStep.DefaultSettings,
-  //     ...this.config
-  //   };
-
-  //   if (Array.isArray(config.target)) this.#screenLocation = config.target;
-  //   else if (typeof config.target === "string") this.#screenLocation = normalizeLocation(await fromUuid(config.target));
-  //   else this.#screenLocation = normalizeLocation(config.target);
-  // }
   public async reverse(): Promise<void> {
     if (this.#filter instanceof RadialWipeFilter) await this.simpleReverse(this.#filter);
   }

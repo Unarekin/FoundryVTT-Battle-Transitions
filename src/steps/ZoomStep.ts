@@ -1,11 +1,12 @@
 import { ZoomFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
-import { createColorTexture, getTargetType, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, getTargetType, log, parseConfigurationFormElements } from "../utils";
 import { generateDualStyleSelectOptions, generateEasingSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
-import { ZoomConfiguration } from "./types";
-import { getTargetFromForm, onTargetSelectDialogClosed, setTargetSelectEventListeners } from "./targetSelectFunctions";
+import { SceneChangeConfiguration, TransitionConfiguration, ZoomConfiguration } from "./types";
+import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTargetSelectEventListeners, validateTarget } from "./targetSelectFunctions";
+import { InvalidSceneError, InvalidTargetError } from "../errors";
 
 // #region Classes (1)
 
@@ -49,7 +50,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     const targetType = getTargetType({
       ...ZoomStep.DefaultSettings,
       ...(config ? config : {})
-    });
+    }, oldScene, newScene);
 
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ZoomStep.template}.hbs`, {
       ...ZoomStep.DefaultSettings,
@@ -112,22 +113,30 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
 
   public static getDuration(config: ZoomConfiguration): number { return { ...ZoomStep.DefaultSettings, ...config }.duration }
 
-  // public static async validate(config: ZoomConfiguration): Promise<ZoomConfiguration | Error> {
-  //   try {
-  //     const target = await validateTarget({
-  //       ...ZoomStep.DefaultSettings,
-  //       ...config
-  //     });
-  //     if (target instanceof Error) throw target;
+  public static async validate(config: ZoomConfiguration, sequence: TransitionConfiguration[]): Promise<ZoomConfiguration | Error> {
+    try {
+      const newSceneId = sequence.reduce((prev, curr) => curr.type === "scenechange" ? (curr as SceneChangeConfiguration).scene : prev, null as string | null);
+      if (!newSceneId) throw new InvalidSceneError(typeof newSceneId === "string" ? newSceneId : typeof newSceneId);
+      const newScene = game.scenes?.get(newSceneId);
+      if (!newScene) throw new InvalidSceneError(typeof newSceneId === "string" ? newSceneId : typeof newSceneId);
 
-  //     return {
-  //       ...config,
-  //       target
-  //     };
-  //   } catch (err) {
-  //     return err as Error;
-  //   }
-  // }
+      const target = await validateTarget({
+        ...ZoomStep.DefaultSettings,
+        ...config
+      },
+        canvas?.scene as Scene,
+        newScene
+      );
+      return {
+        ...ZoomStep.DefaultSettings,
+        ...config,
+        target
+      }
+
+    } catch (err) {
+      return err as Error;
+    }
+  }
 
   // #endregion Public Static Methods (10)
 
@@ -138,6 +147,15 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       ...ZoomStep.DefaultSettings,
       ...this.config
     };
+
+    // Check for our target in the current (new) scene
+    if (!Array.isArray(config.target)) {
+      const obj = await fromUuid(config.target);
+      if (!obj) throw new InvalidTargetError(config.target);
+      const parsed = foundry.utils.parseUuid(config.target);
+      if (parsed?.primaryType !== "Scene") throw new InvalidTargetError(config.target);
+      if (parsed.primaryId === canvas?.scene?.id) this.#screenLocation = normalizePosition(obj);
+    }
 
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const filters: PIXI.Filter[] = [];
@@ -162,20 +180,23 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     }
   }
 
-  // public async prepare(): Promise<void> {
-  //   // Cache actual screen space location to which to zoom
-  //   const config: ZoomConfiguration = {
-  //     ...ZoomStep.DefaultSettings,
-  //     ...this.config
-  //   };
+  public async prepare(): Promise<void> {
+    const config: ZoomConfiguration = {
+      ...ZoomStep.DefaultSettings,
+      ...this.config
+    };
 
-  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  //   const target = config.target as any;
-
-  //   if (Array.isArray(target)) this.#screenLocation = target as [number, number];
-  //   else if (typeof target === "string") this.#screenLocation = normalizeLocation(await fromUuid(target));
-  //   else this.#screenLocation = normalizeLocation(target);
-  // }
+    if (Array.isArray(config.target)) {
+      this.#screenLocation = config.target;
+    } else {
+      // Check if the target is in our current (old) scene.
+      const obj = await fromUuid(config.target);
+      if (!obj) throw new InvalidTargetError(config.target);
+      const parsed = foundry.utils.parseUuid(config.target);
+      if (parsed?.primaryType !== "Scene") throw new InvalidTargetError(config.target);
+      if (parsed.primaryId === canvas?.scene?.id) this.#screenLocation = normalizePosition(obj);
+    }
+  }
 
   public async reverse(): Promise<void> {
     const config: ZoomConfiguration = {
