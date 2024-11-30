@@ -1,7 +1,7 @@
 import { ZoomFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
-import { createColorTexture, getTargetType, log, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, getTargetType, parseConfigurationFormElements } from "../utils";
 import { generateDualStyleSelectOptions, generateEasingSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { SceneChangeConfiguration, TransitionConfiguration, ZoomConfiguration } from "./types";
