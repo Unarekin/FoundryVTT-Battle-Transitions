@@ -27,6 +27,8 @@ function v10X(old: V10Config): TextureSwapConfiguration {
     bgSizingMode: "stretch",
     backgroundImage: old.texture && !(isColor(old.texture)) ? old.texture : "",
     backgroundColor: old.texture && !(isColor(old.texture)) ? "" : old.texture,
-    backgroundType: old.texture && !isColor(old.texture) ? "image" : "color"
+    backgroundType: old.texture && !isColor(old.texture) ? "image" : "color",
+    applyToOverlay: true,
+    applyToScene: false
   }
 }
