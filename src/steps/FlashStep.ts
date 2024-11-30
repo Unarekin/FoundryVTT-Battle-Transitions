@@ -2,6 +2,7 @@ import { TextureSwapFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
 import { createColorTexture, parseConfigurationFormElements, wait } from '../utils';
+import { generateDualStyleSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { FlashConfiguration } from "./types";
 
@@ -36,7 +37,9 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${FlashStep.template}.hbs`, {
       ...FlashStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      ...(config ? config : {})
+      ...(config ? config : {}),
+      dualStyleSelect: generateDualStyleSelectOptions(),
+      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
     })
   }
 
