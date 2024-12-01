@@ -34,7 +34,7 @@ For a list of provided effects, please see the [examples wiki page](https://gith
 ## How does this Work?
 Short version: Smoke and Mirrors.
 
-Longer version that actually explains anything:  When triggering a transition, either via command line / macro, the scene navigation context menu, or automatically on scene activation, Battle Transitions first renders a copy of the current scene and creates an overlay placed on top of Foundry's normal canvas.  THe module then activates the next scene, and applies a series of PIXI filters on the overlay image to allow for effects that reveal the new scene in some interesting way.  These effects generally use GLSL shaders, which allows for a great deal of freedom when designing them.
+Longer version that actually explains anything:  When triggering a transition, either via command line / macro, the scene navigation context menu, or automatically on scene activation, Battle Transitions first renders a copy of the current scene and creates an overlay placed on top of Foundry's normal canvas.  The module then activates the next scene, and applies a series of PIXI filters on the overlay image to allow for effects that reveal the new scene in some interesting way.  These effects generally use GLSL shaders, which allows for a great deal of freedom when designing them.
 
 ## What About [Some Effect Here]?
 I do have a short list of effects from some classic JRPG titles (mostly Final Fantasy, honestly) that I'm looking at incorporating, but am very open to implementing requests from the module's users.
