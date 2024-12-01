@@ -6,7 +6,7 @@ import { TextureWipeFilter } from '../TextureWipe/TextureWipeFilter';
 
 
 //#region Texture Generation
-function horizontalInside(): PIXI.Texture {
+function verticalInside(): PIXI.Texture {
   return createGradientTexture(window.innerWidth, 1, 0, 0, window.innerWidth, 0, [
     { point: 0, color: "white" },
     { point: .5, color: "black" },
@@ -14,7 +14,7 @@ function horizontalInside(): PIXI.Texture {
   ])
 }
 
-function horizontalOutside(): PIXI.Texture {
+function verticalOutside(): PIXI.Texture {
   return createGradientTexture(window.innerWidth, 1, 0, 0, window.innerWidth, 0, [
     { point: 0, color: "black" },
     { point: .5, color: "white" },
@@ -84,7 +84,7 @@ function topRightOutside(): PIXI.Texture {
   )
 }
 
-function verticalInside(): PIXI.Texture {
+function horizontalInside(): PIXI.Texture {
   return createGradientTexture(
     1, window.innerHeight,
     0, 0,
@@ -97,7 +97,7 @@ function verticalInside(): PIXI.Texture {
   )
 }
 
-function verticalOutside(): PIXI.Texture {
+function horizontalOutside(): PIXI.Texture {
   return createGradientTexture(
     1, window.innerHeight,
     0, 0,
