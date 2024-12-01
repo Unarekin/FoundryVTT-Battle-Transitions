@@ -287,6 +287,7 @@ export class BattleTransition {
       type: "angularwipe",
       duration,
       serializedTexture,
+      backgroundType: backgroundType(background),
       easing
     } as AngularWipeConfiguration);
 
@@ -332,6 +333,7 @@ export class BattleTransition {
     this.#sequence.push({
       type: "bilinearwipe",
       serializedTexture,
+      backgroundType: backgroundType(background),
       duration,
       direction,
       radial,
@@ -403,6 +405,7 @@ export class BattleTransition {
       duration,
       clockDirection: clockDirection,
       direction,
+      backgroundType: backgroundType(background),
       easing
     } as ClockWipeConfiguration)
 
@@ -424,6 +427,7 @@ export class BattleTransition {
       type: "diamondwipe",
       serializedTexture,
       size,
+      backgroundType: backgroundType(background),
       duration,
       easing
     } as DiamondWipeConfiguration)
@@ -452,6 +456,7 @@ export class BattleTransition {
     this.#sequence.push({
       type: "fade",
       serializedTexture,
+      backgroundType: backgroundType(background),
       duration,
       easing
     } as FadeConfiguration)
@@ -614,6 +619,7 @@ export class BattleTransition {
       type: "melt",
       serializedTexture,
       duration,
+      backgroundType: backgroundType(background),
       easing
     } as MeltConfiguration)
 
@@ -938,6 +944,7 @@ export class BattleTransition {
       direction,
       radial,
       duration,
+      backgroundType: backgroundType(background),
       serializedTexture,
       easing
     } as SpotlightWipeConfiguration)
@@ -954,7 +961,8 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(texture);
     this.#sequence.push({
       type: "textureswap",
-      serializedTexture
+      serializedTexture,
+      backgroundType: backgroundType(texture),
     } as TextureSwapConfiguration);
 
     return this;
@@ -1019,6 +1027,7 @@ export class BattleTransition {
       serializedTexture,
       direction,
       duration,
+      backgroundType: backgroundType(background),
       easing
     } as WaveWipeConfiguration)
 
@@ -1043,7 +1052,7 @@ export class BattleTransition {
    * @param {Easing} [easing="none"] - {@link Easing} to use when animating the transition.
    * @returns 
    */
-  public zoom(amount: number, duration: number = 1000, arg: ZoomArg = [0.5, 0.5], clampBounds: boolean = false, bg: TextureLike = "transparent", easing: Easing = "none"): this {
+  public zoom(amount: number, duration: number = 1000, arg: ZoomArg = [0.5, 0.5], clampBounds: boolean = false, bg: TextureLike = "transparent", easing: Easing = "none", background: TextureLike = "transparent"): this {
     const step = getStepClassByKey("zoom");
     if (!step) throw new InvalidTransitionError("zoom");
 
@@ -1054,6 +1063,7 @@ export class BattleTransition {
       duration,
       clampBounds,
       serializedTexture,
+      backgroundType: backgroundType(background),
       easing
     };
 
