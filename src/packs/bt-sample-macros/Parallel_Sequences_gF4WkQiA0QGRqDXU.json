@@ -3,7 +3,7 @@
   "type": "script",
   "_id": "gF4WkQiA0QGRqDXU",
   "author": "EWXMWWsbLjRVVnzu",
-  "img": "icons/svg/dice-target.svg",
+  "img": "modules/battle-transitions/assets/icons/parallel.svg",
   "scope": "global",
   "command": "const scene = await BattleTransition.SelectScene();\nif (!scene) return;\n\nnew BattleTransition(scene)\n  .parallel(\n    (sequence) => sequence.linearWipe(\"left\", 1000, \"black\"),\n    (sequence) => sequence.linearWipe(\"right\", 1000, \"black\"),\n    (sequence) => sequence.linearWipe(\"top\", 1000, \"black\"),\n    (sequence) => sequence.linearWipe(\"bottom\", 1000, \"black\")\n  )\n  .diamondWipe(40)\n  .execute();",
   "folder": null,
