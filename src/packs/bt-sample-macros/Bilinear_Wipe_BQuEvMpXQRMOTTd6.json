@@ -3,7 +3,7 @@
   "type": "script",
   "_id": "BQuEvMpXQRMOTTd6",
   "author": "EWXMWWsbLjRVVnzu",
-  "img": "modules/battle-transitions/assets/wipes/bilinear-vertical-inside.webp",
+  "img": "modules/battle-transitions/assets/icons/bilinear-wipe.svg",
   "scope": "global",
   "command": "const scene = await BattleTransition.SelectScene();\nif (!scene) return;\n\nnew BattleTransition(scene).bilinearWipe(\"vertical\", \"inside\").execute()",
   "folder": null,

@@ -37,12 +37,7 @@ export async function createSnapshot() {
   const renderer = canvas.app.renderer;
 
   const rt = PIXI.RenderTexture.create({ width: sceneWidth, height: sceneHeight });
-  // const bgTexture = createColorTexture(renderer.background.backgroundColor.toHex());
-  // const bgSprite = new PIXI.Sprite(bgTexture);
-  // bgSprite.width = sceneWidth;
-  // bgSprite.height = sceneHeight;
-  // renderer.render(bgSprite, { renderTexture: rt, skipUpdateTransform: true, clear: false })
-  renderer.render(canvas.stage, { renderTexture: rt, skipUpdateTransform: true, clear: true });
+  renderer.render(canvas.stage, { renderTexture: rt, skipUpdateTransform: true, clear: false });
 
   const transitionCover = document.getElementById(COVER_ID) as HTMLImageElement | null;
   if (!transitionCover) throw new NoCoverElementError();
@@ -63,12 +58,17 @@ export async function createSnapshot() {
 
   const src = tempCanvas.toDataURL();
 
+  const renderTexture = PIXI.RenderTexture.create({ width: window.innerWidth, height: window.innerHeight });
+  const finalTexture = PIXI.Texture.from(tempCanvas);
+  const bgSprite = PIXI.Sprite.from(finalTexture);
+  renderer.render(bgSprite, { renderTexture, skipUpdateTransform: true, clear: false });
+
   // const img = renderer.extract.canvas(rt) as HTMLCanvasElement;
   transitionCover.style.backgroundImage = `url(${src})`;
   transitionCover.style.backgroundColor = renderer.background.backgroundColor.toHex()
   transitionCover.style.display = "block";
 
-  const sprite = new PIXI.Sprite(rt);
+  const sprite = new PIXI.Sprite(renderTexture);
   return sprite;
 }
 

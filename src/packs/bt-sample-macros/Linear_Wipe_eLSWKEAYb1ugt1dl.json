@@ -3,7 +3,7 @@
   "type": "script",
   "_id": "eLSWKEAYb1ugt1dl",
   "author": "EWXMWWsbLjRVVnzu",
-  "img": "modules/battle-transitions/assets/wipes/linear-left.webp",
+  "img": "modules/battle-transitions/assets/icons/linear-wipe.svg",
   "scope": "global",
   "command": "/*\nThis macro will demonstrate a simple linear wipe.\n*/\n\nconst scene = await BattleTransition.SelectScene();\nif (!scene) return;\n\nnew BattleTransition(scene).linearWipe(\"left\").execute();",
   "folder": null,
