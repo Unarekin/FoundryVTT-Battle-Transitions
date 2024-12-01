@@ -237,7 +237,8 @@ export function logImage(url: string, width: number = 256, height: number = 256)
       // `padding: ${this.height / 100 * size}px ${this.width / 100 * size}px`,
       `background: url(${url}) no-repeat`,
       `background-size:contain`,
-      `border:1px solid black`
+      `border:1px solid black`,
+      `max-width: 512px`
     ].join(";")
     console.log('%c ', style);
   }
@@ -245,10 +246,15 @@ export function logImage(url: string, width: number = 256, height: number = 256)
   image.src = url;
 }
 
-export function logTexture(texture: PIXI.Texture, width: number = 256, height: number = 256) {
+export function logTexture(texture: PIXI.Texture) {
   const renderTexture = PIXI.RenderTexture.create({ width: texture.width, height: texture.height });
   const sprite = PIXI.Sprite.from(texture);
   canvas?.app?.renderer.render(sprite, { renderTexture });
+
+  const ratio = 512 / Math.max(texture.width, texture.height);
+  const width = texture.width > texture.height ? 512 : texture.width * ratio;
+  const height = texture.height > texture.width ? 512 : texture.height * ratio;
+
   canvas?.app?.renderer.extract.base64(renderTexture)
     .then(base64 => {
       logImage(base64, width, height);
