@@ -4,7 +4,7 @@ import { Easing } from "../../types";
 
 export class FireDissolveMigrator extends Migrator<FireDissolveConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => FireDissolveConfiguration; } = {
-    "~1.1.0": v10XMigration
+    "~1.0": v10XMigration
   };
   public NewestVersion: string = "1.1.0";
 
