@@ -40,7 +40,7 @@ jobs:
           DOWNLOAD: ${{ env.release_module_url }}
 
       - name: Create Module Archive
-        working-directory: ./dist
+        working-directory: dist
         run: |
           # Note that `zip` will only emit warnings when a file or directory
           # doesn't exist, it will not fail.
