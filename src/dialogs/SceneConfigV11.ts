@@ -3,7 +3,7 @@ import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
-import { downloadJSON, formatDuration, getStepClassByKey, importSequence, localize } from "../utils";
+import { downloadJSON, formatDuration, getStepClassByKey, importSequence, localize, log } from "../utils";
 import { addStepDialog, buildTransitionFromForm, confirm, editStepDialog } from "./functions";
 
 // #region Classes (1)
@@ -18,6 +18,12 @@ export class SceneConfigV11 extends SceneConfig {
 
     const navContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-config.hbs`, config);
     html.find(`button[type="submit"]`).before(`<div class="tab" data-tab="battle-transitions">${navContent}</div>`);
+
+    // Insert sequence steps
+    for (const step of config.sequence) {
+      await upsertStepButton(app, html, step);
+    }
+
     addEventListeners(app, html);
   }
 
@@ -183,6 +189,7 @@ async function uploadHandler(app: SceneConfig, html: JQuery<HTMLElement>) {
 }
 
 async function upsertStepButton(app: SceneConfig, html: JQuery<HTMLElement>, config: TransitionConfiguration) {
+  log("Upsert:", app, html, config);
   const step = getStepClassByKey(config.type);
   if (!step) throw new InvalidTransitionError(config.type);
 
