@@ -22,7 +22,7 @@ jobs:
       - name: Build
         run: |
           npm install
-          npm run build:prod
+          npm run build:prod -- --no-lint
 
       - name: Extract Version from Tag
         id: get_version

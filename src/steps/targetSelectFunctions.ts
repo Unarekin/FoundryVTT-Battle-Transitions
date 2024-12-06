@@ -181,7 +181,7 @@ function selectNewToken(html: JQuery<HTMLElement>) {
   const hook = Hooks.on("controlToken", (token: Token, controlled: boolean) => {
     if (controlled) {
       clearSelectMode(html);
-      html.find("#selectedNewToken").val(token.document.uuid);
+      html.find("#selectedNewToken").val(token.document?.uuid ?? "");
     }
   });
   html.find("[data-select-hook]").data("select-hook", hook);
