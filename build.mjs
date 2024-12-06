@@ -38,7 +38,8 @@ let spinner = null;
 
 if (!process.argv.slice(2).includes("--no-lint")) {
   const lintStart = Date.now();
-  if (!process.env.GITHUB_ACTIONS) spinner = yoctoSpinner({ text: "Linting..." }).start();
+  if (!process.env.GITHUB_ACTIONS)
+    spinner = yoctoSpinner({ text: "Linting..." }).start();
   else console.log("Linting...");
 
   const linter = new ESLint({
@@ -58,13 +59,20 @@ if (!process.argv.slice(2).includes("--no-lint")) {
     console.log(formatter.format(lintResults));
     process.exit();
   } else {
-    if (spinner) spinner.success(`Linting passed in ${((Date.now() - start) / 1000).toFixed(2)}s`);
-    else console.log(`Linting passed in ${((Date.now() - start) / 1000).toFixed(2)}s`);
+    if (spinner)
+      spinner.success(
+        `Linting passed in ${((Date.now() - start) / 1000).toFixed(2)}s`
+      );
+    else
+      console.log(
+        `Linting passed in ${((Date.now() - start) / 1000).toFixed(2)}s`
+      );
   }
 }
 
 const buildStart = Date.now();
-if (!process.env.GITHUB_ACTIONS) spinner = yoctoSpinner({ text: "Building..." }).start();
+if (!process.env.GITHUB_ACTIONS)
+  spinner = yoctoSpinner({ text: "Building..." }).start();
 else console.log("Building...");
 const jsonMergers = (
   await fs.readdir(LANG_PATH, { withFileTypes: true })
@@ -159,13 +167,21 @@ if (buildResults.errors.length) {
   if (spinner) spinner.error("Build failed!");
   else console.error("Build failed!");
   console.error(buildResults.errors);
+  process.exit(1);
 } else {
-  if (spinner) spinner.success(`Build completed in ${((Date.now() - buildStart) / 1000).toFixed(2)}s`);
-  else console.log(`Build completed in ${((Date.now() - buildStart) / 1000).toFixed(2)}s`);
+  if (spinner)
+    spinner.success(
+      `Build completed in ${((Date.now() - buildStart) / 1000).toFixed(2)}s`
+    );
+  else
+    console.log(
+      `Build completed in ${((Date.now() - buildStart) / 1000).toFixed(2)}s`
+    );
   // if (buildResults.warnings.length) console.warn(buildResults.warnings);
 
   const packStart = Date.now();
-  if (!process.env.GITHUB_ACTIONS) spinner = yoctoSpinner({ text: "Packing compendia..." }).start();
+  if (!process.env.GITHUB_ACTIONS)
+    spinner = yoctoSpinner({ text: "Packing compendia..." }).start();
   else console.log("Packing compendia...");
   try {
     // Build compendia
@@ -178,11 +194,18 @@ if (buildResults.errors.length) {
         { yaml: false }
       );
     }
-    if (spinner) spinner.success(`Compendia packed in ${((Date.now() - packStart) / 1000).toFixed(2)}s`);
-    else console.log(`Compendia packed in ${((Date.now() - packStart) / 1000).toFixed(2)}s`);
+    if (spinner)
+      spinner.success(
+        `Compendia packed in ${((Date.now() - packStart) / 1000).toFixed(2)}s`
+      );
+    else
+      console.log(
+        `Compendia packed in ${((Date.now() - packStart) / 1000).toFixed(2)}s`
+      );
   } catch (err) {
     if (spinner) spinner.error("Build failed!");
     else console.error("Build failed!");
     console.error(err);
+    process.exit(1);
   }
 }
