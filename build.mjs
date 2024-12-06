@@ -49,15 +49,17 @@ if (!process.argv.slice(2).includes("--no-lint")) {
   const lintResults = await linter.lintFiles(["src/**.ts", "src/*/**.ts"]);
   await ESLint.outputFixes(lintResults);
 
-  let formatter = await linter.loadFormatter("html");
-  await fs.writeFile("./lint-report.html", formatter.format(lintResults));
+  if (!process.env.GITHUB_ACTIONS) {
+    const formatter = await linter.loadFormatter("html");
+    await fs.writeFile("./lint-report.html", formatter.format(lintResults));
+  }
 
   const hasErrors = lintResults.findIndex((result) => result.errorCount) !== -1;
   if (hasErrors) {
     if (spinner) spinner.error("Linting errors found!");
-    formatter = await linter.loadFormatter("stylish");
+    const formatter = await linter.loadFormatter("stylish");
     console.log(formatter.format(lintResults));
-    process.exit();
+    process.exit(1);
   } else {
     if (spinner)
       spinner.success(
