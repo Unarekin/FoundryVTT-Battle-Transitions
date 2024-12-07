@@ -20,6 +20,7 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   public static category: string = "";
 
   public static reversible = false;
+  public static skipWhenSceneViewed = true;
 
   public reverse(): Promise<void> | void {
     throw new NotImplementedError();

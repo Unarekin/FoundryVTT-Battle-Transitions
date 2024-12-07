@@ -128,7 +128,14 @@ export class BattleTransition {
 
   public static async executePreparedSequence(id: string): Promise<void> {
     const prepared = PreparedSequences[id];
+    log("Executing:", prepared);
+
     if (!prepared) throw new InvalidTransitionError(typeof prepared);
+
+    const sceneChange = prepared.original.sequence.find(item => item.type === "scenechange") as SceneChangeConfiguration | undefined;
+    const skipTransition = sceneChange && sceneChange.scene === canvas?.scene?.id;
+
+    log("Skip transition:", skipTransition, sceneChange?.scene, canvas?.scene?.id)
 
     Hooks.callAll(CUSTOM_HOOKS.TRANSITION_START, prepared.original);
 
@@ -143,6 +150,9 @@ export class BattleTransition {
       BattleTransition.SuppressSoundUpdates = true;
       // Execute
       for (const step of prepared.prepared.sequence) {
+        const stepClass = getStepClassByKey(step.config.type ?? "");
+
+        if (stepClass?.skipWhenSceneViewed && skipTransition) continue;
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if ((step.config as any).backgroundType === "overlay" || (step.config as any).serializedTexture === "overlay") {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
