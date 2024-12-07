@@ -16,7 +16,7 @@ export class ConfigurationHandler {
             const scene = getScene(li);
             if (!scene) return false;
 
-            if (scene.id === canvas?.scene?.id) return false;
+            if (scene.id === game?.scenes?.active?.id) return false;
             const steps = this.GetSceneTransition(scene) ?? [];
             return Array.isArray(steps) && steps.length;
           } catch (err) {
@@ -49,7 +49,7 @@ export class ConfigurationHandler {
         condition: (li: JQuery<HTMLLIElement>) => {
           const scene = getScene(li);
           if (!scene) return false;
-          return scene.id !== canvas?.scene?.id;
+          return scene.id !== game?.scenes?.active?.id
         },
         callback: (li: JQuery<HTMLLIElement>) => {
           const sceneId = li.data("sceneId") as string;

@@ -141,19 +141,19 @@ export async function activateScene(arg: unknown): Promise<Scene> {
   if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : "[Object object]");
   // void scene.activate();
 
+  const shouldAwaitHook = (canvas?.scene?.id !== scene.id);
+
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   await (scene as any).setFlag(__MODULE_ID__, "isTriggered", true);
-  void scene.activate();
-  // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-  // void (scene as any).update({
-  //   active: true,
-  //   flags: {
-  //     [__MODULE_ID__]: {
-  //       autoTriggered: true
-  //     }
-  //   }
-  // });
-  await awaitHook("canvasReady");
+
+
+  if (shouldAwaitHook) {
+    void scene.activate();
+    await awaitHook("canvasReady");
+  } else {
+    await scene.activate();
+  }
+
   return scene;
 }
 
