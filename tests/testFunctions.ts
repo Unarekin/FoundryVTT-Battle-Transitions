@@ -1,4 +1,5 @@
 import { Page } from "@playwright/test";
+import { awaitHook } from "./foundryFunctions";
 
 export async function setupWorld(page: Page, worldId: string, userId?: string) {
   await page.goto("http://localhost:20000");
@@ -22,6 +23,7 @@ export async function setupWorld(page: Page, worldId: string, userId?: string) {
 
   if (page.url() === "http://localhost:20000/game") {
     await clearPopup(page);
+    await awaitHook(page, "canvasReady");
     await page.evaluate(() => {
       if (game.paused) game.togglePause(true);
     });
