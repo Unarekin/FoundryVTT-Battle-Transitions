@@ -10,7 +10,7 @@
     "typedoc": "npx typedoc",
     "start": "docker compose up --build",
     "stop": "docker compose down",
-    "test": "npx start-server-and-test start http://localhost:30000 'PW_TEST_HTML_REPORT_OPEN='never' npx playwright test' || yarn stop"
+    "test": "npx start-server-and-test start http://localhost:20000 'PW_TEST_HTML_REPORT_OPEN='never' npx playwright test' || yarn stop"
   },
   "author": "Unarekin",
   "license": "MIT",

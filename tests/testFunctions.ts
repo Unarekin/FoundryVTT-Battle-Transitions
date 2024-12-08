@@ -1,17 +1,31 @@
 import { Page } from "@playwright/test";
 
 export async function setupWorld(page: Page, worldId: string, userId?: string) {
-  await page.goto("http://localhost:30000");
-  await acceptLicenseAgreement(page);
-  await declineSharingUsageData(page);
-  await clearPopup(page);
-  await clearPopup(page);
-  await selectWorld(page, worldId);
-  await page.waitForURL("http://localhost:30000/join");
-  await loginToWorld(page, userId);
-  await page.waitForURL("http://localhost:30000/game");
-  await clearPopup(page);
-  await page.keyboard.press(" ")
+  await page.goto("http://localhost:20000");
+
+  // Accept the license
+  if (page.url() === "http://localhost:20000/license") await acceptLicenseAgreement(page);
+
+  // Choose our world
+  if (page.url() === "http://localhost:20000/setup") {
+    await declineSharingUsageData(page);
+    await clearPopup(page);
+    await clearPopup(page);
+    await selectWorld(page, worldId);
+    await page.waitForURL("http://localhost:20000/join");
+  }
+
+  if (page.url() === "http://localhost:20000/join") {
+    await loginToWorld(page, userId);
+    await page.waitForURL("http://localhost:20000/game");
+  }
+
+  if (page.url() === "http://localhost:20000/game") {
+    await clearPopup(page);
+    await page.evaluate(() => {
+      if (game.paused) game.togglePause(true);
+    });
+  }
 }
 
 export async function acceptLicenseAgreement(page: Page) {
@@ -26,7 +40,7 @@ export async function clearPopup(page: Page) {
 }
 
 export async function selectWorld(page: Page, id: string) {
-  await page.locator(`#worlds-list [data-package-id="${id}"] [data-action='worldLaunch']`).click();
+  await page.locator(`#worlds-list [data-package-id="${id}"] [data-action='worldLaunch']`).dispatchEvent("click");
 }
 
 export async function loginToWorld(page: Page, userId?: string, password?: string) {

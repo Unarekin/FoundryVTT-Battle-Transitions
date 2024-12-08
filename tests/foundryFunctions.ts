@@ -1,12 +1,6 @@
-/**
- * Quick wrapper to wait for a hook to get called
- * @param {string} hook The hook to await
- * @returns 
- */
-export async function awaitHook(hook: string): Promise<unknown[]> {
-  return new Promise<unknown[]>(resolve => {
-    Hooks.once(hook, (...args: unknown[]) => {
-      resolve(args);
-    })
-  })
+import { Page } from '@playwright/test';
+export async function awaitHook(page: Page, hook: string): Promise<void> {
+  return page.evaluate((hook: string) => new Promise(resolve => {
+    Hooks.once(hook, () => { resolve(); });
+  }), hook)
 }
