@@ -46,10 +46,13 @@ export async function selectWorld(page: Page, id: string) {
 }
 
 export async function loginToWorld(page: Page, userId?: string, password?: string) {
+  await page.waitForSelector(`select[name="userid"]`);
   const actualId = userId ? userId : await page.locator(`select[name="userid"] option:nth-child(2)`).getAttribute("value");
   await page.selectOption(`select[name='userid']`, actualId);
   if (password) await page.locator(`input[type="password"]`).fill(password);
   await page.locator(`button[type="submit"][name="join"]`).click();
+  await page.waitForURL("**/game");
+  await page.waitForLoadState("networkidle");
 }
 
 export async function declineSharingUsageData(page: Page) {

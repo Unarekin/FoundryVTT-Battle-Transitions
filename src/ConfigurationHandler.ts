@@ -89,6 +89,7 @@ export class ConfigurationHandler {
         sequence: []
       }
     }
+
     // Check for data migration
     if (DataMigration.SceneConfiguration.NeedsMigration(flags)) return DataMigration.SceneConfiguration.Migrate(flags);
     else return flags as SceneConfiguration;

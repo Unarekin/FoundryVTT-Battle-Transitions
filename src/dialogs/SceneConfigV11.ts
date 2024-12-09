@@ -20,8 +20,10 @@ export class SceneConfigV11 extends SceneConfig {
     html.find(`button[type="submit"]`).before(`<div class="tab" data-tab="battle-transitions">${navContent}</div>`);
 
     // Insert sequence steps
-    for (const step of config.sequence) {
-      await upsertStepButton(app, html, step);
+    if (Array.isArray(config.sequence)) {
+      for (const step of config.sequence) {
+        await upsertStepButton(app, html, step);
+      }
     }
 
     addEventListeners(app, html);

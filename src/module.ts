@@ -9,7 +9,7 @@ import { BattleTransition } from "./BattleTransition";
 import semver from "semver";
 import { awaitHook, log } from './utils';
 import { libWrapper } from "./vendor/libwrapper.shim";
-import { SceneChangeStep } from './steps';
+import { BossSplashStep, SceneChangeStep } from './steps';
 
 (window as any).semver = semver;
 (window as any).BattleTransition = BattleTransition;

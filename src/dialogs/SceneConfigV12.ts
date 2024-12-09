@@ -20,8 +20,10 @@ export class SceneConfigV12 extends SceneConfig {
     html.find("footer.sheet-footer").before(`<div class="tab" data-group="main" data-tab="${__MODULE_ID__}">${navContent}</div>`);
 
     // Insert sequence steps
-    for (const step of config.sequence) {
-      await upsertStepButton(app, html, step);
+    if (Array.isArray(config.sequence)) {
+      for (const step of config.sequence) {
+        await upsertStepButton(app, html, step);
+      }
     }
 
     addEventListeners(app, html);
@@ -100,7 +102,10 @@ async function addStep(app: SceneConfig, html: JQuery<HTMLElement>) {
   let config: TransitionConfiguration | null = null;
   if (!step.skipConfig) {
     // Edit form
-    config = await editStepDialog(step.DefaultSettings, undefined, app.document)
+    config = await editStepDialog({
+      ...step.DefaultSettings,
+      id: foundry.utils.randomID()
+    }, undefined, app.document)
   } else {
     config = {
       ...step.DefaultSettings,

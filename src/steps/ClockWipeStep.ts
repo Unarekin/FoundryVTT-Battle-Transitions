@@ -1,6 +1,5 @@
 import { ClockWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { Easing } from "../types";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ClockWipeConfiguration } from "./types";
@@ -15,7 +14,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     id: "",
     type: "clockwipe",
     duration: 1000,
-    easing: "none" as Easing,
+    easing: "none",
     clockDirection: "clockwise",
     direction: "top",
     version: "1.1.0",

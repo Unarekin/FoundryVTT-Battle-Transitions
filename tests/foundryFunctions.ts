@@ -25,3 +25,13 @@ export async function activateScene(page: Page, name: string) {
     }
   });
 }
+
+
+export async function getSceneFlag<t = any>(page: Page, name: string, flag: string): Promise<t> {
+  return page.evaluate<t, string[]>(([name, flag]) => {
+    const scene = game?.scenes?.getName(name);
+    if (!scene) throw new Error(`Unknown scene: ${name}`);
+    return (scene as any).getFlag("battle-transitions", flag);
+
+  }, [name, flag]);
+}

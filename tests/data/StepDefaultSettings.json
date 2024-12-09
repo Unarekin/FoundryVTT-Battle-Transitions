@@ -1,0 +1,394 @@
+{
+  "angularwipe": {
+    "id": "",
+    "type": "angularwipe",
+    "duration": 1000,
+    "easing": "none",
+    "version": "1.1.0",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000"
+  },
+  "barwipe": {
+    "id": "",
+    "type": "barwipe",
+    "duration": 1000,
+    "easing": "none",
+    "direction": "horizontal",
+    "version": "1.1.0",
+    "backgroundType": "color",
+    "backgroundColor": "#00000000",
+    "backgroundImage": "",
+    "bgSizingMode": "stretch",
+    "bars": 4
+  },
+  "bilinearwipe": {
+    "id": "",
+    "type": "bilinearwipe",
+    "duration": 1000,
+    "easing": "none",
+    "radial": "inside",
+    "direction": "vertical",
+    "version": "1.1.0",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000"
+  },
+  "cleareffects": {
+    "id": "",
+    "type": "cleareffects",
+    "version": "1.1.0",
+    "applyToOverlay": true,
+    "applyToScene": false
+  },
+  "clockwipe": {
+    "id": "",
+    "type": "clockwipe",
+    "duration": 1000,
+    "easing": "none",
+    "clockDirection": "clockwise",
+    "direction": "top",
+    "version": "1.1.0",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000"
+  },
+  "diamondwipe": {
+    "id": "",
+    "type": "diamondwipe",
+    "size": 40,
+    "duration": 1000,
+    "easing": "none",
+    "version": "1.1.0",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000"
+  },
+  "fade": {
+    "id": "",
+    "type": "fade",
+    "duration": 1000,
+    "version": "1.1.0",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundColor": "#00000000",
+    "easing": "none"
+  },
+  "firedissolve": {
+    "id": "",
+    "type": "firedissolve",
+    "duration": 1000,
+    "easing": "none",
+    "burnSize": 1.3,
+    "version": "1.1.0"
+  },
+  "flash": {
+    "id": "",
+    "type": "flash",
+    "duration": 250,
+    "version": "1.1.0",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000",
+    "applyToOverlay": true,
+    "applyToScene": false
+  },
+  "hueshift": {
+    "id": "",
+    "type": "hueshift",
+    "duration": 0,
+    "version": "1.1.0",
+    "maxShift": 0,
+    "easing": "none",
+    "applyToOverlay": true,
+    "applyToScene": false
+  },
+  "invert": {
+    "id": "",
+    "type": "invert",
+    "version": "1.1.0",
+    "applyToOverlay": true,
+    "applyToScene": false
+  },
+  "linearwipe": {
+    "id": "",
+    "type": "linearwipe",
+    "duration": 1000,
+    "easing": "none",
+    "direction": "left",
+    "version": "1.1.0",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000"
+  },
+  "macro": {
+    "id": "",
+    "type": "macro",
+    "macro": "",
+    "version": "1.1.0"
+  },
+  "melt": {
+    "id": "",
+    "type": "melt",
+    "duration": 1000,
+    "version": "1.1.0",
+    "easing": "none",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000"
+  },
+  "parallel": {
+    "id": "",
+    "type": "parallel",
+    "version": "1.1.0",
+    "sequences": []
+  },
+  "pixelate": {
+    "id": "",
+    "type": "pixelate",
+    "version": "1.1.0",
+    "maxSize": 100,
+    "duration": 1000,
+    "easing": "none",
+    "applyToScene": false,
+    "applyToOverlay": true
+  },
+  "radialwipe": {
+    "id": "",
+    "type": "radialwipe",
+    "easing": "none",
+    "radial": "inside",
+    "duration": 1000,
+    "bgSizingMode": "stretch",
+    "version": "1.1.0",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000",
+    "target": [0.5, 0.5]
+  },
+  "removeoverlay": {
+    "id": "",
+    "type": "removeoverlay",
+    "version": "1.1.0"
+  },
+  "repeat": {
+    "id": "",
+    "type": "repeat",
+    "version": "1.1.0",
+    "style": "previous",
+    "delay": 0,
+    "iterations": 2
+  },
+  "restoreoverlay": {
+    "id": "",
+    "type": "restoreoverlay",
+    "version": "1.1.0"
+  },
+  "reverse": {
+    "id": "",
+    "type": "reverse",
+    "version": "1.1.0",
+    "delay": 0
+  },
+  "scenechange": {
+    "id": "",
+    "type": "scenechange",
+    "scene": "",
+    "version": "1.1.0"
+  },
+  "sound": {
+    "id": "",
+    "type": "sound",
+    "volume": 100,
+    "file": "",
+    "version": "1.1.0"
+  },
+  "spiralshutter": {
+    "id": "",
+    "type": "spiralshutter",
+    "duration": 1000,
+    "direction": "clockwise",
+    "radial": "inside",
+    "easing": "none",
+    "bgSizingMode": "stretch",
+    "version": "1.1.0",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000"
+  },
+  "spiralwipe": {
+    "id": "",
+    "type": "spiralwipe",
+    "duration": 1000,
+    "direction": "left",
+    "clockDirection": "clockwise",
+    "radial": "outside",
+    "easing": "none",
+    "version": "1.1.0",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000"
+  },
+  "spotlightwipe": {
+    "id": "",
+    "type": "spotlightwipe",
+    "duration": 1000,
+    "easing": "none",
+    "direction": "top",
+    "radial": "outside",
+    "bgSizingMode": "stretch",
+    "version": "1.1.0",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000"
+  },
+  "startplaylist": {
+    "id": "",
+    "type": "startplaylist",
+    "version": "1.1.0"
+  },
+  "textureswap": {
+    "id": "",
+    "type": "textureswap",
+    "version": "1.1.0",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000",
+    "applyToScene": false,
+    "applyToOverlay": true
+  },
+  "UNKNOWN": {
+    "id": "",
+    "type": "UNKNOWN",
+    "version": "1.1.0"
+  },
+  "twist": {
+    "id": "",
+    "type": "twist",
+    "version": "1.1.0",
+    "duration": 1000,
+    "maxAngle": 10,
+    "easing": "none",
+    "direction": "clockwise",
+    "applyToScene": false,
+    "applyToOverlay": true
+  },
+  "video": {
+    "id": "",
+    "type": "video",
+    "volume": 100,
+    "clear": false,
+    "file": "",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000",
+    "videoSizingMode": "stretch",
+    "version": "1.1.0"
+  },
+  "wavewipe": {
+    "id": "",
+    "type": "wavewipe",
+    "duration": 1000,
+    "easing": "none",
+    "direction": "inside",
+    "version": "1.1.0",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundImage": "",
+    "backgroundColor": "#00000000"
+  },
+  "zoomblur": {
+    "id": "",
+    "type": "zoomblur",
+    "version": "1.1.0",
+    "duration": 1000,
+    "maxStrength": 0.5,
+    "easing": "none",
+    "innerRadius": 0,
+    "applyToOverlay": true,
+    "applyToScene": false
+  },
+  "zoom": {
+    "id": "",
+    "type": "zoom",
+    "duration": 1000,
+    "backgroundType": "color",
+    "bgSizingMode": "stretch",
+    "backgroundColor": "#00000000",
+    "version": "1.1.0",
+    "easing": "none",
+    "amount": 0,
+    "clampBounds": false,
+    "target": [0.5, 0.5],
+    "applyToOverlay": true,
+    "applyToScene": false
+  },
+  "wait": {
+    "id": "",
+    "type": "wait",
+    "duration": 0,
+    "version": "1.1.0"
+  },
+  "loadingtip": {
+    "id": "",
+    "type": "loadingtip",
+    "version": "1.1.0",
+    "duration": 0,
+    "source": "string",
+    "message": "Loading",
+    "location": "bottomcenter",
+    "style": {
+      "align": "left",
+      "breakWords": false,
+      "fontFamily": "Arial",
+      "fontStyle": "normal",
+      "fontVariant": "normal",
+      "fontWeight": "normal",
+      "leading": 0,
+      "letterSpacing": 0,
+      "lineHeight": 0,
+      "padding": 0,
+      "stroke": null,
+      "textBaseline": "alphabetic",
+      "trim": false,
+      "whiteSpace": "pre",
+      "wordWrap": false,
+      "wordWrapWidth": 100,
+      "fill": "#FFFFFF",
+      "dropShadow": true,
+      "fontSize": 64
+    }
+  },
+  "bosssplash": {
+    "id": "",
+    "type": "bosssplash",
+    "version": "1.1.0",
+    "duration": 5000,
+    "actor": "",
+    "topColor": "#ffd502",
+    "midColor": "#ff8400",
+    "botColor": "#ff1f9c",
+    "fontColor": "#ffffff",
+    "fontShadow": "#000000",
+    "subColor": "#ffffff",
+    "subShadow": "#000000",
+    "sound": null,
+    "font": "Arial",
+    "fontSize": "100px",
+    "subSize": "30px",
+    "message": "",
+    "subText": "",
+    "animationDelay": 0,
+    "animationDuration": 3000
+  }
+}
