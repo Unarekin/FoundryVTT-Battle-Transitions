@@ -1,5 +1,7 @@
 import { Page } from "@playwright/test";
 import { awaitHook } from "./foundryFunctions";
+import path from "path";
+import { promises as fs } from "fs";
 
 export async function setupWorld(page: Page, worldId: string, userId?: string) {
   await page.goto("http://localhost:20000");
@@ -23,10 +25,10 @@ export async function setupWorld(page: Page, worldId: string, userId?: string) {
 
   if (page.url() === "http://localhost:20000/game") {
     await clearPopup(page);
-    await awaitHook(page, "canvasReady");
-    await page.evaluate(() => {
-      if (game.paused) game.togglePause(true);
-    });
+    // await awaitHook(page, "canvasReady");
+    // await page.evaluate(() => {
+    //   if (game.paused) game.togglePause(true);
+    // });
   }
 }
 
@@ -56,7 +58,13 @@ export async function loginToWorld(page: Page, userId?: string, password?: strin
 }
 
 export async function declineSharingUsageData(page: Page) {
-  // if (await page.isVisible(`div[data-appid] button[data-button="no"]`)) {
-  await page.locator(`div[data-appid] button[data-button="no"]`).click();
-  // }
+  if (await page.isVisible(`div[data-appid] button[data-button="no"]`)) {
+    await page.locator(`div[data-appid] button[data-button="no"]`).click();
+  }
+}
+
+export async function getStepDefaults(key: string): Promise<object> {
+  const data = JSON.parse((await fs.readFile("./tests/data/StepDefaultSettings.json")).toString());
+  if (data[key]) return data[key]
+  else throw new Error(`Unknown step type: ${key}`);
 }
