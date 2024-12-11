@@ -1,4 +1,5 @@
 export * from './AngularWipe';
+export * from './BarWipeMigrator';
 export * from './BilinearWipe';
 export * from './ClockWipe';
 export * from './DiamondWipe';
