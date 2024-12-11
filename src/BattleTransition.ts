@@ -128,14 +128,10 @@ export class BattleTransition {
 
   public static async executePreparedSequence(id: string): Promise<void> {
     const prepared = PreparedSequences[id];
-    log("Executing:", prepared);
-
     if (!prepared) throw new InvalidTransitionError(typeof prepared);
 
     const sceneChange = prepared.original.sequence.find(item => item.type === "scenechange") as SceneChangeConfiguration | undefined;
     const skipTransition = sceneChange && sceneChange.scene === canvas?.scene?.id;
-
-    log("Skip transition:", skipTransition, sceneChange?.scene, canvas?.scene?.id)
 
     Hooks.callAll(CUSTOM_HOOKS.TRANSITION_START, prepared.original);
 
