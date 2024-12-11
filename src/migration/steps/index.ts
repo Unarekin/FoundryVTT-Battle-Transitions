@@ -26,4 +26,5 @@ export * from './TwistMigrator';
 export * from './Video';
 export * from './Wait';
 export * from './WaveWipe';
+export * from './ZoomBlurMigrator';
 export * from './functions';
