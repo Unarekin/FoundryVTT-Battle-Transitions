@@ -16,6 +16,7 @@ export * from './Parallel';
 export * from './PixelateMigrator';
 export * from './RadialWipe';
 export * from './RemoveOverlay';
+export * from './RepeatMigrator';
 export * from './RestoreOverlay';
 export * from './SceneChange';
 export * from './Sound';
