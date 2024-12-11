@@ -2,6 +2,7 @@ import { FileNotFoundError } from "../errors";
 import { TextureSwapFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { generateBackgroundTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { VideoConfiguration } from "./types";
 
@@ -40,7 +41,8 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${VideoStep.template}.hbs`, {
       ...VideoStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      ...(config ? config : {})
+      ...(config ? config : {}),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
     });
   }
 
@@ -68,7 +70,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
       ...VideoStep.DefaultSettings,
       ...(file ? { file } : {}),
       ...(volume ? { volume: volume / 100 } : {}),
-      serializedTexture: backgroundImage,
+      backgroundImage,
       ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor", "label")
     })
   }
