@@ -831,6 +831,17 @@ export class BattleTransition {
   }
 
   /**
+   * Starts the destination scene's ambient playlist/track if configured.
+   */
+  public startPlaylist(): this {
+    const step = getStepClassByKey("startplaylist");
+    if (!step) throw new InvalidTransitionError("startplaylist");
+    this.#sequence.push(step.DefaultSettings);
+
+    return this;
+  }
+
+  /**
    * Executes the previous step, but in reverse.
    * @param {number} [delay=0] - Duration, in milliseconds, to wait before reversing the previous step.
    */
