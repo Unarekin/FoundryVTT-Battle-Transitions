@@ -1,7 +1,7 @@
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
 import { parseConfigurationFormElements } from '../utils';
-import { generateDualStyleSelectOptions } from './selectOptions';
+import { generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
 import { TransitionStep } from './TransitionStep';
 import { PixelateConfiguration } from './types';
 
@@ -36,7 +36,8 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
       dualStyleSelect: generateDualStyleSelectOptions(),
-      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
+      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay",
+      easingSelect: generateEasingSelectOptions(),
     });
   }
 
@@ -56,9 +57,10 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
 
     return new PixelateStep({
       ...PixelateStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "duration", "maxSize", "label"),
+      ...parseConfigurationFormElements(elem, "id", "duration", "maxSize", "label", "easing"),
       applyToOverlay: dualStyle === "overlay" || dualStyle === "both",
-      applyToScene: dualStyle === "scene" || dualStyle === "both"
+      applyToScene: dualStyle === "scene" || dualStyle === "both",
+
     });
   }
 
