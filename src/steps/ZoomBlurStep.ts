@@ -11,7 +11,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
   public static DefaultSettings: ZoomBlurConfiguration = {
     id: "",
     type: "zoomblur",
-    version: "1.1.0",
+    version: "1.1.6",
     duration: 1000,
     maxStrength: 0.5,
     easing: "none",

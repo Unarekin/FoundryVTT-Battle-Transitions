@@ -23,7 +23,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
     direction: "top",
     radial: "outside",
     bgSizingMode: "stretch",
-    version: "1.1.0",
+    version: "1.1.6",
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000"

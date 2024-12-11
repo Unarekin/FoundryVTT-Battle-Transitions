@@ -14,7 +14,7 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
     duration: 1000,
     easing: "none",
     burnSize: 1.3,
-    version: "1.1.0"
+    version: "1.1.6"
   }
 
   public static category = "wipe";

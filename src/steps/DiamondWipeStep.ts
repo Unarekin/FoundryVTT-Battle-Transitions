@@ -14,7 +14,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
     size: 40,
     duration: 1000,
     easing: "none",
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",

@@ -15,7 +15,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
     id: "",
     type: "fade",
     duration: 1000,
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundColor: "#00000000",

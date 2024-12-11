@@ -15,7 +15,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
     id: "",
     type: "melt",
     duration: 1000,
-    version: "1.1.0",
+    version: "1.1.6",
     easing: "none",
     bgSizingMode: "stretch",
     backgroundType: "color",

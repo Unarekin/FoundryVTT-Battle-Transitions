@@ -13,7 +13,7 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
     id: "",
     type: "hueshift",
     duration: 0,
-    version: "1.1.0",
+    version: "1.1.6",
     maxShift: 0,
     easing: "none",
     applyToOverlay: true,

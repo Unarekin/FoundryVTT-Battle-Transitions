@@ -18,7 +18,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     easing: "none",
     radial: "inside",
     direction: "vertical",
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",

@@ -15,7 +15,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     duration: 1000,
     easing: "none",
     direction: "inside",
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",

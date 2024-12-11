@@ -19,7 +19,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     easing: "none" as Easing,
     clockDirection: "clockwise",
     direction: "top",
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",

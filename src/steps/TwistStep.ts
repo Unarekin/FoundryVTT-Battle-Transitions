@@ -11,7 +11,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
   public static DefaultSettings: TwistConfiguration = {
     id: "",
     type: "twist",
-    version: "1.1.0",
+    version: "1.1.6",
     duration: 1000,
     maxAngle: 10,
     easing: "none",

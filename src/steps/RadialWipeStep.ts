@@ -20,7 +20,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     radial: "inside",
     duration: 1000,
     bgSizingMode: "stretch",
-    version: "1.1.0",
+    version: "1.1.6",
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000",

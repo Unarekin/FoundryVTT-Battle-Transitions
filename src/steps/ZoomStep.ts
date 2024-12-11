@@ -25,7 +25,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     backgroundType: "color",
     bgSizingMode: "stretch",
     backgroundColor: "#00000000",
-    version: "1.1.0",
+    version: "1.1.6",
     easing: "none",
     amount: 0,
     clampBounds: false,

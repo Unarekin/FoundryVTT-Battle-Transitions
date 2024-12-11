@@ -15,7 +15,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     type: "angularwipe",
     duration: 1000,
     easing: "none",
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",

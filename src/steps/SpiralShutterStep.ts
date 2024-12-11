@@ -18,7 +18,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
     radial: "inside",
     easing: "none",
     bgSizingMode: "stretch",
-    version: "1.1.0",
+    version: "1.1.6",
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000"

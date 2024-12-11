@@ -16,7 +16,7 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
     clockDirection: "clockwise",
     radial: "outside",
     easing: "none",
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
