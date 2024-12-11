@@ -2,7 +2,7 @@ import { Migrator } from "../Migrator";
 import { SpiralShutterConfiguration } from '../../steps/types';
 import { v115EasingFix } from "./functions";
 
-export class SpiralRadialWipeMigrator extends Migrator<SpiralShutterConfiguration> {
+export class SpiralShutterMigrator extends Migrator<SpiralShutterConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => SpiralShutterConfiguration } = {
     "<=1.1.5": v115EasingFix
   };
