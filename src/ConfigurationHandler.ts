@@ -89,9 +89,19 @@ export class ConfigurationHandler {
         sequence: []
       }
     }
-    // Check for data migration
-    if (DataMigration.SceneConfiguration.NeedsMigration(flags)) return DataMigration.SceneConfiguration.Migrate(flags);
-    else return flags as SceneConfiguration;
+    try {
+      // Check for data migration
+      if (DataMigration.SceneConfiguration.NeedsMigration(flags)) return DataMigration.SceneConfiguration.Migrate(flags);
+      else return flags as SceneConfiguration;
+    } catch (err) {
+      ui.notifications?.error((err as Error).message, { console: false, localize: true });
+      console.error(err);
+    }
+    return {
+      autoTrigger: false,
+      version: DataMigration.SceneConfiguration.NewestVersion,
+      sequence: []
+    }
   }
 
   public static GetSceneTransition(scene: Scene): TransitionConfiguration[] {

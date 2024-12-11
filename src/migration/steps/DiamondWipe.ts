@@ -1,11 +1,13 @@
 import { Migrator } from "../Migrator";
-import { DiamondWipeConfiguration } from "../../steps";
+import { AnimatedTransition, DiamondWipeConfiguration } from "../../steps";
 import { Easing } from "../../types";
 import { migratev10XBackground } from "../../utils";
+import { v115EasingFix } from "./functions";
 
 export class DiamondWipeMigrator extends Migrator<DiamondWipeConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => DiamondWipeConfiguration; } = {
-    "~1.0": V10X
+    "~1.0": V10X,
+    ">=1.1.0 <=1.1.5": v115EasingFix
   };
   public NewestVersion: string = "1.1.0";
 
@@ -23,13 +25,13 @@ interface V10XConfig {
 }
 
 function V10X(old: V10XConfig): DiamondWipeConfiguration {
-  return {
+  return v115EasingFix({
     id: old.id ?? foundry.utils.randomID(),
     type: "diamondwipe",
-    version: "1.1.0",
+    version: "1.1.6",
     duration: old.duration,
     size: old.size,
     easing: old.easing,
     ...migratev10XBackground(old)
-  }
+  } as AnimatedTransition)
 }

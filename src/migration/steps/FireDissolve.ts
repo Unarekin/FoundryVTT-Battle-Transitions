@@ -1,12 +1,14 @@
 import { Migrator } from "../Migrator";
-import { FireDissolveConfiguration } from "../../steps";
+import { AnimatedTransition, FireDissolveConfiguration } from "../../steps";
 import { Easing } from "../../types";
+import { v115EasingFix } from "./functions";
 
 export class FireDissolveMigrator extends Migrator<FireDissolveConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => FireDissolveConfiguration; } = {
-    "~1.0": v10XMigration
+    "~1.0": v10XMigration,
+    ">=1.1.0 <=1.1.5": v115EasingFix
   };
-  public NewestVersion: string = "1.1.0";
+  public NewestVersion: string = "1.1.6";
 
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -22,12 +24,12 @@ interface v10XConfig {
 }
 
 function v10XMigration(old: v10XConfig): FireDissolveConfiguration {
-  return {
+  return v115EasingFix({
     id: old.id ?? foundry.utils.randomID(),
     easing: old.easing,
     duration: old.duration,
     burnSize: old.burnSize,
     type: "firedissolve",
-    version: "1.1.0"
-  }
+    version: "1.1.6"
+  } as AnimatedTransition)
 }
