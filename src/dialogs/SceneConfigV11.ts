@@ -24,6 +24,7 @@ export class SceneConfigV11 extends SceneConfig {
       await upsertStepButton(app, html, step);
     }
 
+    updateTotalDuration(html);
     addEventListeners(app, html);
   }
 
