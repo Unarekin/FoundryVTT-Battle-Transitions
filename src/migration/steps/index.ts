@@ -27,4 +27,5 @@ export * from './Video';
 export * from './Wait';
 export * from './WaveWipe';
 export * from './ZoomBlurMigrator';
+export * from './ZoomMigrator';
 export * from './functions';
