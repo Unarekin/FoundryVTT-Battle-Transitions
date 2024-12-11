@@ -12,6 +12,7 @@ export * from './LinearWipe';
 export * from './Macro';
 export * from './Melt';
 export * from './Parallel';
+export * from './PixelateMigrator';
 export * from './RadialWipe';
 export * from './RemoveOverlay';
 export * from './RestoreOverlay';
