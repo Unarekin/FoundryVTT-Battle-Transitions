@@ -45,7 +45,8 @@ interface V115Config {
 function v115(old: V115Config): SceneConfiguration {
   return {
     ...old,
-    sequence: migrateSequence(old.sequence)
+    sequence: migrateSequence(old.sequence),
+    version: "1.1.6"
   }
 }
 
