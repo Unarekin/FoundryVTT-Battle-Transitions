@@ -2,12 +2,14 @@ import { Migrator } from "../Migrator";
 import { SpotlightWipeConfiguration } from "../../steps";
 import { migratev10XBackground } from "../../utils";
 import { Easing } from "../../types";
+import { v115EasingFix } from "./functions";
 
 export class SpotlightWipeMigrator extends Migrator<SpotlightWipeConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => SpotlightWipeConfiguration; } = {
-    "~1.0": v10X
+    "~1.0": v10X,
+    "<=1.1.5": v115EasingFix
   };
-  public NewestVersion: string = "1.1.0";
+  public NewestVersion: string = "1.1.6";
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   public Version(data: unknown): string { return ((data as any).version as string) ?? "1.0.5"; }

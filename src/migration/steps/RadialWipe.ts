@@ -2,12 +2,14 @@ import { Migrator } from "../Migrator";
 import { RadialWipeConfiguration } from "../../steps";
 import { Easing, RadialDirection } from "../../types";
 import { migratev10XBackground } from "../../utils";
+import { v115EasingFix } from "./functions";
 
 export class RadialWipeMigrator extends Migrator<RadialWipeConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => RadialWipeConfiguration; } = {
-    "~1.0": v10Migration
+    "~1.0": v10Migration,
+    "<=1.1.5": v115EasingFix
   };
-  public NewestVersion: string = "1.1.0"
+  public NewestVersion: string = "1.1.6"
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   public Version(data: unknown): string { return ((data as any).version as string) ?? "1.0.5"; }

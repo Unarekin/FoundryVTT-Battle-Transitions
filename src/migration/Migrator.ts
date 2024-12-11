@@ -1,5 +1,5 @@
 import semver from "semver";
-import { InvalidVersionError, NewerVersionError, UnableToMigrateError } from "../errors";
+import { InvalidVersionError, MigratorNotFoundError, NewerVersionError } from "../errors";
 
 export abstract class Migrator<t> {
   // #region Properties (2)
@@ -19,13 +19,15 @@ export abstract class Migrator<t> {
 
     if (version === this.NewestVersion) return old as t;
 
-    const hash = Object.entries(this.migrationFunctions);
-    for (const [key, func] of hash) {
-      if (semver.satisfies(version, key)) {
-        return func(old);
-      }
-    }
-    throw new UnableToMigrateError(version, this.NewestVersion);
+    const knownVersions = Object.keys(this.migrationFunctions);
+    const funcKey = semver.maxSatisfying(knownVersions, version);
+    if (typeof funcKey === "string") return this.migrationFunctions[funcKey](old);
+    else throw new MigratorNotFoundError(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      typeof (old as any).type === "string" ? (old as any).type : typeof (old as any).type,
+      version,
+      this.NewestVersion
+    );
   }
 
   public NeedsMigration(data: unknown): boolean {

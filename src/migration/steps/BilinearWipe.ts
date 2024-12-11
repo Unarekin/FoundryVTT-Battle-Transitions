@@ -2,10 +2,12 @@ import { Migrator } from "../Migrator";
 import { BilinearWipeConfiguration } from "../../steps";
 import { BilinearDirection, Easing, RadialDirection } from "../../types";
 import { migratev10XBackground } from "../../utils";
+import { v115EasingFix } from "./functions";
 
 export class BilinearWipeMigrator extends Migrator<BilinearWipeConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => BilinearWipeConfiguration; } = {
-    "~1.0": V10X
+    "~1.0": V10X,
+    "<=1.1.5": v115EasingFix
   };
   public NewestVersion: string = "1.1.0";
 

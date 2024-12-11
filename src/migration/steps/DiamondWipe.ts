@@ -2,10 +2,12 @@ import { Migrator } from "../Migrator";
 import { DiamondWipeConfiguration } from "../../steps";
 import { Easing } from "../../types";
 import { migratev10XBackground } from "../../utils";
+import { v115EasingFix } from "./functions";
 
 export class DiamondWipeMigrator extends Migrator<DiamondWipeConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => DiamondWipeConfiguration; } = {
-    "~1.0": V10X
+    "~1.0": V10X,
+    "<=1.1.5": v115EasingFix
   };
   public NewestVersion: string = "1.1.0";
 

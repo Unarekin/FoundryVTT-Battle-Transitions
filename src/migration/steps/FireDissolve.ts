@@ -1,12 +1,14 @@
 import { Migrator } from "../Migrator";
 import { FireDissolveConfiguration } from "../../steps";
 import { Easing } from "../../types";
+import { v115EasingFix } from "./functions";
 
 export class FireDissolveMigrator extends Migrator<FireDissolveConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => FireDissolveConfiguration; } = {
-    "~1.0": v10XMigration
+    "~1.0": v10XMigration,
+    "<=1.1.5": v115EasingFix
   };
-  public NewestVersion: string = "1.1.0";
+  public NewestVersion: string = "1.1.6";
 
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

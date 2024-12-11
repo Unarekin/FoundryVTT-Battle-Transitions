@@ -2,10 +2,12 @@ import { Migrator } from "../Migrator";
 import { ClockWipeConfiguration } from "../../steps";
 import { ClockDirection, Easing, WipeDirection } from "../../types";
 import { migratev10XBackground } from "../../utils";
+import { v115EasingFix } from "./functions";
 
 export class ClockWipeMigrator extends Migrator<ClockWipeConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => ClockWipeConfiguration; } = {
-    "~1.0": V10X
+    "~1.0": V10X,
+    "<=1.1.5": v115EasingFix
   };
 
   public NewestVersion: string = "1.1.0";

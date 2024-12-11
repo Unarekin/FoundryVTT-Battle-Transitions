@@ -2,10 +2,12 @@ import { Migrator } from "../Migrator";
 import { FadeConfiguration } from "../../steps";
 import { Easing } from '../../types';
 import { migratev10XBackground } from "../../utils";
+import { v115EasingFix } from "./functions";
 
 export class FadeMigrator extends Migrator<FadeConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => FadeConfiguration; } = {
-    "~1.0": V10X
+    "~1.0": V10X,
+    "<=1.1.5": v115EasingFix
   }
   public NewestVersion: string = "1.1.0";
 
