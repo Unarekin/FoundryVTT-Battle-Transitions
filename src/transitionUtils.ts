@@ -170,8 +170,10 @@ export async function sequenceDuration(sequence: TransitionConfiguration[]): Pro
   for (const config of sequence) {
     const step = getStepClassByKey(config.type);
     if (!step) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
-    const res = step.getDuration(config, sequence);
-    duration += res instanceof Promise ? await res : res;
+    if (step.addDurationToTotal) {
+      const res = step.getDuration(config, sequence);
+      duration += res instanceof Promise ? await res : res;
+    }
   }
   return duration;
 }

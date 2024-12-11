@@ -208,6 +208,7 @@ async function upsertStepButton(app: SceneConfig, html: JQuery<HTMLElement>, con
     type: step.key,
     calculatedDuration,
     skipConfig: step.skipConfig,
+    omitDurationFromTotal: !step.addDurationToTotal,
     newScene: app.document.uuid,
     flag: JSON.stringify({
       ...step.DefaultSettings,
