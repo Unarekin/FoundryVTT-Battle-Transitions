@@ -17,6 +17,7 @@ export * from './InvalidTransitionError';
 export * from './InvalidVersionError';
 export * from './LocalizedError';
 export * from './MigratorNotFoundError';
+export * from './ModuleNotActiveError';
 export * from './NewerVersionError';
 export * from './NoApplicationError';
 export * from './NoBackgroundProvidedError';

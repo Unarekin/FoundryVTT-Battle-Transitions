@@ -1,6 +1,7 @@
 export * from './AngularWipe';
 export * from './BarWipeMigrator';
 export * from './BilinearWipe';
+export * from './BossSplash';
 export * from './ClockWipe';
 export * from './DiamondWipe';
 export * from './Fade';

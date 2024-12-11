@@ -1,6 +1,6 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
-import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
+import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
 import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
@@ -358,6 +358,11 @@ export class BattleTransition {
    * @param {BossSplashConfiguration} config - {@link BossSplashConfiguration}
    */
   public bossSplash(config: BossSplashConfiguration): this {
+    if (!game?.modules?.get("boss-splash")?.active) {
+      const err = new ModuleNotActiveError("Boss Splash Screen");
+      ui.notifications?.error(err.message, { console: false });
+      throw err;
+    }
     const step = getStepClassByKey("bosssplash");
     if (!step) throw new InvalidTransitionError("bosssplash");
     const newConfig: BossSplashConfiguration = {

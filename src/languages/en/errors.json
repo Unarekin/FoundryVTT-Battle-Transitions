@@ -14,6 +14,7 @@
       "INVALIDOBJECT": "Invalid object specified: {object}",
       "MIGRATORNOTFOUND": "Could not find function to migrate {type} from version {currentVersion} to {newVersion}.",
       "INVALIDROLLTABLE": "Invalid RollTable provided: {table}",
+      "MODULENOTACTIVE": "The module {name} is not installed and active.",
       "INVALIDSCENE": "Invalid scene: {name}",
       "INVALIDSOUND": "Invalid sound: {sound}",
       "INVALIDTARGET": "Invalid target: {item}",
