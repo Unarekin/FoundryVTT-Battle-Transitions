@@ -16,21 +16,8 @@
     <p class="notes">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"
       }}</p>
-
-    <div class="form-group">
-      <label for="texture">{{localize
-          "BATTLETRANSITIONS.SCENECONFIG.TEXTURESWAP.TEXTURE.LABEL"
-        }}</label>
-      <file-picker
-        name="texture"
-        id="texture"
-        type="image"
-        value="{{texture}}"
-      ></file-picker>
-    </div>
-    <p class="notes">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.TEXTURESWAP.TEXTURE.HINT"
-      }}</p>
+      
+      {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
 
       {{> "/modules/battle-transitions/templates/config/dualtransition-selector.hbs" this}}
   </form>

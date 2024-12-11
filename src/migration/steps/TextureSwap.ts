@@ -7,7 +7,7 @@ export class TextureSwapMigrator extends Migrator<TextureSwapConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => TextureSwapConfiguration; } = {
     "~1.0": v10X
   };
-  public readonly NewestVersion: string = "1.1";
+  public readonly NewestVersion: string = "1.1.0";
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   public Version(data: unknown): string { return ((data as any).version as string) ?? "1.0.5"; }

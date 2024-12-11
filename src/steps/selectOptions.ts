@@ -157,3 +157,11 @@ export function generateTokenSelectOptions(scene: Scene): { [x: string]: string 
 }
 
 // #endregion Functions (13)
+
+export function generateBackgroundTypeSelectOptions(): { [x: string]: string } {
+  return {
+    color: "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.COLOR",
+    image: "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.IMAGE",
+    overlay: "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.OVERLAY"
+  }
+}

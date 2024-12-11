@@ -6,8 +6,10 @@
       "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.HINT"
     }}</span>
   <div class="form-group">
+
     <select name="backgroundType" id="backgroundType">
-      <option value="color">{{localize
+      {{selectOptions bgTypeSelect selected=backgroundType localize=true}}
+      {{!-- <option value="color">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.COLOR"
         }}</option>
       <option value="image">{{localize
@@ -15,7 +17,7 @@
         }}</option>
       <option value="overlay">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.OVERLAY"
-        }}</option>
+        }}</option> --}}
     </select>
 
     <section data-background-type="color">
