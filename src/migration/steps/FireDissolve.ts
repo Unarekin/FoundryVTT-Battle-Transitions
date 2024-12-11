@@ -30,6 +30,6 @@ function v10XMigration(old: v10XConfig): FireDissolveConfiguration {
     duration: old.duration,
     burnSize: old.burnSize,
     type: "firedissolve",
-    version: "1.1.0"
+    version: "1.1.6"
   } as AnimatedTransition)
 }

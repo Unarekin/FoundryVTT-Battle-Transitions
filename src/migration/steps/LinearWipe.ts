@@ -29,7 +29,7 @@ function v10XMigration(old: v10XConfig): LinearWipeConfiguration {
   return v115EasingFix({
     id: old.id ?? foundry.utils.randomID(),
     type: "linearwipe",
-    version: "1.1.0",
+    version: "1.1.6",
     duration: old.duration,
     direction: old.direction,
     easing: old.easing,

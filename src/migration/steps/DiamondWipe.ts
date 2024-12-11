@@ -28,7 +28,7 @@ function V10X(old: V10XConfig): DiamondWipeConfiguration {
   return v115EasingFix({
     id: old.id ?? foundry.utils.randomID(),
     type: "diamondwipe",
-    version: "1.1.0",
+    version: "1.1.6",
     duration: old.duration,
     size: old.size,
     easing: old.easing,

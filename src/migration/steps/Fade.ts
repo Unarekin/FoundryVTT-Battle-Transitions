@@ -28,7 +28,7 @@ function V10X(old: V10XConfig): FadeConfiguration {
     easing: old.easing,
     duration: old.duration,
     type: "fade",
-    version: "1.1.0",
+    version: "1.1.6",
     ...migratev10XBackground(old)
   } as AnimatedTransition)
 }

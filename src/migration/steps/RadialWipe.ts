@@ -27,7 +27,7 @@ function v10Migration(old: V10Config): RadialWipeConfiguration {
   return v115EasingFix({
     id: old.id ?? foundry.utils.randomID(),
     easing: (old.easing ?? "none") as Easing,
-    version: "1.1.0",
+    version: "1.1.6",
     radial: old.radial,
     duration: old.duration,
     type: "radialwipe",
