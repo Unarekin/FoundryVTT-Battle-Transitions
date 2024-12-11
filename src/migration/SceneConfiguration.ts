@@ -52,7 +52,7 @@ function v115(old: V115Config): SceneConfiguration {
 function v10X(old: V10Config): SceneConfiguration {
   return {
     autoTrigger: old.config?.autoTrigger ?? false,
-    version: "1.1.0",
+    version: "1.1.6",
     isTriggered: false,
     sequence: migrateSequence(old.steps as any[])
   } as SceneConfiguration;

@@ -1,5 +1,5 @@
 import { Migrator } from "../Migrator";
-import { RadialWipeConfiguration } from "../../steps";
+import { AnimatedTransition, RadialWipeConfiguration } from "../../steps";
 import { Easing, RadialDirection } from "../../types";
 import { migratev10XBackground } from "../../utils";
 import { v115EasingFix } from "./functions";
@@ -7,7 +7,7 @@ import { v115EasingFix } from "./functions";
 export class RadialWipeMigrator extends Migrator<RadialWipeConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => RadialWipeConfiguration; } = {
     "~1.0": v10Migration,
-    "<=1.1.5": v115EasingFix
+    ">=1.1.0 <=1.1.5": v115EasingFix
   };
   public NewestVersion: string = "1.1.6"
 
@@ -24,7 +24,7 @@ interface V10Config {
 }
 
 function v10Migration(old: V10Config): RadialWipeConfiguration {
-  return {
+  return v115EasingFix({
     id: old.id ?? foundry.utils.randomID(),
     easing: (old.easing ?? "none") as Easing,
     version: "1.1.0",
@@ -33,5 +33,5 @@ function v10Migration(old: V10Config): RadialWipeConfiguration {
     type: "radialwipe",
     target: [0.5, 0.5],
     ...migratev10XBackground(old)
-  }
+  } as AnimatedTransition)
 }

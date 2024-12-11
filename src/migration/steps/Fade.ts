@@ -1,5 +1,5 @@
 import { Migrator } from "../Migrator";
-import { FadeConfiguration } from "../../steps";
+import { AnimatedTransition, FadeConfiguration } from "../../steps";
 import { Easing } from '../../types';
 import { migratev10XBackground } from "../../utils";
 import { v115EasingFix } from "./functions";
@@ -7,7 +7,7 @@ import { v115EasingFix } from "./functions";
 export class FadeMigrator extends Migrator<FadeConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => FadeConfiguration; } = {
     "~1.0": V10X,
-    "<=1.1.5": v115EasingFix
+    ">=1.1.0 <=1.1.5": v115EasingFix
   }
   public NewestVersion: string = "1.1.0";
 
@@ -23,12 +23,12 @@ interface V10XConfig {
 }
 
 function V10X(old: V10XConfig): FadeConfiguration {
-  return {
+  return v115EasingFix({
     id: old.id ?? foundry.utils.randomID(),
     easing: old.easing,
     duration: old.duration,
     type: "fade",
     version: "1.1.0",
     ...migratev10XBackground(old)
-  }
+  } as AnimatedTransition)
 }
