@@ -79,7 +79,7 @@ export function createGradient1DTexture(size: number, startColor?: PIXI.Color, e
  * @param {RandomFn} random {@link RandomFn}
  * @returns 
  */
-export function createNoiseTexture(width: number = 256, height: number = 256, random?: RandomFn): PIXI.Texture {
+export function createNoiseTexture(width: number = 512, height: number = 512, random?: RandomFn): PIXI.Texture {
   const noise2D = createNoise2D(random);
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -93,10 +93,15 @@ export function createNoiseTexture(width: number = 256, height: number = 256, ra
   for (let y = 0; y < canvas.height; y++) {
     for (let x = 0; x < canvas.width; x++) {
       const value = noise2D(x / 32, y / 32);
+      const color = Math.floor((value + 1) * 128);
+
       const index = (y * canvas.width + x) * 4;
-      data[index] = value * 255;
-      data[index + 1] = value * 255;
-      data[index + 2] = value * 255;
+      data[index] = color;
+      data[index + 1] = color;
+      data[index + 2] = color;
+      // data[index] = value * 255;
+      // data[index + 1] = value * 255;
+      // data[index + 2] = value * 255;
       data[index + 3] = 255;
     }
   }
