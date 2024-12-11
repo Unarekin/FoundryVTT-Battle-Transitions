@@ -98,12 +98,13 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
     const elem = $(form) as JQuery<HTMLFormElement>;
 
     const sequence = buildTransition(elem);
+
     return new RepeatStep({
       ...RepeatStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "iterations", "style", "delay", "label"),
       id: foundry.utils.randomID(),
+      ...parseConfigurationFormElements(elem, "id", "iterations", "style", "delay", "label"),
       sequence
-    })
+    });
   }
 
   // #endregion Public Static Methods (7)

@@ -3,7 +3,7 @@ import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
-import { downloadJSON, formatDuration, getStepClassByKey, importSequence, localize, log } from "../utils";
+import { downloadJSON, formatDuration, getStepClassByKey, importSequence, localize } from "../utils";
 import { addStepDialog, buildTransitionFromForm, confirm, editStepDialog } from "./functions";
 
 // #region Classes (1)
