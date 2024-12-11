@@ -5,6 +5,7 @@ import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ClockWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateClockDirectionSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
   // #region Properties (9)
@@ -42,6 +43,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
       ...ClockWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
       clockDirectionSelect: generateClockDirectionSelectOptions(),
       bgTypeSelect: generateBackgroundTypeSelectOptions(),

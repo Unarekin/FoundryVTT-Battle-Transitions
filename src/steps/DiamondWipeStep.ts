@@ -3,6 +3,7 @@ import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { DiamondWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
   // #region Properties (7)
@@ -37,6 +38,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
       ...DiamondWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       bgTypeSelect: generateBackgroundTypeSelectOptions(),
       easingSelect: generateEasingSelectOptions()
     });

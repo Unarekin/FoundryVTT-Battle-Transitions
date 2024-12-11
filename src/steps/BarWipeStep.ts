@@ -4,6 +4,7 @@ import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { BarWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
   // #region Properties (9)
@@ -41,6 +42,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
       ...BarWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
       bgTypeSelect: generateBackgroundTypeSelectOptions(),
       directionSelect: {

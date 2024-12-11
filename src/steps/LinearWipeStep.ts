@@ -4,6 +4,7 @@ import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { LinearWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   // #region Properties (10)
@@ -44,6 +45,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
       ...LinearWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
       bgTypeSelect: generateBackgroundTypeSelectOptions(),
       directionSelect: generateLinearDirectionSelectOptions()

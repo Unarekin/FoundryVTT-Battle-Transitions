@@ -7,6 +7,7 @@ import { TransitionStep } from "./TransitionStep";
 import { SceneChangeConfiguration, TransitionConfiguration, ZoomConfiguration } from "./types";
 import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTargetSelectEventListeners, validateTarget } from "./targetSelectFunctions";
 import { InvalidSceneError, InvalidTargetError } from "../errors";
+import { reconcileBackground } from "./functions";
 
 // #region Classes (1)
 
@@ -56,6 +57,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       ...ZoomStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       oldScene: oldScene?.id ?? "",
       newScene: newScene?.id ?? "",
       easingSelect: generateEasingSelectOptions(),

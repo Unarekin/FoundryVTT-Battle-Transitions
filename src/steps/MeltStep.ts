@@ -4,6 +4,7 @@ import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { MeltConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 export class MeltStep extends TransitionStep<MeltConfiguration> {
   // #region Properties (9)
@@ -39,6 +40,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
       ...MeltStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
       bgTypeSelect: generateBackgroundTypeSelectOptions()
     });

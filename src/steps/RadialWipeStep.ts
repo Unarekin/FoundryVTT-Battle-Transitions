@@ -5,6 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { RadialWipeConfiguration, SceneChangeConfiguration, TransitionConfiguration } from "./types";
 import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTargetSelectEventListeners, validateTarget } from "./targetSelectFunctions";
 import { InvalidSceneError, InvalidTargetError } from "../errors";
+import { reconcileBackground } from "./functions";
 
 export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   // #region Properties (10)
@@ -48,6 +49,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
       ...RadialWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),
       bgTypeSelect: generateBackgroundTypeSelectOptions(),

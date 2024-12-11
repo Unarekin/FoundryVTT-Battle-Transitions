@@ -4,6 +4,7 @@ import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { WaveWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
   // #region Properties (7)
@@ -38,6 +39,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
       ...WaveWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       radialSelect: generateRadialDirectionSelectOptions(),
       bgTypeSelect: generateBackgroundTypeSelectOptions(),
       easingSelect: generateEasingSelectOptions()

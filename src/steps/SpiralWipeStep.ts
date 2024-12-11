@@ -3,6 +3,7 @@ import { createColorTexture, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { SpiralWipeConfiguration } from './types';
 import { generateBackgroundTypeSelectOptions, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
+import { reconcileBackground } from './functions';
 
 export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
   // #region Properties (7)
@@ -38,6 +39,7 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
       ...SpiralWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),
       bgTypeSelect: generateBackgroundTypeSelectOptions(),

@@ -4,6 +4,7 @@ import { TransitionStep } from "./TransitionStep";
 import { SpiralShutterConfiguration } from "./types";
 import { SpiralShutterFilter } from "../filters";
 import { generateBackgroundTypeSelectOptions, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 
 export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration> {
@@ -40,6 +41,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
       ...SpiralShutterStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
       bgTypeSelect: generateBackgroundTypeSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),

@@ -2,6 +2,7 @@ import { TextureSwapFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
 import { createColorTexture, parseConfigurationFormElements, wait } from '../utils';
+import { reconcileBackground } from "./functions";
 import { generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { FlashConfiguration } from "./types";
@@ -38,6 +39,7 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
       ...FlashStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       dualStyleSelect: generateDualStyleSelectOptions(),
       bgTypeSelect: generateBackgroundTypeSelectOptions(),
       dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"

@@ -1,9 +1,10 @@
 import { SpotlightWipeFilter } from "../filters";
 import { TransitionSequence } from '../interfaces';
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, log, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SpotlightWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 
 export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration> {
@@ -41,15 +42,18 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: SpotlightWipeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpotlightWipeStep.template}.hbs`, {
+    const renderConfig = {
       ...SpotlightWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
       directionSelect: generateLinearDirectionSelectOptions(),
       bgTypeSelect: generateBackgroundTypeSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions()
-    });
+    };
+    log("Render config:", renderConfig);
+    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpotlightWipeStep.template}.hbs`, renderConfig);
   }
 
   public static from(config: SpotlightWipeConfiguration): SpotlightWipeStep

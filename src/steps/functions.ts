@@ -1,7 +1,8 @@
+import { SerializedAsset } from "../interfaces";
 import { ParallelStep } from "./ParallelStep";
 import { RepeatStep } from "./RepeatStep";
 import { TransitionStep } from "./TransitionStep";
-import { ParallelConfiguration, RepeatConfiguration, TransitionConfiguration } from "./types";
+import { ParallelConfiguration, RepeatConfiguration, TransitionConfiguration, BackgroundTransition } from './types';
 
 export function getPreviousStep(id: string, sequence: TransitionConfiguration[]): TransitionConfiguration | undefined
 export function getPreviousStep(id: string, sequence: TransitionStep[]): TransitionStep | undefined
@@ -51,3 +52,22 @@ function getPreviousStepByStep(id: string, sequence: TransitionStep[]): Transiti
   return undefined;
 }
 
+export function urlFromSerializedTexture(texture: SerializedAsset): string {
+  if (typeof texture !== "string") return "";
+  if (CSS.supports("color", texture)) return "";
+  return texture;
+}
+
+export function colorFromSerializedTexture(texture: SerializedAsset): string {
+  if (typeof texture !== "string") return "";
+  if (CSS.supports("color", texture)) return texture;
+  return "";
+}
+
+export function reconcileBackground(config: BackgroundTransition): BackgroundTransition {
+  return {
+    ...config,
+    ...(config.backgroundImage ? { backgroundImage: config.backgroundImage } : { backgroundImage: urlFromSerializedTexture(config.serializedTexture ?? "") }),
+    ...(config.backgroundColor ? { backgroundColor: config.backgroundColor } : { backgroundColor: colorFromSerializedTexture(config.serializedTexture ?? "") })
+  }
+}
