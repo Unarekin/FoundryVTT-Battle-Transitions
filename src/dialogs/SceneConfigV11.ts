@@ -206,6 +206,7 @@ async function upsertStepButton(app: SceneConfig, html: JQuery<HTMLElement>, con
     description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
     type: step.key,
     calculatedDuration,
+    omitDurationFromTotal: !step.addDurationToTotal,
     skipConfig: step.skipConfig,
     newScene: app.document.uuid,
     flag: JSON.stringify({
