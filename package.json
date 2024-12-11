@@ -9,6 +9,7 @@
     "build:prod": "NODE_ENV=production node build.mjs",
     "typedoc": "npx typedoc",
     "start": "docker compose up --build",
+    "build:mime": "node build-mimedb.mjs",
     "stop": "docker compose down",
     "test": "npx start-server-and-test start http://localhost:30000 'PW_TEST_HTML_REPORT_OPEN='never' npx playwright test' || yarn stop"
   },

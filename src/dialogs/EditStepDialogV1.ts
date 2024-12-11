@@ -1,7 +1,7 @@
 
 import { InvalidTransitionError } from '../errors';
 import { TransitionConfiguration } from '../steps/types';
-import { getStepClassByKey, localize } from '../utils';
+import { getStepClassByKey, localize, mimeType } from '../utils';
 
 export class EditStepDialogV1 {
   static async prompt(config: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<TransitionConfiguration | null> {
@@ -67,12 +67,28 @@ function setBackgroundImage(html: JQuery<HTMLElement>) {
   const val = (html.find("#backgroundImage").val() as string) ?? "";
 
   if (val) {
-    const tag = document.createElement("img");
-    const img = $(tag);
-    img.addClass("bg-image-preview");
-    img.attr("src", val);
-    html.find("#backgroundImagePreview img").remove();
-    html.find("#backgroundImagePreview").append(img);
+    html.find("#backgroundImagePreview").children().remove();
+
+    const mime = mimeType(val);
+    const fileType = mime.split("/")[0];
+
+    if (fileType === "image") {
+      const tag = document.createElement("img");
+      const img = $(tag);
+      img.addClass("bg-image-preview");
+      img.attr("src", val);
+      html.find("#backgroundImagePreview img").remove();
+      html.find("#backgroundImagePreview").append(img);
+    } else if (fileType === "video") {
+      const tag = document.createElement("video");
+      const vid = $(tag);
+      vid.addClass("bg-image-preview");
+      vid.attr("controls", "true");
+      vid.attr("muted", "true");
+      vid.append(`<source src="${val}" type="${mime}">`);
+
+      html.find("#backgroundImagePreview").append(vid);
+    }
   } else {
     html.find("#backgroundImagePreview img").remove();
   }

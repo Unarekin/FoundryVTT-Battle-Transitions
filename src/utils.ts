@@ -8,6 +8,7 @@ import { bytesToBase64 } from "./lib/base64Utils";
 import { TransitionStep, BackgroundTransition, TransitionConfiguration, TargetedTransition } from "./steps";
 import * as steps from "./steps"
 import { BackgroundType, TextureLike } from "./types";
+import json from "./mime.json";
 
 // #region Functions (33)
 
@@ -600,3 +601,14 @@ export function isValidFontSize(input: string): boolean {
   return temp.style.fontSize !== "";
 }
 
+
+
+
+const mimeDB = json as Record<string, string>;
+
+export function mimeType(path: string) {
+  const ext = path.split(".").pop();
+  if (!ext) return "application/octet-stream";
+  else if (mimeDB[ext]) return mimeDB[ext];
+  else return "application/octet-stream";
+}
