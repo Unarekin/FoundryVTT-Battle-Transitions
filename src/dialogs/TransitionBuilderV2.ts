@@ -154,40 +154,45 @@ async function updateTotalDuration(html: JQuery<HTMLElement>) {
 }
 
 async function upsertStepButton(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>, config: TransitionConfiguration) {
-  const step = getStepClassByKey(config.type);
-  if (!step) throw new InvalidTransitionError(config.type);
+  try {
+    const step = getStepClassByKey(config.type);
+    if (!step) throw new InvalidTransitionError(config.type);
 
-  const sequence = [...buildTransitionFromForm(html), config];
-  const durationRes = step.getDuration(config, sequence);
-  const duration = (durationRes instanceof Promise) ? (await durationRes) : durationRes;
+    const sequence = [...buildTransitionFromForm(html), config];
+    const durationRes = step.getDuration(config, sequence);
+    const duration = (durationRes instanceof Promise) ? (await durationRes) : durationRes;
 
-  const totalDuration = await sequenceDuration(sequence);
-  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+    const totalDuration = await sequenceDuration(sequence);
+    html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
 
-  const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`,
-    {
-      ...step.DefaultSettings,
-      ...config,
-      name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
-      description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
-      type: step.key,
-      calculatedDuration: duration,
-      skipConfig: step.skipConfig,
-      flag: JSON.stringify({
+    const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`,
+      {
         ...step.DefaultSettings,
-        ...config
-      })
-    }
-  );
+        ...config,
+        name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
+        description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
+        type: step.key,
+        calculatedDuration: duration,
+        skipConfig: step.skipConfig,
+        flag: JSON.stringify({
+          ...step.DefaultSettings,
+          ...config
+        })
+      }
+    );
 
-  const button = $(buttonContent);
+    const button = $(buttonContent);
 
-  const extant = html.find(`[data-id="${config.id}"]`);
-  if (extant.length) extant.replaceWith(button);
-  else html.find("#transition-step-list").append(button);
+    const extant = html.find(`[data-id="${config.id}"]`);
+    if (extant.length) extant.replaceWith(button);
+    else html.find("#transition-step-list").append(button);
 
-  setClearDisabled(html);
-  addStepEventListeners(dialog, html, button, config);
+    setClearDisabled(html);
+    addStepEventListeners(dialog, html, button, config);
+  } catch (err) {
+    ui.notifications?.error((err as Error).message, { console: false });
+    console.error(err);
+  }
 }
 
 function addStepEventListeners(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>, button: JQuery<HTMLElement>, config: TransitionConfiguration) {
