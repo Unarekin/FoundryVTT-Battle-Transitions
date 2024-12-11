@@ -3,7 +3,7 @@ import { TransitionSequence } from "../interfaces";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { MeltConfiguration } from "./types";
-import { generateEasingSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
 
 export class MeltStep extends TransitionStep<MeltConfiguration> {
   // #region Properties (9)
@@ -39,7 +39,8 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
       ...MeltStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
-      easingSelect: generateEasingSelectOptions()
+      easingSelect: generateEasingSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions()
     });
   }
 

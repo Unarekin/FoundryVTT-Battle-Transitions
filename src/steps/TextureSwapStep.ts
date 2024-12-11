@@ -2,7 +2,7 @@ import { TextureSwapFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
-import { generateDualStyleSelectOptions } from "./selectOptions";
+import { generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { TextureSwapConfiguration } from "./types";
 
@@ -39,6 +39,7 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
       dualStyleSelect: generateDualStyleSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
     })
   }

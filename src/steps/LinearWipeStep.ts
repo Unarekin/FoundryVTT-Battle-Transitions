@@ -3,7 +3,7 @@ import { TransitionSequence } from "../interfaces";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { LinearWipeConfiguration } from "./types";
-import { generateEasingSelectOptions, generateLinearDirectionSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions } from './selectOptions';
 
 export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   // #region Properties (10)
@@ -45,6 +45,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       directionSelect: generateLinearDirectionSelectOptions()
     });
   }

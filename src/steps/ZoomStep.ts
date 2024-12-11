@@ -2,7 +2,7 @@ import { ZoomFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
 import { createColorTexture, getTargetType, parseConfigurationFormElements } from "../utils";
-import { generateDualStyleSelectOptions, generateEasingSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
+import { generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { SceneChangeConfiguration, TransitionConfiguration, ZoomConfiguration } from "./types";
 import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTargetSelectEventListeners, validateTarget } from "./targetSelectFunctions";
@@ -59,6 +59,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       oldScene: oldScene?.id ?? "",
       newScene: newScene?.id ?? "",
       easingSelect: generateEasingSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       targetType,
       ...generateTargetTypeSelectOptions(oldScene, newScene),
       pointX: Array.isArray(config?.target) ? config.target[0] : 0.5,

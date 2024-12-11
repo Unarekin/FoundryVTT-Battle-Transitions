@@ -3,7 +3,7 @@ import { TransitionSequence } from "../interfaces";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { FadeConfiguration } from "./types";
-import { generateEasingSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
 
 export class FadeStep extends TransitionStep<FadeConfiguration> {
   // #region Properties (9)
@@ -38,6 +38,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
       ...FadeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       easingSelect: generateEasingSelectOptions()
     });
   }

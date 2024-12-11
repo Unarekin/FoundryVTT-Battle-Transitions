@@ -1,6 +1,6 @@
 import { RadialWipeFilter } from "../filters";
 import { createColorTexture, getTargetType, parseConfigurationFormElements } from "../utils";
-import { generateEasingSelectOptions, generateRadialDirectionSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { RadialWipeConfiguration, SceneChangeConfiguration, TransitionConfiguration } from "./types";
 import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTargetSelectEventListeners, validateTarget } from "./targetSelectFunctions";
@@ -50,6 +50,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       targetType,
       oldScene: oldScene?.id ?? "",
       newScene: newScene?.id ?? "",

@@ -3,7 +3,7 @@ import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { BarWipeConfiguration } from "./types";
-import { generateEasingSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
 
 export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
   // #region Properties (9)
@@ -42,6 +42,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       directionSelect: {
         horizontal: "BATTLETRANSITIONS.DIRECTIONS.HORIZONTAL",
         vertical: "BATTLETRANSITIONS.DIRECTIONS.VERTICAL"

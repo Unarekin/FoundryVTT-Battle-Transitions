@@ -2,7 +2,7 @@ import { AngularWipeConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
 import { createColorTexture, parseConfigurationFormElements } from '../utils';
 import { AngularWipeFilter } from '../filters';
-import { generateEasingSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
 
 export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
   // #region Properties (9)
@@ -38,7 +38,8 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
       ...AngularWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
-      easingSelect: generateEasingSelectOptions()
+      easingSelect: generateEasingSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions()
     });
   }
 

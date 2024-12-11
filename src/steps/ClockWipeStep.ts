@@ -4,7 +4,7 @@ import { Easing } from "../types";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ClockWipeConfiguration } from "./types";
-import { generateClockDirectionSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateClockDirectionSelectOptions, generateEasingSelectOptions } from './selectOptions';
 
 export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
   // #region Properties (9)
@@ -44,6 +44,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       clockDirectionSelect: generateClockDirectionSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       directionSelect: {
         top: "BATTLETRANSITIONS.DIRECTIONS.TOP",
         left: "BATTLETRANSITIONS.DIRECTIONS.LEFT",

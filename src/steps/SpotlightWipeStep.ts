@@ -3,7 +3,7 @@ import { TransitionSequence } from '../interfaces';
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SpotlightWipeConfiguration } from "./types";
-import { generateEasingSelectOptions, generateLinearDirectionSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
 
 
 export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration> {
@@ -47,6 +47,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
       directionSelect: generateLinearDirectionSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions()
     });
   }
