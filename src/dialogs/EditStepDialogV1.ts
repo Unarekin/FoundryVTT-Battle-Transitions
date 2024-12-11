@@ -63,6 +63,21 @@ function checkFormValidity(html: JQuery<HTMLElement>) {
   else html.find("button[data-action='ok']").attr("disabled", "true");
 }
 
+function setBackgroundImage(html: JQuery<HTMLElement>) {
+  const val = (html.find("#backgroundImage").val() as string) ?? "";
+
+  if (val) {
+    const tag = document.createElement("img");
+    const img = $(tag);
+    img.addClass("bg-image-preview");
+    img.attr("src", val);
+    html.find("#backgroundImagePreview img").remove();
+    html.find("#backgroundImagePreview").append(img);
+  } else {
+    html.find("#backgroundImagePreview img").remove();
+  }
+}
+
 function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
   // Select number and text fields on focus
   html.find("input[type='number'],input[type='text']").on("focus", e => { (e.currentTarget as HTMLInputElement).select(); })
@@ -83,20 +98,9 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
   });
 
   // log("Background image:", html.find("#backgroundImage"));
-
+  setBackgroundImage(html);
   html.find("#backgroundImage").on("input", () => {
-    const val = (html.find("#backgroundImage").val() as string) ?? "";
-
-    if (val) {
-      const tag = document.createElement("img");
-      const img = $(tag);
-      img.addClass("bg-image-preview");
-      img.attr("src", val);
-      html.find("#backgroundImagePreview img").remove();
-      html.find("#backgroundImagePreview").append(img);
-    } else {
-      html.find("#backgroundImagePreview img").remove();
-    }
+    setBackgroundImage(html);
   });
 
   // Set up tabs

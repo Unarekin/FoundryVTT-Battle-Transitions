@@ -66,6 +66,21 @@ function checkFormValidity(html: JQuery<HTMLElement>) {
 
 }
 
+function setBackgroundImage(html: JQuery<HTMLElement>) {
+  const val = (html.find("#backgroundImage").val() as string) ?? "";
+
+  if (val) {
+    const tag = document.createElement("img");
+    const img = $(tag);
+    img.addClass("bg-image-preview");
+    img.attr("src", val);
+    html.find("#backgroundImagePreview img").remove();
+    html.find("#backgroundImagePreview").append(img);
+  } else {
+    html.find("#backgroundImagePreview img").remove();
+  }
+}
+
 function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>) {
   // Select number and text fields on focus
   html.find("input[type='number'],input[type='text']").on("focus", e => { (e.currentTarget as HTMLInputElement).select(); })
@@ -73,22 +88,9 @@ function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQue
   checkFormValidity(html);
   html.find("input,select").on("input", () => { checkFormValidity(html); });
 
-  // log("Background image:", html.find("#backgroundImage"));
-
+  setBackgroundImage(html);
   html.find("#backgroundImage").on("input", () => {
-    const val = (html.find("#backgroundImage").val() as string) ?? "";
-
-    if (val) {
-      const tag = document.createElement("img");
-      const img = $(tag);
-      img.addClass("bg-image-preview");
-      img.attr("src", val);
-      html.find("#backgroundImagePreview img").remove();
-      html.find("#backgroundImagePreview").append(img);
-    } else {
-      html.find("#backgroundImagePreview img").remove();
-    }
-
+    setBackgroundImage(html);
   });
 
   // Font selector

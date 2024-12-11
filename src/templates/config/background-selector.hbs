@@ -6,31 +6,37 @@
       "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.HINT"
     }}</span>
   <div class="form-group">
+    <table class="no-margins">
+      <tr>
+        <td style="width:50%" valign="top">
+          <select name="backgroundType" id="backgroundType">
+            {{selectOptions bgTypeSelect selected=backgroundType localize=true}}
+          </select>
+        </td>
+        <td valign="top">
+          <section data-background-type="color">
+            <input
+              type="text"
+              data-color-picker="{alphaChannel: true}"
+              value="{{backgroundColor}}"
+              id="backgroundColor"
+              name="backgroundColor"
+            />
+          </section>
+          <section data-background-type="image">
+            <file-picker
+              id="backgroundImage"
+              name="backgroundImage"
+              type="imagevideo"
+              value="{{backgroundImage}}"
+            ></file-picker>
+            <section id="backgroundImagePreview"></section>
+          </section>
+          <section data-background-type="overlay">
 
-    <select name="backgroundType" id="backgroundType">
-      {{selectOptions bgTypeSelect selected=backgroundType localize=true}}
-    </select>
-
-    <section data-background-type="color">
-      <input
-        type="text"
-        data-color-picker="{alphaChannel: true}"
-        value="{{backgroundColor}}"
-        id="backgroundColor"
-        name="backgroundColor"
-      />
-    </section>
-    <section data-background-type="image">
-      <file-picker
-        id="backgroundImage"
-        name="backgroundImage"
-        type="imagevideo"
-        value="{{backgroundImage}}"
-      ></file-picker>
-      <section id="backgroundImagePreview"></section>
-    </section>
-    <section data-background-type="overlay">
-
-    </section>
+          </section>
+        </td>
+      </tr>
+    </table>
   </div>
 </fieldset>
