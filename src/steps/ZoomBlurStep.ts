@@ -62,7 +62,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     const dualStyle = elem.find("#dualStyle").val() as string;
     return new ZoomBlurStep({
       ...ZoomBlurStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "duration", "label"),
+      ...parseConfigurationFormElements(elem, "id", "duration", "label", "easing"),
       maxStrength,
       innerRadius,
       applyToOverlay: dualStyle === "overlay" || dualStyle === "both",
