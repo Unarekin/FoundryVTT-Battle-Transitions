@@ -22,6 +22,7 @@ export * from './SpiralShutter';
 export * from './SpiralWipe';
 export * from './SpotlightWipe';
 export * from './TextureSwap';
+export * from './TwistMigrator';
 export * from './Video';
 export * from './Wait';
 export * from './WaveWipe';
