@@ -82,11 +82,11 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): RadialWipeStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
-    const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";
+    const backgroundImage = elem.find("#backgroundImage").val() as string ?? "";
     const target = getTargetFromForm(elem);
     return new RadialWipeStep({
       ...RadialWipeStep.DefaultSettings,
-      serializedTexture,
+      backgroundImage,
       target,
       ...parseConfigurationFormElements(elem, "id", "duration", "radial", "backgroundType", "backgroundColor", "easing", "label")
     });

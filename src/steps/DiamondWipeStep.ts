@@ -58,7 +58,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
     return new DiamondWipeStep({
       ...DiamondWipeStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     })
   }
 

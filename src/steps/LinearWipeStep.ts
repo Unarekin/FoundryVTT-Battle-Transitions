@@ -66,7 +66,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
     return new LinearWipeStep({
       ...LinearWipeStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     });
   }
 

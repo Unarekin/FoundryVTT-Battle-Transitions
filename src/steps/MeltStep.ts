@@ -60,7 +60,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
     return new MeltStep({
       ...MeltStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     });
   }
 

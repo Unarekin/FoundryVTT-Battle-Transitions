@@ -64,11 +64,11 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
 
   public static fromFormElement(form: HTMLFormElement): SpotlightWipeStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
-    const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";
+    const backgroundImage = elem.find("#backgroundImage").val() as string ?? "";
 
     return new SpotlightWipeStep({
       ...SpotlightWipeStep.DefaultSettings,
-      serializedTexture,
+      backgroundImage,
       ...parseConfigurationFormElements(elem, "id", "duration", "direction", "radial", "backgroundType", "backgroundColor", "easing", "label")
     });
   }

@@ -56,11 +56,11 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): WaveWipeStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
-    const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";
+    const backgroundImage = elem.find("#backgroundImage").val() as string ?? "";
 
     return new WaveWipeStep({
       ...WaveWipeStep.DefaultSettings,
-      serializedTexture,
+      backgroundImage,
       ...parseConfigurationFormElements(elem, "id", "label", "duration", "backgroundType", "backgroundColor", "easing", "direction")
     })
   }

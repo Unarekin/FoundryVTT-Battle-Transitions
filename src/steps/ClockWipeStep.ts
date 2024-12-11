@@ -71,7 +71,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     return new ClockWipeStep({
       ...ClockWipeStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     })
   }
 

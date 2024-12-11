@@ -64,7 +64,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     return new BilinearWipeStep({
       ...BilinearWipeStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     });
   }
 

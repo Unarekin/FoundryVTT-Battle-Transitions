@@ -66,7 +66,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     return new BarWipeStep({
       ...BarWipeStep.DefaultSettings,
       ...parseConfigurationFormElements(elem, "id", "duration", "bars", "direction", "easing", "backgroundType", "backgroundColor", "label"),
-      serializedTexture: backgroundImage
+      backgroundImage
     })
   }
 

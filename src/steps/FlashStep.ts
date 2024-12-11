@@ -60,7 +60,7 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
     return new FlashStep({
       ...FlashStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     })
   }
 

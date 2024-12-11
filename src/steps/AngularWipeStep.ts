@@ -59,7 +59,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     return new AngularWipeStep({
       ...AngularWipeStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     });
   }
 

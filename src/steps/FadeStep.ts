@@ -59,7 +59,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
     return new FadeStep({
       ...FadeStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     })
   }
 

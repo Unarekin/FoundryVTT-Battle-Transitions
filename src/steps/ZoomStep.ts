@@ -94,7 +94,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): ZoomStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
-    const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";
+    const backgroundImage = elem.find("#backgroundImage").val() as string ?? "";
 
     const dualStyle = elem.find("#dualStyle").val() as string;
 
@@ -103,7 +103,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     const config: ZoomConfiguration = {
       ...ZoomStep.DefaultSettings,
       ...parseConfigurationFormElements(elem, "id", "label", "duration", "easing", "amount", "backgroundType", "backgroundColor", "clampBounds"),
-      serializedTexture,
+      backgroundImage,
       target,
       applyToOverlay: dualStyle === "overlay" || dualStyle === "both",
       applyToScene: dualStyle === "scene" || dualStyle === "both"
