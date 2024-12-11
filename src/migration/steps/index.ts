@@ -6,6 +6,7 @@ export * from './DiamondWipe';
 export * from './Fade';
 export * from './FireDissolve';
 export * from './Flash';
+export * from './HueShiftMigrator';
 export * from './Invert';
 export * from './LinearWipe';
 export * from './Macro';
