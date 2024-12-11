@@ -74,7 +74,11 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
     (html.find("#selected-sequence-steps") as any).sortable({
       handle: ".drag-handle",
       containment: "parent",
-      axis: "y"
+      axis: "y",
+      update: () => {
+        const index = html.find("#selected-sequence").data("index") as number;
+        updateSequenceConfiguration(html, index);
+      }
     })
   }
 
@@ -340,8 +344,12 @@ async function upsertStepButton(html: JQuery<HTMLElement>, config: TransitionCon
   addStepEventListeners(html, button, config);
 
   // Update serialized version on parent
-  const index = button.parents("[data-index]").data("index") as number;
 
+  const index = button.parents("[data-index]").data("index") as number;
+  updateSequenceConfiguration(html, index);
+}
+
+function updateSequenceConfiguration(html: JQuery<HTMLElement>, index: number) {
   const sequence = buildTransition(html);
   html.find(`#sequence-list [data-index="${index}"]`).attr("data-sequence", JSON.stringify(sequence));
 }
