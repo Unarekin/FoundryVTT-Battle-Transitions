@@ -74,7 +74,7 @@ export class BattleTransition {
 
   public static async BuildTransition(scene?: Scene): Promise<void> {
     const transition = await transitionBuilderDialog(scene);
-    if (transition) await BattleTransition.executeSequence(transition);
+    if (transition) await BattleTransition.ExecuteSequence(transition);
   }
 
   public static async SelectScene(omitCurrent: boolean = false): Promise<Scene | null> {
@@ -180,12 +180,52 @@ export class BattleTransition {
   }
 
   /**
-   * Validates a transition sequence and triggers it for all connected clients
-   * @param {TransitionConfiguration[]} sequence - {@link TransitionConfiguration}[] representing steps of the sequence
+   * Executes a given transition sequence.
+   * 
+   * @remarks This form expects that the sequence has a SceneChangeStep at the start.
+   * @param {TransitionConfiguration[]} sequence - {@link TransitionConfiguration}[]
    */
-  public static async executeSequence(sequence: TransitionConfiguration[]): Promise<void> {
-    // Check for scenechange step
-    if (sequence[0].type !== "scenechange") throw new InvalidSceneError(typeof undefined);
+  public static async ExecuteSequence(sequence: TransitionConfiguration[]): Promise<void>
+  /**
+   * Executes a given sequence
+   * @param {string} sceneId - ID of the {@link Scene} to which to transition
+   * @param {TransitionConfiguration[]} sequence - {@link TransitionConfiguration}[]
+   */
+  public static async ExecuteSequence(sceneId: string, sequence: TransitionConfiguration[]): Promise<void>
+  /**
+   * Executes a given sequence
+   * @param {string} sceneName - Name of the {@link Scene} to which to transition.
+   * @param {TransitionConfiguration[]} sequence - {@link TransitionConfiguration}[]
+   */
+  public static async ExecuteSequence(sceneName: string, sequence: TransitionConfiguration[]): Promise<void>
+  /**
+   * Executes a given sequence
+   * @param {string} sceneUUID - UUID of the {@link Scene} to which to transition.
+   * @param {TransitionConfiguration[]} sequence - {@link TransitionConfiguration}[]
+   */
+  public static async ExecuteSequence(sceneUUID: string, sequence: TransitionConfiguration[]): Promise<void>
+  /**
+   * Executes a given sequence
+   * @param {Scene} scene - {@link Scene} to which to transition.
+   * @param {TransitionConfiguration[]} sequence - {@link TransitionConfiguration}[]
+   */
+  public static async ExecuteSequence(scene: Scene, sequence: TransitionConfiguration[]): Promise<void>
+  public static async ExecuteSequence(...args: unknown[]): Promise<void> {
+    const sequence = (Array.isArray(args[0]) ? args[0] : args[1]) as TransitionConfiguration[];
+
+    if (typeof args[0] === "string" || args[0] instanceof Scene) {
+      const scene = (args[0] instanceof Scene) ? args[0] : coerceScene(args[0]);
+      if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof args[0] === "string" ? args[0] : typeof args[0]);
+      const sceneStepClass = getStepClassByKey("scenechange");
+      if (!sceneStepClass) throw new InvalidTransitionError("scenechange");
+
+      const sceneStep: SceneChangeConfiguration = {
+        ...sceneStepClass.DefaultSettings,
+        scene: scene.id ?? ""
+      };
+
+      sequence.unshift(sceneStep);
+    }
 
     // Validate the target scene
     const scene = (game.scenes?.get((sequence[0] as SceneChangeConfiguration).scene)) as Scene;
@@ -196,6 +236,21 @@ export class BattleTransition {
 
     // Socket time baybee
     await SocketHandler.execute(sequence);
+
+  }
+
+  /**
+   * Adds a preconfigured sequence to the current sequence chain.
+   * @param {TransitionConfiguration[]} sequence {@link TransitionConfiguration}[]
+   * @returns 
+   */
+  public addSequence(sequence: TransitionConfiguration[]): this {
+    this.#sequence.push(...sequence);
+    return this;
+  }
+
+  public executeSequence(sequence: TransitionConfiguration[]): Promise<void> {
+    return this.addSequence(sequence).execute();
   }
 
   /**
