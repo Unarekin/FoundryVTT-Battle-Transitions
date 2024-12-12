@@ -10,6 +10,9 @@
       "REMOVEOVERLAYDEPRECATION": "The 'removeOverlay' function is deprecated, and will be removed in a future update.  Please use 'hideOverlay' instead.",
       "RESTOREOVERLAYDEPRECATION": "The 'restoreOverlay' function is deprecated, and will be removed in a future update.  Please use 'showOverlay' instead."
     },
+    "INFO": {
+      "SCENESMIGRATED": "Battle Transitions: Updated {count} scene(s) to most recent configuration format."
+    },
     "DIRECTIONS": {
       "BOTTOM": "Bottom",
       "BOTTOMLEFT": "Bottom Left",

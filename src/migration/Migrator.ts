@@ -12,7 +12,8 @@ export abstract class Migrator<t> {
 
   // #region Public Methods (2)
 
-  public Migrate(old: unknown): t {
+  public Migrate(old: unknown): t | undefined {
+    if (!old) return undefined;
     const version = this.Version(old);
     if (semver.gt(version, this.NewestVersion)) throw new NewerVersionError(version);
     if (!version) throw new InvalidVersionError(typeof version === "string" ? version : version);
@@ -39,6 +40,7 @@ export abstract class Migrator<t> {
   }
 
   public NeedsMigration(data: unknown): boolean {
+    if (typeof data === "undefined") return false;
     const version = this.Version(data);
     if (semver.gt(version, this.NewestVersion)) throw new NewerVersionError(version);
     return semver.lt(version, this.NewestVersion);
