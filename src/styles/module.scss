@@ -11,6 +11,11 @@
   }
 }
 
+[data-action="export-json"].disabled {
+  color: #808080;
+  pointer-events: none;
+}
+
 .transition-builder .dialog-buttons {
   max-height: 36px;
 }

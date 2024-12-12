@@ -1,7 +1,7 @@
 import { InvalidSceneError, InvalidTransitionError } from "../errors";
 import { SceneChangeConfiguration, TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
-import { formatDuration, getStepClassByKey, localize, uploadJSON } from "../utils";
+import { downloadJSON, formatDuration, getStepClassByKey, localize, uploadJSON } from "../utils";
 import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from "./functions";
 
 export class TransitionBuilderV2 {
@@ -88,6 +88,25 @@ function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQue
     }
   })
   setClearDisabled(html);
+
+  // Download
+  html.find(`[data-action="export-json"]`).on("click", e => {
+    if ($(e.currentTarget).is(":visible")) {
+      e.preventDefault();
+      const sequence = buildTransitionFromForm(html);
+      downloadJSON(sequence, `${localize("BATTLETRANSITIONS.COMMON.TRANSITION")}.json`);
+    }
+  });
+
+  setExportEnabled(html);
+}
+
+function setExportEnabled(html: JQuery<HTMLElement>) {
+  if (html.find("#transition-step-list").children().length) {
+    html.find("[data-action='export-json']").removeClass("disabled");
+  } else {
+    html.find("[data-action='export-json']").addClass("disabled");
+  }
 }
 
 async function clearButtonhandler(html: JQuery<HTMLElement>) {
@@ -102,6 +121,7 @@ function setClearDisabled(html: JQuery<HTMLElement>) {
   const sequence = buildTransitionFromForm(html);
   if (!sequence.length) html.find("#clear-steps").attr("disabled", "true");
   else html.find("#clear-steps").removeAttr("disabled");
+  setExportEnabled(html);
 }
 
 async function uploadHandler(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>) {
@@ -188,7 +208,9 @@ async function upsertStepButton(dialog: foundry.applications.api.DialogV2, html:
     else html.find("#transition-step-list").append(button);
 
     setClearDisabled(html);
+    setExportEnabled(html);
     addStepEventListeners(dialog, html, button, config);
+
   } catch (err) {
     ui.notifications?.error((err as Error).message, { console: false });
     console.error(err);
@@ -207,6 +229,7 @@ function addStepEventListeners(dialog: foundry.applications.api.DialogV2, html: 
         if (confirm) {
           button.remove();
           setClearDisabled(html);
+          setExportEnabled(html);
         }
       }).catch((err: Error) => {
         ui.notifications?.error(err.message, { console: false });

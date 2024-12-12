@@ -83,14 +83,23 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
     }
   })
   setClearDisabled(html);
+  setExportEnabled(html);
 }
 
+function setExportEnabled(html: JQuery<HTMLElement>) {
+  if (html.find("#transition-step-list").children().length) {
+    html.find("[data-action='export-json']").removeClass("disabled");
+  } else {
+    html.find("[data-action='export-json']").addClass("disabled");
+  }
+}
 async function clearButtonhandler(html: JQuery<HTMLElement>) {
   const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
   if (!confirmed) return;
   html.find("#transition-step-list").children().remove();
   await updateTotalDuration(html);
   setClearDisabled(html);
+  setExportEnabled(html);
 }
 
 function setClearDisabled(html: JQuery<HTMLElement>) {
@@ -180,6 +189,7 @@ async function upsertStepButton(dialog: Dialog, html: JQuery<HTMLElement>, confi
     else html.find("#transition-step-list").append(button);
 
     addStepEventListeners(dialog, html, button, config);
+    setExportEnabled(html);
   } catch (err) {
     ui.notifications?.error((err as Error).message, { console: false });
     console.error(err);
@@ -199,6 +209,7 @@ function addStepEventListeners(dialog: Dialog, html: JQuery<HTMLElement>, button
         if (confirm) {
           button.remove();
           dialog.setPosition();
+          setExportEnabled(html);
         }
       }).catch(err => {
         ui.notifications?.error((err as Error).message, { console: false });
