@@ -14,6 +14,7 @@ export abstract class Migrator<t> {
 
   public Migrate(old: unknown): t | undefined {
     if (!old) return undefined;
+
     const version = this.Version(old);
     if (semver.gt(version, this.NewestVersion)) throw new NewerVersionError(version);
     if (!version) throw new InvalidVersionError(typeof version === "string" ? version : version);

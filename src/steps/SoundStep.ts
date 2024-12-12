@@ -66,7 +66,10 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   }
 
   //public static getDuration(config: PixelateConfiguration): number { return { ...PixelateStep.DefaultSettings, ...config }.duration }
-  public static getDuration(config: SoundConfiguration): Promise<number> {
+  public static async getDuration(config: SoundConfiguration): Promise<number> {
+    const exist = await srcExists(config.file);
+    if (!exist) return 0;
+
     return new Promise<number>((resolve, reject) => {
       const audio = new Audio();
       audio.onloadedmetadata = () => { resolve(Math.round(audio.duration * 1000)); };
