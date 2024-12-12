@@ -2,10 +2,10 @@ import { coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
 import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
-import { BilinearDirection, ClockDirection, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
+import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
 import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, log, serializeTexture, shouldUseAppV2 } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { transitionBuilderDialog } from "./dialogs";
@@ -442,15 +442,18 @@ export class BattleTransition {
   }
 
   /**
-   * Removes any active transition effects from the overlay.
+   * Removes any active transition effects from the overlay, the scene, or both
+   * @param {DualStyle} [style=0] - {@link DualStyle}
    */
-  public clearEffects(): this {
+  public clearEffects(style: DualStyle = DualStyle.Both): this {
     const step = getStepClassByKey("cleareffects");
     if (!step) throw new InvalidTransitionError("cleareffects");
     this.#sequence.push({
       ...step.DefaultSettings,
-      id: foundry.utils.randomID()
-    });
+      id: foundry.utils.randomID(),
+      applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
+      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
+    } as ClearEffectsConfiguration);
     return this;
   }
 
@@ -533,9 +536,10 @@ export class BattleTransition {
    * Changes the current overlay texture to another for a specified amount of time
    * @param {TextureLike} texture - {@link TextureLike}
    * @param {number} [duration] - Duration, in milliseconds, for this effect to last
+   * @param {DualStyle} [style=0] - 0 = Overlay, 1 = Scene, 2 = Both
    * @returns 
    */
-  public flash(texture: TextureLike, duration: number): this {
+  public flash(texture: TextureLike, duration: number, style: DualStyle = DualStyle.Overlay): this {
     const step = getStepClassByKey("flash");
     if (!step) throw new InvalidTransitionError("flash");
 
@@ -543,7 +547,9 @@ export class BattleTransition {
     this.#sequence.push({
       ...step.DefaultSettings,
       duration,
-      serializedTexture
+      serializedTexture,
+      applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
+      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
     } as FlashConfiguration);
     return this;
   }
@@ -561,14 +567,19 @@ export class BattleTransition {
    * 
    * @param {number} amount - Amount by which to shift the hue
    * @param {number} [duration=0] - Duration, in milliseconds, the shift should take to complete
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @param {DualStyle} [style=0] - {@link DualStyle}
    */
-  public hueShift(amount: number, duration: number = 0): this {
+  public hueShift(amount: number, duration: number = 0, easing: Easing = "none", style: DualStyle = DualStyle.Overlay): this {
     const step = getStepClassByKey("hueshift");
     if (!step) throw new InvalidTransitionError("hueshift");
     const config = {
       ...step.DefaultSettings,
       maxShift: amount,
-      duration
+      duration,
+      easing,
+      applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
+      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
     };
     this.#sequence.push(config);
     return this;
@@ -576,14 +587,17 @@ export class BattleTransition {
 
   /**
    * Inverts the current overlay texture
+   * @param {DualStyle} [style=0] - 0 = Overlay, 1 = Scene, 2 = Both
    * @returns 
    */
-  public invert(): this {
+  public invert(style: DualStyle = DualStyle.Overlay): this {
     const step = getStepClassByKey("invert");
     if (!step) throw new InvalidTransitionError("invert");
     this.#sequence.push({
       ...step.DefaultSettings,
-      id: foundry.utils.randomID()
+      id: foundry.utils.randomID(),
+      applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
+      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
     } as InvertConfiguration);
     return this;
   }
@@ -723,14 +737,19 @@ export class BattleTransition {
    * Progressively increases the relative size of displayed pixels
    * @param {number} [maxSize=10] - Relative size of pixels
    * @param {number} [duration=1000] - Duration, in milliseconds, to scale up the pixels
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @param {DualStyle} [style=0] - 0 for overlay, 1 for scene, 2 for both
    */
-  public pixelate(maxSize: number = 100, duration: number = 1000): this {
+  public pixelate(maxSize: number = 100, duration: number = 1000, easing: Easing = "none", style: DualStyle = 0): this {
     const step = getStepClassByKey("pixelate");
     if (!step) throw new InvalidTransitionError("pixelate");
     const config = {
       ...step.DefaultSettings,
       maxSize,
-      duration
+      duration,
+      easing,
+      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both,
+      applyToScene: style === DualStyle.Scene || style === DualStyle.Both
     };
     this.#sequence.push(config);
 
@@ -1032,25 +1051,40 @@ export class BattleTransition {
   /**
    * Swaps the current overlay texture
    * @param {TextureLike} texture - {@link TextureLike}
+   * @param {DualStyle} style - 0 = Overlay, 1 = Scene, 2 = Both
    * @returns 
    */
-  public textureSwap(texture: TextureLike): this {
+  public textureSwap(texture: TextureLike, style: DualStyle = DualStyle.Overlay): this {
     const serializedTexture = serializeTexture(texture);
     this.#sequence.push({
       type: "textureswap",
       serializedTexture,
       backgroundType: backgroundType(texture),
+      applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
+      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
     } as TextureSwapConfiguration);
 
     return this;
   }
 
-  public twist(duration: number = 1000, direction: ClockDirection = "clockwise", maxAngle: number = 10): this {
+  /**
+   * Twists the screen
+   * @param {number} [duration=1000] - Duration, in milliseconds, the animation should last
+   * @param {ClockDirection} [direction ="clockwise"] - {@link ClockDirection}
+   * @param {number} [maxAngle =10] - Amount to twist
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @param {DualStyle} [style=0] - 0 = Overlay, 1 = Scene, 2= Both
+   * @returns 
+   */
+  public twist(duration: number = 1000, direction: ClockDirection = "clockwise", maxAngle: number = 10, easing: Easing = "none", style: DualStyle = DualStyle.Overlay): this {
     this.#sequence.push({
       type: "twist",
       duration,
       direction,
-      maxAngle
+      maxAngle,
+      easing,
+      applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
+      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
     } as TwistConfiguration);
 
     return this;
@@ -1127,13 +1161,14 @@ export class BattleTransition {
    * @param {boolean} [clampBounds=false] - If true, will prevent the texture from leaving the boundaries of its containing sprite when zooming out.
    * @param {TextureLike} [bg="transparent"] - {@link TextureLike} for the background displayed when zooming out if clampBounds is false.
    * @param {Easing} [easing="none"] - {@link Easing} to use when animating the transition.
+   * @param {DualStyle} [style=0] - 0 = Overlay, 1 = Scene, 2 = Both
    * @returns 
    */
-  public zoom(amount: number, duration: number = 1000, arg: ZoomArg = [0.5, 0.5], clampBounds: boolean = false, bg: TextureLike = "transparent", easing: Easing = "none", background: TextureLike = "transparent"): this {
+  public zoom(amount: number, duration: number = 1000, arg: ZoomArg = [0.5, 0.5], clampBounds: boolean = false, background: TextureLike = "transparent", easing: Easing = "none", style: DualStyle = DualStyle.Overlay): this {
     const step = getStepClassByKey("zoom");
     if (!step) throw new InvalidTransitionError("zoom");
 
-    const serializedTexture = serializeTexture(bg);
+    const serializedTexture = serializeTexture(background);
     const config: ZoomConfiguration = {
       ...(step.DefaultSettings as ZoomConfiguration),
       amount,
@@ -1141,7 +1176,9 @@ export class BattleTransition {
       clampBounds,
       serializedTexture,
       backgroundType: backgroundType(background),
-      easing
+      easing,
+      applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
+      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
     };
 
     if (Array.isArray(arg)) {
@@ -1162,12 +1199,24 @@ export class BattleTransition {
     return this;
   }
 
-  public zoomBlur(duration: number = 1000, maxStrength: number = 0.5, innerRadius: number = 0): this {
+  /**
+   * Simultaneously zoom and blur the screen
+   * @param {number} [duration=1000] - Duration in milliseconds the animation should take
+   * @param {number} [maxStrength=0.5] - Maximum strength of effect
+   * @param {number} [innerRadius=0] - Radius of a circle in the center of the effect that is unaffected
+   * @param {Easing} [easing="none"] - {@link Easing}
+   * @param {DualStyle} [style=0] - 0 = Overlay, 1 = Scene, 2 = Both
+   * @returns 
+   */
+  public zoomBlur(duration: number = 1000, maxStrength: number = 0.5, innerRadius: number = 0, easing: Easing = "none", style: DualStyle = DualStyle.Overlay): this {
     this.#sequence.push({
       type: "zoomblur",
       duration,
       maxStrength,
       innerRadius,
+      easing,
+      applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
+      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
     } as ZoomBlurConfiguration)
 
     return this;
