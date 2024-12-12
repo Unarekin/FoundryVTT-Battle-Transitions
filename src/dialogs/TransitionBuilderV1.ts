@@ -83,14 +83,23 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
     }
   })
   setClearDisabled(html);
+  setExportEnabled(html);
 }
 
+function setExportEnabled(html: JQuery<HTMLElement>) {
+  if (html.find("#transition-step-list").children().length) {
+    html.find("[data-action='export-json']").removeClass("disabled");
+  } else {
+    html.find("[data-action='export-json']").addClass("disabled");
+  }
+}
 async function clearButtonhandler(html: JQuery<HTMLElement>) {
   const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
   if (!confirmed) return;
   html.find("#transition-step-list").children().remove();
   await updateTotalDuration(html);
   setClearDisabled(html);
+  setExportEnabled(html);
 }
 
 function setClearDisabled(html: JQuery<HTMLElement>) {
@@ -149,36 +158,42 @@ async function updateTotalDuration(html: JQuery<HTMLElement>) {
 }
 
 async function upsertStepButton(dialog: Dialog, html: JQuery<HTMLElement>, config: TransitionConfiguration) {
-  const step = getStepClassByKey(config.type);
-  if (!step) throw new InvalidTransitionError(config.type);
+  try {
+    const step = getStepClassByKey(config.type);
+    if (!step) throw new InvalidTransitionError(config.type);
 
-  const sequence = [...buildTransitionFromForm(html), config];
-  const durationRes = step.getDuration(config, sequence);
-  const duration = (durationRes instanceof Promise) ? (await durationRes) : durationRes;
+    const sequence = [...buildTransitionFromForm(html), config];
+    const durationRes = step.getDuration(config, sequence);
+    const duration = (durationRes instanceof Promise) ? (await durationRes) : durationRes;
 
-  await updateTotalDuration(html);
+    await updateTotalDuration(html);
 
-  const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
-    ...step.DefaultSettings,
-    ...config,
-    name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
-    description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
-    type: step.key,
-    calculatedDuration: duration,
-    skipConfig: step.skipConfig,
-    flag: JSON.stringify({
+    const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
       ...step.DefaultSettings,
-      ...config
-    })
-  });
+      ...config,
+      name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
+      description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
+      type: step.key,
+      calculatedDuration: duration,
+      skipConfig: step.skipConfig,
+      flag: JSON.stringify({
+        ...step.DefaultSettings,
+        ...config
+      })
+    });
 
-  const button = $(buttonContent);
+    const button = $(buttonContent);
 
-  const extant = html.find(`[data-id="${config.id}"]`);
-  if (extant.length) extant.replaceWith(button);
-  else html.find("#transition-step-list").append(button);
+    const extant = html.find(`[data-id="${config.id}"]`);
+    if (extant.length) extant.replaceWith(button);
+    else html.find("#transition-step-list").append(button);
 
-  addStepEventListeners(dialog, html, button, config);
+    addStepEventListeners(dialog, html, button, config);
+    setExportEnabled(html);
+  } catch (err) {
+    ui.notifications?.error((err as Error).message, { console: false });
+    console.error(err);
+  }
 }
 
 function addStepEventListeners(dialog: Dialog, html: JQuery<HTMLElement>, button: JQuery<HTMLElement>, config: TransitionConfiguration) {
@@ -194,6 +209,7 @@ function addStepEventListeners(dialog: Dialog, html: JQuery<HTMLElement>, button
         if (confirm) {
           button.remove();
           dialog.setPosition();
+          setExportEnabled(html);
         }
       }).catch(err => {
         ui.notifications?.error((err as Error).message, { console: false });

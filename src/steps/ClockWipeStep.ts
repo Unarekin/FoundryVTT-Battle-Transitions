@@ -4,7 +4,8 @@ import { Easing } from "../types";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ClockWipeConfiguration } from "./types";
-import { generateClockDirectionSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateClockDirectionSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
   // #region Properties (9)
@@ -18,7 +19,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     easing: "none" as Easing,
     clockDirection: "clockwise",
     direction: "top",
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
@@ -42,8 +43,10 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
       ...ClockWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
       clockDirectionSelect: generateClockDirectionSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       directionSelect: {
         top: "BATTLETRANSITIONS.DIRECTIONS.TOP",
         left: "BATTLETRANSITIONS.DIRECTIONS.LEFT",
@@ -70,7 +73,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     return new ClockWipeStep({
       ...ClockWipeStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     })
   }
 

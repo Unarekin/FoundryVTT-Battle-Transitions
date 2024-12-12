@@ -3,7 +3,8 @@ import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SpiralShutterConfiguration } from "./types";
 import { SpiralShutterFilter } from "../filters";
-import { generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 
 export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration> {
@@ -17,7 +18,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
     radial: "inside",
     easing: "none",
     bgSizingMode: "stretch",
-    version: "1.1.0",
+    version: "1.1.6",
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000"
@@ -40,7 +41,9 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
       ...SpiralShutterStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),
       directionSelect: generateClockDirectionSelectOptions()
     });

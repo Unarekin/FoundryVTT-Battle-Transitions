@@ -2,7 +2,8 @@ import { AngularWipeConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
 import { createColorTexture, parseConfigurationFormElements } from '../utils';
 import { AngularWipeFilter } from '../filters';
-import { generateEasingSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { reconcileBackground } from './functions';
 
 export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
   // #region Properties (9)
@@ -14,7 +15,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     type: "angularwipe",
     duration: 1000,
     easing: "none",
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
@@ -38,7 +39,9 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
       ...AngularWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
-      easingSelect: generateEasingSelectOptions()
+      ...(config ? reconcileBackground(config) : {}),
+      easingSelect: generateEasingSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions()
     });
   }
 
@@ -58,7 +61,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     return new AngularWipeStep({
       ...AngularWipeStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     });
   }
 

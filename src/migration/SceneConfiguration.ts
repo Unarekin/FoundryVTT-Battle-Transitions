@@ -1,15 +1,16 @@
 import { SceneConfiguration } from "../interfaces";
 import { Migrator } from "./Migrator";
-import { InvalidTransitionError, UnableToMigrateError } from "../errors";
+import { InvalidTransitionError, MigratorNotFoundError } from "../errors";
 import { getStepClassByKey } from "../utils";
 import { TransitionConfiguration } from "../steps";
 import { DataMigration } from "../DataMigration";
 
-const CURRENT_VERSION = "1.1.0";
+const CURRENT_VERSION = "1.1.6";
 
 export class SceneConfigurationMigrator extends Migrator<SceneConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => SceneConfiguration; } = {
-    "~1.0": v10X
+    "~1.0": v10X,
+    "<=1.1.5": v115
   }
 
   public Version(data: unknown): string {
@@ -34,24 +35,53 @@ interface V10Config {
   }[]
 }
 
-function v10X(old: V10Config): SceneConfiguration {
-  const updated: SceneConfiguration = {
-    autoTrigger: old.config?.autoTrigger ?? false,
-    version: "1.1.0",
-    isTriggered: false,
-    sequence: []
-  };
+interface V115Config {
+  autoTrigger: boolean;
+  sequence: TransitionConfiguration[];
+  version: string;
+  isTriggered?: boolean;
+}
 
-  if (Array.isArray(old.steps) && old.steps.length) {
-    updated.sequence = old.steps.map(step => {
+function v115(old: V115Config): SceneConfiguration {
+  return {
+    ...old,
+    sequence: migrateSequence(old.sequence),
+    version: "1.1.6"
+  }
+}
+
+function v10X(old: V10Config): SceneConfiguration {
+  return {
+    autoTrigger: old.config?.autoTrigger ?? false,
+    version: "1.1.6",
+    isTriggered: false,
+    sequence: migrateSequence(old.steps as any[])
+  } as SceneConfiguration;
+}
+
+function migrateSequence(sequence: any[]): TransitionConfiguration[] {
+  if (Array.isArray(sequence)) {
+    if (!sequence.length) return [];
+    return sequence.map(step => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
       const stepClass = getStepClassByKey(step.type);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
       if (!stepClass) throw new InvalidTransitionError(typeof step.type === "string" ? step.type : typeof step.class);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       const migrator = (DataMigration as any).TransitionSteps[step.type] as Migrator<TransitionConfiguration>;
-      if (!migrator) throw new UnableToMigrateError(typeof undefined, __MODULE_VERSION__);
+      if (!migrator) throw new MigratorNotFoundError(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+        typeof step.type === "string" ? step.type : typeof step.type,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+        typeof step.version === "string" ? step.version : typeof step.version,
+        CURRENT_VERSION);
+      // if (!migrator) throw new UnableToMigrateError(typeof undefined, __MODULE_VERSION__);
       if (migrator.NeedsMigration(step)) return migrator.Migrate(step);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       else return step;
     }) as TransitionConfiguration[];
+
+  } else {
+    return []
   }
-  return updated;
 }

@@ -3,7 +3,8 @@ import { TransitionSequence } from "../interfaces";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { MeltConfiguration } from "./types";
-import { generateEasingSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 export class MeltStep extends TransitionStep<MeltConfiguration> {
   // #region Properties (9)
@@ -14,7 +15,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
     id: "",
     type: "melt",
     duration: 1000,
-    version: "1.1.0",
+    version: "1.1.6",
     easing: "none",
     bgSizingMode: "stretch",
     backgroundType: "color",
@@ -39,7 +40,9 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
       ...MeltStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
-      easingSelect: generateEasingSelectOptions()
+      ...(config ? reconcileBackground(config) : {}),
+      easingSelect: generateEasingSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions()
     });
   }
 
@@ -59,7 +62,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
     return new MeltStep({
       ...MeltStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     });
   }
 

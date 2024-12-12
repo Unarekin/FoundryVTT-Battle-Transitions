@@ -57,8 +57,7 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
     })
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public static addEventListeners(elem: HTMLElement | JQuery<HTMLElement>, config?: TransitionConfiguration): void {
+  public static addEventListeners(elem: HTMLElement | JQuery<HTMLElement>, config?: RepeatConfiguration): void {
     const html = $(elem);
     setStyle(html);
 
@@ -79,6 +78,16 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
       }
     })
     setClearDisabled(html);
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    (html.find("#transition-step-list") as any).sortable({
+      handle: ".drag-handle",
+      containment: "parent",
+      axis: "y"
+    });
+
+    // upsert sequence
+    void addSequence(html, config?.sequence ?? []);
   }
 
 
@@ -98,12 +107,13 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
     const elem = $(form) as JQuery<HTMLFormElement>;
 
     const sequence = buildTransition(elem);
+
     return new RepeatStep({
       ...RepeatStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "iterations", "style", "delay", "label"),
       id: foundry.utils.randomID(),
+      ...parseConfigurationFormElements(elem, "id", "iterations", "style", "delay", "label"),
       sequence
-    })
+    });
   }
 
   // #endregion Public Static Methods (7)
@@ -316,4 +326,11 @@ async function updateTotalDuration(html: JQuery<HTMLElement>) {
   const sequence = buildTransitionFromForm(html);
   const totalDuration = await sequenceDuration(sequence);
   html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+}
+
+
+async function addSequence(html: JQuery<HTMLElement>, sequence: TransitionConfiguration[]) {
+  for (const item of sequence) {
+    await upsertStepButton(html, item);
+  }
 }

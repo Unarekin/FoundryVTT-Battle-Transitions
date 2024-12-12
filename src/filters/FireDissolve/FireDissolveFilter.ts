@@ -10,7 +10,7 @@ type FireDissolveUniforms = {
   burn_size: number;
 }
 
-export const defaultBurnTexture = createGradient1DTexture(1024, new PIXI.Color("#ff0400"), new PIXI.Color("#ffff01"));
+export const defaultBurnTexture = createGradient1DTexture(window.innerWidth, new PIXI.Color("#FF0000"), new PIXI.Color("#ffff00"));
 
 export class FireDissolveFilter extends CustomFilter<FireDissolveUniforms> {
 

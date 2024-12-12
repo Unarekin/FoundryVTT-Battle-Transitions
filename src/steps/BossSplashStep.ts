@@ -1,3 +1,4 @@
+import { ModuleNotActiveError } from '../errors';
 import { TransitionSequence } from '../interfaces';
 import { getActors, getCompendiumFromUUID, isValidFontSize, parseConfigurationFormElements, parseFontSize, wait } from '../utils';
 import { generateFontSelectOptions } from './selectOptions';
@@ -6,9 +7,11 @@ import { BossSplashConfiguration } from './types';
 
 type InputEvent = JQuery.TriggeredEvent<HTMLElement, undefined, HTMLElement, HTMLElement>;
 
-function getSplashSetting<t>(key: string): t {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-  return (game.settings as any)?.get("boss-splash", key) as t;
+function getSplashSetting<t>(key: string, defaultSetting: t): t {
+  if (game.modules?.get("boss-splash")?.active) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    return (game.settings as any)?.get("boss-splash", key) as t;
+  } else return defaultSetting;
 }
 
 export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
@@ -22,23 +25,23 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
       actor: "",
 
       // Get defaults for Boss Splash Screen global settings
-      topColor: getSplashSetting<string>("colorFirst"),
-      midColor: getSplashSetting<string>("colorSecond"),
-      botColor: getSplashSetting<string>("colorThird"),
+      topColor: getSplashSetting<string>("colorFirst", "#FFD502"),
+      midColor: getSplashSetting<string>("colorSecond", "#FF8400"),
+      botColor: getSplashSetting<string>("colorThird", "#FF1F9C"),
 
-      fontColor: getSplashSetting<string>("colorFont"),
-      fontShadow: getSplashSetting<string>("colorShadow"),
-      subColor: getSplashSetting<string>("subColorFont"),
-      subShadow: getSplashSetting<string>("subColorShadow"),
-      sound: getSplashSetting<string>("bossSound"),
-      font: getSplashSetting<string>("fontFamily"),
-      fontSize: getSplashSetting<string>("fontSize"),
+      fontColor: getSplashSetting<string>("colorFont", "#FFFFFF"),
+      fontShadow: getSplashSetting<string>("colorShadow", "#000000"),
+      subColor: getSplashSetting<string>("subColorFont", "#FFFFFF"),
+      subShadow: getSplashSetting<string>("subColorShadow", "#000000"),
+      sound: getSplashSetting<string | undefined>("bossSound", undefined),
+      font: getSplashSetting<string>("fontFamily", "Arial"),
+      fontSize: getSplashSetting<string>("fontSize", "100px"),
 
-      subSize: getSplashSetting<string>("subFontSize"),
-      message: getSplashSetting<string>("splashMessage") === "{{actor.name}}" ? "" : getSplashSetting<string>("splashMessage"),
-      subText: getSplashSetting<string>("subText"),
-      animationDelay: getSplashSetting<number>("animationDelay") * 1000,
-      animationDuration: getSplashSetting<number>("animationDuration") * 1000,
+      subSize: getSplashSetting<string>("subFontSize", "30px"),
+      message: getSplashSetting<string>("splashMessage", "{{actor.name}}") === "{{actor.name}}" ? "" : getSplashSetting<string>("splashMessage", ""),
+      subText: getSplashSetting<string>("subText", ""),
+      animationDelay: getSplashSetting<number>("animationDelay", 0) * 1000,
+      animationDuration: getSplashSetting<number>("animationDuration", 3) * 1000,
     };
   }
 
@@ -88,6 +91,10 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
     return true;
   }
 
+  public static validate(config: BossSplashConfiguration): BossSplashConfiguration | Error {
+    if (!game?.modules?.get("boss-splash")?.active) return new ModuleNotActiveError("Boss Splash Screen");
+    return config;
+  }
 
   public static addEventListeners(element: HTMLElement | JQuery<HTMLElement>): void {
     const html = $(element);

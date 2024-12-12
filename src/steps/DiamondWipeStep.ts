@@ -2,7 +2,8 @@ import { DiamondTransitionFilter } from "../filters";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { DiamondWipeConfiguration } from "./types";
-import { generateEasingSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
   // #region Properties (7)
@@ -13,7 +14,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
     size: 40,
     duration: 1000,
     easing: "none",
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
@@ -37,6 +38,8 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
       ...DiamondWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       easingSelect: generateEasingSelectOptions()
     });
   }
@@ -57,7 +60,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
     return new DiamondWipeStep({
       ...DiamondWipeStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     })
   }
 

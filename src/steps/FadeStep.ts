@@ -3,7 +3,8 @@ import { TransitionSequence } from "../interfaces";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { FadeConfiguration } from "./types";
-import { generateEasingSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 export class FadeStep extends TransitionStep<FadeConfiguration> {
   // #region Properties (9)
@@ -14,7 +15,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
     id: "",
     type: "fade",
     duration: 1000,
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundColor: "#00000000",
@@ -38,6 +39,8 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
       ...FadeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       easingSelect: generateEasingSelectOptions()
     });
   }
@@ -58,7 +61,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
     return new FadeStep({
       ...FadeStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     })
   }
 

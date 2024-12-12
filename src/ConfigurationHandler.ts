@@ -4,6 +4,7 @@ import { SceneChangeConfiguration, SceneChangeStep, TransitionConfiguration } fr
 import { SceneConfigV11, SceneConfigV12 } from "./dialogs";
 import { BattleTransition } from "./BattleTransition";
 import { InvalidSceneError } from "./errors";
+import { localize, log } from "./utils";
 
 export class ConfigurationHandler {
   public static AddToNavigationBar(buttons: any[]) {
@@ -37,7 +38,7 @@ export class ConfigurationHandler {
             ...sceneChange.config
           };
 
-          void BattleTransition.executeSequence([
+          void BattleTransition.ExecuteSequence([
             step,
             ...sequence
           ])
@@ -61,6 +62,32 @@ export class ConfigurationHandler {
         }
       }
     )
+  }
+
+  public static async MigrateAllScenes() {
+    const scenesToMigrate = game.scenes?.contents.filter(scene => {
+      if (!(game.user instanceof User)) return false;
+      if (!scene.flags[__MODULE_ID__]) return false;
+      if (!scene.canUserModify(game.user, "update")) return false;
+      return DataMigration.SceneConfiguration.NeedsMigration(scene.flags[__MODULE_ID__]);
+    }) ?? [];
+
+    if (scenesToMigrate.length) {
+      await Promise.all(scenesToMigrate.map(scene => ConfigurationHandler.MigrateScene(scene)));
+      ui.notifications?.info(localize("BATTLETRANSITIONS.INFO.SCENESMIGRATED", { count: scenesToMigrate.length }), { localize: true })
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/require-await
+  public static async MigrateScene(scene: Scene) {
+    const originalConfig = scene.flags[__MODULE_ID__];
+    if ((game.user instanceof User) &&
+      scene.canUserModify(game.user, "update") &&
+      DataMigration.SceneConfiguration.NeedsMigration(originalConfig)) {
+      log("Migrating scene:", scene.name, originalConfig);
+      const newConfig = ConfigurationHandler.GetSceneConfiguration(scene);
+      await ConfigurationHandler.SetSceneConfiguration(scene, newConfig);
+    }
   }
 
   public static SetSceneConfiguration(scene: Scene, config: SceneConfiguration): Promise<Scene | undefined> {
@@ -89,9 +116,27 @@ export class ConfigurationHandler {
         sequence: []
       }
     }
-    // Check for data migration
-    if (DataMigration.SceneConfiguration.NeedsMigration(flags)) return DataMigration.SceneConfiguration.Migrate(flags);
-    else return flags as SceneConfiguration;
+    try {
+      // Check for data migration
+      if (DataMigration.SceneConfiguration.NeedsMigration(flags)) {
+        const migrated = DataMigration.SceneConfiguration.Migrate(flags);
+        if (!migrated) return {
+          autoTrigger: false,
+          version: DataMigration.SceneConfiguration.NewestVersion,
+          sequence: []
+        };
+      } else {
+        return flags as SceneConfiguration;
+      }
+    } catch (err) {
+      ui.notifications?.error((err as Error).message, { console: false, localize: true });
+      console.error(err);
+    }
+    return {
+      autoTrigger: false,
+      version: DataMigration.SceneConfiguration.NewestVersion,
+      sequence: []
+    }
   }
 
   public static GetSceneTransition(scene: Scene): TransitionConfiguration[] {

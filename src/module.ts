@@ -35,7 +35,7 @@ Hooks.once("init", async () => {
       if (delta.active && config.autoTrigger && config.sequence?.length && !(this.flags[__MODULE_ID__] as any).isTriggered) {
         delete delta.active;
         const sceneChangeStep = new SceneChangeStep({ scene: this.id ?? "" });
-        void BattleTransition.executeSequence([
+        void BattleTransition.ExecuteSequence([
           {
             ...SceneChangeStep.DefaultSettings,
             id: foundry.utils.randomID(),
@@ -50,6 +50,10 @@ Hooks.once("init", async () => {
     }, "MIXED");
   }
 });
+
+Hooks.once("ready", () => {
+  void ConfigurationHandler.MigrateAllScenes();
+})
 
 Hooks.on("renderSceneConfig", (app: SceneConfig, html: JQuery<HTMLElement>, options: any) => {
   void ConfigurationHandler.InjectSceneConfig(app, html, options);
@@ -99,3 +103,4 @@ Hooks.on("updateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, user
     awaitHook("canvasReady").then(() => { Hooks.callAll(CUSTOM_HOOKS.SCENE_ACTIVATED, scene); }).catch(console.error);
   }
 });
+

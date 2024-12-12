@@ -25,3 +25,9 @@ export type BackgroundType = "color" | "image" | "overlay";
 export type TextureLike = PIXI.TextureSource | PIXI.ColorSource;
 
 export type SizingMode = "stretch" | "contain" | "cover" | "center";
+
+export enum DualStyle {
+  Overlay = 0,
+  Scene = 1,
+  Both = 2
+}

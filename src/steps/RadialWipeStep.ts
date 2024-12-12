@@ -1,10 +1,11 @@
 import { RadialWipeFilter } from "../filters";
 import { createColorTexture, getTargetType, parseConfigurationFormElements } from "../utils";
-import { generateEasingSelectOptions, generateRadialDirectionSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { RadialWipeConfiguration, SceneChangeConfiguration, TransitionConfiguration } from "./types";
 import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTargetSelectEventListeners, validateTarget } from "./targetSelectFunctions";
 import { InvalidSceneError, InvalidTargetError } from "../errors";
+import { reconcileBackground } from "./functions";
 
 export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   // #region Properties (10)
@@ -19,7 +20,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     radial: "inside",
     duration: 1000,
     bgSizingMode: "stretch",
-    version: "1.1.0",
+    version: "1.1.6",
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000",
@@ -48,8 +49,10 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
       ...RadialWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       targetType,
       oldScene: oldScene?.id ?? "",
       newScene: newScene?.id ?? "",
@@ -81,11 +84,11 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): RadialWipeStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
-    const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";
+    const backgroundImage = elem.find("#backgroundImage").val() as string ?? "";
     const target = getTargetFromForm(elem);
     return new RadialWipeStep({
       ...RadialWipeStep.DefaultSettings,
-      serializedTexture,
+      backgroundImage,
       target,
       ...parseConfigurationFormElements(elem, "id", "duration", "radial", "backgroundType", "backgroundColor", "easing", "label")
     });

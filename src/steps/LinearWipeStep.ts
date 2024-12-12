@@ -3,7 +3,8 @@ import { TransitionSequence } from "../interfaces";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { LinearWipeConfiguration } from "./types";
-import { generateEasingSelectOptions, generateLinearDirectionSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   // #region Properties (10)
@@ -20,7 +21,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
     duration: 1000,
     easing: "none",
     direction: "left",
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
@@ -44,7 +45,9 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
       ...LinearWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       directionSelect: generateLinearDirectionSelectOptions()
     });
   }
@@ -65,7 +68,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
     return new LinearWipeStep({
       ...LinearWipeStep.DefaultSettings,
       ...elem,
-      serializedTexture: backgroundImage
+      backgroundImage
     });
   }
 

@@ -3,7 +3,8 @@ import { TransitionSequence } from "../interfaces";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { WaveWipeConfiguration } from "./types";
-import { generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
   // #region Properties (7)
@@ -14,7 +15,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     duration: 1000,
     easing: "none",
     direction: "inside",
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
@@ -38,7 +39,9 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
       ...WaveWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       radialSelect: generateRadialDirectionSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       easingSelect: generateEasingSelectOptions()
     });
   }
@@ -55,11 +58,11 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): WaveWipeStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
-    const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";
+    const backgroundImage = elem.find("#backgroundImage").val() as string ?? "";
 
     return new WaveWipeStep({
       ...WaveWipeStep.DefaultSettings,
-      serializedTexture,
+      backgroundImage,
       ...parseConfigurationFormElements(elem, "id", "label", "duration", "backgroundType", "backgroundColor", "easing", "direction")
     })
   }

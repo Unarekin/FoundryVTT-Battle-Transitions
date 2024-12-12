@@ -21,6 +21,7 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   public static reversible = false;
   public static skipWhenSceneViewed = true;
+  public static addDurationToTotal: boolean = true;
 
   public reverse(): Promise<void> | void {
     throw new NotImplementedError();

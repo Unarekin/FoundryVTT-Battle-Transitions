@@ -22,6 +22,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   public static key = "sound";
   public static name = "SOUND";
   public static template = "sound-config";
+  public static addDurationToTotal: boolean = false;
 
   // #endregion Properties (8)
 

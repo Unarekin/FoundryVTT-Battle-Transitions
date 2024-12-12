@@ -662,6 +662,13 @@
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
 
+"@playwright/test@^1.49.0":
+  version "1.49.0"
+  resolved "https://registry.yarnpkg.com/@playwright/test/-/test-1.49.0.tgz#74227385b58317ee076b86b56d0e1e1b25cff01e"
+  integrity sha512-DMulbwQURa8rNIQrf94+jPJQ4FmOVdpE5ZppRNvWVjvhC+6sOeo28r8MgIpQRYouXRtt/FCCXU7zn20jnHR4Qw==
+  dependencies:
+    playwright "1.49.0"
+
 "@rollup/rollup-android-arm-eabi@4.26.0":
   version "4.26.0"
   resolved "https://registry.yarnpkg.com/@rollup/rollup-android-arm-eabi/-/rollup-android-arm-eabi-4.26.0.tgz#f221c519a6efb5d3652bff32351522e0fb98e392"
@@ -2496,6 +2503,11 @@ fs.realpath@^1.0.0:
   resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
   integrity sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==
 
+fsevents@2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
+  integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
+
 fsevents@~2.3.2, fsevents@~2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
@@ -3952,6 +3964,20 @@ plantuml-pipe@^1.6.0:
   dependencies:
     binary-split "^1.0.5"
     split2 "^4.2.0"
+
+playwright-core@1.49.0:
+  version "1.49.0"
+  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.49.0.tgz#8e69ffed3f41855b854982f3632f2922c890afcb"
+  integrity sha512-R+3KKTQF3npy5GTiKH/T+kdhoJfJojjHESR1YEWhYuEKRVfVaxH3+4+GvXE5xyCngCxhxnykk0Vlah9v8fs3jA==
+
+playwright@1.49.0:
+  version "1.49.0"
+  resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.49.0.tgz#df6b9e05423377a99658202844a294a8afb95d0a"
+  integrity sha512-eKpmys0UFDnfNb3vfsf8Vx2LEOtflgRebl0Im2eQQnYMA4Aqd+Zw8bEOB+7ZKvN76901mRnqdsiOGKxzVTbi7A==
+  dependencies:
+    playwright-core "1.49.0"
+  optionalDependencies:
+    fsevents "2.3.2"
 
 possible-typed-array-names@^1.0.0:
   version "1.0.0"

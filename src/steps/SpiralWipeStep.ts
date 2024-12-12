@@ -2,7 +2,8 @@ import { SpiralWipeFilter } from '../filters';
 import { createColorTexture, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { SpiralWipeConfiguration } from './types';
-import { generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
+import { reconcileBackground } from './functions';
 
 export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
   // #region Properties (7)
@@ -15,7 +16,7 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
     clockDirection: "clockwise",
     radial: "outside",
     easing: "none",
-    version: "1.1.0",
+    version: "1.1.6",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
@@ -38,8 +39,10 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
       ...SpiralWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       directionSelect: {
         top: "BATTLETRANSITIONS.DIRECTIONS.TOP",
         left: "BATTLETRANSITIONS.DIRECTIONS.LEFT",

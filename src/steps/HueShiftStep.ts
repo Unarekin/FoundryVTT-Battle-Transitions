@@ -4,7 +4,7 @@ import { HueShiftFilter } from '../filters';
 import { parseConfigurationFormElements } from '../utils';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
-import { generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
 
 export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
   // #region Properties (7)
@@ -13,7 +13,7 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
     id: "",
     type: "hueshift",
     duration: 0,
-    version: "1.1.0",
+    version: "1.1.6",
     maxShift: 0,
     easing: "none",
     applyToOverlay: true,
@@ -37,6 +37,7 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
       easingSelect: generateEasingSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       dualStyleSelect: generateDualStyleSelectOptions(),
       dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
     });

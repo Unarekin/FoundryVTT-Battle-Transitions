@@ -3,7 +3,8 @@ import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { BarWipeConfiguration } from "./types";
-import { generateEasingSelectOptions } from './selectOptions';
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { reconcileBackground } from "./functions";
 
 export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
   // #region Properties (9)
@@ -16,7 +17,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     duration: 1000,
     easing: "none",
     direction: "horizontal",
-    version: "1.1.0",
+    version: "1.1.6",
     backgroundType: "color",
     backgroundColor: "#00000000",
     backgroundImage: "",
@@ -41,7 +42,9 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
       ...BarWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       easingSelect: generateEasingSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       directionSelect: {
         horizontal: "BATTLETRANSITIONS.DIRECTIONS.HORIZONTAL",
         vertical: "BATTLETRANSITIONS.DIRECTIONS.VERTICAL"
@@ -65,7 +68,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     return new BarWipeStep({
       ...BarWipeStep.DefaultSettings,
       ...parseConfigurationFormElements(elem, "id", "duration", "bars", "direction", "easing", "backgroundType", "backgroundColor", "label"),
-      serializedTexture: backgroundImage
+      backgroundImage
     })
   }
 

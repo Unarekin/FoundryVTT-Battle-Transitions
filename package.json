@@ -1,19 +1,24 @@
 {
   "name": "foundryvtt-battle-transitions",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "A module for Foundry-VTT to provide for JRPG-like scene transitions.",
   "main": "dist/module.js",
   "scripts": {
     "watch": "npx onchange src/**/* -i -- yarn build",
     "build": "node build.mjs",
     "build:prod": "NODE_ENV=production node build.mjs",
-    "typedoc": "npx typedoc"
+    "typedoc": "npx typedoc",
+    "start": "docker compose up --build",
+    "build:mime": "node build-mimedb.mjs",
+    "stop": "docker compose down",
+    "test": "npx start-server-and-test start http://localhost:30000 'PW_TEST_HTML_REPORT_OPEN='never' npx playwright test' || yarn stop"
   },
   "author": "Unarekin",
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.11.0",
     "@foundryvtt/foundryvtt-cli": "^1.0.3",
+    "@playwright/test": "^1.49.0",
     "@types/Foundry-VTT": "https://github.com/League-of-Foundry-Developers/foundry-vtt-types.git#v12/main",
     "@types/eslint__js": "^8.42.3",
     "@types/handlebars": "^4.1.0",

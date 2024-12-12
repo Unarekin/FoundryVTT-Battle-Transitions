@@ -2,11 +2,12 @@ import { ZoomFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
 import { createColorTexture, getTargetType, parseConfigurationFormElements } from "../utils";
-import { generateDualStyleSelectOptions, generateEasingSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
+import { generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { SceneChangeConfiguration, TransitionConfiguration, ZoomConfiguration } from "./types";
 import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTargetSelectEventListeners, validateTarget } from "./targetSelectFunctions";
 import { InvalidSceneError, InvalidTargetError } from "../errors";
+import { reconcileBackground } from "./functions";
 
 // #region Classes (1)
 
@@ -24,7 +25,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     backgroundType: "color",
     bgSizingMode: "stretch",
     backgroundColor: "#00000000",
-    version: "1.1.0",
+    version: "1.1.6",
     easing: "none",
     amount: 0,
     clampBounds: false,
@@ -56,9 +57,11 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       ...ZoomStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
+      ...(config ? reconcileBackground(config) : {}),
       oldScene: oldScene?.id ?? "",
       newScene: newScene?.id ?? "",
       easingSelect: generateEasingSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
       targetType,
       ...generateTargetTypeSelectOptions(oldScene, newScene),
       pointX: Array.isArray(config?.target) ? config.target[0] : 0.5,
@@ -93,7 +96,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): ZoomStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
-    const serializedTexture = elem.find("#backgroundImage").val() as string ?? "";
+    const backgroundImage = elem.find("#backgroundImage").val() as string ?? "";
 
     const dualStyle = elem.find("#dualStyle").val() as string;
 
@@ -102,7 +105,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     const config: ZoomConfiguration = {
       ...ZoomStep.DefaultSettings,
       ...parseConfigurationFormElements(elem, "id", "label", "duration", "easing", "amount", "backgroundType", "backgroundColor", "clampBounds"),
-      serializedTexture,
+      backgroundImage,
       target,
       applyToOverlay: dualStyle === "overlay" || dualStyle === "both",
       applyToScene: dualStyle === "scene" || dualStyle === "both"
