@@ -54,7 +54,14 @@ export class BattleTransition {
         const scene = coerceScene(arg);
         if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
         if (scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
-        this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
+        const changeStep = getStepClassByKey("scenechange");
+        if (!changeStep) throw new InvalidTransitionError("scenechange");
+
+        this.#sequence.push({
+          ...changeStep?.DefaultSettings,
+          scene: scene.id
+        } as SceneChangeConfiguration);
+        // this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
       }
     } catch (err) {
       ui.notifications?.error((err as Error).message);
