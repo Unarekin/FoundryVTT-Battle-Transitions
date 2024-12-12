@@ -216,6 +216,7 @@ export class BattleTransition {
     if (typeof args[0] === "string" || args[0] instanceof Scene) {
       const scene = (args[0] instanceof Scene) ? args[0] : coerceScene(args[0]);
       if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof args[0] === "string" ? args[0] : typeof args[0]);
+      if (scene.active) throw new TransitionToSelfError();
       const sceneStepClass = getStepClassByKey("scenechange");
       if (!sceneStepClass) throw new InvalidTransitionError("scenechange");
 
