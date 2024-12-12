@@ -23,6 +23,7 @@ export * from './Sound';
 export * from './SpiralShutter';
 export * from './SpiralWipe';
 export * from './SpotlightWipe';
+export * from './StartPlaylist';
 export * from './TextureSwap';
 export * from './TwistMigrator';
 export * from './Video';

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import { BattleTransition } from "./BattleTransition";
+import { DataMigration } from "./DataMigration";
 import { TransitionSequence } from "./interfaces";
 import { StartPlaylistConfiguration, StartPlaylistStep, TransitionConfiguration } from "./steps";
 import { sequenceDuration } from "./transitionUtils";
@@ -24,7 +25,8 @@ class SocketHandler {
     try {
       const id = foundry.utils.randomID();
 
-      const validated = await BattleTransition.validateSequence(sequence);
+      const migrated = DataMigration.SceneConfiguration.MigrateSequence(sequence);
+      const validated = await BattleTransition.validateSequence(migrated);
       if (validated instanceof Error) throw validated;
 
       const actual: TransitionSequence = {
@@ -43,6 +45,7 @@ class SocketHandler {
       }
 
       const expectedDuration = await sequenceDuration(actual.sequence);
+      log("Expected duration:", expectedDuration)
 
       const users = (game.users?.contents.filter(user => user.active) as User[]) ?? []
 

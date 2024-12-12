@@ -22,6 +22,19 @@ export class SceneConfigurationMigrator extends Migrator<SceneConfiguration> {
 
   public readonly NewestVersion: string = CURRENT_VERSION;
 
+  public MigrateSequence(sequence: any[]): TransitionConfiguration[] {
+    return sequence.map(item => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      const stepClass = getStepClassByKey(item.type);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      if (!stepClass) throw new InvalidTransitionError(typeof item.type === "string" ? item.type : typeof item.type);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const migrator = (DataMigration.TransitionSteps as any)[stepClass.key] as Migrator<TransitionConfiguration>;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      if (!migrator) throw new MigratorNotFoundError(typeof item.type === "string" ? item.type : typeof item.type, typeof undefined, typeof undefined);
+      return migrator.NeedsMigration(item) ? migrator.Migrate(item) : item as TransitionConfiguration;
+    }) as TransitionConfiguration[];
+  }
 }
 
 interface V10Config {
