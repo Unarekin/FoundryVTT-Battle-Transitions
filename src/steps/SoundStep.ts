@@ -1,7 +1,7 @@
 import { TransitionStep } from "./TransitionStep";
 import { SoundConfiguration, TransitionConfiguration } from "./types";
 import { TransitionSequence } from "../interfaces";
-import { log, parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements } from "../utils";
 import { FileNotFoundError } from "../errors";
 
 export class SoundStep extends TransitionStep<SoundConfiguration> {
