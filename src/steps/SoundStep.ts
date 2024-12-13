@@ -1,7 +1,8 @@
 import { TransitionStep } from "./TransitionStep";
-import { SoundConfiguration } from "./types";
+import { SoundConfiguration, TransitionConfiguration } from "./types";
 import { TransitionSequence } from "../interfaces";
-import { parseConfigurationFormElements } from "../utils";
+import { log, parseConfigurationFormElements } from "../utils";
+import { FileNotFoundError } from "../errors";
 
 export class SoundStep extends TransitionStep<SoundConfiguration> {
   // #region Properties (8)
@@ -81,6 +82,17 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
 
       audio.src = config.file;
     })
+  }
+
+  public static async validate(config: SoundConfiguration,): Promise<TransitionConfiguration | Error> {
+    if (config.file) {
+      const exists = await srcExists(config.file);
+      if (!exists) return new FileNotFoundError(config.file);
+      return config;
+    } else {
+      return new FileNotFoundError(typeof config.file === "string" ? config.file : typeof config.file)
+    }
+
   }
 
   // #endregion Public Static Methods (8)
