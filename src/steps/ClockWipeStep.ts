@@ -68,7 +68,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): ClockWipeStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "clockdirection", "easing", "backgroundType", "backgroundColor", "label");
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "clockDirection", "easing", "backgroundType", "backgroundColor", "label");
 
     return new ClockWipeStep({
       ...ClockWipeStep.DefaultSettings,
