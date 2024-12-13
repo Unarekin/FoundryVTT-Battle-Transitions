@@ -18,6 +18,7 @@ export * from './RadialWipe';
 export * from './RemoveOverlay';
 export * from './RepeatMigrator';
 export * from './RestoreOverlay';
+export * from './ReverseMigrator';
 export * from './SceneChange';
 export * from './Sound';
 export * from './SpiralShutter';
