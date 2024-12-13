@@ -12,7 +12,10 @@ import { defineConfig, devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  reporter: "html",
+  reporter: [
+    ["list"],
+    ["html"]
+  ],
   testDir: "./tests",
   timeout: 45 * 1000,
   expect: {

@@ -1,4 +1,6 @@
 import { test as base, expect, Page } from "@playwright/test";
+import { promises as fs } from "fs";
+import stepDefaults from "./data/defaults.json";
 
 const BASE_URL = "http://localhost:30000";
 export { BASE_URL }
@@ -25,11 +27,25 @@ async function joinWorld(page: Page) {
   // await expect(button).not.toBeVisible();
 }
 
+async function clearSceneConfigurations(page: Page) {
+  await page.evaluate(async () => {
+    const scenes = game.scenes?.contents as Scene[] ?? [];
+    for (const scene of scenes) {
+      const flags = scene.flags["battle-transitions"] as any;
+      for (const key in flags) {
+        await scene.unsetFlag("battle-transitions", key);
+      }
+    }
+  });
+}
+
 const testv12 = base.extend({
-  page: async ({ baseURL, page }, use) => {
+  page: async ({ page }, use) => {
     await joinWorld(page);
     await use(page);
-  }
+    await clearSceneConfigurations(page);
+  },
+  stepDefaults
 })
 
 export { expect, testv12 }
