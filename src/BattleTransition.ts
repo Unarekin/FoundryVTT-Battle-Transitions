@@ -6,7 +6,7 @@ import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfigurati
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, log, serializeTexture, shouldUseAppV2 } from "./utils";
+import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, serializeTexture, shouldUseAppV2 } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { transitionBuilderDialog } from "./dialogs";
 import { filters } from "./filters";
@@ -54,7 +54,15 @@ export class BattleTransition {
         const scene = coerceScene(arg);
         if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
         if (scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
-        this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
+        const changeStep = getStepClassByKey("scenechange");
+        if (!changeStep) throw new InvalidTransitionError("scenechange");
+
+        this.#sequence.push({
+          ...changeStep?.DefaultSettings,
+          id: foundry.utils.randomID(),
+          scene: scene.id
+        } as SceneChangeConfiguration);
+        // this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
       }
     } catch (err) {
       ui.notifications?.error((err as Error).message);
@@ -216,11 +224,13 @@ export class BattleTransition {
     if (typeof args[0] === "string" || args[0] instanceof Scene) {
       const scene = (args[0] instanceof Scene) ? args[0] : coerceScene(args[0]);
       if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof args[0] === "string" ? args[0] : typeof args[0]);
+      if (scene.active) throw new TransitionToSelfError();
       const sceneStepClass = getStepClassByKey("scenechange");
       if (!sceneStepClass) throw new InvalidTransitionError("scenechange");
 
       const sceneStep: SceneChangeConfiguration = {
         ...sceneStepClass.DefaultSettings,
+        id: foundry.utils.randomID(),
         scene: scene.id ?? ""
       };
 
@@ -346,6 +356,7 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(background);
     this.#sequence.push({
       type: "angularwipe",
+      id: foundry.utils.randomID(),
       duration,
       serializedTexture,
       backgroundType: backgroundType(background),
@@ -370,6 +381,7 @@ export class BattleTransition {
     if (!step) throw new InvalidTransitionError("barwipe");
     this.#sequence.push({
       ...step.DefaultSettings,
+      id: foundry.utils.randomID(),
       duration,
       bars,
       easing,
@@ -392,6 +404,7 @@ export class BattleTransition {
   public bilinearWipe(direction: BilinearDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "bilinearwipe",
       serializedTexture,
       backgroundType: backgroundType(background),
@@ -418,7 +431,8 @@ export class BattleTransition {
     if (!step) throw new InvalidTransitionError("bosssplash");
     const newConfig: BossSplashConfiguration = {
       ...step.DefaultSettings,
-      ...config
+      ...config,
+      id: foundry.utils.randomID()
     };
 
     this.#sequence.push(newConfig);
@@ -433,6 +447,7 @@ export class BattleTransition {
    */
   public burn(duration: number = 1000, burnSize: number = 1.3, easing: Easing = "none"): this {
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "firedissolve",
       duration,
       burnSize,
@@ -469,6 +484,7 @@ export class BattleTransition {
   public clockWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "clockwipe",
       serializedTexture,
       duration,
@@ -493,6 +509,7 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(background);
 
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "diamondwipe",
       serializedTexture,
       size,
@@ -523,6 +540,7 @@ export class BattleTransition {
   public fade(duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "fade",
       serializedTexture,
       backgroundType: backgroundType(background),
@@ -546,6 +564,7 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(texture);
     this.#sequence.push({
       ...step.DefaultSettings,
+      id: foundry.utils.randomID(),
       duration,
       serializedTexture,
       applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
@@ -575,6 +594,7 @@ export class BattleTransition {
     if (!step) throw new InvalidTransitionError("hueshift");
     const config = {
       ...step.DefaultSettings,
+      id: foundry.utils.randomID(),
       maxShift: amount,
       duration,
       easing,
@@ -614,6 +634,7 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(background);
 
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "linearwipe",
       serializedTexture,
       direction,
@@ -649,6 +670,7 @@ export class BattleTransition {
 
     const config: LoadingTipConfiguration = {
       ...step.DefaultSettings as LoadingTipConfiguration,
+      id: foundry.utils.randomID(),
       duration,
       location
     }
@@ -680,6 +702,7 @@ export class BattleTransition {
     const actualMacro = coerceMacro(macro as any);
     if (!actualMacro) throw new InvalidMacroError(typeof macro === "string" ? macro : typeof macro);
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "macro",
       macro: actualMacro.uuid
     } as MacroConfiguration);
@@ -696,6 +719,7 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(background);
 
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "melt",
       serializedTexture,
       duration,
@@ -745,6 +769,7 @@ export class BattleTransition {
     if (!step) throw new InvalidTransitionError("pixelate");
     const config = {
       ...step.DefaultSettings,
+      id: foundry.utils.randomID(),
       maxSize,
       duration,
       easing,
@@ -801,6 +826,7 @@ export class BattleTransition {
 
     const config: RadialWipeConfiguration = {
       ...step.DefaultSettings as RadialWipeConfiguration,
+      id: foundry.utils.randomID(),
       serializedTexture,
       radial: direction,
       duration,
@@ -886,6 +912,7 @@ export class BattleTransition {
     } else {
       this.#sequence.push({
         ...step.DefaultSettings,
+        id: foundry.utils.randomID(),
         iterations: iterations - 1,
         delay,
         style: "previous"
@@ -910,7 +937,10 @@ export class BattleTransition {
   public startPlaylist(): this {
     const step = getStepClassByKey("startplaylist");
     if (!step) throw new InvalidTransitionError("startplaylist");
-    this.#sequence.push(step.DefaultSettings);
+    this.#sequence.push({
+      ...step.DefaultSettings,
+      id: foundry.utils.randomID()
+    });
 
     return this;
   }
@@ -934,7 +964,6 @@ export class BattleTransition {
       id: foundry.utils.randomID()
     }
 
-    log("Adding reverse:", config);
     this.#sequence.push(config);
 
     return this;
@@ -964,6 +993,7 @@ export class BattleTransition {
     const sound = typeof arg === "string" ? arg : (arg instanceof Sound) ? arg.id : null;
     if (!sound) throw new InvalidSoundError(typeof arg === "string" ? arg : typeof arg);
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "sound",
       volume,
       file: sound
@@ -983,6 +1013,7 @@ export class BattleTransition {
   public spiralShutter(direction: ClockDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "spiralradialwipe",
       serializedTexture,
       duration,
@@ -1010,6 +1041,7 @@ export class BattleTransition {
     const backgroundType = typeof serializedTexture === "string" && isColor(serializedTexture) ? "color" : "image";
     this.#sequence.push({
       type: "spiralwipe",
+      id: foundry.utils.randomID(),
       version: "1.1.0",
       duration,
       direction,
@@ -1036,6 +1068,7 @@ export class BattleTransition {
   public spotlightWipe(direction: WipeDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "spotlightwipe",
       direction,
       radial,
@@ -1057,6 +1090,7 @@ export class BattleTransition {
   public textureSwap(texture: TextureLike, style: DualStyle = DualStyle.Overlay): this {
     const serializedTexture = serializeTexture(texture);
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "textureswap",
       serializedTexture,
       backgroundType: backgroundType(texture),
@@ -1078,6 +1112,7 @@ export class BattleTransition {
    */
   public twist(duration: number = 1000, direction: ClockDirection = "clockwise", maxAngle: number = 10, easing: Easing = "none", style: DualStyle = DualStyle.Overlay): this {
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "twist",
       duration,
       direction,
@@ -1105,6 +1140,7 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(background);
 
     this.#sequence.push({
+      id: foundry.utils.randomID(),
       type: "video",
       volume,
       file,
@@ -1119,7 +1155,7 @@ export class BattleTransition {
    * @param {number} duration - Amount of time, in milliseconds, to wait.
    */
   public wait(duration: number): this {
-    this.#sequence.push({ type: "wait", duration } as WaitConfiguration);
+    this.#sequence.push({ type: "wait", duration, id: foundry.utils.randomID(), } as WaitConfiguration);
     return this;
   }
 
@@ -1135,6 +1171,7 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(background);
     this.#sequence.push({
       type: "wavewipe",
+      id: foundry.utils.randomID(),
       serializedTexture,
       direction,
       duration,
@@ -1171,6 +1208,7 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(background);
     const config: ZoomConfiguration = {
       ...(step.DefaultSettings as ZoomConfiguration),
+      id: foundry.utils.randomID(),
       amount,
       duration,
       clampBounds,
@@ -1211,6 +1249,7 @@ export class BattleTransition {
   public zoomBlur(duration: number = 1000, maxStrength: number = 0.5, innerRadius: number = 0, easing: Easing = "none", style: DualStyle = DualStyle.Overlay): this {
     this.#sequence.push({
       type: "zoomblur",
+      id: foundry.utils.randomID(),
       duration,
       maxStrength,
       innerRadius,

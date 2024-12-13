@@ -1,6 +1,6 @@
 import { coerceTexture } from "./coercion";
 import { LOG_ICON } from "./constants";
-import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidImportError, InvalidObjectError, InvalidTargetError, InvalidTextureError, NoFileError } from "./errors";
+import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidImportError, InvalidObjectError, InvalidTargetError, InvalidTextureError, MigratorNotFoundError, NoFileError } from "./errors";
 import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
@@ -9,6 +9,8 @@ import { TransitionStep, BackgroundTransition, TransitionConfiguration, Targeted
 import * as steps from "./steps"
 import { BackgroundType, TextureLike } from "./types";
 import json from "./mime.json";
+import { DataMigration } from "./DataMigration";
+import { Migrator } from "./migration";
 
 // #region Functions (33)
 
@@ -496,10 +498,23 @@ export async function importSequence(): Promise<TransitionConfiguration[] | null
   const sequence: TransitionConfiguration[] = [];
   if (!json) return null;
   if (!Array.isArray(json)) throw new InvalidImportError();
-  for (const config of json) {
+
+
+  // Data migration step
+  const migrated = json.map(config => {
     const step = getStepClassByKey(config.type);
     if (!step) throw new InvalidImportError();
-    const res = step.validate(config, json);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const migrator = (DataMigration.TransitionSteps as any)[config.type] as Migrator<TransitionConfiguration>;
+    if (!migrator) throw new MigratorNotFoundError(config.type, typeof config.version === "string" ? config.version : typeof config.version, step.DefaultSettings.version);
+    if (migrator.NeedsMigration(config)) return migrator.Migrate(config);
+    else return config;
+  }).filter(item => !!item);
+
+  for (const config of migrated) {
+    const step = getStepClassByKey(config.type);
+    if (!step) throw new InvalidImportError();
+    const res = step.validate(config, migrated);
     const actual = (res instanceof Promise) ? await res : res;
     if (actual instanceof Error) throw actual;
     sequence.push(actual);

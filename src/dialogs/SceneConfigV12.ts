@@ -76,7 +76,7 @@ function addEventListeners(app: SceneConfig, html: JQuery<HTMLElement>) {
     void ConfigurationHandler.SetSceneConfiguration(
       app.document,
       {
-        version: "1.1.0",
+        version: "1.1.6",
         autoTrigger,
         isTriggered: false,
         sequence
@@ -197,8 +197,14 @@ async function upsertStepButton(app: SceneConfig, html: JQuery<HTMLElement>, con
     if (!step) throw new InvalidTransitionError(config.type);
 
     const sequence = [...buildTransitionFromForm(html), config];
-    const durationRes = step.getDuration(config, sequence);
-    const calculatedDuration = durationRes instanceof Promise ? await durationRes : durationRes;
+    let calculatedDuration = -1;
+    try {
+      const durationRes = step.getDuration(config, sequence);
+      calculatedDuration = durationRes instanceof Promise ? await durationRes : durationRes;
+    } catch (err) {
+      ui.notifications?.error((err as Error).message, { console: false });
+      console.error(err);
+    }
 
     await updateTotalDuration(html);
 

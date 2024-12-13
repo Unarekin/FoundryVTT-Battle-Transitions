@@ -1,6 +1,7 @@
 {
   "BATTLETRANSITIONS": {
     "ERRORS": {
+      "CANNOTAUTOPLAYAUDIO": "Cannot play audio programmatically, please interact with the browser window first.",
       "CANNOTINITIALIZECANVAS": "Unable to initialize canvas",
       "CANVASNOTFOUND": "Canvas not found",
       "EXECUTECALLEDPARALLEL": "Do not call execute function when creating parallel transition chains.",
@@ -12,9 +13,7 @@
       "INVALIDIMPORT": "Invalid import data.",
       "INVALIDMARO": "Invalid macro: {macro}",
       "INVALIDOBJECT": "Invalid object specified: {object}",
-      "MIGRATORNOTFOUND": "Could not find function to migrate {type} from version {currentVersion} to {newVersion}.",
       "INVALIDROLLTABLE": "Invalid RollTable provided: {table}",
-      "MODULENOTACTIVE": "The module {name} is not installed and active.",
       "INVALIDSCENE": "Invalid scene: {name}",
       "INVALIDSOUND": "Invalid sound: {sound}",
       "INVALIDTARGET": "Invalid target: {item}",
@@ -22,6 +21,8 @@
       "INVALIDTIPLOCATION": "Invalid loading tip location: {location}",
       "INVALIDTRANSITION": "Invalid transition: {name}",
       "INVALIDVERSION": "Invalid data version: {version}",
+      "MIGRATORNOTFOUND": "Could not find function to migrate {type} from version {currentVersion} to {newVersion}.",
+      "MODULENOTACTIVE": "The module {name} is not installed and active.",
       "NEWERVERSION": "Data appears to be from a newer version: {version}",
       "NOAPPLICATION": "No PIXI Application",
       "NOBACKGROUNDPROVIDED": "No background image or color provided.",

@@ -1,7 +1,8 @@
 import { TransitionStep } from "./TransitionStep";
-import { SoundConfiguration } from "./types";
+import { SoundConfiguration, TransitionConfiguration } from "./types";
 import { TransitionSequence } from "../interfaces";
 import { parseConfigurationFormElements } from "../utils";
+import { FileNotFoundError } from "../errors";
 
 export class SoundStep extends TransitionStep<SoundConfiguration> {
   // #region Properties (8)
@@ -66,7 +67,10 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   }
 
   //public static getDuration(config: PixelateConfiguration): number { return { ...PixelateStep.DefaultSettings, ...config }.duration }
-  public static getDuration(config: SoundConfiguration): Promise<number> {
+  public static async getDuration(config: SoundConfiguration): Promise<number> {
+    const exist = await srcExists(config.file);
+    if (!exist) return 0;
+
     return new Promise<number>((resolve, reject) => {
       const audio = new Audio();
       audio.onloadedmetadata = () => { resolve(Math.round(audio.duration * 1000)); };
@@ -78,6 +82,17 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
 
       audio.src = config.file;
     })
+  }
+
+  public static async validate(config: SoundConfiguration,): Promise<TransitionConfiguration | Error> {
+    if (config.file) {
+      const exists = await srcExists(config.file);
+      if (!exists) return new FileNotFoundError(config.file);
+      return config;
+    } else {
+      return new FileNotFoundError(typeof config.file === "string" ? config.file : typeof config.file)
+    }
+
   }
 
   // #endregion Public Static Methods (8)

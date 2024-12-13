@@ -30,9 +30,11 @@ Hooks.once("init", async () => {
     (libWrapper as any).register(__MODULE_ID__, "Scene.prototype.update", function (this: Scene, wrapped: Function, ...args: unknown[]) {
 
       const delta = args[0] as Partial<Scene>;
-      const config = ConfigurationHandler.GetSceneConfiguration(this);
 
-      if (delta.active && config.autoTrigger && config.sequence?.length && !(this.flags[__MODULE_ID__] as any).isTriggered) {
+      if (delta.active && ConfigurationHandler.ShouldAutoTrigger(this)) {
+        // const config = ConfigurationHandler.GetSceneConfiguration(this);
+        // if (delta.active && config.autoTrigger && config.sequence?.length && !(this.flags[__MODULE_ID__] as any).isTriggered) {
+        const config = ConfigurationHandler.GetSceneConfiguration(this);
         delete delta.active;
         const sceneChangeStep = new SceneChangeStep({ scene: this.id ?? "" });
         void BattleTransition.ExecuteSequence([
@@ -52,7 +54,7 @@ Hooks.once("init", async () => {
 });
 
 Hooks.once("ready", () => {
-  void ConfigurationHandler.MigrateAllScenes();
+  // void ConfigurationHandler.MigrateAllScenes();
 })
 
 Hooks.on("renderSceneConfig", (app: SceneConfig, html: JQuery<HTMLElement>, options: any) => {

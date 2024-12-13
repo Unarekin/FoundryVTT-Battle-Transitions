@@ -78,7 +78,10 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
 
   // #endregion Public Static Methods (6)
 
-  public static getDuration(config: VideoConfiguration): Promise<number> {
+  public static async getDuration(config: VideoConfiguration): Promise<number> {
+    const exist = await srcExists(config.file);
+    if (!exist) return 0;
+
     return new Promise<number>((resolve, reject) => {
       const vid = document.createElement("video");
       vid.onloadedmetadata = () => { resolve(Math.round(vid.duration * 1000)); };

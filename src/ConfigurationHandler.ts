@@ -1,10 +1,18 @@
 import { SceneConfiguration } from "./interfaces";
-import { DataMigration } from "./DataMigration";
 import { SceneChangeConfiguration, SceneChangeStep, TransitionConfiguration } from "./steps";
 import { SceneConfigV11, SceneConfigV12 } from "./dialogs";
 import { BattleTransition } from "./BattleTransition";
-import { InvalidSceneError } from "./errors";
-import { localize, log } from "./utils";
+import { InvalidSceneError, UnableToMigrateError } from "./errors";
+
+import { DataMigration } from "./DataMigration";
+import { log } from "./utils";
+
+const DEFAULT_CONFIG: SceneConfiguration = {
+  version: "1.1.6",
+  autoTrigger: false,
+  isTriggered: false,
+  sequence: []
+};
 
 export class ConfigurationHandler {
   public static AddToNavigationBar(buttons: any[]) {
@@ -18,8 +26,9 @@ export class ConfigurationHandler {
             if (!scene) return false;
 
             if (scene.id === game?.scenes?.active?.id) return false;
-            const steps = this.GetSceneTransition(scene) ?? [];
-            return Array.isArray(steps) && steps.length;
+            return ConfigurationHandler.HasTransition(scene, true);
+            // const steps = this.GetSceneTransition(scene) ?? [];
+            // return Array.isArray(steps) && steps.length;
           } catch (err) {
             ui.notifications?.error((err as Error).message, { console: false });
             console.error(err as Error)
@@ -28,8 +37,8 @@ export class ConfigurationHandler {
         callback: (li: JQuery<HTMLLIElement>) => {
           const scene = getScene(li);
           if (!scene) throw new InvalidSceneError(typeof li.data("sceneId") === "string" ? li.data("sceneId") as string : typeof li.data("sceneId"));
+          if (!ConfigurationHandler.HasTransition(scene, true)) return;
           const sequence = this.GetSceneTransition(scene) ?? [];
-          if (!(Array.isArray(sequence) && sequence.length)) return;
 
           const sceneChange = new SceneChangeStep({ scene: scene.id ?? "" });
           const step: SceneChangeConfiguration = {
@@ -64,31 +73,32 @@ export class ConfigurationHandler {
     )
   }
 
-  public static async MigrateAllScenes() {
-    const scenesToMigrate = game.scenes?.contents.filter(scene => {
-      if (!(game.user instanceof User)) return false;
-      if (!scene.flags[__MODULE_ID__]) return false;
-      if (!scene.canUserModify(game.user, "update")) return false;
-      return DataMigration.SceneConfiguration.NeedsMigration(scene.flags[__MODULE_ID__]);
-    }) ?? [];
+  // public static async MigrateAllScenes() {
+  //   const scenesToMigrate = game.scenes?.contents.filter(scene => {
+  //     if (!(game.user instanceof User)) return false;
+  //     if (!scene.flags[__MODULE_ID__]) return false;
+  //     if (!scene.canUserModify(game.user, "update")) return false;
+  //     return DataMigration.SceneConfiguration.NeedsMigration(scene.flags[__MODULE_ID__]);
+  //   }) ?? [];
 
-    if (scenesToMigrate.length) {
-      await Promise.all(scenesToMigrate.map(scene => ConfigurationHandler.MigrateScene(scene)));
-      ui.notifications?.info(localize("BATTLETRANSITIONS.INFO.SCENESMIGRATED", { count: scenesToMigrate.length }), { localize: true })
-    }
-  }
+  //   if (scenesToMigrate.length) {
+  //     await Promise.all(scenesToMigrate.map(scene => ConfigurationHandler.MigrateScene(scene)));
+  //     ui.notifications?.info(localize("BATTLETRANSITIONS.INFO.SCENESMIGRATED", { count: scenesToMigrate.length }), { localize: true })
+  //   }
+  // }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  public static async MigrateScene(scene: Scene) {
-    const originalConfig = scene.flags[__MODULE_ID__];
-    if ((game.user instanceof User) &&
-      scene.canUserModify(game.user, "update") &&
-      DataMigration.SceneConfiguration.NeedsMigration(originalConfig)) {
-      log("Migrating scene:", scene.name, originalConfig);
-      const newConfig = ConfigurationHandler.GetSceneConfiguration(scene);
-      await ConfigurationHandler.SetSceneConfiguration(scene, newConfig);
-    }
-  }
+
+  // public static async MigrateScene(scene: Scene) {
+  //   const originalConfig = scene.flags[__MODULE_ID__];
+  //   if ((game.user instanceof User) &&
+  //     scene.canUserModify(game.user, "update") &&
+  //     DataMigration.SceneConfiguration.NeedsMigration(originalConfig)) {
+  //     log("Migrating scene:", scene.name, originalConfig);
+  //     const newConfig = ConfigurationHandler.GetSceneConfiguration(scene);
+  //     log(newConfig);
+  //     await ConfigurationHandler.SetSceneConfiguration(scene, newConfig);
+  //   }
+  // }
 
   public static SetSceneConfiguration(scene: Scene, config: SceneConfiguration): Promise<Scene | undefined> {
     const newConfig: { [x: string]: unknown } = { ...config };
@@ -106,36 +116,59 @@ export class ConfigurationHandler {
     });
   }
 
-  public static GetSceneConfiguration(scene: Scene): SceneConfiguration {
+  /**
+   * Returns whether or not the transition for a given scene should be automatically triggered if it is being activated
+   * @param {Scene} scene - {@link Scene}
+   * @returns 
+   */
+  public static ShouldAutoTrigger(scene: Scene): boolean {
+    if (!ConfigurationHandler.HasTransition(scene, true)) return false;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const flags = scene.flags[__MODULE_ID__] as any;
-    if (!flags) {
-      return {
-        autoTrigger: false,
-        version: DataMigration.SceneConfiguration.NewestVersion,
-        sequence: []
-      }
-    }
-    try {
-      // Check for data migration
-      if (DataMigration.SceneConfiguration.NeedsMigration(flags)) {
-        const migrated = DataMigration.SceneConfiguration.Migrate(flags);
-        if (!migrated) return {
-          autoTrigger: false,
-          version: DataMigration.SceneConfiguration.NewestVersion,
-          sequence: []
-        };
-      } else {
-        return flags as SceneConfiguration;
-      }
-    } catch (err) {
-      ui.notifications?.error((err as Error).message, { console: false, localize: true });
-      console.error(err);
-    }
-    return {
-      autoTrigger: false,
-      version: DataMigration.SceneConfiguration.NewestVersion,
-      sequence: []
+    if (!flags) return false;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (flags.isTriggered || flags.autoTriggered) return false;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    return !!(flags.autoTrigger || flags.config?.autoTrigger);
+  }
+
+  /**
+   * Will determine if a given scene has a transition sequence configured
+   * @param {Scene} scene - {@link Scene}
+   * @param {boolean} [requireSteps=false] - Whether to require that the transition have any actual steps
+   * @returns 
+   */
+  public static HasTransition(scene: Scene, requireSteps: boolean = false): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const flags = scene.flags[__MODULE_ID__] as any;
+    // No flags?  Can't be a sequence
+    if (!flags) return false;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (Array.isArray(flags.steps) && requireSteps && flags.steps.length) return true;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (Array.isArray(flags.steps) && !requireSteps) return true;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (Array.isArray(flags.sequence) && requireSteps && flags.sequence.length) return true;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (Array.isArray(flags.sequence) && !requireSteps) return true;
+
+    return false;
+  }
+
+  public static GetSceneConfiguration(scene: Scene): SceneConfiguration {
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const flags = scene.flags[__MODULE_ID__] as any;
+    if (!flags) return DEFAULT_CONFIG
+
+    // Check for data migration
+    if (DataMigration.SceneConfiguration.NeedsMigration(flags)) {
+      log("Migrating scene configuration:", flags);
+      const migrated = DataMigration.SceneConfiguration.Migrate(flags);
+      if (!migrated) throw new UnableToMigrateError(DataMigration.SceneConfiguration.Version(flags), DataMigration.SceneConfiguration.NewestVersion);
+      return migrated;
+    } else {
+      return flags as SceneConfiguration;
     }
   }
 
