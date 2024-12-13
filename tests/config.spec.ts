@@ -2,7 +2,7 @@ import { testv12 as test, expect } from "./fixtures";
 import steps from "./data/defaults.json"
 import categories from "./data/categories.json";
 
-test.describe.configure({ mode: "serial" });
+// test.describe.configure({ mode: "serial" });
 
 // test.describe("Default Configuration", () => {
 
