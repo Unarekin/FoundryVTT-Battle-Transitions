@@ -4,6 +4,7 @@ import { InvalidTransitionError, NoPreviousStepError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
 import { formatDuration, getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
+import { getPreviousStep } from "./functions";
 import { TransitionStep } from "./TransitionStep";
 import { RepeatConfiguration, TransitionConfiguration, WaitConfiguration } from './types';
 import { WaitStep } from "./WaitStep";
@@ -120,17 +121,14 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
 
   public static async getDuration(config: RepeatConfiguration, sequence: TransitionConfiguration[]): Promise<number> {
     if (config.style === "previous") {
-      const index = sequence.findIndex(item => item.id === config.id);
-      if (index === -1) throw new InvalidTransitionError(RepeatStep.key);
-      else if (index === 0) throw new NoPreviousStepError();
+      const prev = getPreviousStep(config.id, sequence);
+      if (!prev) throw new NoPreviousStepError();
 
-      const prev = sequence[index - 1];
       const step = getStepClassByKey(prev.type);
       if (!step) throw new InvalidTransitionError(typeof prev.type === "string" ? prev.type : typeof prev.type);
       const res = step.getDuration(prev, sequence);
       const duration = res instanceof Promise ? await res : res;
       return ((duration + config.delay) * (config.iterations - 1)) + config.delay;
-
     } else {
       const duration = await sequenceDuration(config.sequence ?? []);
       return duration + (config.delay * config.iterations);
@@ -155,9 +153,11 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
 
     if (config.style === "sequence" && !config.sequence?.length) throw new InvalidTransitionError(RepeatStep.key);
 
-    const currentStep = sequence.sequence.findIndex(step => step.id === config.id);
-    if (currentStep === -1) throw new InvalidTransitionError(RepeatStep.key);
-    const previousStep = sequence.sequence[currentStep - 1];
+    const previousStep = getPreviousStep(config.id, sequence.sequence);
+
+    // const currentStep = sequence.sequence.findIndex(step => step.id === config.id);
+    // if (currentStep === -1) throw new InvalidTransitionError(RepeatStep.key);
+    // const previousStep = sequence.sequence[currentStep - 1];
 
     if (!previousStep) throw new InvalidTransitionError(RepeatStep.key);
 

@@ -14,7 +14,10 @@ export function getPreviousStep(id: string, sequence: unknown[]): TransitionStep
 function getPreviousStepByConfig(id: string, sequence: TransitionConfiguration[]): TransitionConfiguration | undefined {
   for (let i = 0; i < sequence.length; i++) {
     const step = sequence[i];
-    if (step.id === id && i > 0) return sequence[i - 1];
+    if (step.id === id && i > 0) {
+      const prev = sequence[i - 1];
+      return prev;
+    }
     else if (step.id === id && i === 0) return undefined;
     if (step.type === "parallel") {
       const parallel = step as ParallelConfiguration;

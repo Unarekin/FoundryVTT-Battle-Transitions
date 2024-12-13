@@ -59,6 +59,7 @@ export class BattleTransition {
 
         this.#sequence.push({
           ...changeStep?.DefaultSettings,
+          id: foundry.utils.randomID(),
           scene: scene.id
         } as SceneChangeConfiguration);
         // this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
@@ -229,6 +230,7 @@ export class BattleTransition {
 
       const sceneStep: SceneChangeConfiguration = {
         ...sceneStepClass.DefaultSettings,
+        id: foundry.utils.randomID(),
         scene: scene.id ?? ""
       };
 
@@ -554,6 +556,7 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(texture);
     this.#sequence.push({
       ...step.DefaultSettings,
+      id: foundry.utils.randomID(),
       duration,
       serializedTexture,
       applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
@@ -894,6 +897,7 @@ export class BattleTransition {
     } else {
       this.#sequence.push({
         ...step.DefaultSettings,
+        id: foundry.utils.randomID(),
         iterations: iterations - 1,
         delay,
         style: "previous"
@@ -918,7 +922,10 @@ export class BattleTransition {
   public startPlaylist(): this {
     const step = getStepClassByKey("startplaylist");
     if (!step) throw new InvalidTransitionError("startplaylist");
-    this.#sequence.push(step.DefaultSettings);
+    this.#sequence.push({
+      ...step.DefaultSettings,
+      id: foundry.utils.randomID()
+    });
 
     return this;
   }

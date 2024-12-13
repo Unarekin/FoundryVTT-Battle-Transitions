@@ -39,13 +39,13 @@ class SocketHandler {
       if (!sequence.some(step => step.type === "startplaylist")) {
         const step: StartPlaylistConfiguration = {
           ...StartPlaylistStep.DefaultSettings,
-          ...(new StartPlaylistStep({}).config)
+          ...(new StartPlaylistStep({}).config),
+          id: foundry.utils.randomID()
         }
         actual.sequence.push(step);
       }
 
       const expectedDuration = await sequenceDuration(actual.sequence);
-      log("Expected duration:", expectedDuration)
 
       const users = (game.users?.contents.filter(user => user.active) as User[]) ?? []
 
