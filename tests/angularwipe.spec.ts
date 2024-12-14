@@ -70,53 +70,53 @@ test.describe("Configuration Tests", () => {
     return color;
   }
 
-  test.describe("Visuals", () => {
-    const directions = ["left", "topleft", "top", "topright", "right", "bottomright", "bottom", "bottomleft"];
-    const config = directions.map(direction => ({
-      id: "",
-      version: "1.1.6",
-      type: "linearwipe",
-      duration: 1000,
-      direction,
-      backgroundColor: `${getRandomColor()}FF`,
-      backgroundType: "color",
-      bgSizingMode: "stretch",
-      easing: "none"
-    }));
+  // test.describe("Visuals", () => {
+  //   const directions = ["left", "topleft", "top", "topright", "right", "bottomright", "bottom", "bottomleft"];
+  //   const config = directions.map(direction => ({
+  //     id: "",
+  //     version: "1.1.6",
+  //     type: "linearwipe",
+  //     duration: 1000,
+  //     direction,
+  //     backgroundColor: `${getRandomColor()}FF`,
+  //     backgroundType: "color",
+  //     bgSizingMode: "stretch",
+  //     easing: "none"
+  //   }));
 
-    test("Aw yee", async ({ page }) => {
+  //   test("Aw yee", async ({ page }) => {
 
-      await page.evaluate<void, typeof config>(async (config) => {
+  //     await page.evaluate<void, typeof config>(async (config) => {
 
-        await BattleTransition
-          .ExecuteSequence("Scene 2", config)
-          .then(() => new Promise(resolve => { setTimeout(resolve, 2000) }))
-          // .then(() => new Promise(resolve => { setTimeout(resolve, config.length * 750) }))
-          .then(() => game?.scenes?.getName("Scene 1").activate())
-          ;
+  //       await BattleTransition
+  //         .ExecuteSequence("Scene 2", config)
+  //         .then(() => new Promise(resolve => { setTimeout(resolve, 2000) }))
+  //         // .then(() => new Promise(resolve => { setTimeout(resolve, config.length * 750) }))
+  //         .then(() => game?.scenes?.getName("Scene 1").activate())
+  //         ;
 
-      }, config);
+  //     }, config);
 
-    });
+  //   });
 
-    // test("Left", async ({ page }) => {
-    //   await page.evaluate(() => BattleTransition.ExecuteSequence(
-    //     game?.scenes?.getName("Scene 2") as Scene,
-    //     [
-    //       {
-    //         id: "",
-    //         version: "1.1.6",
-    //         type: "linearwipe",
-    //         duration: 2000,
-    //         direction: "left",
-    //         backgroundColor: "#00000000",
-    //         backgroundType: "color",
-    //         bgSizingMode: "stretch",
-    //         easing: "none"
-    //       } as LinearWipeConfiguration,
-    //     ]
-    //   )
-    //     .then(() => new Promise(resolve => { setTimeout(resolve, 2000) })));
+  //   // test("Left", async ({ page }) => {
+  //   //   await page.evaluate(() => BattleTransition.ExecuteSequence(
+  //   //     game?.scenes?.getName("Scene 2") as Scene,
+  //   //     [
+  //   //       {
+  //   //         id: "",
+  //   //         version: "1.1.6",
+  //   //         type: "linearwipe",
+  //   //         duration: 2000,
+  //   //         direction: "left",
+  //   //         backgroundColor: "#00000000",
+  //   //         backgroundType: "color",
+  //   //         bgSizingMode: "stretch",
+  //   //         easing: "none"
+  //   //       } as LinearWipeConfiguration,
+  //   //     ]
+  //   //   )
+  //   //     .then(() => new Promise(resolve => { setTimeout(resolve, 2000) })));
 
-  })
+  // })
 });

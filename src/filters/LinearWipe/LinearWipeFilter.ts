@@ -29,7 +29,7 @@ function right(): PIXI.Texture {
   )
 }
 
-function top(): PIXI.Texture {
+function bottom(): PIXI.Texture {
   return createGradientTexture(
     1, window.innerHeight,
     0, 0,
@@ -41,7 +41,7 @@ function top(): PIXI.Texture {
   )
 }
 
-function bottom(): PIXI.Texture {
+function top(): PIXI.Texture {
   return createGradientTexture(
     1, window.innerHeight,
     0, 0,
