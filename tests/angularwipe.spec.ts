@@ -59,12 +59,64 @@ test.describe("Configuration Tests", () => {
       })
     }
   });
+});
 
-  test("Visual Confirmation", async ({ page }) => {
+test.describe("API Tests", () => {
+  test("No arguments", async ({ page }) => {
     await page.evaluate(async () => {
-      await new BattleTransition("Scene 2").angularWipe(2000).execute();
-      const scene = game?.scenes?.getName("Scene 1");
-      if (scene) await scene.activate();
-    })
+      try {
+        await new BattleTransition("Scene 2").angularWipe().execute();
+        const current = game.scenes?.active;
+        if (current?.name !== "Scene 2") throw new Error("Did not change scenes");
+      } finally {
+        const scene = game.scenes?.getName("Scene 1");
+        if (scene) await scene.activate();
+      }
+    });
+
+    await new Promise(resolve => { setTimeout(resolve, 2000) });
   });
+
+  test("Only duration", async ({ page }) => {
+    await page.evaluate(async () => {
+      try {
+        await new BattleTransition("Scene 2").angularWipe(5000).execute();
+        const current = game.scenes?.active;
+        if (current?.name !== "Scene 2") throw new Error("Did not change scenes");
+      } finally {
+        const scene = game.scenes?.getName("Scene 1");
+        if (scene) await scene.activate();
+      }
+    });
+
+    await new Promise(resolve => { setTimeout(resolve, 2000) });
+
+  });
+
+  test("Duration and background", async ({ page }) => {
+    await page.evaluate(async () => {
+      try {
+        await new BattleTransition("Scene 2").angularWipe(2000, "black").execute();
+        const current = game.scenes?.active;
+        if (current?.name !== "Scene 2") throw new Error("Did not change scenes");
+      } finally {
+        const scene = game.scenes?.getName("Scene 1");
+        if (scene) await scene.activate();
+      }
+    });
+
+    await new Promise(resolve => { setTimeout(resolve, 2000) });
+  });
+
+  test("Duration, background, easing", ({ page }) => { });
+});
+
+test.describe("Transition Builder Tests", () => { });
+
+test("Visual Confirmation", async ({ page }) => {
+  await page.evaluate(async () => {
+    await new BattleTransition("Scene 2").angularWipe(2000).execute();
+    const scene = game?.scenes?.getName("Scene 1");
+    if (scene) await scene.activate();
+  })
 });
