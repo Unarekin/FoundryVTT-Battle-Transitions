@@ -2,6 +2,7 @@ export * from './CannotInitializeCanvasError';
 export * from './CanvasNotFoundError';
 export * from './FileNotFoundError';
 export * from './InvalidDirectionError';
+export * from './InvalidDurationError';
 export * from './InvalidEasingError';
 export * from './InvalidElementError';
 export * from './InvalidImportError';
