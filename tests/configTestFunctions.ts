@@ -10,7 +10,7 @@ const categoryKeys = {
   technical: "technical"
 }
 
-async function openStepConfiguration(page: Page, key: string) {
+export async function openStepConfiguration(page: Page, key: string) {
   await openSceneConfiguration(page);
   await page.locator(`div.tab[data-tab='battle-transitions'] button[data-action='add-step']`).click();
 
