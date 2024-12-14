@@ -19,7 +19,7 @@ async function joinWorld(page: Page) {
   await page.getByRole("button", { name: " Join Game Session" }).click();
 
   await expect(page).toHaveURL(`${BASE_URL}/game`);
-  await page.waitForFunction(() => window["game"].ready);
+  await page.waitForFunction(() => window["game"]?.ready);
 
   // let button = page.locator("div#notification-application a.close");
   // await expect(button).toBeVisible();

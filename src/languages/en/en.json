@@ -60,7 +60,11 @@
       "POWER4OUT": "power4.out",
       "SINEIN": "sine.in",
       "SINEINOUT": "sine.inOut",
-      "SINEOUT": "sine.out"
+      "SINEOUT": "sine.out",
+      "STEPS": "steps",
+      "ROUGH": "rough",
+      "SLOW": "slow",
+      "EXPOSCALE": "expoScale"
     },
     "FORMATTERS": {
       "MILLISECONDS": "{value}ms",
