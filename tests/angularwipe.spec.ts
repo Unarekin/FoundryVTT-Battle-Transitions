@@ -2,7 +2,6 @@ import { testv12 as test } from "./fixtures";
 import { angularwipe } from "./data/defaults.json";
 import easings from "./data/easings.json";
 import { backgroundColorTest, backgroundImageTest, backgroundOverlayTest, defaultConfigurationTest, durationTest, easingTest, labelTest } from "./configTestFunctions";
-import { LinearWipeConfiguration } from "../src/steps";
 
 declare const BattleTransition: any;
 

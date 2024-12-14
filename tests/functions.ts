@@ -27,3 +27,16 @@ export async function getSceneConfiguration(page: Page, name: string) {
     return scene.flags["battle-transitions"];
   }, name)
 }
+
+export function generateColorSteps(r1: number, g1: number, b1: number, r2: number, g2: number, b2: number, steps: number): [number, number, number][] {
+  const colors: number[][] = [];
+  const step = 255 / (steps - 1);
+  for (let i = 0; i < 255; i += step) {
+    const r = r1 + ((i * (r2 - r1)) / 255);
+    const g = g1 + ((i * (g2 - g1)) / 255);
+    const b = b1 + ((i * (b2 - b1)) / 255);
+    colors.push([r, g, b]);
+  }
+  colors.push([r2, g2, b2]);
+  return colors as [number, number, number][];
+}
