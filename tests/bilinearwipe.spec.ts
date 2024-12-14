@@ -4,7 +4,7 @@ import easings from "./data/easings.json";
 import { backgroundColorTest, backgroundImageTest, backgroundOverlayTest, defaultConfigurationTest, durationTest, easingTest, labelTest, openStepConfiguration } from "./configTestFunctions";
 import { generateColorSteps, getSceneConfiguration, getStepConfiguration } from "./functions";
 import { BilinearWipeConfiguration } from "../src/steps";
-import { BilinearDirection, RadialDirection } from '../src/types';
+import { BilinearDirection, BilinearDirections, Easings, RadialDirection, RadialDirections } from '../src/types';
 import { Page } from "@playwright/test";
 
 declare const BattleTransition: any;
@@ -152,6 +152,201 @@ test.describe("Configuration Tests", () => {
     }
   });
 });
+
+test.describe("API Tests", () => {
+  test("No arguments", async ({ page }) => {
+    await page.evaluate(async () => {
+      try {
+        try {
+          await new BattleTransition("Scene 2").bilinearWipe();
+        } catch (err) {
+          return true;
+        }
+        throw new Error("Expected error to be thrown.");
+      } finally {
+        const scene = game.scenes?.getName("Scene 1");
+        if (scene) await scene.activate();
+      }
+    });
+  });
+
+  test.describe("Directions", () => {
+    test("Invalid", async ({ page }) => {
+      await page.evaluate(async () => {
+        try {
+          try {
+            await new BattleTransition("Scene 2").bilinearWipe("invalid");
+          } catch (err) {
+            return true;
+          }
+
+          throw new Error("Expected error to be thrown.");
+        } finally {
+          const scene = game.scenes?.getName("Scene 1");
+          if (scene) await scene.activate();
+        }
+      })
+    });
+
+    for (const direction of BilinearDirections) {
+      test(direction, async ({ page }) => {
+        await page.evaluate<void, string>(async (direction) => {
+          try {
+            await new BattleTransition("Scene 2").bilinearWipe(direction, "inside");
+
+            const current = game.scenes?.active;
+            if (current?.name !== "Scene 2") throw new Error("Did not change scenes");
+          } finally {
+            const scene = game?.scenes?.getName("Scene 1");
+            if (scene) await scene.activate();
+          }
+        }, direction)
+      })
+    }
+  })
+
+  test.describe("Radial directions", () => {
+    test("Invalid", async ({ page }) => {
+      await page.evaluate(async () => {
+        try {
+          try {
+            await new BattleTransition("Scene 2").bilinearWipe("horizontal", "invalid");
+          } catch (err) {
+            return true;
+          }
+          throw new Error("Expected error to be thrown.");
+
+
+        } finally {
+          const scene = game.scenes?.getName("Scene 1");
+          if (scene) await scene.activate();
+        }
+      })
+    });
+
+    for (const direction of RadialDirections) {
+      test(direction, async ({ page }) => {
+        await page.evaluate<void, string>(async (direction) => {
+          try {
+            try {
+              await new BattleTransition("Scene 2").bilinearWipe("horizontal", direction);
+
+              const current = game.scenes?.active;
+              if (current?.name !== "Scene 2") throw new Error("Did not change scenes");
+            } catch (err) {
+              return;
+            }
+
+            const current = game.scenes?.active;
+            if (current?.name !== "Scene 2") throw new Error("Did not change scenes.");
+          } finally {
+            const scene = game.scenes?.getName("Scene 1");
+            if (scene) await scene.activate();
+          }
+        }, direction)
+      })
+    }
+  });
+
+  test.describe("Duration", () => {
+    test("Non-numeric", async ({ page }) => {
+      await page.evaluate(async () => {
+        try {
+          try {
+            await new BattleTransition("Scene 2").bilinearWipe("horizontal", "inside", "invalid");
+          } catch (err) {
+            return
+          }
+          throw new Error("Expected error to be thrown.");
+        } finally {
+          const scene = game?.scenes?.getName("Scene 1");
+          if (scene) await scene.activate();
+        }
+      });
+    });
+
+    test("Negative", async ({ page }) => {
+      await page.evaluate(async () => {
+        try {
+          try {
+            new BattleTransition("Scene 2").bilinearWipe("horizontal", "inside", -1000);
+          } catch (err) {
+            return
+          }
+          throw new Error("Expected error to be thrown.");
+        } finally {
+          const scene = game?.scenes?.getName("Scene 1");
+          if (scene) await scene.activate();
+        }
+      });
+    });
+
+    test("Valid", async ({ page }) => {
+      await page.evaluate(async () => {
+        try {
+          await new BattleTransition("Scene 2").bilinearWipe("horizontal", "inside", 2000).execute();
+
+          const current = game.scenes?.active;
+          if (current?.name !== "Scene 2") throw new Error("Did not change scenes");
+        } finally {
+          const scene = game?.scenes?.getName("Scene 1");
+          if (scene) await scene.activate();
+        }
+      })
+    })
+  })
+
+  test.describe("Backgrounds", () => {
+    test("Invalid", async ({ page }) => {
+      await page.evaluate(async () => {
+        try {
+          try {
+            new BattleTransition("Scene 2").bilinearWipe("horizontal", "inside", 1000, null);
+          } catch (err) {
+            return;
+          }
+          throw new Error("Expected error to be thrown.")
+        } finally {
+          const scene = game?.scenes?.getName("Scene 1");
+          if (scene) await scene.activate();
+        }
+      })
+    })
+  });
+
+  test.describe("Easings", () => {
+    test("Invalid", async ({ page }) => {
+      await page.evaluate(async () => {
+        try {
+          try {
+            new BattleTransition("Scene 2").bilinearWipe("horizontal", "inside", 1000, "transparent", "invalid");
+          } catch (err) {
+            return;
+          }
+          throw new Error("Expected error to be thrown.");
+        } finally {
+          const scene = game?.scenes?.getName("Scene 1");
+          if (scene) await scene.activate();
+        }
+      });
+    });
+
+    for (const easing of Easings) {
+      test(easing, async ({ page }) => {
+        await page.evaluate<void, string>(async (easing) => {
+          try {
+            new BattleTransition("Scene 2").bilinearWipe("horizontal", "inside", 1000, "transparent", easing);
+          } finally {
+            const scene = game?.scenes?.getName("Scene 1");
+            if (scene) await scene.activate();
+          }
+        }, easing);
+      });
+    }
+
+  });
+
+})
 
 test("Visual Confirmation", async ({ page }) => {
   const directions: BilinearDirection[] = ["horizontal", "vertical", "topleft", "topright"];

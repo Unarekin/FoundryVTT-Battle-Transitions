@@ -1,6 +1,6 @@
 import { coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
-import { InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
+import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
 import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration } from "./steps";
 import SocketHandler from "./SocketHandler";
@@ -10,6 +10,7 @@ import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColo
 import { TransitionStep } from "./steps/TransitionStep";
 import { transitionBuilderDialog } from "./dialogs";
 import { filters } from "./filters";
+import { isValidBilinearDirection, isValidEasing, isValidRadialDirection } from "./validation";
 
 // #region Type aliases (1)
 
@@ -403,16 +404,31 @@ export class BattleTransition {
    */
   public bilinearWipe(direction: BilinearDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
-    this.#sequence.push({
+
+    if (!serializedTexture) throw new InvalidTextureError();
+
+    if (!isValidBilinearDirection(direction)) throw new InvalidDirectionError(direction);
+    if (!isValidRadialDirection(radial)) throw new InvalidDirectionError(radial);
+    if (!isValidEasing(easing)) throw new InvalidEasingError(easing);
+    if (isNaN(parseFloat(duration.toString()))) throw new InvalidDurationError(duration);
+    if (duration < 0) throw new InvalidDurationError(duration);
+
+
+    const step = getStepClassByKey("bilinearwipe");
+    if (!step) throw new InvalidTransitionError("bilinearwipe");
+
+    const config: BilinearWipeConfiguration = {
+      ...(step.DefaultSettings as BilinearWipeConfiguration),
       id: foundry.utils.randomID(),
-      type: "bilinearwipe",
       serializedTexture,
       backgroundType: backgroundType(background),
       duration,
       direction,
       radial,
-      easing
-    } as BilinearWipeConfiguration);
+      easing,
+    }
+
+    this.#sequence.push(config);
 
     return this;
   }
@@ -1273,5 +1289,7 @@ function getStepInstance(step: TransitionConfiguration): TransitionStep {
   if (!handler) throw new InvalidTransitionError(step.type);
   return handler.from(step);
 }
+
+
 
 // #endregion Functions (1)
