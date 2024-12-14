@@ -57,6 +57,39 @@ export default defineConfig({
           height: 1080
         }
       },
-    }
+    },
+    {
+      name: 'firefox',
+      use: {
+        ...devices['Desktop Firefox'],
+        contextOptions: {
+          screen: {
+            width: 1920,
+            height: 1080
+          }
+        },
+        viewport: {
+          width: 1920,
+          height: 1080
+        }
+      },
+    },
+
+    {
+      name: 'webkit',
+      use: {
+        ...devices['Desktop Safari'],
+        contextOptions: {
+          screen: {
+            width: 1920,
+            height: 1080
+          }
+        },
+        viewport: {
+          width: 1920,
+          height: 1080
+        }
+      },
+    },
   ]
 });

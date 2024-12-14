@@ -378,6 +378,13 @@ export class BattleTransition {
   public barWipe(bars: number, direction: "horizontal" | "vertical", duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
 
+    if (!(direction === "horizontal" || direction === "vertical")) throw new InvalidDirectionError(direction);
+    if (isNaN(parseFloat(duration.toString()))) throw new InvalidDurationError(duration);
+    if (duration < 0) throw new InvalidDurationError(duration);
+
+    if (!isValidEasing(easing)) throw new InvalidEasingError(easing);
+
+
     const step = getStepClassByKey("barwipe");
     if (!step) throw new InvalidTransitionError("barwipe");
     this.#sequence.push({
@@ -387,7 +394,8 @@ export class BattleTransition {
       bars,
       easing,
       direction,
-      serializedTexture
+      serializedTexture,
+      backgroundType: backgroundType(background)
     } as BarWipeConfiguration);
 
     return this;

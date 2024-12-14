@@ -40,3 +40,10 @@ export function generateColorSteps(r1: number, g1: number, b1: number, r2: numbe
   colors.push([r2, g2, b2]);
   return colors as [number, number, number][];
 }
+
+export async function activateScene(page: Page, name: string) {
+  await page.evaluate<void, string>(async (name) => {
+    const scene = game.scenes?.getName(name);
+    if (scene) await scene.activate();
+  }, name)
+}
