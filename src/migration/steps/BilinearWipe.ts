@@ -13,7 +13,7 @@ export class BilinearWipeMigrator extends Migrator<BilinearWipeConfiguration> {
       version: "1.1.6"
     })
   };
-  public NewestVersion: string = "1.1.0";
+  public NewestVersion: string = "1.1.6";
 
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
