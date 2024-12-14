@@ -192,7 +192,7 @@ test.describe("API Tests", () => {
       test(direction, async ({ page }) => {
         await page.evaluate<void, string>(async (direction) => {
           try {
-            await new BattleTransition("Scene 2").bilinearWipe(direction, "inside");
+            await new BattleTransition("Scene 2").bilinearWipe(direction, "inside").execute();
 
             const current = game.scenes?.active;
             if (current?.name !== "Scene 2") throw new Error("Did not change scenes");
@@ -229,10 +229,7 @@ test.describe("API Tests", () => {
         await page.evaluate<void, string>(async (direction) => {
           try {
             try {
-              await new BattleTransition("Scene 2").bilinearWipe("horizontal", direction);
-
-              const current = game.scenes?.active;
-              if (current?.name !== "Scene 2") throw new Error("Did not change scenes");
+              await new BattleTransition("Scene 2").bilinearWipe("horizontal", direction).activate();
             } catch (err) {
               return;
             }
