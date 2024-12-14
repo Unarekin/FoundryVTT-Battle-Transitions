@@ -22,9 +22,12 @@ export function coerceScene(arg: unknown): Scene | undefined {
 
   if (typeof arg === "string") {
     let scene = game.scenes.get(arg);
-    if (scene) return scene;
+    if (scene instanceof Scene) return scene;
     scene = game.scenes.getName(arg);
-    if (scene) return scene;
+    if (scene instanceof Scene) return scene;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    scene = fromUuidSync(arg) as any;
+    if (scene instanceof Scene) return scene;
   } else if (arg instanceof Scene) {
     return arg;
   }
