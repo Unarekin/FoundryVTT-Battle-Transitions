@@ -33,7 +33,7 @@ test("UI Test", async ({ page }) => {
 test("API Test", async ({ page }) => {
   await page.evaluate(async () => {
     try {
-      await new BattleTransition("Scene 2").clearOverlay().execute();
+      await new BattleTransition("Scene 2").hideOverlay().execute();
       await new Promise(resolve => { setTimeout(resolve, 1000); });
       const scene = game.scenes?.current;
       if (scene?.name !== "Scene 2") throw new Error("Did not change scenes.");
