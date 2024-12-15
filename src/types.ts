@@ -20,7 +20,7 @@ export const Easings = ["none",
   "circ.in", "circ.out", "circ.inOut",
   "elastic.in", "elastic.out", "elastic.inOut",
   "expo.in", "expo.out", "expo.inOut",
-  "sine.in", "sine.out", "sine.inout",
+  "sine.in", "sine.out", "sine.inOut",
   "steps", "rough", "slow", "expoScale"
 ] as const;
 export type Easing = typeof Easings[number];

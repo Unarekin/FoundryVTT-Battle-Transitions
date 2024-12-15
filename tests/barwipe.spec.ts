@@ -144,9 +144,12 @@ test.describe("API Tests", () => {
   test("No arguments", async ({ page }) => {
     await page.evaluate(async () => {
       try {
-        await new BattleTransition("Scene 2").barWipe().execute();
-        const scene = game.scenes?.current;
-        if (scene?.name !== "Scene 2") throw new Error("Did not change scenes.");
+        try {
+          await new BattleTransition("Scene 2").barWipe().execute();
+        } catch {
+          return
+        }
+        throw new Error("Expected test to fail.");
       } finally {
         const scene = game.scenes?.getName("Scene 1");
         if (scene) await scene.activate();
@@ -157,7 +160,7 @@ test.describe("API Tests", () => {
   test("Bars", async ({ page }) => {
     await page.evaluate(async () => {
       try {
-        await new BattleTransition("Scene 2").barWipe(12).execute();
+        await new BattleTransition("Scene 2").barWipe(12, "horizontal").execute();
         const scene = game.scenes?.current;
         if (scene?.name !== "Scene 2") throw new Error("Did not change scenes.");
       } finally {
