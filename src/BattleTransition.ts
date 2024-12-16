@@ -1,8 +1,8 @@
-import { coerceMacro, coerceScene } from "./coercion";
+import { coerceColorHex, coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
 import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
@@ -10,7 +10,7 @@ import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColo
 import { TransitionStep } from "./steps/TransitionStep";
 import { transitionBuilderDialog } from "./dialogs";
 import { filters } from "./filters";
-import { isValidBilinearDirection, isValidEasing, isValidRadialDirection } from "./validation";
+import { isValidBilinearDirection, isValidClockDirection, isValidEasing, isValidRadialDirection, isValidWipeDirection } from "./validation";
 
 // #region Type aliases (1)
 
@@ -506,17 +506,32 @@ export class BattleTransition {
    * @returns 
    */
   public clockWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
+    // Sanity check arguments
+    if (!isValidClockDirection(clockDirection)) throw new InvalidDirectionError(clockDirection);
+    if (!isValidWipeDirection(direction)) throw new InvalidDirectionError(direction);
+    if (isNaN(parseFloat(duration.toString())) || duration < 0) throw new InvalidDurationError(duration);
+    if (!isValidEasing(easing)) throw new InvalidEasingError(easing);
+
+
     const serializedTexture = serializeTexture(background);
-    this.#sequence.push({
+
+    const bgType = backgroundType(background);
+
+
+    const config: ClockWipeConfiguration = {
+      ...ClockWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      type: "clockwipe",
       serializedTexture,
       duration,
-      clockDirection: clockDirection,
+      clockDirection,
       direction,
-      backgroundType: backgroundType(background),
+      backgroundType: bgType,
+      backgroundColor: bgType === "color" ? coerceColorHex(background) ?? "" : "",
+      backgroundImage: bgType === "image" ? background as string : "",
       easing
-    } as ClockWipeConfiguration)
+    }
+
+    this.#sequence.push(config);
 
     return this;
   }

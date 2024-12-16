@@ -1,4 +1,4 @@
-import { coerceTexture } from "./coercion";
+import { coerceColorHex, coerceTexture } from "./coercion";
 import { LOG_ICON } from "./constants";
 import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidImportError, InvalidObjectError, InvalidTargetError, InvalidTextureError, MigratorNotFoundError, NoFileError } from "./errors";
 import { DataURLBuffer, TextureBuffer } from "./interfaces";
@@ -6,11 +6,12 @@ import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 import { bytesToBase64 } from "./lib/base64Utils";
 import { TransitionStep, BackgroundTransition, TransitionConfiguration, TargetedTransition } from "./steps";
-import * as steps from "./steps"
+import * as steps from "./steps";
 import { BackgroundType, TextureLike } from "./types";
 import json from "./mime.json";
 import { DataMigration } from "./DataMigration";
 import { Migrator } from "./migration";
+import { isValidColor } from "./validation";
 
 // #region Functions (33)
 
@@ -324,16 +325,24 @@ function serializeDataURL(url: string): DataURLBuffer {
 export function serializeTexture(texture: any): string | TextureBuffer | DataURLBuffer {
   if (typeof texture === "string" && texture === "overlay") return "overlay";
   if (typeof texture === "string" && texture.startsWith("data:")) return serializeDataURL(texture);
+  if (isValidColor(texture)) return coerceColorHex(texture) as unknown as string;
+
   if (typeof texture === "string") return texture;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-  if (typeof texture.src === "string") return texture.src;
+  if (texture instanceof HTMLImageElement) return texture.src;
+  if (texture instanceof HTMLVideoElement) return texture.src;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-  if (typeof texture.value !== "undefined") return texture.value;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-  const baseTexture: PIXI.BaseTexture = texture.baseTexture;
+  let coerced: PIXI.Texture | undefined = undefined;
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    coerced = new PIXI.Texture(texture);
+  } catch {
+    throw new InvalidTextureError();
+  }
+
+  const baseTexture: PIXI.BaseTexture = coerced.baseTexture;
   const resource = baseTexture.resource;
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
@@ -479,7 +488,7 @@ export function deepCopy(target: any, source: any): void {
 
 export function backgroundType(background: TextureLike): BackgroundType {
   if (typeof background === "string" && background === "overlay") return "overlay";
-  else if (typeof background === "string" && isColor(background)) return "color";
+  else if (isValidColor(background)) return "color";
   else return "image";
 }
 

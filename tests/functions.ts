@@ -1,7 +1,9 @@
 import { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { SceneConfiguration } from '../src/interfaces';
+import { TransitionConfiguration } from "../src/steps";
 
+declare const BattleTransition: any;
 
 export async function openSceneConfiguration(page: Page) {
   await page.locator(`li.scene.nav-item i`).click({ button: "right" });
@@ -46,4 +48,15 @@ export async function activateScene(page: Page, name: string) {
     const scene = game.scenes?.getName(name);
     if (scene) await scene.activate();
   }, name)
+}
+
+export async function executeSequence(page: Page, sequence: TransitionConfiguration[]) {
+  await page.evaluate(async sequence => {
+    try {
+      await BattleTransition.ExecuteSequence("Scene 2", sequence);
+    } finally {
+      const scene = game?.scenes?.getName("Scene 1");
+      if (scene) await scene.activate();
+    }
+  }, sequence)
 }

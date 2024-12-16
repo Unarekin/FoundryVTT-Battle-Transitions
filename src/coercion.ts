@@ -6,6 +6,12 @@ export function coerceColor(source: unknown): PIXI.Color | undefined {
   } catch { /* empty */ }
 }
 
+export function coerceColorHex(source: unknown): string | undefined {
+  const color = coerceColor(source);
+  if (color) return color.toHexa();
+  return;
+}
+
 export function coerceTexture(source: unknown): PIXI.Texture | undefined {
   const color = coerceColor(source);
   if (color) return createColorTexture(color);

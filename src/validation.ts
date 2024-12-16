@@ -9,3 +9,12 @@ export function isValidBilinearDirection(input: string): boolean { return Biline
 export function isValidRadialDirection(input: string): boolean { return RadialDirections.includes(input as any); }
 export function isValidBackgroundType(input: string): boolean { return BackgroundTypes.includes(input as any); }
 export function isValidSizingMode(input: string): boolean { return SizingModes.includes(input as any); }
+
+export function isValidColor(input: unknown): boolean {
+  try {
+    new PIXI.Color(input as PIXI.ColorSource);
+    return true;
+  } catch {
+    return false;
+  }
+}
