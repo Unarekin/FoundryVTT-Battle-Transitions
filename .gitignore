@@ -138,3 +138,5 @@ dist/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+esbuild.meta.json

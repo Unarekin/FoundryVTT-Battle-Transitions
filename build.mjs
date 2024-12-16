@@ -154,6 +154,7 @@ const buildResults = await build({
     ".frag": "text",
     ".vert": "text",
   },
+  metafile: __DEV__,
   plugins: [
     nodeExternalsPlugin(),
     cleanPlugin({ patterns: "./dist/**" }),
@@ -164,6 +165,13 @@ const buildResults = await build({
     // externalizeAllPackagesExcept(["rxjs", "mini-rx-store", "tslib", "mime", "@pixi/gif"])
   ],
 });
+
+if (buildResults.metafile) {
+  await fs.writeFile(
+    "./esbuild.meta.json",
+    JSON.stringify(buildResults.metafile, null, 2)
+  );
+}
 
 if (buildResults.errors.length) {
   if (spinner) spinner.error("Build failed!");
