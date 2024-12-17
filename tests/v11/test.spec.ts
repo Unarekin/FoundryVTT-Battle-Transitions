@@ -1,5 +1,5 @@
-import { test } from "@playwright/test";
+import { test } from "../fixtures";
 
-test("test", async ({ page }) => {
+test("Test", async ({ page }) => {
   await page.waitForLoadState("load");
-})
+});
