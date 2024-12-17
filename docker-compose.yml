@@ -1,9 +1,11 @@
 ---
 
 services:
-  foundry:
-    build: .
-    hostname: battle_transitions
+  foundry12:
+    build:
+      context: .
+      dockerfile: DockerfileV12
+    hostname: battle_transitionsV12
     env_file: ".env"
     volumes:
       - type: bind
@@ -11,5 +13,35 @@ services:
         target: /data/Data/modules/battle-transitions
     ports:
       - target: 30000
-        published: 30000
+        published: 30012
+        protocol: tcp
+
+  foundry11:
+    build:
+      context: .
+      dockerfile: DockerfileV11
+    hostname: battle_transitionsV11
+    env_file: ".env"
+    volumes:
+      - type: bind
+        source: ./dist
+        target: /data/Data/modules/battle-transitions
+    ports:
+      - target: 30000
+        published: 30011
+        protocol: tcp
+
+  foundry13:
+    build:
+      context: .
+      dockerfile: DockerfileV13
+    hostname: battle_transitionsV13
+    env_file: ".env"
+    volumes:
+      - type: bind
+        source: ./dist
+        target: /data/Data/modules/battle-transitions
+    ports:
+      - target: 30000
+        published: 30013
         protocol: tcp

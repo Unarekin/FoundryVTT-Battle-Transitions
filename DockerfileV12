@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM felddy/foundryvtt
+FROM felddy/foundryvtt:12
 
 RUN rm -rf /data/*
 RUN apk add unzip

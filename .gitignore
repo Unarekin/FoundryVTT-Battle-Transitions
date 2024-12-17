@@ -133,6 +133,9 @@ cypress/reports
 lint-report.html
 
 foundryvtt-12.331.zip
+foundryvtt-13.332.zip
+foundryvtt-11.315.zip
+
 dist/
 /test-results/
 /playwright-report/
