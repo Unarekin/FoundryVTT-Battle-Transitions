@@ -1,10 +1,7 @@
-import { openStepConfiguration } from "./configTestFunctions";
-import { testv12 as test, expect } from "./fixtures";
-
-import { cleareffects } from "./data/defaults.json";
-import { getSceneConfiguration, getStepConfiguration } from "./functions";
-
-declare const BattleTransition: any;
+import { openStepConfiguration } from "../../configTestFunctions";
+import { test, expect } from "../fixtures";
+import { cleareffects } from '../../data/defaults.json'
+import { getSceneConfiguration, getStepConfiguration } from "../../functions";
 
 test("UI Test", async ({ page }) => {
   await openStepConfiguration(page, "cleareffects");
@@ -28,19 +25,4 @@ test("UI Test", async ({ page }) => {
   expect(config?.sequence).toHaveLength(1);
 
   expect(config?.sequence?.[0]).toEqual(expected);
-})
-
-test("API Test", async ({ page }) => {
-  await page.evaluate(async () => {
-    try {
-      await new BattleTransition("Scene 2").clearEffects().execute();
-      await new Promise(resolve => { setTimeout(resolve, 1000); });
-      const scene = game.scenes?.current;
-      if (scene?.name !== "Scene 2") throw new Error("Did not change scenes.");
-    } finally {
-      await new Promise(resolve => { setTimeout(resolve, 1000); });
-      const scene = game?.scenes?.getName("Scene 1");
-      if (scene) await scene.activate();
-    }
-  })
 });

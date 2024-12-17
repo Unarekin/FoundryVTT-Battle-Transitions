@@ -16,12 +16,10 @@ export default defineConfig({
     ["list"],
     ["html"]
   ],
-  testDir: "./tests",
   timeout: 45 * 1000,
   expect: {
     timeout: 5000
   },
-  fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   // workers: process.env.CI ? 1 : undefined,
@@ -40,7 +38,16 @@ export default defineConfig({
   },
   projects: [
     {
-      name: "Desktop Chromium",
+      name: "v12 Setup",
+      testDir: "./tests/v12",
+      testMatch: /global\.setup\.ts/
+    },
+    {
+      name: "Chrome - UI - v12",
+      testDir: "./tests/v12/serial",
+      fullyParallel: false,
+      dependencies: ['v12 Setup'],
+      // teardown: "v12 Teardown",
       use: {
         ...devices["Desktop Chrome"],
         launchOptions: {
@@ -59,9 +66,15 @@ export default defineConfig({
       },
     },
     {
-      name: 'firefox',
+      name: "Chrome - API - v12",
+      testDir: "./tests/v12/parallel",
+      dependencies: ['v12 Setup'],
+      // teardown: "v12 Teardown",
       use: {
-        ...devices['Desktop Firefox'],
+        ...devices["Desktop Chrome"],
+        launchOptions: {
+          args: ["--enable-gpu"]
+        },
         contextOptions: {
           screen: {
             width: 1920,
@@ -74,22 +87,64 @@ export default defineConfig({
         }
       },
     },
-
     {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-        contextOptions: {
-          screen: {
-            width: 1920,
-            height: 1080
-          }
-        },
-        viewport: {
-          width: 1920,
-          height: 1080
-        }
-      },
+      name: "v12 Teardown",
+      testDir: "./tests/v12",
+      testMatch: /global\.teardown\.ts/
     },
   ]
+  // projects: [
+  //   {
+  //     name: "Desktop Chromium",
+  //     use: {
+  //       ...devices["Desktop Chrome"],
+  //       launchOptions: {
+  //         args: ["--enable-gpu"]
+  //       },
+  //       contextOptions: {
+  //         screen: {
+  //           width: 1920,
+  //           height: 1080
+  //         }
+  //       },
+  //       viewport: {
+  //         width: 1920,
+  //         height: 1080
+  //       }
+  //     },
+  //   },
+  //   {
+  //     name: 'firefox',
+  //     use: {
+  //       ...devices['Desktop Firefox'],
+  //       contextOptions: {
+  //         screen: {
+  //           width: 1920,
+  //           height: 1080
+  //         }
+  //       },
+  //       viewport: {
+  //         width: 1920,
+  //         height: 1080
+  //       }
+  //     },
+  //   },
+
+  //   {
+  //     name: 'webkit',
+  //     use: {
+  //       ...devices['Desktop Safari'],
+  //       contextOptions: {
+  //         screen: {
+  //           width: 1920,
+  //           height: 1080
+  //         }
+  //       },
+  //       viewport: {
+  //         width: 1920,
+  //         height: 1080
+  //       }
+  //     },
+  //   },
+  // ]
 });
