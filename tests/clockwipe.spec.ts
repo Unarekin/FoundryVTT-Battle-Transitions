@@ -199,7 +199,7 @@ test.describe("API Tests", () => {
         ...clockwipe,
         id: item.id,
         duration: 5000,
-        backgroundColor: "transparent",
+        backgroundColor: "#00000000",
       };
 
 
