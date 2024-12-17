@@ -5,6 +5,6 @@ FROM felddy/foundryvtt:11
 RUN rm -rf /data/*
 RUN apk add unzip
 
-COPY FoundryData.zip /tmp/FoundryData.zip
+COPY ./FoundryData/v11.zip /tmp/FoundryData.zip
 RUN unzip /tmp/FoundryData.zip -d /data/
 COPY foundryvtt-11.315.zip /data/container_cache/foundryvtt-11.315.zip

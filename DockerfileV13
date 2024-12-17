@@ -6,6 +6,6 @@ RUN rm -rf /data/*
 # RUN apk add unzip
 RUN apt install unzip
 
-COPY FoundryData.zip /tmp/FoundryData.zip
+COPY ./FoundryData/v13.zip /tmp/FoundryData.zip
 RUN unzip /tmp/FoundryData.zip -d /data/
 COPY foundryvtt-13.332.zip /data/container_cache/foundryvtt-13.332.zip
