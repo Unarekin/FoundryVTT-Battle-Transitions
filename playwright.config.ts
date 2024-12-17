@@ -43,11 +43,6 @@ export default defineConfig({
       testMatch: /global\.setup\.ts/
     },
     {
-      name: "v12 Teardown",
-      testDir: "./tests/v12",
-      testMatch: /global\.teardown\.ts/
-    },
-    {
       name: "Chrome - UI - v12",
       testDir: "./tests/v12/serial",
       fullyParallel: false,
@@ -69,7 +64,34 @@ export default defineConfig({
           height: 1080
         }
       },
-    }
+    },
+    {
+      name: "Chrome - API - v12",
+      testDir: "./tests/v12/parallel",
+      dependencies: ['v12 Setup'],
+      // teardown: "v12 Teardown",
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: {
+          args: ["--enable-gpu"]
+        },
+        contextOptions: {
+          screen: {
+            width: 1920,
+            height: 1080
+          }
+        },
+        viewport: {
+          width: 1920,
+          height: 1080
+        }
+      },
+    },
+    {
+      name: "v12 Teardown",
+      testDir: "./tests/v12",
+      testMatch: /global\.teardown\.ts/
+    },
   ]
   // projects: [
   //   {

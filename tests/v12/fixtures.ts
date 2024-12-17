@@ -5,6 +5,9 @@ import stepDefaults from "../data/defaults.json";
 const BASE_URL = "http://localhost:30000";
 export { BASE_URL }
 
+declare global {
+  const BattleTransition: any;
+}
 
 
 async function joinWorld(page: Page) {
