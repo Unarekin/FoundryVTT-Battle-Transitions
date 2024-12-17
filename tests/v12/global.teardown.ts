@@ -1,12 +1,7 @@
-import { test as teardown } from "@playwright/test";
-import { downAll } from "docker-compose";
-import { exec as tempExec } from "child_process"
-import util from "util";
+import { test } from "@playwright/test";
+import { downOne } from "docker-compose"
+import path from "path";
 
-const exec = util.promisify(tempExec);
-
-teardown("Stop container", async () => {
-  await new Promise(resolve => { setTimeout(resolve, 5000) });
-  await downAll();
-  await exec("docker system prune --volumes -f");
-});
+test("Closing container", async () => {
+  await downOne("foundry12", { cwd: path.resolve(__dirname, "../..") });
+})
