@@ -1,3 +1,5 @@
 import { test } from "@playwright/test";
 
-test("Test", () => { });
+test("test", async ({ page }) => {
+  await page.waitForLoadState("load");
+})
