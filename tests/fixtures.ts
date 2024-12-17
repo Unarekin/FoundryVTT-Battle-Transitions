@@ -11,10 +11,15 @@ async function joinWorld(page: Page, baseURL: string) {
     .locator(`select[name="userid"]`)
     .selectOption({ label: "Gamemaster" });
 
-  await page.getByRole("button", { name: " Join Game Session" }).click();
-
-  await expect(page).toHaveURL("/game");
+  // await page.getByRole("button", { name: "Join Game Session" }).click();
+  // await page.locator("button[name='join']").click({ timeout: 10000 });
+  // await page.waitForFunction(() => window["game"]?.ready);
+  await page.waitForFunction(() => $(`button[name="join"]`).trigger("click"));
   await page.waitForFunction(() => window["game"]?.ready);
+  // await expect(async () => {
+  //   await page.locator("button[name='join']").dispatchEvent("click");
+  //   await page.waitForFunction(() => window["game"]?.ready);
+  // }).toPass();
 }
 
 async function clearSceneConfigurations(page: Page) {
