@@ -14,6 +14,10 @@ async function joinWorld(page: Page, baseURL: string) {
 
   await page.waitForFunction(() => $(`button[name="join"]`).trigger("click"));
   await page.waitForFunction(() => window["game"]?.ready);
+
+  await wait(1000);
+  if (await page.locator(`.tour-center-step.tour .step-button[data-action="exit"]`).isVisible())
+    await page.locator(`.tour-center-step.tour .step-button[data-action="exit"]`).click();
 }
 
 async function clearSceneConfigurations(page: Page) {
@@ -29,7 +33,7 @@ async function clearSceneConfigurations(page: Page) {
 }
 
 
-const test = base.extend<{ scene: Scene }>({
+const test = base.extend<{ scene: string }>({
   page: async ({ page, baseURL }, use) => {
     await joinWorld(page, baseURL ?? "");
     await use(page);
@@ -43,19 +47,18 @@ const test = base.extend<{ scene: Scene }>({
       const scene = await Scene.create({ name: `Scene ${id}` });
       if (!scene) throw new Error("Scene not created");
 
-      $(`.tour-center-step.tour .step-button[data-action="exit"] i`).trigger("click");
-
-      await new Promise(resolve => { setTimeout(resolve, 1000); });
-      await scene.activate();
-      return scene;
+      // await new Promise(resolve => { setTimeout(resolve, 1000); });
+      // await scene.activate();
+      return scene.id;
     });
+
     if (!scene) throw new Error("Invalid scene");
     await use(scene);
     // Delete
     await page.evaluate(async (id) => {
       const scene = game?.scenes?.get(id ?? "");
       if (scene instanceof Scene) await scene.delete();
-    }, scene.id);
+    }, scene);
   }
 })
 
