@@ -12,6 +12,9 @@ const baseURL = "http://localhost";
 
 const chromeSetup = {
   ...devices['Desktop Chrome'],
+  launchOptions: {
+    args: ["--enable-gpu"]
+  },
   contextOptions: {
     screen: {
       width: 1920,
@@ -117,7 +120,8 @@ export default defineConfig({
     },
     {
       name: "Chrome",
-      testDir: "./tests/v12",
+      testDir: "./tests",
+      testMatch: /.*\.spec\.ts/,
       dependencies: ["v12 Setup"],
       teardown: "v12 Teardown",
       use: {

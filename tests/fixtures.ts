@@ -1,4 +1,5 @@
 import { test as base, expect, Page } from "@playwright/test";
+import { wait } from "./common.functions";
 
 declare global {
   const BattleTransition: any;
@@ -11,15 +12,12 @@ async function joinWorld(page: Page, baseURL: string) {
     .locator(`select[name="userid"]`)
     .selectOption({ label: "Gamemaster" });
 
-  // await page.getByRole("button", { name: "Join Game Session" }).click();
-  // await page.locator("button[name='join']").click({ timeout: 10000 });
-  // await page.waitForFunction(() => window["game"]?.ready);
   await page.waitForFunction(() => $(`button[name="join"]`).trigger("click"));
   await page.waitForFunction(() => window["game"]?.ready);
-  // await expect(async () => {
-  //   await page.locator("button[name='join']").dispatchEvent("click");
-  //   await page.waitForFunction(() => window["game"]?.ready);
-  // }).toPass();
+
+  await wait(1000);
+  if (await page.locator(`.tour-center-step.tour .step-button[data-action="exit"]`).isVisible())
+    await page.locator(`.tour-center-step.tour .step-button[data-action="exit"]`).click();
 }
 
 async function clearSceneConfigurations(page: Page) {
@@ -35,11 +33,32 @@ async function clearSceneConfigurations(page: Page) {
 }
 
 
-const test = base.extend({
+const test = base.extend<{ scene: string }>({
   page: async ({ page, baseURL }, use) => {
-    await joinWorld(page, baseURL);
+    await joinWorld(page, baseURL ?? "");
     await use(page);
-    await clearSceneConfigurations(page);
+    // await clearSceneConfigurations(page);
+  },
+  scene: async ({ page }, use) => {
+    // Create scene for this test suite
+
+    const scene = await page.evaluate(async () => {
+      const id = Math.random().toString(36).substring(2, 8);
+      const scene = await Scene.create({ name: `Scene ${id}` });
+      if (!scene) throw new Error("Scene not created");
+
+      // await new Promise(resolve => { setTimeout(resolve, 1000); });
+      // await scene.activate();
+      return scene.id;
+    });
+
+    if (!scene) throw new Error("Invalid scene");
+    await use(scene);
+    // Delete
+    await page.evaluate(async (id) => {
+      const scene = game?.scenes?.get(id ?? "");
+      if (scene instanceof Scene) await scene.delete();
+    }, scene);
   }
 })
 
