@@ -1,9 +1,10 @@
 import { Page, expect } from "@playwright/test";
-import { test } from "./fixtures";
-import { addStep, getStepConfiguration } from "./common.functions";
-import defaultSettings from "./data/defaults.json";
+import { test } from "../fixtures";
+import { getStepConfiguration } from "../common.functions";
+import defaultSettings from "../data/defaults.json";
 
-import { Easings } from "../src/types";
+import { Easings } from "../../src/types";
+import { addStep } from "./common.functions";
 export type TransitionKey = keyof typeof defaultSettings;
 
 
