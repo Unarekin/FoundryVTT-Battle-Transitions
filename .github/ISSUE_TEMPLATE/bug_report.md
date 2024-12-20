@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
@@ -19,6 +19,9 @@ Steps to reproduce the behavior:
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
+
+**Transition sequence export**
+If you are having an issue executing a transition, please sport the configuration and either paste the contents of the file here, or attach the json file directly to this issue.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
