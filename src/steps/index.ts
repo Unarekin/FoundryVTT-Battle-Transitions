@@ -1,6 +1,6 @@
 export * from './AngularWipeStep';
 export * from './BarWipeStep';
-export * from './BillinearWipeStep';
+export * from './BilinearWipeStep';
 export * from './BossSplashStep';
 export * from './ClearEffectsStep';
 export * from './ClockWipeStep';
@@ -35,4 +35,7 @@ export * from './WaitStep';
 export * from './WaveWipeStep';
 export * from './ZoomBlurStep';
 export * from './ZoomStep';
+export * from './functions';
+export * from './selectOptions';
+export * from './targetSelectFunctions';
 export * from './types';

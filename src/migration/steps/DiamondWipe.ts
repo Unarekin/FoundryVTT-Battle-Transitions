@@ -9,7 +9,7 @@ export class DiamondWipeMigrator extends Migrator<DiamondWipeConfiguration> {
     "~1.0": V10X,
     ">=1.1.0 <=1.1.5": v115EasingFix
   };
-  public NewestVersion: string = "1.1.0";
+  public NewestVersion: string = "1.1.6";
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   public Version(data: unknown): string { return ((data as any).version as string) ?? "1.0.5"; }
