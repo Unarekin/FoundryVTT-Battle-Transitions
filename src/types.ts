@@ -5,30 +5,31 @@ export type WipeDirection = typeof WipeDirections[number];
 export const ClockDirections = ["clockwise", "counterclockwise"] as const;
 export type ClockDirection = typeof ClockDirections[number];
 
+
 export const BilinearDirections = ["horizontal", "vertical", "topleft", "topright", "bottomleft", "bottomright"] as const;
 export type BilinearDirection = typeof BilinearDirections[number];
 
 export const RadialDirections = ["inside", "outside"] as const;
 export type RadialDirection = typeof RadialDirections[number];
 
-export const Easings = ["none",
-  "power1.out", "power1.in", "power1.inOut",
-  "power2.in", "power2.out", "power2.inOut",
-  "power3.in", "power3.out", "power3.inOut",
-  "power4.in", "power4.out", "power4.inOut",
-  "back.in", "back.out", "back.inOut",
-  "bounce.in", "bounce.out", "bounce.inOut",
-  "circ.in", "circ.out", "circ.inOut",
-  "elastic.in", "elastic.out", "elastic.inOut",
-  "expo.in", "expo.out", "expo.inOut",
-  "sine.in", "sine.out", "sine.inOut",
-  "steps", "rough", "slow", "expoScale"
-] as const;
-export type Easing = typeof Easings[number];
-
 export const BackgroundTypes = ["color", "image", "overlay"] as const;
 export type BackgroundType = typeof BackgroundTypes[number];
-
+export type Easing = "none"
+  | "power1.out" | "power1.in" | "power1.inOut"
+  | "power2.in" | "power2.out" | "power2.inOut"
+  | "power3.in" | "power3.out" | "power3.inOut"
+  | "power4.in" | "power4.out" | "power4.inOut"
+  | "back.in" | "back.out" | "back.inOut"
+  | "bounce.in" | "bounce.out" | "bounce.inOut"
+  | "circ.in" | "circ.out" | "circ.inOut"
+  | "elastic.in" | "elastic.out" | "elastic.inOut"
+  | "expo.in" | "expo.out" | "expo.inOut"
+  | "sine.in" | "sine.out" | "sine.inOut"
+// | "steps"
+// | "rough"
+// | "slow"
+// | "expoScale"
+// The above easing types need arguments
 
 export type TextureLike = PIXI.TextureSource | PIXI.ColorSource;
 
