@@ -82,9 +82,19 @@
         "CLEARSTEPS": "Clear Steps"
       },
       "CHROMAKEY": {
+        "ENABLE": {
+          "LABEL": "Enable Chroma Key",
+          "HINT": ""
+        },
         "KEYCOLOR": {
           "HINT": "Color to be removed",
           "LABEL": "Key Color"
+        },
+        "RANGE": {
+          "LABEL": "Cut-off Range",
+          "HINT": "Cut-off values for background, foreground, or blending colors.",
+          "X": "X",
+          "Y": "Y"
         }
       },
       "CLOCKWIPE": {
@@ -357,6 +367,10 @@
         "FILE": {
           "HINT": "Video to play",
           "LABEL": "File"
+        },
+        "TABS": {
+          "BASICS": "Basics",
+          "CHROMAKEY": "Chroma Key"
         }
       },
       "ZOOM": {

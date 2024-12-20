@@ -1,5 +1,5 @@
 import { FileNotFoundError } from "../errors";
-import { TextureSwapFilter } from "../filters";
+import { ChromaKeyFilter, TextureSwapFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
 import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { generateBackgroundTypeSelectOptions } from "./selectOptions";
@@ -23,7 +23,10 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
     backgroundImage: "",
     backgroundColor: "#00000000",
     videoSizingMode: "stretch",
-    version: "1.1.0"
+    version: "1.1.9",
+    chromaKey: "#0CA023",
+    chromaRange: [0.11, 0.22],
+    enableChromaKey: false
   }
 
   public static hidden: boolean = false;
@@ -38,11 +41,18 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
   // #region Public Static Methods (6)
 
   public static async RenderTemplate(config?: VideoConfiguration): Promise<string> {
+    const actualConfig = {
+      ...VideoStep.DefaultSettings,
+      ...(config ? config : {})
+    };
+
     return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${VideoStep.template}.hbs`, {
       ...VideoStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
       bgTypeSelect: generateBackgroundTypeSelectOptions(),
+      keyRangeX: actualConfig.chromaRange[0],
+      keyRangeY: actualConfig.chromaRange[1]
     });
   }
 
@@ -66,12 +76,21 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
     const file = $(form).find("#file").val() as string ?? "";
     const volume = $(form).find("#volume input[type='number']").val() as number;
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? ""
+    // const chromaRange: [number, number] = [parseFloat($(form).find("#keyRangeX").val() as number ?? 0, $(form).find("#keyRangeY").val() as number ?? 0];
+
+    const range = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "keyRangeX", "keyRangeY");
+
+
+    const enableChromaKey = $(form).find("#enableChromaKey").is(":checked");
+
     return new VideoStep({
       ...VideoStep.DefaultSettings,
       ...(file ? { file } : {}),
       ...(volume ? { volume: volume / 100 } : {}),
       backgroundImage,
-      ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor", "label")
+      ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor", "label", "chromaKey"),
+      chromaRange: [range.keyRangeX, range.keyRangeY],
+      enableChromaKey
     })
   }
 
@@ -129,8 +148,15 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
       this.#videoContainer = videoContainer;
       container.addChild(videoContainer);
 
+      if (config.enableChromaKey) {
+        const chromaFilter = new ChromaKeyFilter(config.chromaKey);
+        this.addFilter(sprite, chromaFilter);
+      }
+
       source.addEventListener("ended", () => {
-        if (config.clear) setTimeout(() => { sprite.destroy(); }, 500);
+        if (config.clear) setTimeout(() => {
+          sprite.renderable = false;
+        }, 500);
         resolve();
       });
 

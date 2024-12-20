@@ -7,42 +7,79 @@
     <input type="hidden" name="id" id="id" value="{{id}}" />
     <p>{{localize "BATTLETRANSITIONS.VIDEO.DESCRIPTION"}}</p>
 
-    <div class="form-group">
-      <label for="label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
-      <input type="text" name="label" id="label" value="{{label}}">
-    </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+    <section class="dialog-content sheet">
+      <nav class="sheet-tabs tabs" data-group="primary-tabs">
+        <a data-tab="basics">{{localize "BATTLETRANSITIONS.SCENECONFIG.VIDEO.TABS.BASICS"}}</a>
+        <a data-tab="chromakey">{{localize "BATTLETRANSITIONS.SCENECONFIG.VIDEO.TABS.CHROMAKEY"}}</a>
+        
+      </nav>
+    </section>
 
-    <div class="form-group">
-      <label for="file">{{localize
-          "BATTLETRANSITIONS.SCENECONFIG.VIDEO.FILE.LABEL"
-        }}</label>
-      <file-picker
-        name="file"
-        id="file"
-        value="{{file}}"
-        type="video"
-      ></file-picker>
-    </div>
-    <p class="notes">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.VIDEO.FILE.HINT"
-      }}</p>
-    <div class="form-group">
-      <label for="volume">{{localize
-          "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.LABEL"
-        }}</label>
-      <range-picker
-        value="{{volume}}"
-        min="0"
-        max="100"
-        step="1"
-        id="volume"
-        name="volume"
-      ></range-picker>
-    </div>
-    <p class="notes">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.HINT"
-      }}</p>
-{{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
+    <section class="tab-content no-row-gap">
+      <div class="tab" data-tab="basics" data-group="primary-tabs">
+        <div class="form-group">
+          <label for="label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
+          <input type="text" name="label" id="label" value="{{label}}">
+        </div>
+        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+
+        <div class="form-group">
+          <label for="file">{{localize
+              "BATTLETRANSITIONS.SCENECONFIG.VIDEO.FILE.LABEL"
+            }}</label>
+          <file-picker
+            name="file"
+            id="file"
+            value="{{file}}"
+            type="video"
+          ></file-picker>
+        </div>
+        <p class="notes">{{localize
+            "BATTLETRANSITIONS.SCENECONFIG.VIDEO.FILE.HINT"
+          }}</p>
+        <div class="form-group">
+          <label for="volume">{{localize
+              "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.LABEL"
+            }}</label>
+          <range-picker
+            value="{{volume}}"
+            min="0"
+            max="100"
+            step="1"
+            id="volume"
+            name="volume"
+          ></range-picker>
+        </div>
+        <p class="notes">{{localize
+            "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.HINT"
+          }}</p>
+        {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
+      </div>
+
+      <div class="tab" data-tab="chromakey" data-group="primary-tabs">
+        <p class="notes">{{localize "BATTLETRANSITIONS.CHROMAKEY.DESCRIPTION"}}</p>
+        <div class="form-group">
+          <label for="enableChromaKey">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.ENABLE.LABEL"}}</label>
+          <input type="checkbox" {{checked enableChromaKey}} id="enableChromaKey" name="enableChromaKey">
+        </div>
+
+        <div class="form-group">
+          <label for="chromaKey">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.KEYCOLOR.LABEL"}}</label>
+          <input type="text" data-color-picker="{}" name="chromaKey" id="chromaKey" value="{{chromaKey}}">
+        </div>
+        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.KEYCOLOR.HINT"}}</p>
+        
+        <div class="form-group">
+          <label>{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.RANGE.LABEL"}}</label>
+          <div class="flexrow">
+            <div class="center">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.RANGE.X"}}</div>
+            <input type="number" value="{{keyRangeX}}" min="0" max="1" step="any" name="keyRangeX" id="keyRangeX">
+            <div class="center">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.RANGE.Y"}}</div>
+            <input type="number" name="keyRangeY" id="keyRangeY" value="{{keyRangeY}}" min="0" max="1" step="any">
+          </div>
+        </div>
+        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.RANGE.HINT"}}</p>
+      </div>
+    </section>
   </form>
 </div>

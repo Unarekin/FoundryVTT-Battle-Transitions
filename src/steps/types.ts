@@ -84,6 +84,9 @@ export type VideoConfiguration = BackgroundTransition & TransitionConfiguration 
   volume: number;
   clear?: boolean;
   videoSizingMode: SizingMode;
+  chromaKey: PIXI.ColorSource;
+  chromaRange: [number, number];
+  enableChromaKey: boolean;
 });
 
 

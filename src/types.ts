@@ -14,22 +14,25 @@ export type RadialDirection = typeof RadialDirections[number];
 
 export const BackgroundTypes = ["color", "image", "overlay"] as const;
 export type BackgroundType = typeof BackgroundTypes[number];
-export type Easing = "none"
-  | "power1.out" | "power1.in" | "power1.inOut"
-  | "power2.in" | "power2.out" | "power2.inOut"
-  | "power3.in" | "power3.out" | "power3.inOut"
-  | "power4.in" | "power4.out" | "power4.inOut"
-  | "back.in" | "back.out" | "back.inOut"
-  | "bounce.in" | "bounce.out" | "bounce.inOut"
-  | "circ.in" | "circ.out" | "circ.inOut"
-  | "elastic.in" | "elastic.out" | "elastic.inOut"
-  | "expo.in" | "expo.out" | "expo.inOut"
-  | "sine.in" | "sine.out" | "sine.inOut"
-// | "steps"
-// | "rough"
-// | "slow"
-// | "expoScale"
-// The above easing types need arguments
+
+export const Easings = [
+  "none",
+  "power1.out", "power1.in", "power1.inOut",
+  "power2.in", "power2.out", "power2.inOut",
+  "power3.in", "power3.out", "power3.inOut",
+  "power4.in", "power4.out", "power4.inOut",
+  "back.in", "back.out", "back.inOut",
+  "bounce.in", "bounce.out", "bounce.inOut",
+  "circ.in", "circ.out", "circ.inOut",
+  "elastic.in", "elastic.out", "elastic.inOut",
+  "expo.in", "expo.out", "expo.inOut",
+  "sine.in", "sine.out", "sine.inOut",
+  // "steps", "rough", "slow", "expoScale"
+  // These easings need arguments, to be implemented later
+] as const;
+
+export type Easing = typeof Easings[number];
+
 
 export type TextureLike = PIXI.TextureSource | PIXI.ColorSource;
 

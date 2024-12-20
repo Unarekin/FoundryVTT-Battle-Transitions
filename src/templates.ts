@@ -50,8 +50,7 @@ export async function registerTemplates() {
 
   return loadTemplates([
     `/modules/${__MODULE_ID__}/templates/scene-config.hbs`,
-    ...["add-step",
-      "fade-config",
+    ...["fade-config",
       "linearwipe-config",
       "step-item",
       "background-selector",
