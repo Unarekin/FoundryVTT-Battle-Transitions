@@ -15,11 +15,12 @@ export type Easing = "none"
   | "elastic.in" | "elastic.out" | "elastic.inOut"
   | "expo.in" | "expo.out" | "expo.inOut"
   | "sine.in" | "sine.out" | "sine.inOut"
-  | "steps"
-  | "rough"
-  | "slow"
-  | "expoScale"
+// | "steps"
+// | "rough"
+// | "slow"
+// | "expoScale"
 
+// The above easing types need arguments
 
 export type BackgroundType = "color" | "image" | "overlay";
 export type TextureLike = PIXI.TextureSource | PIXI.ColorSource;
