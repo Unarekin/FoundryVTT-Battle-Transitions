@@ -371,6 +371,10 @@
         "TABS": {
           "BASICS": "Basics",
           "CHROMAKEY": "Chroma Key"
+        },
+        "CLEAR": {
+          "LABEL": "Clear After Playing",
+          "HINT": "Will remove the video after it has finished playing."
         }
       },
       "ZOOM": {

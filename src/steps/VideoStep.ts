@@ -89,7 +89,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
       // ...(volume ? { volume: volume / 100 } : {}),
       volume,
       backgroundImage,
-      ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor", "label", "chromaKey"),
+      ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor", "label", "chromaKey", "clear"),
       chromaRange: [range.keyRangeX, range.keyRangeY],
       enableChromaKey
     })

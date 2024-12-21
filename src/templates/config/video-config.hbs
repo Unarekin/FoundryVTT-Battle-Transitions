@@ -70,6 +70,13 @@
         <p class="notes">{{localize
             "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.HINT"
           }}</p>
+
+        <div class="form-group">
+          <label for="clear">{{localize "BATTLETRANSITIONS.SCENECONFIG.VIDEO.CLEAR.LABEL"}}</label>
+          <input type="checkbox" name="clear" id="clear" {{checked clear}}>
+        </div>
+        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.VIDEO.CLEAR.HINT"}}</p>
+
         {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
       </div>
 
