@@ -56,7 +56,8 @@ export class StartPlaylistStep extends TransitionStep<StartPlaylistConfiguration
       if (scene.playlist) {
         if (scene.playlistSound) {
           const sound = typeof scene.playlistSound === "string" ? scene.playlist.sounds.get(scene.playlistSound) : (scene.playlistSound as PlaylistSound);
-          if (sound) await sound.load();
+          if (sound?.load) await sound.load();
+          else if (sound?.sound?.load) await sound.sound.load();
         } else {
           const firstId = scene.playlist.playbackOrder[0];
           const sound = scene.playlist.sounds.get(firstId);

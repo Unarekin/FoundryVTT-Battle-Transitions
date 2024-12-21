@@ -314,7 +314,7 @@ export class BattleTransition {
     } catch (err) {
       ui.notifications?.error((err as Error).message, { console: false });
       console.error(err);
-      return []
+      throw err;
     }
   }
 
