@@ -8,7 +8,10 @@ export class EditStepDialogV1 {
     const step = getStepClassByKey(config.type);
     if (!step) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
 
-    const content = await step.RenderTemplate(config, oldScene, newScene);
+    const content = await step.RenderTemplate({
+      ...config,
+      isV1: true
+    } as TransitionConfiguration, oldScene, newScene);
 
     return new Promise<TransitionConfiguration | null>(resolve => {
 
@@ -64,7 +67,7 @@ function checkFormValidity(html: JQuery<HTMLElement>) {
 }
 
 function setBackgroundImage(html: JQuery<HTMLElement>) {
-  const val = (html.find("#backgroundImage").val() as string) ?? "";
+  const val = (html.find("#backgroundImage,input[name='backgroundImage']").val() as string) ?? "";
 
   if (val) {
     html.find("#backgroundImagePreview").children().remove();
@@ -130,6 +133,28 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
   // Background type
   setBackgroundType(html);
   html.find("#backgroundType").on("change", () => { setBackgroundType(html) });
+
+  // Enable file picker
+  html.find("#file + button.file-picker").on("click", () => {
+    new FilePicker({
+      callback: (file) => { $("#file").val(file); }
+    }).render(true);
+  });
+
+  html.find("#backgroundImage + button.file-picker").on("click", () => {
+    new FilePicker({
+      callback: (file) => {
+        $("#backgroundImage").val(file);
+        setBackgroundImage(html);
+      }
+    }).render(true);
+  })
+
+  html.find("input[type='range']").on("input", e => {
+    if (e.currentTarget instanceof HTMLInputElement) {
+      $(e.currentTarget).siblings("span.range-value").text(e.currentTarget.value);
+    }
+  })
 
   // Color picker
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
