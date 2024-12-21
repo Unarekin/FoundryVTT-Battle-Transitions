@@ -67,7 +67,7 @@ function checkFormValidity(html: JQuery<HTMLElement>) {
 }
 
 function setBackgroundImage(html: JQuery<HTMLElement>) {
-  const val = (html.find("#backgroundImage").val() as string) ?? "";
+  const val = (html.find("#backgroundImage,input[name='backgroundImage']").val() as string) ?? "";
 
   if (val) {
     html.find("#backgroundImagePreview").children().remove();
@@ -139,6 +139,21 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
     new FilePicker({
       callback: (file) => { $("#file").val(file); }
     }).render(true);
+  });
+
+  html.find("#backgroundImage + button.file-picker").on("click", () => {
+    new FilePicker({
+      callback: (file) => {
+        $("#backgroundImage").val(file);
+        setBackgroundImage(html);
+      }
+    }).render(true);
+  })
+
+  html.find("input[type='range']").on("input", e => {
+    if (e.currentTarget instanceof HTMLInputElement) {
+      $(e.currentTarget).siblings("span.range-value").text(e.currentTarget.value);
+    }
   })
 
   // Color picker

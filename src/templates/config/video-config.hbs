@@ -38,14 +38,25 @@
       <label for="volume">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.LABEL"
         }}</label>
-      <range-picker
-        value="{{volume}}"
-        min="0"
-        max="100"
-        step="1"
-        id="volume"
-        name="volume"
-      ></range-picker>
+      {{#if isV1 }}
+        {{rangePicker
+          name="volume"
+          value=volume
+          min=0
+          max=100
+          step=1
+          id="volume"
+        }}
+      {{ else }}
+        <range-picker
+          value="{{volume}}"
+          min="0"
+          max="100"
+          step="1"
+          id="volume"
+          name="volume"
+        ></range-picker>
+      {{/if}}
     </div>
     <p class="notes">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.HINT"

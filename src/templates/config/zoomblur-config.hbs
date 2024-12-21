@@ -11,13 +11,33 @@
 
     <div class="form-group">
       <label for="maxStrength">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.MAXSTRENGTH.LABEL"}}</label>
-      <range-picker value="{{maxStrength}}" min="0" max="1" id="maxStrength" name="maxStrength"></range-picker>
+      {{#if isV1}}
+        {{rangePicker
+          name="maxStrength"
+          value=maxStrength
+          min=0
+          max=1
+          step=0.01
+        }}
+      {{else}}
+        <range-picker value="{{maxStrength}}" min="0" max="1" id="maxStrength" name="maxStrength"></range-picker>
+      {{/if}}
     </div>
     <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.MAXSTRENGTH.HINT"}}</p>
 
     <div class="form-group">
       <label for="innerRadius">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.INNERRADIUS.LABEL"}}</label>
-      <range-picker value="{{innerRadius}}" min="0" max="1" id="innerRadius" name="innerRadius"></range-picker>
+      {{#if isV1}}
+        {{rangePicker
+          name="innerRadius"
+          value=innerRadius
+          min=0
+          max=1
+          step=0.01
+        }}
+      {{else}}
+        <range-picker value="{{innerRadius}}" min="0" max="1" id="innerRadius" name="innerRadius"></range-picker>
+      {{/if}}
     </div>
     <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.INNERRADIUS.HINT"}}</p>
     {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}

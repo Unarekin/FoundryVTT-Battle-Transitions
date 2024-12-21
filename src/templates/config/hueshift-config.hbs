@@ -10,9 +10,20 @@
     <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
 
 
+v1: {{isV1}}
     <div class="form-group">
       <label for="maxShift">{{localize "BATTLETRANSITIONS.SCENECONFIG.HUESHIFT.MAXSHIFT.LABEL"}}</label>
-      <range-picker value="{{maxShift}}" min="0" max="1" id="maxShift" name="maxShift"></range-picker>
+      {{#if isV1}}
+        {{rangePicker
+          name="maxShift"
+          value=maxShift
+          min=0
+          max=1
+          step=".01"
+        }}
+      {{else}}
+        <range-picker value="{{maxShift}}" min="0" max="1" step=".1" id="maxShift" name="maxShift"></range-picker> 
+      {{/if}}
     </div>
     <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.HUESHIFT.MAXSHIFT.HINT"}}</p>
 

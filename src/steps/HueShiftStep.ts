@@ -55,12 +55,13 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): HueShiftStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
-    const maxShift = elem.find("#maxShift input[type='number']").val() as number;
+    const maxShift = elem.find("#maxShift input[type='number'],input[type='range'][name='maxShift']").val() as string | number;
     const dualStyle = elem.find("#dualStyle").val() as string;
+    //const volume = elem.find("#volume,input[type='range'][name='volume']").val() as number ?? 100;
 
     return new HueShiftStep({
       ...HueShiftStep.DefaultSettings,
-      maxShift,
+      maxShift: typeof maxShift === "string" ? parseFloat(maxShift) : maxShift,
       ...parseConfigurationFormElements(elem, "id", "duration", "easing", "label"),
       applyToOverlay: dualStyle === "overlay" || dualStyle === "both",
       applyToScene: dualStyle === "scene" || dualStyle === "both"

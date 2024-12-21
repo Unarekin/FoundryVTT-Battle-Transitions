@@ -64,12 +64,13 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): VideoStep {
     const file = $(form).find("#file").val() as string ?? "";
-    const volume = $(form).find("#volume input[type='number']").val() as number;
+    const volume = $(form).find("#volume input[type='number'],input[type='range'][name='volume']").val() as number ?? 100;
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? ""
     return new VideoStep({
       ...VideoStep.DefaultSettings,
       ...(file ? { file } : {}),
-      ...(volume ? { volume: volume / 100 } : {}),
+      // ...(volume ? { volume: volume / 100 } : {}),
+      volume,
       backgroundImage,
       ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor", "label")
     })
@@ -110,6 +111,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
     const resource = texture?.baseTexture.resource as PIXI.VideoResource;
     const source = resource.source;
+    source.volume = config.volume / 100;
 
     return new Promise<void>((resolve, reject) => {
       const swapFilter = new TextureSwapFilter(texture.baseTexture);

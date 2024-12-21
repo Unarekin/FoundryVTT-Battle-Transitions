@@ -56,8 +56,8 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
   public static fromFormElement(form: HTMLFormElement): ZoomBlurStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
 
-    const maxStrength = elem.find("#maxStrength input[type='number']").val() as number ?? 1;
-    const innerRadius = elem.find("#innerRadius input[type='number']").val() as number ?? 0;
+    const maxStrength = elem.find("#maxStrength input[type='number'],input[type='range'][name='maxStrength']").val() as number ?? 1;
+    const innerRadius = elem.find("#innerRadius input[type='number'],input[type='range'][name='innerRadius']").val() as number ?? 0;
 
     const dualStyle = elem.find("#dualStyle").val() as string;
     return new ZoomBlurStep({
