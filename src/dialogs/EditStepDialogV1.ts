@@ -8,7 +8,10 @@ export class EditStepDialogV1 {
     const step = getStepClassByKey(config.type);
     if (!step) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
 
-    const content = await step.RenderTemplate(config, oldScene, newScene);
+    const content = await step.RenderTemplate({
+      ...config,
+      isV1: true
+    } as TransitionConfiguration, oldScene, newScene);
 
     return new Promise<TransitionConfiguration | null>(resolve => {
 
@@ -130,6 +133,13 @@ function addEventListeners(dialog: Dialog, html: JQuery<HTMLElement>) {
   // Background type
   setBackgroundType(html);
   html.find("#backgroundType").on("change", () => { setBackgroundType(html) });
+
+  // Enable file picker
+  html.find("#file + button.file-picker").on("click", () => {
+    new FilePicker({
+      callback: (file) => { $("#file").val(file); }
+    }).render(true);
+  })
 
   // Color picker
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
