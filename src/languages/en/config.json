@@ -389,7 +389,7 @@
           "LABEL": "Inner Radius"
         },
         "MAXSTRENGTH": {
-          "HINt": "Maximum strength of the effect.",
+          "HINT": "Maximum strength of the effect.",
           "LABEL": "Maximum Strength"
         }
       }
