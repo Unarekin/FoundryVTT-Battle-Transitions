@@ -105,18 +105,27 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
       ...SoundStep.DefaultSettings,
       ...this.config
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    const sound = await foundry.audio.AudioHelper.play({ src: this.config.file, volume: config.volume / 100, autoplay: true }, true) as Sound;
-    this.#sound = sound;
+
+    if (foundry.audio?.AudioHelper) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      const sound = await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true) as Sound;
+      this.#sound = sound;
+    } else {
+      const sound = await AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true);
+      this.#sound = sound;
+    }
   }
 
   public async prepare(): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await foundry.audio.AudioHelper.preloadSound(this.config.file);
+    if (foundry.audio?.AudioHelper) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      await foundry.audio.AudioHelper.preloadSound(this.config.file);
+    } else {
+      await AudioHelper.preloadSound(this.config.file ?? "");
+    }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public teardown(container: PIXI.Container): void {
+  public teardown(): void {
     this.#sound?.stop();
   }
 
