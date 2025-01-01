@@ -97,7 +97,7 @@ export class BattleTransition {
     if (shouldUseAppV2()) {
       return foundry.applications.api.DialogV2.wait({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        window: ({ title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE") } as any),
+        window: ({ title: localize("BATTLETRANSITIONS.DIALOGS.SCENESELECTOR.TITLE") } as any),
         content,
         buttons: [
           {
@@ -116,7 +116,7 @@ export class BattleTransition {
       })
     } else {
       return Dialog.wait({
-        title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE"),
+        title: localize("BATTLETRANSITIONS.DIALOGS.SCENESELECTOR.TITLE"),
         content,
         default: "ok",
         buttons: {
