@@ -99,6 +99,7 @@ export class BattleTransition {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         window: ({ title: localize("BATTLETRANSITIONS.DIALOGS.SCENESELECTOR.TITLE") } as any),
         content,
+        rejectClose: false,
         buttons: [
           {
             label: `<i class="fas fa-times"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")}`,
@@ -131,7 +132,10 @@ export class BattleTransition {
             callback: (html) => game.scenes?.get($(html).find("#scene").val() as string) ?? undefined
           }
         }
-      }).then(result => result instanceof Scene ? result : undefined);
+      }).then(result => result instanceof Scene ? result : undefined)
+        // Really shouldn't be suppressing all errors, but I cannot dig up a way to check to make sure
+        // it isn't just the dialog being closed without checking the message property which is a bad idea
+        .catch(() => undefined)
     }
   }
 
