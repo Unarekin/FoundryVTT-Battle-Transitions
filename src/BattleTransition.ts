@@ -86,7 +86,7 @@ export class BattleTransition {
     if (transition) await BattleTransition.ExecuteSequence(transition);
   }
 
-  public static async SelectScene(omitCurrent: boolean = false): Promise<Scene | null> {
+  public static async SelectScene(omitCurrent: boolean = false): Promise<Scene | undefined> {
     const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
       scenes: (game.scenes?.contents ?? []).reduce((prev, curr) => {
         if (omitCurrent && curr.id === game.scenes?.current?.id) return prev;
@@ -97,41 +97,45 @@ export class BattleTransition {
     if (shouldUseAppV2()) {
       return foundry.applications.api.DialogV2.wait({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        window: ({ title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE") } as any),
+        window: ({ title: localize("BATTLETRANSITIONS.DIALOGS.SCENESELECTOR.TITLE") } as any),
         content,
+        rejectClose: false,
         buttons: [
           {
             label: `<i class="fas fa-times"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")}`,
             action: "cancel",
-            callback: () => Promise.resolve(null)
+            callback: () => Promise.resolve(undefined)
           },
           {
             label: `<i class="fas fa-check"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK")}`,
             action: "ok",
             callback: (event: Event, button: HTMLButtonElement, dialog: HTMLDialogElement) => {
-              return Promise.resolve(game.scenes?.get($(dialog).find("#scene").val() as string) ?? null);
+              return Promise.resolve(game.scenes?.get($(dialog).find("#scene").val() as string) ?? undefined);
             }
           }
         ]
-      })
+      }).then(result => result instanceof Scene ? result : undefined)
     } else {
       return Dialog.wait({
-        title: localize("BATTLETRANSITIONS.SCENESELECTOR.TITLE"),
+        title: localize("BATTLETRANSITIONS.DIALOGS.SCENESELECTOR.TITLE"),
         content,
         default: "ok",
         buttons: {
           cancel: {
             icon: `<i class="fas fa-times"></i>`,
             label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
-            callback: () => null
+            callback: () => undefined
           },
           ok: {
             icon: `<i class="fas fa-check"></i>`,
             label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
-            callback: (html) => game.scenes?.get($(html).find("#scene").val() as string) ?? null
+            callback: (html) => game.scenes?.get($(html).find("#scene").val() as string) ?? undefined
           }
         }
-      }) as Promise<Scene | null>
+      }).then(result => result instanceof Scene ? result : undefined)
+        // Really shouldn't be suppressing all errors, but I cannot dig up a way to check to make sure
+        // it isn't just the dialog being closed without checking the message property which is a bad idea
+        .catch(() => undefined)
     }
   }
 

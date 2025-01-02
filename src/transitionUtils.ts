@@ -1,7 +1,7 @@
 import { COVER_ID } from "./constants";
 import { ScreenSpaceCanvasGroup } from './ScreenSpaceCanvasGroup';
-import { CanvasNotFoundError, NotInitializedError, NoCoverElementError, InvalidSceneError, CannotInitializeCanvasError, InvalidTransitionError } from './errors';
-import { awaitHook, getStepClassByKey } from "./utils";
+import { CanvasNotFoundError, NotInitializedError, InvalidSceneError, CannotInitializeCanvasError, InvalidTransitionError } from './errors';
+import { awaitHook, getStepClassByKey, log } from "./utils";
 import { coerceScene } from "./coercion";
 import { TransitionConfiguration } from "./steps";
 import { PreparedTransitionSequence } from "./interfaces";
@@ -9,15 +9,26 @@ import { PreparedTransitionSequence } from "./interfaces";
 
 
 // Create cover HTMLElement
-const transitionCover = document.createElement("div");
+const transitionCover = document.createElement("canvas");
 transitionCover.style.display = "none";
 transitionCover.style.position = "absolute";
 transitionCover.style.width = "100%";
 transitionCover.style.height = "100%";
 transitionCover.style.backgroundRepeat = "no-repeat";
-
+transitionCover.style.pointerEvents = "none";
 transitionCover.id = COVER_ID;
+
 document.body.appendChild(transitionCover);
+
+// const transitionCover = document.createElement("div");
+// transitionCover.style.display = "none";
+// transitionCover.style.position = "absolute";
+// transitionCover.style.width = "100%";
+// transitionCover.style.height = "100%";
+// transitionCover.style.backgroundRepeat = "no-repeat";
+
+// transitionCover.id = COVER_ID;
+// document.body.appendChild(transitionCover);
 
 let canvasGroup: ScreenSpaceCanvasGroup | null = null;
 
@@ -26,50 +37,42 @@ export function initializeCanvas() {
   canvas?.stage?.addChild(canvasGroup);
 }
 
-export async function createSnapshot() {
+// function performanceTest() {
+//   if (!canvas) throw new CanvasNotFoundError();
+//   if (!(canvas.app && canvas.hidden && canvas.primary && canvas.tiles && canvas.drawings && canvas.scene && canvas.stage)) throw new NotInitializedError();
+//   const start = Date.now();
+//   const img = canvas.app.renderer.extract.pixels();
+//   const duration = Date.now() - start;
+//   log(`New method: ${duration}ms (${duration / 16} frames)`);
+//   log(img);
+// }
+
+export function createSnapshot() {
   if (!canvas) throw new CanvasNotFoundError();
-  if (!(canvas.app && canvas.hidden && canvas.primary && canvas.tiles && canvas.drawings && canvas.scene && canvas.stage)) throw new NotInitializedError();
-
-  // const { sceneWidth, sceneHeight } = canvas.scene.dimensions;
-  const sceneWidth = window.innerWidth;
-  const sceneHeight = window.innerHeight;
-
+  if (!(canvas.app?.renderer && canvas?.scene && canvas?.stage && typeof canvas.scene.width === "number" && typeof canvas.scene.height === "number")) throw new NotInitializedError();
+  const start = Date.now();
   const renderer = canvas.app.renderer;
 
-  const rt = PIXI.RenderTexture.create({ width: sceneWidth, height: sceneHeight });
+  // const coverCanvas = document.createElement("canvas");
+  // const ctx = coverCanvas.getContext("2d");
+  // if (!ctx) throw new CanvasNotFoundError();
+
+  // Render to RenderTexture for later
+  const rt = PIXI.RenderTexture.create({ width: window.innerWidth, height: window.innerHeight });
   renderer.render(canvas.stage, { renderTexture: rt, skipUpdateTransform: true, clear: false });
 
-  const transitionCover = document.getElementById(COVER_ID) as HTMLImageElement | null;
-  if (!transitionCover) throw new NoCoverElementError();
-
-  transitionCover.style.backgroundImage = "";
-  const img = await renderer.extract.image(rt);
-
-  const tempCanvas = document.createElement("canvas");
-  const ctx = tempCanvas.getContext("2d");
-  if (!ctx) throw new CannotInitializeCanvasError();
-
-  tempCanvas.width = img.width;
-  tempCanvas.height = img.height;
-
-  ctx.fillStyle = renderer.background.backgroundColor.toHex();
-  ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-  ctx.drawImage(img, 0, 0);
-
-  const src = tempCanvas.toDataURL();
-
-  const renderTexture = PIXI.RenderTexture.create({ width: window.innerWidth, height: window.innerHeight });
-  const finalTexture = PIXI.Texture.from(tempCanvas);
-  const bgSprite = PIXI.Sprite.from(finalTexture);
-  renderer.render(bgSprite, { renderTexture, skipUpdateTransform: true, clear: false });
-
-  // const img = renderer.extract.canvas(rt) as HTMLCanvasElement;
-  transitionCover.style.backgroundImage = `url(${src})`;
-  transitionCover.style.backgroundColor = renderer.background.backgroundColor.toHex()
+  const pixels = Uint8ClampedArray.from(renderer.extract.pixels(rt));
+  const imageData = new ImageData(pixels, rt.width, rt.height);
+  transitionCover.width = rt.width;
+  transitionCover.height = rt.height;
+  const ctx = transitionCover.getContext("2d");
+  if (!ctx) throw new CanvasNotFoundError();
+  ctx.putImageData(imageData, 0, 0);
   transitionCover.style.display = "block";
 
-  const sprite = new PIXI.Sprite(renderTexture);
-  return sprite;
+  const duration = Date.now() - start;
+  log(`Snapshot duration: ${duration}ms (${duration / 16} frames)`);
+  return PIXI.Sprite.from(rt);
 }
 
 export function removeFiltersFromScene(sequence: PreparedTransitionSequence) {
@@ -87,9 +90,9 @@ export function removeFilterFromScene(filter: PIXI.Filter) {
   filter.destroy();
 }
 
-export async function setupTransition(): Promise<PIXI.Container> {
+export function setupTransition(): PIXI.Container {
   if (!canvasGroup) throw new CannotInitializeCanvasError();
-  const snapshot = await createSnapshot();
+  const snapshot = createSnapshot();
   const container = new PIXI.Container();
   container.width = window.innerWidth;
   container.height = window.innerHeight;
