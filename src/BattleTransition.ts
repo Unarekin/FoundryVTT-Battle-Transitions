@@ -151,7 +151,7 @@ export class BattleTransition {
     let container: PIXI.Container | null = null;
 
     try {
-      container = await setupTransition();
+      container = setupTransition();
       prepared.overlay = [...container.children];
 
       hideLoadingBar();
