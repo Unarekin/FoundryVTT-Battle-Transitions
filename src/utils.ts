@@ -146,8 +146,7 @@ function isNumeric(value: unknown): boolean {
   if (typeof value === "number") return true;
 
   if (typeof value === "string") {
-    const temp = parseFloat(value);
-    return temp.toString() === value;
+    return !isNaN(parseFloat(value));
   }
   return false;
 }

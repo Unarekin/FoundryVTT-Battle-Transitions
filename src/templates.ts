@@ -56,7 +56,8 @@ export async function registerTemplates() {
       "add-step-button",
       "sequence-item",
       "target-selector",
-      "dualtransition-selector"
+      "dualtransition-selector",
+      "falloff-config"
     ].map(name => `/modules/${__MODULE_ID__}/templates/config/${name}.hbs`),
     `/modules/${__MODULE_ID__}/templates/scene-selector.hbs`,
     `/modules/${__MODULE_ID__}/templates/transition-steps.hbs`,

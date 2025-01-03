@@ -60,6 +60,7 @@ export type FireDissolveConfiguration = DurationTransition & TransitionConfigura
 
 export type LinearWipeConfiguration = WipeTransition & ({
   direction: WipeDirection;
+  falloff: number;
 });
 
 export type RadialWipeConfiguration = WipeTransition & TargetedTransition & ({
