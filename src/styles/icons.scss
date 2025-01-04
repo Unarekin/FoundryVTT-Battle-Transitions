@@ -25,11 +25,11 @@ nav .bt-icon {
   background-color: var(--color-text-dark-primary);
 }
 
-.v1 button .bt-icon {
+.bt.v1 button .bt-icon {
   background-color: var(--color-text-dark-primary);
 }
 
-.v2 {
+.bt.v2 {
   button {
     position: relative;
   }
