@@ -26,8 +26,8 @@ If you are having an issue executing a transition, please sport the configuratio
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Foundry Version**
-The version of Foundry VTT you are using.
+**Foundry and Battle Transitions Version**
+The version of FoundryVTT (by number, please, rather than simply "latest") as well as Battle Transitions that you are using
 
 **Additional context**
 Add any other context about the problem here.
