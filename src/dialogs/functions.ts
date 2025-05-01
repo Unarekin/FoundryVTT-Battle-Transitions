@@ -5,8 +5,6 @@ import { AddStepDialogV2 } from './AddStepDialogV2';
 import { EditStepDialogV1 } from './EditStepDialogV1';
 import { StepContext } from './types';
 import { EditStepDialogV2 } from './EditStepDialogV2';
-import { TransitionBuilderV1 } from './TransitionBuilderV1';
-import { TransitionBuilderV2 } from './TransitionBuilderV2';
 
 export async function addStepDialog(): Promise<string | null> {
   if (shouldUseAppV2()) return AddStepDialogV2.prompt();
@@ -40,17 +38,16 @@ export async function confirm(title: string, content: string): Promise<boolean> 
 
 export function buildTransitionFromForm(html: JQuery<HTMLElement>) {
   const sequence: TransitionConfiguration[] = [];
-  html.find("#transition-step-list [data-transition-type]").each((index, element) => {
-    const flag = element.dataset.flag ?? "";
-    const step = JSON.parse(flag) as TransitionConfiguration;
-    sequence.push(step);
-  });
-  return sequence;
-}
+  html.find(`select#stepList option`)
+    .each((index, element) => {
+      const serialized = element.dataset.serialized ?? "";
+      if (serialized) {
+        const step = JSON.parse(serialized) as TransitionConfiguration;
+        sequence.push(step);
+      }
+    });
 
-export async function transitionBuilderDialog(scene?: Scene): Promise<TransitionConfiguration[] | null> {
-  if (shouldUseAppV2()) return TransitionBuilderV2.prompt(scene);
-  else return TransitionBuilderV1.prompt(scene);
+  return sequence
 }
 
 export async function customDialog(title: string, content: string, buttons: Record<string, DialogButton>, onRender?: (element: JQuery<HTMLElement>) => void, onClose?: (element: JQuery<HTMLElement>) => void): Promise<JQuery<HTMLElement>> {

@@ -8,7 +8,7 @@ import { cleanupTransition, hideLoadingBar, removeFiltersFromScene, setupTransit
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
 import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, serializeTexture, shouldUseAppV2 } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
-import { transitionBuilderDialog } from "./dialogs";
+import { TransitionBuilder } from "./dialogs";
 import { filters } from "./filters";
 import { isValidBilinearDirection, isValidClockDirection, isValidEasing, isValidRadialDirection, isValidWipeDirection } from "./validation";
 
@@ -81,9 +81,13 @@ export class BattleTransition {
 
   // #region Public Static Methods (7)
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static async BuildTransition(scene?: Scene): Promise<void> {
-    const transition = await transitionBuilderDialog(scene);
-    if (transition) await BattleTransition.ExecuteSequence(transition);
+    const app = new TransitionBuilder({});
+    await app.render(true);
+    const config = await app.closed;
+
+    if (config) await new BattleTransition(config.scene).executeSequence(config.sequence);
   }
 
   public static async SelectScene(omitCurrent: boolean = false): Promise<Scene | undefined> {

@@ -4,17 +4,17 @@
   data-id="{{id}}"
 >
   <form>
-    <input type="hidden" value="{{id}}" name="id" id="id" />
+    <input type="hidden" value="{{id}}" name="step.id" id="step.id" />
     <p>{{localize "BATTLETRANSITIONS.CHROMAKEY.DESCRIPTION"}}</p>
     <div class="form-group">
-      <label for="key-color">{{localize
+      <label for="step.key-color">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.KEYCOLOR.LABEL"
         }}</label>
       <input
         type="text"
         data-color-picker="{alphaChannel: false}"
-        name="key-color"
-        id="key-color"
+        name="step.key-color"
+        id="step.key-color"
         value="{{keyColor}}"
       />
     </div>
@@ -22,14 +22,14 @@
         "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.KEYCOLOR.HINT"
       }}</p>
     <div class="form-group">
-      <label for="background">{{localize
+      <label for="step.background">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.LABEL"
         }}</label>
       <input
         type="text"
         data-color-picker="{alphaChannel: true}"
-        name="background"
-        id="background"
+        name="step.background"
+        id="step.background"
         value="{{background}}"
       />
     </div>

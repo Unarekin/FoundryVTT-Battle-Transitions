@@ -4,16 +4,26 @@
   data-id="{{id}}"
 >
   <form>
-    <input type="hidden" name="id" id="id" value="{{id}}" />
-    <input type="hidden" name="oldScene" id="oldScene" value="{{oldScene}}" />
-    <input type="hidden" name="newScene" id="newScene" value="{{newScene}}" />
+    <input type="hidden" name="step.id" id="step.id" value="{{id}}" />
+    <input
+      type="hidden"
+      name="step.oldScene"
+      id="step.oldScene"
+      value="{{oldScene}}"
+    />
+    <input
+      type="hidden"
+      name="step.newScene"
+      id="step.newScene"
+      value="{{newScene}}"
+    />
     <p class="notes">{{localize "BATTLETRANSITIONS.PARALLEL.DESCRIPTION"}}</p>
 
     <div class="form-group">
-      <label for="label">{{localize
+      <label for="step.label">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"
         }}</label>
-      <input type="text" name="label" id="label" value="{{label}}" />
+      <input type="text" name="step.label" id="step.label" value="{{label}}" />
     </div>
     <p class="notes">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"
@@ -21,23 +31,25 @@
 
     <table class="no-margins">
       <tr>
-        <td id="sequence-list">
+        <td id="step.sequence-list">
 
           <button data-action="add-sequence">
             <i class="fas fa-plus"></i>
             {{localize "BATTLETRANSITIONS.SCENECONFIG.PARALLEL.ADDSEQUENCE"}}
           </button>
         </td>
-        <td class="flexcol" id="selected-sequence" data-index="">
-          <div class="flex0 centered full-width" id="sequence-name"></div>
-          <div id="selected-sequence-steps" class="flex1">
+        <td class="flexcol" id="step.selected-sequence" data-index="">
+          <div class="flex0 centered full-width" id="step.sequence-name"></div>
+          <div id="step.selected-sequence-steps" class="flex1">
 
           </div>
-          <div class="right-align" id="total-duration"></div>
+          <div class="right-align" id="step.total-duration"></div>
           <div class="flex0">
-            <button data-action="add-step" id="add-step" name="add-step"><i
-                class="fas fa-plus"
-              ></i>{{localize
+            <button
+              data-action="add-step"
+              id="step.add-step"
+              name="step.add-step"
+            ><i class="fas fa-plus"></i>{{localize
                 "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.ADDSTEP"
               }}</button>
           </div>

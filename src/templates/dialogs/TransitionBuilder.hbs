@@ -1,21 +1,30 @@
-{{#if newScene}}
-  <input type="hidden" name="newScene" id="newScene" value="{{newScene}}">
-{{else}}
-  {{> "/modules/battle-transitions/templates/scene-selector.hbs"}}
-{{/if}}
-{{#if oldScene}}<input type="hidden" name="oldScene" id="oldScene" value="{{oldScene}}">{{/if}}
-<div class="form-group">
-  <label for="import">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.LABEL"}}</label>
-  <div class="right-align">
-    <i class="fas fa-fw fa-upload link" data-action="import-json"></i>
+<div data-role="transition-builder">
+  {{#if newScene}}
+    <input type="hidden" name="newScene" id="newScene" value="{{newScene}}">
+  {{else}}
+    <div class="form-group">
+      <label for="scene">{{localize "DOCUMENT.Scene"}}</label>
+      <select name="scene" id="scene">
+        {{selectOptions scenes selected=newScene}}
+      </select>
+    </div>
+  {{/if}}
+  {{#if oldScene}}<input type="hidden" name="oldScene" id="oldScene" value="{{oldScene}}">{{/if}}
+  <div class="form-group">
+    <label for="import">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.LABEL"}}</label>
+    <div class="right-align">
+      <i class="fas fa-fw fa-upload link" data-action="importJson"></i>
+    </div>
   </div>
-</div>
-<p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.HINT"}}</p>
-<div class="form-group">
-  <label for="export">{{localize "BATTLETRANSITIONS.SCENECONFIG.EXPORT.LABEL"}}</label>
-  <div class="right-align">
-    <i class="fas fa-fw fa-download link" data-action="export-json"></i>
+  <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.HINT"}}</p>
+  <div class="form-group">
+    <label for="export">{{localize "BATTLETRANSITIONS.SCENECONFIG.EXPORT.LABEL"}}</label>
+    <div class="right-align">
+      <i class="fas fa-fw fa-download link" data-action="exportJson"></i>
+    </div>
   </div>
+  <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.EXPORT.HINT"}}</p>
+  <hr />
+  {{> "/modules/battle-transitions/templates/transition-steps.hbs" this}}
+  <hr />
 </div>
-<p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.EXPORT.HINT"}}</p>
-{{> "/modules/battle-transitions/templates/transition-steps.hbs" this}}

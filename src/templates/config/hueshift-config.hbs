@@ -1,26 +1,26 @@
 <div class="flexcol step-config-item" data-transition-type="pixelate" data-id="{{id}}">
   <form>
-    <input type="hidden" id="id" name="id" value="{{id}}">
+    <input type="hidden" id="step.id" name="step.id" value="{{id}}">
     <p>{{localize "BATTLETRANSITIONS.HUESHIFT.DESCRIPTION"}}</p>
 
     <div class="form-group">
-      <label for="label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
-      <input type="text" name="label" id="label" value="{{label}}">
+      <label for="step.label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
+      <input type="text" name="step.label" id="step.label" value="{{label}}">
     </div>
     <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
 
     <div class="form-group">
-      <label for="maxShift">{{localize "BATTLETRANSITIONS.SCENECONFIG.HUESHIFT.MAXSHIFT.LABEL"}}</label>
+      <label for="step.maxShift">{{localize "BATTLETRANSITIONS.SCENECONFIG.HUESHIFT.MAXSHIFT.LABEL"}}</label>
       {{#if isV1}}
         {{rangePicker
-          name="maxShift"
+          name="step.maxShift"
           value=maxShift
           min=0
           max=1
           step=".01"
         }}
       {{else}}
-        <range-picker value="{{maxShift}}" min="0" max="1" step=".1" id="maxShift" name="maxShift"></range-picker> 
+        <range-picker value="{{maxShift}}" min="0" max="1" step=".1" id="step.maxShift" name="step.maxShift"></range-picker> 
       {{/if}}
     </div>
     <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.HUESHIFT.MAXSHIFT.HINT"}}</p>
@@ -28,8 +28,8 @@
     {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
     {{> "/modules/battle-transitions/templates/config/dualtransition-selector.hbs" this}}
     <div class="form-group">
-      <label for="easing">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL"}}</label>
-      <select name="easing" id="easing">
+      <label for="step.easing">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL"}}</label>
+      <select name="step.easing" id="step.easing">
         {{selectOptions easingSelect selected=easing localize=true}}
       </select>
     </div>
