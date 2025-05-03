@@ -1,5 +1,5 @@
 import { EmptyObject } from "Foundry-VTT/src/types/utils.mjs";
-import { downloadJSON, formatDuration, getStepClassByKey, localize, log } from "../utils";
+import { downloadJSON, formatDuration, getStepClassByKey, localize } from "../utils";
 import { addStepDialog, buildTransitionFromForm, confirm, importSequence, setBackgroundType } from "./functions";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
@@ -182,7 +182,6 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
   public static onSubmit(this: TransitionBuilder, e: Event | SubmitEvent, elem: HTMLFormElement, data: FormDataExtended) {
     const formData = foundry.utils.expandObject(data.object) as Record<string, unknown>;
-    log("Form:", foundry.utils.mergeObject({}, formData));
     delete formData.stepList;
 
     const sequence: TransitionConfiguration[] = [];
@@ -211,6 +210,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     }
 
     formData.sequence = sequence;
+
     if (this.#resolve) {
       this.#resolve({
         scene: formData.scene as string,

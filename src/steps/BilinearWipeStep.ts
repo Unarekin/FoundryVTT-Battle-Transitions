@@ -16,6 +16,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     type: "bilinearwipe",
     duration: 1000,
     easing: "none",
+    falloff: 0,
     radial: "inside",
     direction: "vertical",
     version: "1.1.6",
@@ -50,6 +51,11 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     });
   }
 
+  public serialize(): BilinearWipeConfiguration | Promise<BilinearWipeConfiguration> {
+    const config = super.serialize();
+    return config
+  }
+
   public static from(config: BilinearWipeConfiguration): BilinearWipeStep
   public static from(form: JQuery<HTMLFormElement>): BilinearWipeStep
   public static from(form: HTMLFormElement): BilinearWipeStep
@@ -62,12 +68,13 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
 
   public static fromFormElement(form: HTMLFormElement): BilinearWipeStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements<BilinearWipeConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "radial", "easing", "backgroundType", "backgroundColor", "label")
-    return new BilinearWipeStep({
+    const elem = parseConfigurationFormElements<BilinearWipeConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "radial", "easing", "backgroundType", "backgroundColor", "label", "falloff");
+    const step = new BilinearWipeStep({
       ...BilinearWipeStep.DefaultSettings,
       ...elem,
       backgroundImage
     });
+    return step;
   }
 
   public static getDuration(config: BilinearWipeConfiguration): number { return { ...BilinearWipeStep.DefaultSettings, ...config }.duration }
@@ -83,7 +90,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
       ...this.config
     }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new BilinearWipeFilter(config.direction, config.radial, background.baseTexture);
+    const filter = new BilinearWipeFilter(config.direction, config.radial, background.baseTexture, config.falloff);
     this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter)

@@ -34,7 +34,9 @@ export type AnimatedTransition = DurationTransition & ({
   easing: Easing;
 })
 
-type WipeTransition = DurationTransition & BackgroundTransition & TransitionConfiguration & AnimatedTransition;
+type WipeTransition = DurationTransition & BackgroundTransition & TransitionConfiguration & AnimatedTransition & ({
+  falloff: number;
+})
 
 export type BilinearWipeConfiguration = WipeTransition & ({
   direction: BilinearDirection;
@@ -60,7 +62,6 @@ export type FireDissolveConfiguration = DurationTransition & TransitionConfigura
 
 export type LinearWipeConfiguration = WipeTransition & ({
   direction: WipeDirection;
-  falloff: number;
 });
 
 export type RadialWipeConfiguration = WipeTransition & TargetedTransition & ({
@@ -196,7 +197,6 @@ export type HueShiftConfiguration = TransitionConfiguration & DurationTransition
 export type BarWipeConfiguration = WipeTransition & ({
   direction: "vertical" | "horizontal";
   bars: number;
-  falloff: number;
 })
 
 export type TargetedTransition = {
