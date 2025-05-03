@@ -3,7 +3,6 @@ export * from './AddStepDialogV2';
 export * from './EditStepDialogV1';
 export * from './EditStepDialogV2';
 export * from './SceneConfig';
-export * from './SceneConfigV11';
 export * from './SceneConfigV12';
 export * from './SceneConfigV2';
 export * from './TransitionBuilder';
