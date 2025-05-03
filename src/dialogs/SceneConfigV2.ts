@@ -2,9 +2,8 @@ import { ConfigurationHandler } from "../ConfigurationHandler";
 import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
-import { BackgroundType } from "../types";
 import { downloadJSON, getStepClassByKey, localize } from "../utils";
-import { buildTransitionFromForm, confirm, createConfigurationOption, importSequence } from "./functions";
+import { buildTransitionFromForm, createConfigurationOption, importSequence, setEnabledButtons, setBackgroundType, selectItem, deleteSelectedStep } from "./functions";
 
 export function injectSceneConfigV2() {
 
@@ -139,58 +138,7 @@ function onRender(this: foundry.applications.api.ApplicationV2, wrapped: Functio
   return render;
 }
 
-function setBackgroundType(parent: HTMLElement, backgroundType: BackgroundType) {
-  const bgTypes = parent.querySelectorAll(`[data-background-type]`) as unknown as HTMLElement[];
-  for (const elem of bgTypes)
-    elem.style.display = elem.dataset.backgroundType === backgroundType ? "block" : "none";
-}
 
-function setEnabledButtons(parent: HTMLElement) {
-  // empty
-  const sequence = buildTransitionFromForm($(parent));
-
-  const exportButton = parent.querySelector(`[data-action="exportJson"]`);
-  if (exportButton instanceof HTMLElement) {
-    if (sequence.length) exportButton.classList.remove("disabled");
-    else exportButton.classList.add("disabled");
-  }
-
-  const clearButton = parent.querySelector(`[data-action="clearSteps"]`);
-  if (clearButton instanceof HTMLElement) {
-    if (sequence.length) clearButton.classList.remove("disabled");
-    else clearButton.classList.add("disabled");
-  }
-
-  const deleteButton = parent.querySelector(`[data-action="deleteStep"]`);
-  if (deleteButton instanceof HTMLButtonElement) {
-    const id = parent.querySelector(`[data-role="transition-config"] input[name="step.id"]`);
-    deleteButton.disabled = !id;
-  }
-}
-
-async function deleteSelectedStep(parent: HTMLElement) {
-  const idElem = parent.querySelector(`[data-role="transition-config"] input[name="step.id"]`);
-  if (!(idElem instanceof HTMLInputElement)) return;
-  const id = idElem.value;
-  const option = parent.querySelector(`#stepList option[data-id="${id}"]`);
-  if (!(option instanceof HTMLOptionElement)) throw new InvalidTransitionError(id);
-  const serialized = option.dataset.serialized as string;
-  const deserialized = JSON.parse(serialized) as TransitionConfiguration;
-  const step = getStepClassByKey(deserialized.type);
-  if (!step) throw new InvalidTransitionError(deserialized.type);
-
-  const confirmed = await confirm(
-    localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) }),
-    localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) })
-  )
-  if (!confirmed) return;
-
-  option.remove();
-
-  const config = parent.querySelector(`[data-role="transition-config"]`);
-  if (config instanceof HTMLElement) config.innerHTML = "";
-  setEnabledButtons(parent);
-}
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 function onChangeForm(this: foundry.applications.api.ApplicationV2, wrapped: Function, ...args: unknown[]) {
@@ -210,31 +158,6 @@ function onChangeForm(this: foundry.applications.api.ApplicationV2, wrapped: Fun
   return change;
 }
 
-async function selectItem(parent: HTMLElement, id: string) {
-
-  const configArea = parent.querySelector(`[data-role="transition-config"]`);
-  if (configArea instanceof HTMLElement) configArea.innerHTML = "";
-  else return;
-
-  const option = parent.querySelector(`select#stepList option[data-id="${id}"]`);
-  if (!(option instanceof HTMLOptionElement)) return;
-
-  const serialized = option.dataset.serialized as string;
-  if (!serialized) throw new InvalidTransitionError(id);
-  const deserialized = JSON.parse(serialized) as TransitionConfiguration;
-
-  const step = getStepClassByKey(deserialized.type);
-  if (!step) throw new InvalidTransitionError(deserialized.type);
-
-  const content = await step.RenderTemplate({
-    ...deserialized,
-    isV1: false
-  } as TransitionConfiguration);
-
-  configArea.innerHTML = content;
-  setEnabledButtons(parent);
-  setBackgroundType(parent, (deserialized as unknown as BackgroundTransition).backgroundType ?? "");
-}
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 function onSubmitForm(this: foundry.applications.api.ApplicationV2, wrapped: Function, ...args: unknown[]) {

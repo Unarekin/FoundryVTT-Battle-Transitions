@@ -1,4 +1,4 @@
-<div class="tab standard-form transition-builder{{#if tab.active}} active{{/if}}" data-group="sheet" data-tab="transition" data-application-part="transition">
+<div class="tab standard-form transition-builder{{#if tab.active}} active{{/if}}" data-group="{{#if isV1}}main{{else}}sheet{{/if}}" data-tab="transition" data-application-part="transition">
   <div class="form-group">
     <label for="transition.autoTrigger">{{localize "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.LABEL"}}</label>
     <input type="checkbox" name="transition.autoTrigger" id="transition.autoTrigger" {{checked transition.autoTrigger}}/>
@@ -19,4 +19,5 @@
   </div>
   <hr />
   {{> "/modules/battle-transitions/templates/transition-steps.hbs" this}}
+  <br>
 </div>

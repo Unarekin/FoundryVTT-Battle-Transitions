@@ -1,6 +1,5 @@
-import { TransitionConfiguration } from '../steps';
+import { BackgroundTransition, TransitionConfiguration } from '../steps';
 import { getSortedSteps, getStepClassByKey, localize, shouldUseAppV2, uploadJSON } from '../utils';
-import { AddStepDialogV1 } from './AddStepDialogV1';
 import { AddStepDialogV2 } from './AddStepDialogV2';
 import { EditStepDialogV1 } from './EditStepDialogV1';
 import { StepContext } from './types';
@@ -8,8 +7,9 @@ import { EditStepDialogV2 } from './EditStepDialogV2';
 import { InvalidTransitionError } from '../errors';
 
 export async function addStepDialog(): Promise<string | null> {
-  if (shouldUseAppV2()) return AddStepDialogV2.prompt();
-  else return AddStepDialogV1.prompt();
+  // if (shouldUseAppV2()) return AddStepDialogV2.prompt();
+  // else return AddStepDialogV1.prompt();
+  return AddStepDialogV2.prompt();
 }
 
 
@@ -155,4 +155,110 @@ async function customDialogV2(title: string, content: string, buttons: Record<st
       })
     }).catch(reject);
   });
+}
+
+
+export async function selectItem(parent: HTMLElement, id: string) {
+
+  const configArea = parent.querySelector(`[data-role="transition-config"]`);
+  if (!(configArea instanceof HTMLElement)) return;
+
+  const option = parent.querySelector(`select#stepList option[data-id="${id}"]`);
+  if (!(option instanceof HTMLOptionElement)) {
+    // Nothing selected
+    configArea.innerHTML = "";
+    return;
+  }
+
+  const serialized = option.dataset.serialized as string;
+  if (!serialized) throw new InvalidTransitionError(id);
+  const deserialized = JSON.parse(serialized) as TransitionConfiguration;
+
+  const step = getStepClassByKey(deserialized.type);
+  if (!step) throw new InvalidTransitionError(deserialized.type);
+
+  const content = await step.RenderTemplate({
+    ...deserialized,
+    isV1: false
+  } as TransitionConfiguration);
+
+  configArea.innerHTML = content;
+  setEnabledButtons(parent);
+  setBackgroundType(parent, (deserialized as unknown as BackgroundTransition).backgroundType ?? "");
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  ColorPicker.install();
+}
+
+export function setBackgroundType(parent: HTMLElement, backgroundType: BackgroundType) {
+  const bgTypes = parent.querySelectorAll(`[data-background-type]`) as unknown as HTMLElement[];
+  for (const elem of bgTypes)
+    elem.style.display = elem.dataset.backgroundType === backgroundType ? "block" : "none";
+}
+
+export function setEnabledButtons(parent: HTMLElement) {
+  // empty
+  const sequence = buildTransitionFromForm($(parent));
+
+  const exportButton = parent.querySelector(`[data-action="exportJson"]`);
+  if (exportButton instanceof HTMLElement) {
+    if (sequence.length) exportButton.classList.remove("disabled");
+    else exportButton.classList.add("disabled");
+  }
+
+  const clearButton = parent.querySelector(`[data-action="clearSteps"]`);
+  if (clearButton instanceof HTMLElement) {
+    if (sequence.length) clearButton.classList.remove("disabled");
+    else clearButton.classList.add("disabled");
+  }
+
+  const deleteButton = parent.querySelector(`[data-action="deleteStep"]`);
+  if (deleteButton instanceof HTMLButtonElement) {
+    const id = parent.querySelector(`[data-role="transition-config"] input[name="step.id"]`);
+    deleteButton.disabled = !id;
+  }
+}
+
+export async function deleteSelectedStep(parent: HTMLElement) {
+  const idElem = parent.querySelector(`[data-role="transition-config"] input[name="step.id"]`);
+  if (!(idElem instanceof HTMLInputElement)) return;
+  const id = idElem.value;
+  const option = parent.querySelector(`#stepList option[data-id="${id}"]`);
+  if (!(option instanceof HTMLOptionElement)) throw new InvalidTransitionError(id);
+  const serialized = option.dataset.serialized as string;
+  const deserialized = JSON.parse(serialized) as TransitionConfiguration;
+  const step = getStepClassByKey(deserialized.type);
+  if (!step) throw new InvalidTransitionError(deserialized.type);
+
+  const confirmed = await confirm(
+    localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) }),
+    localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) })
+  )
+  if (!confirmed) return;
+
+  option.remove();
+
+  const config = parent.querySelector(`[data-role="transition-config"]`);
+  if (config instanceof HTMLElement) config.innerHTML = "";
+  setEnabledButtons(parent);
+}
+
+export async function addStep(html: HTMLElement): Promise<TransitionConfiguration | undefined> {
+  const key = await addStepDialog();
+  if (!key) return;
+  const step = getStepClassByKey(key);
+  if (!step) throw new InvalidTransitionError(key);
+
+  // Inject step
+  const config = {
+    ...step.DefaultSettings,
+    id: foundry.utils.randomID()
+  };
+  const option = createConfigurationOption(config);
+
+  option.innerText = localize(`BATTLETRANSITIONS.${step.name}.NAME`);
+
+  const stepList = html.querySelector(`#stepList`)
+  if (stepList instanceof HTMLSelectElement) stepList.options.add(option);
+  return config;
 }

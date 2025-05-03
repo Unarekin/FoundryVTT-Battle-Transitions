@@ -10,7 +10,7 @@ import semver from "semver";
 import { awaitHook, log } from './utils';
 import { libWrapper } from "./vendor/libwrapper.shim";
 import { SceneChangeStep } from './steps';
-import { injectSceneConfigV2 } from "./dialogs";
+import { injectSceneConfigV1, injectSceneConfigV2 } from "./dialogs";
 
 (window as any).semver = semver;
 (window as any).BattleTransition = BattleTransition;
@@ -61,8 +61,14 @@ Hooks.once("ready", () => {
     injectSceneConfigV2();
   } else {
     // Set up renderSceneConfig hook to inject configuration for v12
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Hooks.on("renderSceneConfig", (app: SceneConfig, html: JQuery<HTMLElement>, options: any) => {
-      void ConfigurationHandler.InjectSceneConfig(app, html, options);
+      // void ConfigurationHandler.InjectSceneConfig(app, html, options);
+      injectSceneConfigV1(app)
+        .catch((err: Error) => {
+          console.error(err);
+          ui.notifications?.error(err.message, { console: false, localize: true });
+        });
     });
   }
 

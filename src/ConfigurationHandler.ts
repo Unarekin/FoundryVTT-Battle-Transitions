@@ -1,6 +1,5 @@
 import { SceneConfiguration } from "./interfaces";
 import { SceneChangeConfiguration, SceneChangeStep, TransitionConfiguration } from "./steps";
-import { SceneConfigV12 } from "./dialogs";
 import { BattleTransition } from "./BattleTransition";
 import { InvalidSceneError, UnableToMigrateError } from "./errors";
 
@@ -181,12 +180,6 @@ export class ConfigurationHandler {
     return config.sequence;
   }
 
-  public static async InjectSceneConfig(app: SceneConfig, html: JQuery<HTMLElement>, options: any) {
-    const config = ConfigurationHandler.GetSceneConfiguration(app.object);
-
-    if (game.release?.generation ?? 12 <= 12)
-      await SceneConfigV12.inject(app, html, options, config);
-  }
 
   public static BuildTransitionFromForm(html: JQuery<HTMLElement>) {
     const sequence: TransitionConfiguration[] = [];
