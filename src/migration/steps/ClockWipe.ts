@@ -6,6 +6,12 @@ import { v115EasingFix } from "./functions";
 
 export class ClockWipeMigrator extends Migrator<ClockWipeConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => ClockWipeConfiguration; } = {
+    "<2.0.0": (old: any) => ({
+      falloff: 0,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      ...v115EasingFix(old),
+      version: "2.0.0"
+    }),
     "~1.0": V10X,
     ">=1.1.0 <=1.1.5": (old: any) => ({
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -14,7 +20,7 @@ export class ClockWipeMigrator extends Migrator<ClockWipeConfiguration> {
     })
   };
 
-  public NewestVersion: string = "1.1.6";
+  public NewestVersion: string = "2.0.0";
 
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
