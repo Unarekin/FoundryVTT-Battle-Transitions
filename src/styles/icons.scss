@@ -7,6 +7,12 @@
   mask-position: center;
 }
 
+nav {
+  .bt-icon {
+    background-color: var(--color-text-secondary);
+  }
+}
+
 .bt-icon {
   background-size: contain;
   background-repeat: no-repeat;
@@ -15,98 +21,7 @@
   &::before {
     content: " ";
   }
-}
 
-#context-menu .bt-icon {
-  background-color: var(--color-text-light-1);
-}
-
-nav .bt-icon {
-  background-color: var(--color-text-dark-primary);
-}
-
-.bt.v1 button .bt-icon {
-  background-color: var(--color-text-dark-primary);
-}
-
-.bt.v2 {
-  button {
-    position: relative;
-  }
-
-  .bt-icon {
-    position: absolute;
-    left: 4px;
-    top: -1px;
-    background-color: var(--button-text-color);
-  }
-
-  .fas:not(.bt-icon) {
-    position: absolute;
-    left: 4px;
-    top: 8px;
-  }
-}
-
-.bt.v2 {
-  .search-icon {
-    top: 8px;
-  }
-
-  .search-cancel {
-    top: 8px;
-    left: 398px;
-  }
-}
-
-button .bt-icon {
-  float: left;
-  margin-top: 8px;
-}
-
-.transition-config {
-  .search-box {
-    position: relative;
-
-    .search-icon {
-      position: absolute;
-      top: 6px;
-      left: 4px;
-    }
-
-    .search-cancel {
-      position: absolute;
-      top: 6px;
-      right: 4px;
-      cursor: pointer;
-      display: none;
-    }
-
-    .search-text {
-      padding-left: 20px;
-      padding-right: 20px;
-    }
-  }
-}
-
-.add-step-tab button {
-  position: relative;
-  padding-left: 24px;
-  white-space: nowrap;
-}
-
-.add-step-tab .bt-icon {
-  position: absolute;
-  left: 4px;
-}
-
-#step-search-results {
-  .bt-icon {
-    background-color: var(--color-text-dark-primary);
-  }
-}
-
-.bt-icon {
   &.angular-wipe {
     @include mask-icon("../assets/icons/angular-wipe.svg");
   }

@@ -56,7 +56,8 @@
     "greensock/dist/SplitText.min.js",
     "vendor/pixi-filters.js",
     "vendor/jquery-ui.min.js",
-    "vendor/lunr.min.js"
+    "vendor/lunr.min.js",
+    "vendor/jquery.dragOptions.js"
   ],
   "languages": [
     {

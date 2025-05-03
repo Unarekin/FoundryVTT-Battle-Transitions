@@ -1,10 +1,11 @@
 import { TransitionConfiguration } from '../steps';
-import { getSortedSteps, localize, shouldUseAppV2 } from '../utils';
+import { getSortedSteps, getStepClassByKey, localize, shouldUseAppV2, uploadJSON } from '../utils';
 import { AddStepDialogV1 } from './AddStepDialogV1';
 import { AddStepDialogV2 } from './AddStepDialogV2';
 import { EditStepDialogV1 } from './EditStepDialogV1';
 import { StepContext } from './types';
 import { EditStepDialogV2 } from './EditStepDialogV2';
+import { InvalidTransitionError } from '../errors';
 
 export async function addStepDialog(): Promise<string | null> {
   if (shouldUseAppV2()) return AddStepDialogV2.prompt();
@@ -48,6 +49,50 @@ export function buildTransitionFromForm(html: JQuery<HTMLElement>) {
     });
 
   return sequence
+}
+
+export async function importSequence(parent: HTMLElement): Promise<void> {
+  const list = parent.querySelector(`#stepList`);
+  if (!(list instanceof HTMLSelectElement)) return;
+
+  const current = buildTransitionFromForm($(parent));
+  if (current.length) {
+    const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
+    if (!confirmation) return;
+  }
+
+  const sequence = await uploadJSON<TransitionConfiguration[]>();
+  if (!sequence) return;
+
+  list.innerHTML = "";
+
+  for (const step of sequence) {
+    const stepClass = getStepClassByKey(step.type);
+    if (!stepClass) throw new InvalidTransitionError(step.type);
+    const config = {
+      ...stepClass.DefaultSettings,
+      ...step
+    };
+
+    const option = createConfigurationOption(config);
+    option.innerText = localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`);
+    list.appendChild(option);
+  }
+}
+
+
+
+export function createConfigurationOption(config: TransitionConfiguration): HTMLOptionElement {
+  const option = document.createElement("option");
+  updateConfigurationOption(option, config);
+  return option;
+}
+
+export function updateConfigurationOption(option: HTMLOptionElement, config: TransitionConfiguration) {
+  option.dataset.serialized = JSON.stringify(config);
+  option.dataset.type = config.type;
+  option.dataset.id = config.id;
+  option.value = option.dataset.serialized;
 }
 
 export async function customDialog(title: string, content: string, buttons: Record<string, DialogButton>, onRender?: (element: JQuery<HTMLElement>) => void, onClose?: (element: JQuery<HTMLElement>) => void): Promise<JQuery<HTMLElement>> {

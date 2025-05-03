@@ -5,6 +5,7 @@ export * from './EditStepDialogV2';
 export * from './SceneConfig';
 export * from './SceneConfigV11';
 export * from './SceneConfigV12';
+export * from './SceneConfigV2';
 export * from './TransitionBuilder';
 export * from './addStepFunctions';
 export * from './functions';

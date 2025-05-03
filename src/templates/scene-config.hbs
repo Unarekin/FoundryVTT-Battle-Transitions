@@ -1,22 +1,22 @@
-<div class="form-group">
-  <label for="auto-trigger">{{localize "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.LABEL"}}</label>
-  <input
-    type="checkbox" name="auto-trigger" id="auto-trigger" {{checked autoTrigger}}/>
-</div>
-<p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.HINT" }}</p>
-<div class="form-group">
-  <label for="import">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.LABEL"}}</label>
-  <div class="right-align">
-    <i class="fas fa-fw fa-upload link" data-action="import-json"></i>
+<div class="tab standard-form transition-builder{{#if tab.active}} active{{/if}}" data-group="sheet" data-tab="transition" data-application-part="transition">
+  <div class="form-group">
+    <label for="transition.autoTrigger">{{localize "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.LABEL"}}</label>
+    <input type="checkbox" name="transition.autoTrigger" id="transition.autoTrigger" {{checked transition.autoTrigger}}/>
   </div>
-</div>
-<p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.HINT"}}</p>
-<div class="form-group">
-  <label for="export">{{localize "BATTLETRANSITIONS.SCENECONFIG.EXPORT.LABEL"}}</label>
-  <div class="right-align">
-    <i class="fas fa-fw fa-download link" data-action="export-json"></i>
-  </div>
-</div>
-<p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.EXPORT.HINT"}}</p>
 
-{{> "/modules/battle-transitions/templates/transition-steps.hbs" this}}
+  <div class="form-group">
+    <label for="import">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.LABEL"}}</label>
+    <div class="right-align">
+      <i class="fas fa-fw fa-upload link" data-action="importJson"></i>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="export">{{localize "BATTLETRANSITIONS.SCENECONFIG.EXPORT.LABEL"}}</label>
+    <div class="right-align">
+      <i class="fas fa-fw fa-download link" data-action="exportJson"></i>
+    </div>
+  </div>
+  <hr />
+  {{> "/modules/battle-transitions/templates/transition-steps.hbs" this}}
+</div>

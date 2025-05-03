@@ -1,4 +1,11 @@
 {
+  "SCENE": {
+    "TABS": {
+      "SHEET": {
+        "transition": "Transition"
+      }
+    }
+  },
   "BATTLETRANSITIONS": {
     "COMMON": {
       "TRANSITION": "Transition"

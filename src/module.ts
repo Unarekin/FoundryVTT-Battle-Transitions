@@ -10,6 +10,7 @@ import semver from "semver";
 import { awaitHook, log } from './utils';
 import { libWrapper } from "./vendor/libwrapper.shim";
 import { SceneChangeStep } from './steps';
+import { injectSceneConfigV2 } from "./dialogs";
 
 (window as any).semver = semver;
 (window as any).BattleTransition = BattleTransition;
@@ -55,11 +56,18 @@ Hooks.once("init", async () => {
 
 Hooks.once("ready", () => {
   // void ConfigurationHandler.MigrateAllScenes();
+
+  if (game?.release?.isNewer("13")) {
+    injectSceneConfigV2();
+  } else {
+    // Set up renderSceneConfig hook to inject configuration for v12
+    Hooks.on("renderSceneConfig", (app: SceneConfig, html: JQuery<HTMLElement>, options: any) => {
+      void ConfigurationHandler.InjectSceneConfig(app, html, options);
+    });
+  }
+
 })
 
-Hooks.on("renderSceneConfig", (app: SceneConfig, html: JQuery<HTMLElement>, options: any) => {
-  void ConfigurationHandler.InjectSceneConfig(app, html, options);
-});
 
 Hooks.once("socketlib.ready", () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call

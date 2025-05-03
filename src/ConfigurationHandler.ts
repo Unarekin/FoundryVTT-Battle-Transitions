@@ -100,8 +100,12 @@ export class ConfigurationHandler {
   //   }
   // }
 
-  public static SetSceneConfiguration(scene: Scene, config: SceneConfiguration): Promise<Scene | undefined> {
-    const newConfig: { [x: string]: unknown } = { ...config };
+  public static SetSceneConfiguration(scene: Scene, config: Partial<SceneConfiguration>): Promise<Scene | undefined> {
+    // const newConfig: { [x: string]: unknown } = { ...config };
+    const newConfig: Record<string, unknown> = {
+      ...DEFAULT_CONFIG,
+      ...config
+    };
 
     const oldFlag = scene.flags[__MODULE_ID__] as object;
     for (const key in oldFlag) {

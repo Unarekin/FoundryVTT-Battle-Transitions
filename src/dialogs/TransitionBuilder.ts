@@ -1,6 +1,6 @@
 import { EmptyObject } from "Foundry-VTT/src/types/utils.mjs";
-import { downloadJSON, formatDuration, getStepClassByKey, localize, uploadJSON } from "../utils";
-import { addStepDialog, buildTransitionFromForm, confirm } from "./functions";
+import { downloadJSON, formatDuration, getStepClassByKey, localize } from "../utils";
+import { addStepDialog, buildTransitionFromForm, confirm, importSequence } from "./functions";
 import { TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
 import { InvalidTransitionError } from "../errors";
@@ -251,18 +251,15 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
   public static async ImportJSON(this: TransitionBuilder) {
     try {
-      const current = buildTransitionFromForm($(this.element));
-      if (current.length) {
-        const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
-        if (!confirmation) return;
-      }
+      await importSequence(this.element);
+      // const sequence = await ImportJSON(this.element);
+      // if (!sequence) return;
 
-      const sequence = await uploadJSON<TransitionConfiguration[]>();
-      const stepList = this.element.querySelector(`#transition-step-list`);
-      // Remove all steps
-      if (stepList instanceof HTMLElement) stepList.innerHTML = "";
-      for (const step of sequence)
-        await this.upsertStepButton(step);
+      // const stepList = this.element.querySelector(`#transition-step-list`);
+      // // Remove all steps
+      // if (stepList instanceof HTMLElement) stepList.innerHTML = "";
+      // for (const step of sequence)
+      //   await this.upsertStepButton(step);
 
     } catch (err) {
       ui.notifications?.error((err as Error).message, { localize: true });
