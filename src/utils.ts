@@ -273,7 +273,7 @@ export function parseConfigurationFormElements<t = any>(form: JQuery<HTMLFormEle
   const serialized = form.serializeArray();
 
   const elem = Object.fromEntries(
-    elements.map(key => [key, findFormValue(serialized, key)])
+    elements.map(key => [key, findFormValue(serialized, `step.${key}`)])
   );
   return elem as Partial<t>;
 }

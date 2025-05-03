@@ -1,7 +1,7 @@
 import { EmptyObject } from "Foundry-VTT/src/types/utils.mjs";
-import { downloadJSON, formatDuration, getStepClassByKey, localize } from "../utils";
-import { addStepDialog, buildTransitionFromForm, confirm, importSequence } from "./functions";
-import { TransitionConfiguration } from "../steps";
+import { downloadJSON, formatDuration, getStepClassByKey, localize, log } from "../utils";
+import { addStepDialog, buildTransitionFromForm, confirm, importSequence, setBackgroundType } from "./functions";
+import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
 import { InvalidTransitionError } from "../errors";
 
@@ -160,6 +160,10 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
       config.innerHTML = content;
       this.setEnabledButtons();
+      setBackgroundType(this.element, (deserialized as unknown as BackgroundTransition).backgroundType ?? "");
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      ColorPicker.install();
     } catch (err) {
       console.error(err);
       ui.notifications?.error((err as Error).message, { console: false, localize: true });
@@ -178,7 +182,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
   public static onSubmit(this: TransitionBuilder, e: Event | SubmitEvent, elem: HTMLFormElement, data: FormDataExtended) {
     const formData = foundry.utils.expandObject(data.object) as Record<string, unknown>;
-    delete formData.step;
+    log("Form:", foundry.utils.mergeObject({}, formData));
     delete formData.stepList;
 
     const sequence: TransitionConfiguration[] = [];
@@ -192,6 +196,18 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
           if (deserialized) sequence.push(deserialized);
         }
       }
+    }
+
+    // Parse current step
+    const typeElem = elem.querySelector(`[data-role="transition-config"] [data-transition-type]`);
+    if (typeElem instanceof HTMLElement) {
+      const transitionType = typeElem.dataset.transitionType ?? "";
+      const step = getStepClassByKey(transitionType);
+      if (!step) throw new InvalidTransitionError(transitionType);
+      const stepData = step.from(elem).config as TransitionConfiguration;
+      const index = sequence.findIndex(obj => obj.id === stepData.id);
+      if (index !== -1) sequence.splice(index, 1, stepData);
+      else sequence.push(stepData);
     }
 
     formData.sequence = sequence;

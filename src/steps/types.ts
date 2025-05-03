@@ -196,6 +196,7 @@ export type HueShiftConfiguration = TransitionConfiguration & DurationTransition
 export type BarWipeConfiguration = WipeTransition & ({
   direction: "vertical" | "horizontal";
   bars: number;
+  falloff: number;
 })
 
 export type TargetedTransition = {

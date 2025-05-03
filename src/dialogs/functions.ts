@@ -5,6 +5,7 @@ import { EditStepDialogV1 } from './EditStepDialogV1';
 import { StepContext } from './types';
 import { EditStepDialogV2 } from './EditStepDialogV2';
 import { InvalidTransitionError } from '../errors';
+import { BackgroundType } from '../types';
 
 export async function addStepDialog(): Promise<string | null> {
   // if (shouldUseAppV2()) return AddStepDialogV2.prompt();

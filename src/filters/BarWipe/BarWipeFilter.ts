@@ -57,11 +57,11 @@ function createVerticalTexture(bars: number): PIXI.Texture {
 }
 
 export class BarWipeFilter extends TextureWipeFilter {
-  constructor(direction: "horizontal" | "vertical", bars: number, bg: TextureLike) {
+  constructor(direction: "horizontal" | "vertical", bars: number, bg: TextureLike, falloff: number) {
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
     if (!(direction === "horizontal" || direction === "vertical")) throw new InvalidDirectionError(direction);
 
     const wipeTexture = (direction === "horizontal") ? createHorizontalTexture(bars) : createVerticalTexture(bars);
-    super(wipeTexture, bgTexture);
+    super(wipeTexture, falloff, bgTexture);
   }
 }

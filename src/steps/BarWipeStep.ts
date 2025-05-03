@@ -17,7 +17,8 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     duration: 1000,
     easing: "none",
     direction: "horizontal",
-    version: "1.1.6",
+    version: "2.0.0",
+    falloff: 0,
     backgroundType: "color",
     backgroundColor: "#00000000",
     backgroundImage: "",
@@ -67,7 +68,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     const backgroundImage = elem.find("#backgroundImage").val() as string ?? "";
     return new BarWipeStep({
       ...BarWipeStep.DefaultSettings,
-      ...parseConfigurationFormElements(elem, "id", "duration", "bars", "direction", "easing", "backgroundType", "backgroundColor", "label"),
+      ...parseConfigurationFormElements(elem, "id", "duration", "bars", "direction", "easing", "backgroundType", "backgroundColor", "label", "falloff"),
       backgroundImage
     })
   }
@@ -87,7 +88,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
 
     const background = config.deserializedTexture ?? createColorTexture("transparent");
 
-    const filter = new BarWipeFilter(config.direction, config.bars, background.baseTexture);
+    const filter = new BarWipeFilter(config.direction, config.bars, background.baseTexture, config.falloff);
     this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
