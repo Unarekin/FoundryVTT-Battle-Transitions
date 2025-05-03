@@ -3,7 +3,7 @@ import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { downloadJSON, getStepClassByKey, localize } from "../utils";
-import { buildTransitionFromForm, createConfigurationOption, importSequence, setEnabledButtons, setBackgroundType, selectItem, deleteSelectedStep } from "./functions";
+import { buildTransitionFromForm, createConfigurationOption, importSequence, setEnabledButtons, setBackgroundType, selectItem, deleteSelectedStep, confirm } from "./functions";
 
 export function injectSceneConfigV2() {
 
@@ -53,6 +53,28 @@ export function injectSceneConfigV2() {
 
   // Add step button
   // Clear steps button
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  actions.clearSteps = async function (this: foundry.applications.api.ApplicationV2, e: PointerEvent, elem: HTMLElement) {
+    try {
+      const confirmed = await confirm(
+        "BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE",
+        localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE")
+      );
+      if (!confirmed) return;
+
+      const stepList = this.element.querySelector(`select#stepList`);
+      if (stepList instanceof HTMLSelectElement) stepList.innerHTML = "";
+
+      const config = this.element.querySelector(`[data-role="transition-config"]`);
+      if (config instanceof HTMLElement) config.innerHTML = "";
+
+    } catch (err) {
+      console.error(err);
+      ui.notifications?.error((err as Error).message, { console: false, localize: true });
+    }
+  }
+
+
   // Select step
   actions.selectStep = function (this: foundry.applications.api.ApplicationV2, e: PointerEvent, elem: HTMLSelectElement) {
     try {

@@ -2,7 +2,7 @@ import { ConfigurationHandler } from "../ConfigurationHandler";
 import { InvalidTransitionError } from "../errors";
 import { TransitionConfiguration } from "../steps";
 import { downloadJSON, getStepClassByKey, localize } from "../utils";
-import { importSequence, buildTransitionFromForm, setEnabledButtons, selectItem, setBackgroundType, deleteSelectedStep, addStep, createConfigurationOption, } from "./functions";
+import { importSequence, buildTransitionFromForm, setEnabledButtons, selectItem, setBackgroundType, deleteSelectedStep, addStep, createConfigurationOption, confirm, } from "./functions";
 export async function injectSceneConfigV1(app: SceneConfig) {
   // Add tab
   const tab = `<a class="item" data-tab="transition">
@@ -114,6 +114,30 @@ function addEventListeners(parent: HTMLElement, app: SceneConfig) {
           console.error(err);
           ui.notifications?.error(err.message, { console: false, localize: true });
         })
+    })
+  }
+
+  const clearButton = parent.querySelector(`[data-action="clearSteps"]`);
+  if (clearButton instanceof HTMLElement) {
+    clearButton.addEventListener("click", () => {
+      confirm(
+        "BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE",
+        localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE")
+      )
+        .then(confirmed => {
+          if (confirmed) {
+            const stepList = parent.querySelector(`#stepList`);
+            if (stepList instanceof HTMLElement) stepList.innerHTML = "";
+            const edit = parent.querySelector(`[data-role="transition-config"]`);
+            if (edit instanceof HTMLElement) edit.innerHTML = "";
+          }
+        })
+        .catch((err: Error) => {
+          console.error(err);
+          ui.notifications?.error(err.message, { console: false, localize: true });
+        })
+
+
     })
   }
 
