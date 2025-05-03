@@ -3,7 +3,7 @@ import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { downloadJSON, getStepClassByKey, localize } from "../utils";
-import { buildTransitionFromForm, createConfigurationOption, importSequence, setEnabledButtons, setBackgroundType, selectItem, deleteSelectedStep, confirm } from "./functions";
+import { buildTransitionFromForm, createConfigurationOption, importSequence, setEnabledButtons, setBackgroundType, selectItem, deleteSelectedStep, confirm, addStep } from "./functions";
 
 export function injectSceneConfigV2() {
 
@@ -52,6 +52,18 @@ export function injectSceneConfigV2() {
   }
 
   // Add step button
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  actions.addStep = async function (this: foundry.applications.api.ApplicationV2, e: PointerEvent, elem: HTMLElement) {
+    try {
+      const config = await addStep(this.element);
+      if (config) await selectItem(this.element, config.id);
+      setEnabledButtons(this.element);
+    } catch (err) {
+      console.error(err);
+      ui.notifications?.error((err as Error).message, { console: false, localize: true });
+    }
+  }
+
   // Clear steps button
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   actions.clearSteps = async function (this: foundry.applications.api.ApplicationV2, e: PointerEvent, elem: HTMLElement) {
