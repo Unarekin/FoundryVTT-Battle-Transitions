@@ -24,7 +24,8 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000",
-    target: [0.5, 0.5]
+    target: [0.5, 0.5],
+    falloff: 0
   }
 
   public static category = "wipe";
@@ -139,7 +140,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     }
 
     const background = config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new RadialWipeFilter(config.radial, this.#screenLocation[0], this.#screenLocation[1], background.baseTexture);
+    const filter = new RadialWipeFilter(config.radial, this.#screenLocation[0], this.#screenLocation[1], background.baseTexture, config.falloff);
     this.addFilter(container, filter);
     this.#filter = filter;
     await this.simpleTween(filter);

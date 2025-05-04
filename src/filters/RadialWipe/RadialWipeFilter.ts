@@ -44,9 +44,9 @@ function outside(x: number, y: number): PIXI.Texture {
 
 
 export class RadialWipeFilter extends TextureWipeFilter {
-  constructor(direction: RadialDirection, x: number, y: number, bg: PIXI.TextureSource | PIXI.ColorSource) {
+  constructor(direction: RadialDirection, x: number, y: number, bg: PIXI.TextureSource | PIXI.ColorSource, falloff: number) {
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
     const wipeTexture = direction === "inside" ? inside(window.innerWidth * x, window.innerHeight * y) : outside(window.innerWidth * x, window.innerHeight * y);
-    super(wipeTexture, bgTexture);
+    super(wipeTexture, falloff, bgTexture);
   }
 }
