@@ -20,7 +20,8 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
-    backgroundColor: "#00000000"
+    backgroundColor: "#00000000",
+    falloff: 0
   };
   public static category = "wipe";
   public static hidden: boolean = false;
@@ -70,7 +71,7 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
     return new SpiralWipeStep({
       ...SpiralWipeStep.DefaultSettings,
       backgroundImage,
-      ...parseConfigurationFormElements(elem, "id", "duration", "backgroundType", "backgroundColor", "radial", "direction", "clockDirection", "easing", "label")
+      ...parseConfigurationFormElements(elem, "id", "duration", "backgroundType", "backgroundColor", "radial", "direction", "clockDirection", "easing", "label", "falloff")
     })
   }
 
@@ -92,7 +93,7 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
     };
 
     const background = config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new SpiralWipeFilter(config.clockDirection, config.radial, config.direction, background.baseTexture);
+    const filter = new SpiralWipeFilter(config.clockDirection, config.radial, config.direction, background.baseTexture, config.falloff);
     this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
