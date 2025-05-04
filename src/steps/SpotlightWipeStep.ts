@@ -26,7 +26,8 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
     version: "1.1.6",
     backgroundType: "color",
     backgroundImage: "",
-    backgroundColor: "#00000000"
+    backgroundColor: "#00000000",
+    falloff: 0
   }
 
   public static category = "wipe";
@@ -73,7 +74,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
     return new SpotlightWipeStep({
       ...SpotlightWipeStep.DefaultSettings,
       backgroundImage,
-      ...parseConfigurationFormElements(elem, "id", "duration", "direction", "radial", "backgroundType", "backgroundColor", "easing", "label")
+      ...parseConfigurationFormElements(elem, "id", "duration", "direction", "radial", "backgroundType", "backgroundColor", "easing", "label", "falloff")
     });
   }
 
@@ -96,7 +97,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
       ...this.config
     };
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new SpotlightWipeFilter(config.direction, config.radial, background.baseTexture);
+    const filter = new SpotlightWipeFilter(config.direction, config.radial, background.baseTexture, config.falloff);
     this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);
