@@ -15,7 +15,7 @@ const textures = {
 }
 
 export class SpiralShutterFilter extends TextureWipeFilter {
-  constructor(direction: ClockDirection, radial: RadialDirection, background: PIXI.TextureSource | PIXI.ColorSource) {
+  constructor(direction: ClockDirection, radial: RadialDirection, background: PIXI.TextureSource | PIXI.ColorSource, falloff: number) {
     const bg = coerceTexture(background);
 
     if (!(bg instanceof PIXI.Texture)) throw new InvalidTextureError();
@@ -26,6 +26,6 @@ export class SpiralShutterFilter extends TextureWipeFilter {
     if (!wipe) throw new InvalidDirectionError(`${direction}-${radial}`);
 
     const wipeTexture = PIXI.Texture.from(`/modules/${__MODULE_ID__}/assets/wipes/${wipe}.webp`);
-    super(wipeTexture, bg);
+    super(wipeTexture, falloff, bg);
   }
 }
