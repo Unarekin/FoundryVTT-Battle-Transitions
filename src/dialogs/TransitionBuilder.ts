@@ -360,7 +360,18 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     const context = await super._prepareContext(options) as Record<string, unknown>;
 
     // context.scenes = game?.scenes?.contents.map(scene => ({ id: scene.id, uuid: scene.uuid, name: scene.name })) ?? [];
-    context.scenes = Object.fromEntries((game?.scenes?.contents.map(scene => [scene.id, scene.name])) ?? []);
+    context.scenes = Object.fromEntries(
+      (game?.scenes?.contents
+        .reduce((prev, curr) => {
+          if (curr.id === canvas?.scene?.id) return prev;
+          return [...prev, [curr.id, curr.name]];
+        }, [] as [string, string][])
+      ) ?? []
+    );
+
+    // context.scenes = Object.fromEntries((game?.scenes?.contents
+    //   .map(scene => [scene.id, scene.name])) ?? []
+    // );
     context.oldScene = game?.scenes?.current?.id ?? "";
 
 
