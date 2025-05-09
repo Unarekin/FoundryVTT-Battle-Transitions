@@ -68,8 +68,6 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       if (!(this.element instanceof HTMLFormElement)) throw new InvalidTransitionError(typeof undefined);
       const data = foundry.utils.expandObject(new FormDataExtended(this.element).object) as Record<string, unknown>;
 
-      log("Form changed:", foundry.utils.mergeObject({}, data))
-
       // Parse current step
       const currentStep = data.step as Record<string, unknown>;
       if (currentStep) {
@@ -83,7 +81,6 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
             ...step.from(this.element)
           }
 
-          log("Current item:", config);
           const option = this.element.querySelector(`select#stepList [data-id="${config.id}"]`);
           if (option instanceof HTMLOptionElement) {
             option.dataset.serialized = JSON.stringify(config);
