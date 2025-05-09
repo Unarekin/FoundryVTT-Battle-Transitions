@@ -57,36 +57,36 @@ export function getObjectSize(item: unknown): [number, number] {
  * @returns - {@link TargetType}
  */
 export function getTargetFromForm(html: JQuery<HTMLElement>) {
-  const targetType = html.find("#targetType").val() as TargetType ?? "point";
+  const targetType = html.find(`[name="step.targetType"]`).val() as TargetType ?? "point";
   switch (targetType) {
     case "oldtoken":
-      return html.find("#selectedOldToken").val() as string;
+      return html.find(`[name="step.selectedOldToken"]`).val() as string;
     case "newtoken":
-      return html.find("#selectedNewToken").val() as string;
+      return html.find(`[name="step.selectedNewToken"]`).val() as string;
     case "oldtile":
-      return html.find("#selectedOldTile").val() as string;
+      return html.find(`[name="step.selectedOldTile"]`).val() as string;
     case "newtile":
-      return html.find("#selectedNewTile").val() as string;
+      return html.find(`[name="step.selectedNewTile"]`).val() as string;
     case "olddrawing":
-      return html.find("#selectedOldDrawing").val() as string;
+      return html.find(`[name="step.selectedOldDrawing"]`).val() as string;
     case "newdrawing":
-      return html.find("#selectedNewDrawing").val() as string;
+      return html.find(`[name="step.selectedNewDrawing"]`).val() as string;
     case "oldnote":
-      return html.find("#selectedOldNote").val() as string;
+      return html.find(`[name="step.selectedOldNote"]`).val() as string;
     case "newnote":
-      return html.find("#selectedNewNote").val() as string;
+      return html.find(`[name="step.selectedNewNote"]`).val() as string;
     case "prompt":
       return "";
     case "point":
       return [
-        parseFloat(html.find("#pointX").val() as string),
-        parseFloat(html.find("#pointY").val() as string)
+        parseFloat(html.find(`[name="step.pointX"]`).val() as string),
+        parseFloat(html.find(`[name="step.pointY"]`).val() as string)
       ] as [number, number]
   }
 }
 
 function getTargetType(html: JQuery<HTMLElement>): TargetType {
-  return html.find("#targetType").val() as TargetType ?? "point";
+  return html.find(`[name="step.targetType"]`).val() as TargetType ?? "point";
 }
 
 function isNormalized(val: [number, number]): boolean {
@@ -140,7 +140,7 @@ function selectNewDrawing(html: JQuery<HTMLElement>) {
   const hook = Hooks.on("controlDrawing", (drawing: Drawing, controlled: boolean) => {
     if (controlled) {
       clearSelectMode(html);
-      html.find("#selectedNewDrawing").val(drawing.document.uuid);
+      html.find(`[name="step.selectedNewDrawing"]`).val(drawing.document.uuid);
     }
   });
   html.find("[data-select-hook]").data("select-hook", hook);
@@ -153,7 +153,7 @@ function selectNewNote(html: JQuery<HTMLElement>) {
   html.find("[data-select-mode]").data("select-mode", "newnote");
   const hook = Hooks.on("activateNote", (note: Note) => {
     clearSelectMode(html);
-    html.find("#selectedNewNote").val(note.document.uuid);
+    html.find(`[name="step.selectedNewNote"]`).val(note.document.uuid);
   });
   html.find("[data-select-hook]").data("select-hook", hook);
   setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.SElECTHINT");
@@ -166,7 +166,7 @@ function selectNewTile(html: JQuery<HTMLElement>) {
   const hook = Hooks.on("controlTile", (tile: Tile, controlled: boolean) => {
     if (controlled) {
       clearSelectMode(html);
-      html.find("#selectedNewTile").val(tile.document.uuid);
+      html.find(`[name="step.selectedNewTile"]`).val(tile.document.uuid);
     }
   })
   html.find("[data-select-hook]").data("select-hook", hook);
@@ -181,7 +181,7 @@ function selectNewToken(html: JQuery<HTMLElement>) {
   const hook = Hooks.on("controlToken", (token: Token, controlled: boolean) => {
     if (controlled) {
       clearSelectMode(html);
-      html.find("#selectedNewToken").val(token.document?.uuid ?? "");
+      html.find(`[name="step.selectedNewToken"]`).val(token.document?.uuid ?? "");
     }
   });
   html.find("[data-select-hook]").data("select-hook", hook);
@@ -195,7 +195,7 @@ function selectOldDrawing(html: JQuery<HTMLElement>) {
   const hook = Hooks.on("controlDrawing", (drawing: Drawing, controlled: boolean) => {
     if (controlled) {
       clearSelectMode(html);
-      html.find("#selectedOldDrawing").val(drawing.document.uuid);
+      html.find(`[name="step.selectedOldDrawing"]`).val(drawing.document.uuid);
     }
   });
   html.find("[data-select-hook]").data("select-hook", hook);
@@ -208,7 +208,7 @@ function selectOldNote(html: JQuery<HTMLElement>) {
   html.find("[data-select-mode]").data("select-mode", "oldnote");
   const hook = Hooks.on("activateNote", (note: Note) => {
     clearSelectMode(html);
-    html.find("#selectedOldNote").val(note.document.uuid);
+    html.find(`[name="step.selectedOldNote"]`).val(note.document.uuid);
   });
   html.find("[data-select-hook]").data("select-hook", hook);
   setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.SELECTHINT");
@@ -222,7 +222,7 @@ function selectOldTile(html: JQuery<HTMLElement>) {
   const hook = Hooks.on("controlTile", (tile: Tile, controlled: boolean) => {
     if (controlled) {
       clearSelectMode(html);
-      html.find("#selectedOldTile").val(tile.document.uuid);
+      html.find(`[name="step.selectedOldTile"]`).val(tile.document.uuid);
     }
   });
   html.find("[data-select-hook]").data("select-hook", hook);
@@ -237,7 +237,7 @@ function selectOldToken(html: JQuery<HTMLElement>) {
   const hook = Hooks.on("controlToken", (token: Token, controlled: boolean) => {
     if (controlled) {
       clearSelectMode(html);
-      html.find("#selectedOldToken").val(token.document.uuid);
+      html.find(`[name="step.selectedOldToken"]`).val(token.document.uuid);
     }
   });
   html.find("[data-select-hook]").data("select-hook", hook);
@@ -254,7 +254,7 @@ function setSelectHint(html: JQuery<HTMLElement>, hint: string) {
 export function setTargetSelectEventListeners(html: JQuery<HTMLElement>) {
   swapTargetSection(html);
 
-  html.find("#targetType").on("input", () => { swapTargetSection(html); });
+  html.find(`[name="step.targetType"]`).on("input", () => { swapTargetSection(html); });
   html.find("button[data-action] i.fa-spinner").css("display", "none");
   html.find("button[data-action] i.fa-spinner").parent().on("click", e => {
     e.preventDefault();

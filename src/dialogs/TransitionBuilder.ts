@@ -1,6 +1,6 @@
 import { EmptyObject } from "Foundry-VTT/src/types/utils.mjs";
-import { downloadJSON, formatDuration, getStepClassByKey, localize } from "../utils";
-import { addStepDialog, buildTransitionFromForm, confirm, importSequence, setBackgroundType } from "./functions";
+import { downloadJSON, formatDuration, getStepClassByKey, localize, log } from "../utils";
+import { addStepDialog, buildTransitionFromForm, confirm, importSequence, setBackgroundType, setTargetConfig } from "./functions";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
 import { InvalidTransitionError } from "../errors";
@@ -44,11 +44,12 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       // eslint-disable-next-line @typescript-eslint/unbound-method
       clearSteps: TransitionBuilder.ClearSteps,
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      selectStep: TransitionBuilder.SelectStep
+      selectStep: TransitionBuilder.SelectStep,
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      changeTargetType: TransitionBuilder.ChangeTargetType
 
     }
   }
-
 
   public static readonly PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
@@ -67,6 +68,8 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       if (!(this.element instanceof HTMLFormElement)) throw new InvalidTransitionError(typeof undefined);
       const data = foundry.utils.expandObject(new FormDataExtended(this.element).object) as Record<string, unknown>;
 
+      log("Form changed:", foundry.utils.mergeObject({}, data))
+
       // Parse current step
       const currentStep = data.step as Record<string, unknown>;
       if (currentStep) {
@@ -76,17 +79,21 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
           const step = getStepClassByKey(stepType);
           if (!step) throw new InvalidTransitionError(stepType);
           const config = {
-            ...step.DefaultSettings,
             id: foundry.utils.randomID(),
-            ...currentStep
-          };
+            ...step.from(this.element)
+          }
 
-          const option = this.element.querySelector(`select#steplist [data-id="${config.id}"]`);
+          log("Current item:", config);
+          const option = this.element.querySelector(`select#stepList [data-id="${config.id}"]`);
           if (option instanceof HTMLOptionElement) {
             option.dataset.serialized = JSON.stringify(config);
           }
         }
+
       }
+
+      this.setEnabledButtons();
+
     } catch (err) {
       console.error(err);
       ui.notifications?.error((err as Error).message, { console: false, localize: true });
@@ -99,6 +106,8 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     this.#reject = undefined;
     this.#resolve = undefined;
   }
+
+  public static ChangeTargetType(this: TransitionBuilder) { setTargetConfig(this.element); }
 
   public static async ClearSteps(this: TransitionBuilder) {
     const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
@@ -161,6 +170,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       config.innerHTML = content;
       this.setEnabledButtons();
       setBackgroundType(this.element, (deserialized as unknown as BackgroundTransition).backgroundType ?? "");
+      setTargetConfig(this.element);
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       ColorPicker.install();
@@ -210,6 +220,10 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     }
 
     formData.sequence = sequence;
+    log("Submitting:", {
+      scene: formData.scene as string,
+      sequence
+    });
 
     if (this.#resolve) {
       this.#resolve({
@@ -289,6 +303,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected _onRender(context: { [x: string]: undefined; }, options: { force?: boolean | undefined; position?: { top?: number | undefined; left?: number | undefined; width?: number | "auto" | undefined; height?: number | "auto" | undefined; scale?: number | undefined; zIndex?: number | undefined; } | undefined; window?: { title?: string | undefined; icon?: string | false | undefined; controls?: boolean | undefined; } | undefined; parts?: string[] | undefined; isFirstRender?: boolean | undefined; }): void {
     this.setEnabledButtons();
+    setTargetConfig(this.element);
 
     this.#closed = new Promise<BuilderResponse | undefined>((resolve, reject) => {
       this.#reject = reject;

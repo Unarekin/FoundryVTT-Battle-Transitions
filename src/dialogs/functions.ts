@@ -14,6 +14,7 @@ export async function addStepDialog(): Promise<string | null> {
 }
 
 
+
 export function getStepsForCategory(category: string, hidden: boolean = false): StepContext[] {
   return getSortedSteps().reduce((prev, curr) => curr.category === category && (hidden ? true : curr.hidden === false) ? [...prev, { key: curr.key, name: `BATTLETRANSITIONS.${curr.name}.NAME`, description: `BATTLETRANSITIONS.${curr.name}.DESCRIPTION`, icon: curr.icon, tooltip: "", hasIcon: !!curr.icon }] : prev, [] as StepContext[]);
 }
@@ -186,9 +187,19 @@ export async function selectItem(parent: HTMLElement, id: string) {
   configArea.innerHTML = content;
   setEnabledButtons(parent);
   setBackgroundType(parent, (deserialized as unknown as BackgroundTransition).backgroundType ?? "");
+  setTargetConfig(parent);
+
+  setConfigEventListeners(parent);
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   ColorPicker.install();
+}
+
+function setConfigEventListeners(parent: HTMLElement) {
+  const targetType = parent.querySelector(`[name="step.targetType"]`);
+  if (targetType instanceof HTMLElement) {
+    targetType.addEventListener("change", () => { setTargetConfig(parent); });
+  }
 }
 
 export function setBackgroundType(parent: HTMLElement, backgroundType: BackgroundType) {
@@ -242,6 +253,17 @@ export async function deleteSelectedStep(parent: HTMLElement) {
   const config = parent.querySelector(`[data-role="transition-config"]`);
   if (config instanceof HTMLElement) config.innerHTML = "";
   setEnabledButtons(parent);
+}
+
+export function setTargetConfig(html: HTMLElement) {
+  const select = html.querySelector(`[name="step.targetType"]`);
+  if (!(select instanceof HTMLSelectElement)) return;
+  const targetType = select.value;
+
+  const configs = html.querySelectorAll(`[data-target-type]`) as unknown as HTMLElement[];
+
+  for (const elem of configs)
+    elem.style.display = elem.dataset.targetType === targetType ? "block" : "none";
 }
 
 export async function addStep(html: HTMLElement): Promise<TransitionConfiguration | undefined> {

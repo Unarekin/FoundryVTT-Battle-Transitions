@@ -2,8 +2,8 @@ import { ConfigurationHandler } from "../ConfigurationHandler";
 import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
-import { downloadJSON, getStepClassByKey, localize } from "../utils";
-import { buildTransitionFromForm, createConfigurationOption, importSequence, setEnabledButtons, setBackgroundType, selectItem, deleteSelectedStep, confirm, addStep } from "./functions";
+import { downloadJSON, getStepClassByKey, localize, log } from "../utils";
+import { buildTransitionFromForm, createConfigurationOption, importSequence, setEnabledButtons, setBackgroundType, selectItem, deleteSelectedStep, confirm, addStep, setTargetConfig } from "./functions";
 
 export function injectSceneConfigV2() {
 
@@ -167,6 +167,7 @@ function onRender(this: foundry.applications.api.ApplicationV2, wrapped: Functio
     }
   }
 
+  setTargetConfig(this.element);
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return render;
@@ -176,20 +177,45 @@ function onRender(this: foundry.applications.api.ApplicationV2, wrapped: Functio
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 function onChangeForm(this: foundry.applications.api.ApplicationV2, wrapped: Function, ...args: unknown[]) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const change = wrapped(...args);
-  setEnabledButtons(this.element);
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const change = wrapped(...args);
 
-  const parsed = foundry.utils.expandObject(new FormDataExtended(this.element as HTMLFormElement).object) as Record<string, unknown>;
 
-  const step = parsed.step as TransitionConfiguration | undefined;
+    const parsed = foundry.utils.expandObject(new FormDataExtended(this.element as HTMLFormElement).object) as Record<string, unknown>;
 
-  if (step) {
-    setBackgroundType(this.element, (step as unknown as BackgroundTransition).backgroundType ?? "");
+    const step = parsed.step as TransitionConfiguration | undefined;
+
+    if (step) {
+      const typeElem = this.element.querySelector(`[data-role="transition-config"] [data-transition-type]`);
+      if (typeElem instanceof HTMLElement) {
+        const stepType = typeElem.dataset.transitionType as string;
+        const stepClass = getStepClassByKey(stepType);
+        if (!stepClass) throw new InvalidTransitionError(stepType);
+        const config = {
+          ...stepClass.DefaultSettings,
+          id: foundry.utils.randomID(),
+          ...(step as Partial<TransitionConfiguration>),
+          type: stepType
+        };
+
+        const option = this.element.querySelector(`select#stepList [data-id="${config.id}"]`);
+        if (option instanceof HTMLOptionElement) {
+          log("Serializing option:", config);
+          option.dataset.serialized = JSON.stringify(config);
+          log(option.dataset);
+        }
+      }
+      setBackgroundType(this.element, (step as unknown as BackgroundTransition).backgroundType ?? "");
+    }
+
+    setEnabledButtons(this.element);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return change;
+  } catch (err) {
+    console.error(err);
+    ui.notifications?.error((err as Error).message, { console: false, localize: true });
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return change;
 }
 
 
@@ -208,12 +234,12 @@ function onSubmitForm(this: foundry.applications.api.ApplicationV2, wrapped: Fun
     const sequence = buildTransitionFromForm($(this.element));
 
     // Handle current step
-    if (data.step) {
-      const step = data.step as TransitionConfiguration;
-      const index = sequence.findIndex(obj => obj.id === step.id);
-      if (index !== -1) sequence.splice(index, 1, step);
-      else sequence.push(step);
-    }
+    // if (data.step) {
+    //   const step = data.step as TransitionConfiguration;
+    //   const index = sequence.findIndex(obj => obj.id === step.id);
+    //   if (index !== -1) sequence.splice(index, 1, step);
+    //   else sequence.push(step);
+    // }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     void ConfigurationHandler.SetSceneConfiguration((this as any).document as Scene, {
