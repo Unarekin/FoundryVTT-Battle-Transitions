@@ -2,7 +2,7 @@ import { ConfigurationHandler } from "../ConfigurationHandler";
 import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
-import { downloadJSON, getStepClassByKey, localize, log } from "../utils";
+import { downloadJSON, getStepClassByKey, localize } from "../utils";
 import { buildTransitionFromForm, createConfigurationOption, importSequence, setEnabledButtons, setBackgroundType, selectItem, deleteSelectedStep, confirm, addStep, setTargetConfig } from "./functions";
 
 export function injectSceneConfigV2() {
@@ -201,9 +201,7 @@ function onChangeForm(this: foundry.applications.api.ApplicationV2, wrapped: Fun
 
         const option = this.element.querySelector(`select#stepList [data-id="${config.id}"]`);
         if (option instanceof HTMLOptionElement) {
-          log("Serializing option:", config);
           option.dataset.serialized = JSON.stringify(config);
-          log(option.dataset);
         }
       }
       setBackgroundType(this.element, (step as unknown as BackgroundTransition).backgroundType ?? "");

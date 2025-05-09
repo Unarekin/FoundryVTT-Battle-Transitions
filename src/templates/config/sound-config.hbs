@@ -21,25 +21,13 @@
       <label for="step.file">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.SOUND.FILE.LABEL"
         }}</label>
-
-      {{#if isV1}}
-        <input
-          type="text"
-          name="step.file"
-          id="step.file"
-          required
-          value="{{file}}"
-        />
-        {{filePicker type="audio" target="file"}}
-      {{else}}
-        <file-picker
-          name="step.file"
-          id="step.file"
-          type="audio"
-          value="{{file}}"
-          required
-        ></file-picker>
-      {{/if}}
+      <file-picker
+        name="step.file"
+        id="step.file"
+        type="audio"
+        value="{{file}}"
+        required
+      ></file-picker>
     </div>
     <p class="notes">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.SOUND.FILE.HINT"
@@ -48,25 +36,14 @@
       <label for="step.volume">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.LABEL"
         }}</label>
-      {{#if isV1}}
-        {{rangePicker
-          name="step.volume"
-          value=volume
-          min=0
-          max=100
-          step=1
-          id="step.volume"
-        }}
-      {{else}}
-        <range-picker
-          value="100"
-          min="0"
-          max="100"
-          step="1"
-          id="step.volume"
-          name="step.volume"
-        ></range-picker>
-      {{/if}}
+      <range-picker
+        value="{{volume}}"
+        min="0"
+        max="100"
+        step="1"
+        id="step.volume"
+        name="step.volume"
+      ></range-picker>
     </div>
     <p class="notes">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.HINT"
