@@ -7,7 +7,7 @@ import { FileNotFoundError } from "../errors";
 export class SoundStep extends TransitionStep<SoundConfiguration> {
   // #region Properties (8)
 
-  #sound: Sound | null = null;
+  // #sound: Sound | null = null;
 
   public static DefaultSettings: SoundConfiguration = {
     id: "",
@@ -107,12 +107,17 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
     }
 
     if (foundry.audio?.AudioHelper) {
+      // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      // const sound = await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true) as Sound;
+      // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      // const sound = await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true) as Sound;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      const sound = await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true) as Sound;
-      this.#sound = sound;
+      await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true);
+      // this.#sound = sound;
     } else {
-      const sound = await AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true);
-      this.#sound = sound;
+      // const sound = await AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true);
+      await AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true);
+      // this.#sound = sound;
     }
   }
 
@@ -126,7 +131,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   }
 
   public teardown(): void {
-    this.#sound?.stop();
+    // this.#sound?.stop();
   }
 
   // #endregion Public Methods (3)
