@@ -76,12 +76,10 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
           const stepType = typeElem.dataset.transitionType as string;
           const step = getStepClassByKey(stepType);
           if (!step) throw new InvalidTransitionError(stepType);
-          const config = {
-            id: foundry.utils.randomID(),
-            ...step.from(this.element)
-          }
 
+          const { config } = step.from(this.element);
           const option = this.element.querySelector(`select#stepList [data-id="${config.id}"]`);
+          log(option);
           if (option instanceof HTMLOptionElement) {
             option.dataset.serialized = JSON.stringify(config);
           }
