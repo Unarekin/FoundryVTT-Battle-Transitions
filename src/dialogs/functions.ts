@@ -200,6 +200,16 @@ function setConfigEventListeners(parent: HTMLElement) {
   if (targetType instanceof HTMLElement) {
     targetType.addEventListener("change", () => { setTargetConfig(parent); });
   }
+
+  // Set up tabs for config
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const tabs = new (game?.release?.isNewer("13") ? (foundry.applications as any).ux.Tabs as typeof Tabs : Tabs)({
+    contentSelector: ".tab-content",
+    navSelector: `.tabs[data-group="config"]`,
+    initial: "basics"
+  });
+  tabs.bind(parent);
 }
 
 export function setBackgroundType(parent: HTMLElement, backgroundType: BackgroundType) {

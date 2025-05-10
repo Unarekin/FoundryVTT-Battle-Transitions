@@ -79,7 +79,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
           const { config } = step.from(this.element);
           const option = this.element.querySelector(`select#stepList [data-id="${config.id}"]`);
-          log(option);
+
           if (option instanceof HTMLOptionElement) {
             option.dataset.serialized = JSON.stringify(config);
           }
@@ -101,6 +101,11 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     this.#reject = undefined;
     this.#resolve = undefined;
   }
+
+  // changeTab(tab: string, group: string, options?: InexactPartial<{ event: Event; navElement: HTMLElement; force: boolean; updatePosition: boolean; }>): void {
+
+  //   return super.changeTab(tab, group ?? options?.navElement?.dataset.group, options);
+  // }
 
   public static ChangeTargetType(this: TransitionBuilder) { setTargetConfig(this.element); }
 
