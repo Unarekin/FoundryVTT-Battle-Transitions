@@ -79,8 +79,15 @@ Hooks.once("socketlib.ready", () => {
   SocketHandler.register(socketlib.registerModule(__MODULE_ID__));
 });
 
+
 Hooks.on("getSceneNavigationContext", (html: JQuery<HTMLElement>, buttons: any[]) => {
+  console.log("getSceneNavigationContext");
   ConfigurationHandler.AddToNavigationBar(buttons);
+});
+
+Hooks.on("getSceneContextOptions", (directory: SceneDirectory, options: ContextMenuEntry[]) => {
+  ConfigurationHandler.AddToNavigationBar(options);
+  return options;
 });
 
 Hooks.on("preUpdatePlaylist", (playlist: Playlist, delta: Partial<Playlist>) => {

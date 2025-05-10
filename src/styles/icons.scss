@@ -9,9 +9,9 @@
 
 nav {
   .bt-icon {
-    background-color: var(--color-text-secondary);
-    &.v1 {
-      background-color: var(--color-text-dark-primary);
+    background-color: var(--text-color);
+    &.v12 {
+      background-color: var(--color-text-light-1);
     }
   }
 }
