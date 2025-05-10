@@ -8,6 +8,6 @@ export class AngularWipeFilter extends TextureWipeFilter {
     if (!(bg instanceof PIXI.Texture)) throw new InvalidTextureError();
 
     const wipeTexture = PIXI.Texture.from(`/modules/${__MODULE_ID__}/assets/wipes/angular.webp`);
-    super(wipeTexture, bg);
+    super(wipeTexture, 0, bg);
   }
 }

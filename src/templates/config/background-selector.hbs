@@ -24,17 +24,12 @@
             />
           </section>
           <section data-background-type="image">
-            {{#if isV1}}
-              <input type="text" name="step.backgroundImage" id="step.backgroundImage" required value="{{backgroundImage}}" />
-              {{filePicker type="imagevideo" target="file"}}
-            {{else}}
-              <file-picker
-                id="step.backgroundImage"
-                name="step.backgroundImage"
-                type="imagevideo"
-                value="{{backgroundImage}}"
-              ></file-picker>
-            {{/if}}
+            <file-picker
+              id="step.backgroundImage"
+              name="step.backgroundImage"
+              type="imagevideo"
+              value="{{backgroundImage}}"
+            ></file-picker>
             <section id="step.backgroundImagePreview"></section>
             </section>
           </section>

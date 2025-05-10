@@ -13,7 +13,8 @@ uniform float falloff;
 
 void main() {
     vec4 wipe = texture(wipeSampler, vTextureCoord);
-    float val = (wipe.r + wipe.g + wipe.b) / 3.0;
+    float val = wipe.b;
+
     if (val <= progress) {
         color = texture(bgSampler, vTextureCoord);
     } else if (val <= progress + falloff) {

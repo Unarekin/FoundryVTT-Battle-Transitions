@@ -6,6 +6,7 @@ import { LinearWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions } from './selectOptions';
 import { reconcileBackground } from "./functions";
 
+
 export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   // #region Properties (10)
 
@@ -64,7 +65,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   }
 
   public static fromFormElement(form: HTMLFormElement): LinearWipeStep {
-    const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
+    const backgroundImage = $(form).find(`[name="step.backgroundImage"]`).val() as string ?? "";
     const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "easing", "backgroundType", "backgroundColor", "label", "falloff");
     return new LinearWipeStep({
       ...LinearWipeStep.DefaultSettings,
@@ -86,6 +87,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
       ...this.config
     }
     const background = config.deserializedTexture ?? createColorTexture("transparent");
+
     const filter = new LinearWipeFilter(config.direction, config.falloff, background.baseTexture);
     this.#filter = filter;
     this.addFilter(container, filter);
