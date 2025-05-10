@@ -2,11 +2,11 @@ import { coerceColorHex, coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
 import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, AngularWipeStep, LinearWipeStep } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, AngularWipeStep, LinearWipeStep, FadeStep } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, log, serializeTexture, shouldUseAppV2 } from "./utils";
+import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, serializeTexture, shouldUseAppV2 } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./dialogs";
 import { filters } from "./filters";
@@ -602,14 +602,22 @@ export class BattleTransition {
    */
   public fade(duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
-    this.#sequence.push({
+    const bgType = backgroundType(background);
+
+    const config: FadeConfiguration = {
+      ...FadeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       type: "fade",
       serializedTexture,
-      backgroundType: backgroundType(background),
       duration,
-      easing
-    } as FadeConfiguration)
+      easing,
+      backgroundType: bgType,
+      backgroundColor: bgType === "color" ? coerceColorHex(background) ?? "" : "",
+      backgroundImage: bgType === "image" ? background as string : "",
+    };
+
+    this.#sequence.push(config);
+
     return this;
   }
 
@@ -710,7 +718,7 @@ export class BattleTransition {
       backgroundImage: bgType === "image" ? background as string : "",
       easing,
     };
-    log("BattleTransition#linearWipe config:", config);
+
     this.#sequence.push(config);
     return this;
   }
