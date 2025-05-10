@@ -143,6 +143,8 @@ export class BattleTransition {
     }
   }
 
+  public static HideLoadingBar = false;
+
   public static async executePreparedSequence(id: string): Promise<void> {
     const prepared = PreparedSequences[id];
     if (!prepared) throw new InvalidTransitionError(typeof prepared);

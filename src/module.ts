@@ -50,6 +50,25 @@ Hooks.once("init", async () => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return wrapped(delta);
     }, "MIXED");
+
+    // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-function-type
+    // libWrapper.register(__MODULE_ID__, "TextureLoader.loadSceneTextures", function (this: TextureLoader, wrapped: Function, ...args: unknown[]) {
+    //   log("loadSceneTextures:", args);
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    //   return wrapped(...args);
+    // });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-function-type
+    libWrapper.register(__MODULE_ID__, "TextureLoader.prototype.load", function (this: TextureLoader, wrapped: Function, ...args: unknown[]) {
+
+      if (BattleTransition.HideLoadingBar) {
+        const opt = args[1] as Record<string, unknown>;
+        opt.displayProgress = false;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return wrapped(...args);
+    });
   }
 });
 
