@@ -386,6 +386,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     // );
     context.oldScene = game?.scenes?.current?.id ?? "";
 
+    context.newScene = this.scene ? this.scene.id : "";
 
     context.buttons = [
       { type: "button", icon: "fas fa-times", label: "Cancel", action: "cancel" },
@@ -393,5 +394,10 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     ]
 
     return context as EmptyObject;
+  }
+
+  constructor(private readonly scene?: Scene) {
+    super({});
+
   }
 }

@@ -81,9 +81,8 @@ export class BattleTransition {
 
   // #region Public Static Methods (7)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static async BuildTransition(scene?: Scene): Promise<void> {
-    const app = new TransitionBuilder({});
+    const app = new TransitionBuilder(scene);
     await app.render(true);
     const config = await app.closed;
 
