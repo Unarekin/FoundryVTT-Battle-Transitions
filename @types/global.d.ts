@@ -8,6 +8,7 @@ declare var gsap: any;
 declare var ColorPicker: any;
 
 declare var socketlib: any;
+declare var libWrapper: any;
 
 declare module '*.frag' {
   const content: string;

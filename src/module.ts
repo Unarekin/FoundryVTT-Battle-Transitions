@@ -8,7 +8,6 @@ import SocketHandler from "./SocketHandler";
 import { BattleTransition } from "./BattleTransition";
 import semver from "semver";
 import { awaitHook, log } from './utils';
-import { libWrapper } from "./vendor/libwrapper.shim";
 import { SceneChangeStep } from './steps';
 import { injectSceneConfigV1, injectSceneConfigV2 } from "./dialogs";
 
@@ -28,7 +27,7 @@ Hooks.once("init", async () => {
 
   if (typeof libWrapper === "function") {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-function-type
-    (libWrapper as any).register(__MODULE_ID__, "Scene.prototype.update", function (this: Scene, wrapped: Function, ...args: unknown[]) {
+    libWrapper.register(__MODULE_ID__, "Scene.prototype.update", function (this: Scene, wrapped: Function, ...args: unknown[]) {
 
       const delta = args[0] as Partial<Scene>;
 
