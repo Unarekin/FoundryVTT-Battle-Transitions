@@ -311,6 +311,11 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       this.#reject = reject;
       this.#resolve = resolve;
     });
+
+    // Set step list as re-orderable via drag and drop
+    const stepList = this.element.querySelector(`#stepList`);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    if (stepList instanceof HTMLSelectElement) ($(stepList) as any).dragOptions({});
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
