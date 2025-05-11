@@ -1,6 +1,6 @@
 import { EmptyObject } from "Foundry-VTT/src/types/utils.mjs";
 import { downloadJSON, formatDuration, formDataExtendedClass, getStepClassByKey, localize } from "../utils";
-import { addStepDialog, buildTransitionFromForm, confirm, importSequence, setBackgroundType, setTargetConfig } from "./functions";
+import { addStepDialog, buildTransitionFromForm, confirm, deleteSelectedStep, importSequence, setBackgroundType, setTargetConfig } from "./functions";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
 import { InvalidTransitionError } from "../errors";
@@ -47,7 +47,9 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       // eslint-disable-next-line @typescript-eslint/unbound-method
       selectStep: TransitionBuilder.SelectStep,
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      changeTargetType: TransitionBuilder.ChangeTargetType
+      changeTargetType: TransitionBuilder.ChangeTargetType,
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      deleteStep: TransitionBuilder.DeleteStep
 
     }
   }
@@ -107,6 +109,15 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
   //   return super.changeTab(tab, group ?? options?.navElement?.dataset.group, options);
   // }
+
+  public static async DeleteStep(this: TransitionBuilder) {
+    try {
+      await deleteSelectedStep(this.element);
+    } catch (err) {
+      console.error(err);
+      ui.notifications?.error((err as Error).message, { console: false, localize: true });
+    }
+  }
 
   public static ChangeTargetType(this: TransitionBuilder) { setTargetConfig(this.element); }
 
@@ -264,11 +275,13 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       if (idElem instanceof HTMLInputElement) {
         removeButton.disabled = false;
         const option = this.element.querySelector(`[data-action="selectStep"] option[data-id="${idElem.value}"]`);
-        const label = removeButton.querySelector(`[data-role="delete-step-label"]`);
+        // const label = removeButton.querySelector(`[data-role="delete-step-label"]`);
         if (label instanceof HTMLElement) {
           if (option instanceof HTMLOptionElement) {
             const deserialized = JSON.parse(option.dataset.serialized as string) as TransitionConfiguration;
-            label.innerText = localize("BATTLETRANSITIONS.SCENECONFIG.BUTTONS.REMOVE", { name: deserialized.label ?? deserialized.type });
+            const stepClass = getStepClassByKey(deserialized.type);
+            if (!stepClass) throw new InvalidTransitionError(deserialized.type);
+            label.innerText = localize("BATTLETRANSITIONS.SCENECONFIG.BUTTONS.REMOVE", { name: localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`) });
           } else {
             label.innerText = localize("BATTLETRANSITIONS.SCENECONFIG.BUTTONS.REMOVE", { name: "" });
           }
