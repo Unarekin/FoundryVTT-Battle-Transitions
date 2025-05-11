@@ -3,7 +3,6 @@ import { TransitionSequence } from "../interfaces";
 import { SceneChangeConfiguration, StartPlaylistConfiguration } from "./types";
 import { InvalidSceneError, NotImplementedError } from "../errors";
 import { parseConfigurationFormElements } from "../utils";
-import { SceneChangeStep } from "./SceneChangeStep";
 import { BattleTransition } from "../BattleTransition";
 
 export class StartPlaylistStep extends TransitionStep<StartPlaylistConfiguration> {
@@ -72,8 +71,11 @@ export class StartPlaylistStep extends TransitionStep<StartPlaylistConfiguration
   public execute(container: PIXI.Container, sequence: TransitionSequence): void {
     BattleTransition.SuppressSoundUpdates = false;
 
-    const sceneChange = sequence.sequence.reduce((prev, curr) => curr instanceof SceneChangeStep ? curr : prev) as SceneChangeConfiguration;
-    if (!sceneChange) throw new InvalidSceneError(typeof sceneChange);
+    // const sceneChange = sequence.sequence.reduce((prev, curr) => curr instanceof SceneChangeStep ? curr : prev) as SceneChangeConfiguration;
+    const sceneChange = sequence.sequence.find(step => step.type === "scenechange") as SceneChangeConfiguration | undefined;
+
+    if (!sceneChange) return;
+    // if (!sceneChange) throw new InvalidSceneError(typeof sceneChange);
     const scene = game.scenes?.get(sceneChange.scene) as Scene;
     if (!(scene instanceof Scene)) throw new InvalidSceneError(sceneChange.scene);
     if (!scene.canUserModify(game.user as User, "update")) return;

@@ -225,7 +225,7 @@ function onSubmitForm(this: foundry.applications.api.ApplicationV2, wrapped: Fun
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   const form = (this as any).form as HTMLFormElement;
   if (form instanceof HTMLFormElement) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+
     const data = new (formDataExtendedClass())(form).object as Record<string, unknown>;
 
     // Parse step list

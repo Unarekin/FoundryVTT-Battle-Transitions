@@ -26,7 +26,7 @@ export class ConfigurationHandler {
             const scene = getScene(li);
             if (!scene) return false;
 
-            if (scene.id === game?.scenes?.active?.id) return false;
+            // if (scene.id === game?.scenes?.active?.id) return false;
             return ConfigurationHandler.HasTransition(scene, true);
             // const steps = this.GetSceneTransition(scene) ?? [];
             // return Array.isArray(steps) && steps.length;
@@ -43,19 +43,19 @@ export class ConfigurationHandler {
           }
 
           if (!ConfigurationHandler.HasTransition(scene, true)) return;
-          const sequence = this.GetSceneTransition(scene) ?? [];
+          const sequence = [...this.GetSceneTransition(scene) ?? []];
 
-          const sceneChange = new SceneChangeStep({ scene: scene.id ?? "" });
-          const step: SceneChangeConfiguration = {
-            ...SceneChangeStep.DefaultSettings,
-            id: foundry.utils.randomID(),
-            ...sceneChange.config
-          };
+          if (scene !== canvas?.scene) {
+            const sceneChange = new SceneChangeStep({ scene: scene.id ?? "" });
+            const step: SceneChangeConfiguration = {
+              ...SceneChangeStep.DefaultSettings,
+              id: foundry.utils.randomID(),
+              ...sceneChange.config
+            };
+            sequence.unshift(step);
+          }
 
-          void BattleTransition.ExecuteSequence([
-            step,
-            ...sequence
-          ])
+          void BattleTransition.ExecuteSequence(sequence);
         }
       },
       {
@@ -64,7 +64,8 @@ export class ConfigurationHandler {
         condition: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
           const scene = getScene(li);
           if (!scene) return false;
-          return scene.id !== game?.scenes?.active?.id
+          // return scene.id !== game?.scenes?.active?.id
+          return true;
         },
         callback: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
           const scene = getScene(li);

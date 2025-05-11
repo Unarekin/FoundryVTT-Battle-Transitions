@@ -134,6 +134,7 @@ export function showLoadingBar() {
 }
 
 export function hideTransitionCover() {
+  log("Hiding transition cover");
   transitionCover.style.display = "none";
   transitionCover.style.removeProperty("backgroundImage");
 }

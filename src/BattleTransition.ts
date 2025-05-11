@@ -1,10 +1,10 @@
 import { coerceColorHex, coerceMacro, coerceScene } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
-import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
+import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
 import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, AngularWipeStep, LinearWipeStep, FadeStep } from "./steps";
 import SocketHandler from "./SocketHandler";
-import { cleanupTransition, hideLoadingBar, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
+import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
 import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
@@ -54,16 +54,18 @@ export class BattleTransition {
       if (arg) {
         const scene = coerceScene(arg);
         if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
-        if (scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
-        const changeStep = getStepClassByKey("scenechange");
-        if (!changeStep) throw new InvalidTransitionError("scenechange");
+        if (scene.id !== canvas?.scene?.id) {
+          // if (scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
+          const changeStep = getStepClassByKey("scenechange");
+          if (!changeStep) throw new InvalidTransitionError("scenechange");
 
-        this.#sequence.push({
-          ...changeStep?.DefaultSettings,
-          id: foundry.utils.randomID(),
-          scene: scene.id
-        } as SceneChangeConfiguration);
-        // this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
+          this.#sequence.push({
+            ...changeStep?.DefaultSettings,
+            id: foundry.utils.randomID(),
+            scene: scene.id
+          } as SceneChangeConfiguration);
+          // this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
+        }
       }
     } catch (err) {
       ui.notifications?.error((err as Error).message);
@@ -140,6 +142,11 @@ export class BattleTransition {
       hideLoadingBar();
 
       BattleTransition.SuppressSoundUpdates = true;
+
+      // if (sceneChange) Hooks.once(CUSTOM_HOOKS.SCENE_ACTIVATED, () => { hideTransitionCover(); });
+      if (!sceneChange) hideTransitionCover();
+
+
       // Execute
       for (const step of prepared.prepared.sequence) {
         const stepClass = getStepClassByKey(step.config.type ?? "");
@@ -225,12 +232,12 @@ export class BattleTransition {
       sequence.unshift(sceneStep);
     }
 
-    // Validate the target scene
-    const scene = (game.scenes?.get((sequence[0] as SceneChangeConfiguration).scene)) as Scene;
-    if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof (sequence[0] as SceneChangeConfiguration).scene === "string" ? (sequence[0] as SceneChangeConfiguration).scene : typeof (sequence[0] as SceneChangeConfiguration).scene);
+    // // Validate the target scene
+    // const scene = (game.scenes?.get((sequence[0] as SceneChangeConfiguration).scene)) as Scene;
+    // if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof (sequence[0] as SceneChangeConfiguration).scene === "string" ? (sequence[0] as SceneChangeConfiguration).scene : typeof (sequence[0] as SceneChangeConfiguration).scene);
 
-    // Make sure we have permission to activate the new scene
-    if (!scene.canUserModify(game.user as User, "update")) throw new PermissionDeniedError();
+    // // Make sure we have permission to activate the new scene
+    // if (!scene.canUserModify(game.user as User, "update")) throw new PermissionDeniedError();
 
     // Socket time baybee
     await SocketHandler.execute(sequence);
