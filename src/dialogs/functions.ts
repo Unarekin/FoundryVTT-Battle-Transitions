@@ -1,6 +1,6 @@
 import { BackgroundTransition, TransitionConfiguration } from '../steps';
 import { getSortedSteps, getStepClassByKey, localize, shouldUseAppV2, uploadJSON } from '../utils';
-import { AddStepDialogV2 } from './AddStepDialogV2';
+import { AddStepDialog } from './AddStepDialog';
 import { EditStepDialogV1 } from './EditStepDialogV1';
 import { StepContext } from './types';
 import { EditStepDialogV2 } from './EditStepDialogV2';
@@ -10,7 +10,7 @@ import { BackgroundType } from '../types';
 export async function addStepDialog(): Promise<string | null> {
   // if (shouldUseAppV2()) return AddStepDialogV2.prompt();
   // else return AddStepDialogV1.prompt();
-  return AddStepDialogV2.prompt();
+  return AddStepDialog.prompt();
 }
 
 

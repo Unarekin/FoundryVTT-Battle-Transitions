@@ -2,7 +2,7 @@ import { localize, renderTemplateFunc } from "../utils";
 import { clearSearchResults, handleSearchInput } from "./addStepFunctions";
 import { getStepsForCategory } from "./functions";
 
-export class AddStepDialogV2 {
+export class AddStepDialog {
   public static async prompt(): Promise<string | null> {
     const content = await renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/dialogs/AddStepDialogV2.hbs`, {
       tabs: [
