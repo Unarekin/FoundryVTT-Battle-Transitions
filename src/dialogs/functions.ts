@@ -1,9 +1,7 @@
 import { BackgroundTransition, TransitionConfiguration } from '../steps';
 import { getSortedSteps, getStepClassByKey, localize, shouldUseAppV2, uploadJSON } from '../utils';
 import { AddStepDialog } from './AddStepDialog';
-import { EditStepDialogV1 } from './EditStepDialogV1';
 import { StepContext } from './types';
-import { EditStepDialogV2 } from './EditStepDialogV2';
 import { InvalidTransitionError } from '../errors';
 import { BackgroundType } from '../types';
 
@@ -17,11 +15,6 @@ export async function addStepDialog(): Promise<string | null> {
 
 export function getStepsForCategory(category: string, hidden: boolean = false): StepContext[] {
   return getSortedSteps().reduce((prev, curr) => curr.category === category && (hidden ? true : curr.hidden === false) ? [...prev, { key: curr.key, name: `BATTLETRANSITIONS.${curr.name}.NAME`, description: `BATTLETRANSITIONS.${curr.name}.DESCRIPTION`, icon: curr.icon, tooltip: "", hasIcon: !!curr.icon }] : prev, [] as StepContext[]);
-}
-
-export async function editStepDialog(config: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<TransitionConfiguration | null> {
-  if (shouldUseAppV2()) return EditStepDialogV2.prompt(config, oldScene, newScene);
-  else return EditStepDialogV1.prompt(config, oldScene, newScene);
 }
 
 export async function confirm(title: string, content: string): Promise<boolean> {

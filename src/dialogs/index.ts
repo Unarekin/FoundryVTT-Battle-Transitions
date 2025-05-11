@@ -1,6 +1,4 @@
 export * from './AddStepDialog';
-export * from './EditStepDialogV1';
-export * from './EditStepDialogV2';
 export * from './SceneConfig';
 export * from './SceneConfigV1';
 export * from './SceneConfigV2';

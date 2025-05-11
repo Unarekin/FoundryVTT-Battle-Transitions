@@ -1,5 +1,5 @@
 import { BattleTransition } from "../BattleTransition";
-import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from "../dialogs";
+import { addStepDialog, confirm, buildTransitionFromForm } from "../dialogs";
 import { InvalidTransitionError, NoPreviousStepError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
@@ -195,6 +195,7 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
 
 // #region Functions (5)
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function addStep(html: JQuery<HTMLElement>) {
   const key = await addStepDialog();
   if (!key) return;
@@ -202,13 +203,15 @@ async function addStep(html: JQuery<HTMLElement>) {
   const step = getStepClassByKey(key);
   if (!step) throw new InvalidTransitionError(key);
 
-  const oldScene = html.find("#oldScene").val() as string ?? "";
-  const newScene = html.find("#newScene").val() as string ?? "";
+  // TODO: Implement add/edit step
 
-  const config = step.skipConfig ? { ...step.DefaultSettings, id: foundry.utils.randomID() } : await editStepDialog(step.DefaultSettings, game.scenes?.get(oldScene), game.scenes?.get(newScene));
-  if (!config) return;
+  // const oldScene = html.find("#oldScene").val() as string ?? "";
+  // const newScene = html.find("#newScene").val() as string ?? "";
 
-  void upsertStepButton(html, config);
+  // const config = step.skipConfig ? { ...step.DefaultSettings, id: foundry.utils.randomID() } : await editStepDialog(step.DefaultSettings, game.scenes?.get(oldScene), game.scenes?.get(newScene));
+  // if (!config) return;
+
+  // void upsertStepButton(html, config);
 }
 
 function addStepEventListeners(html: JQuery<HTMLElement>, button: JQuery<HTMLElement>, config: TransitionConfiguration) {
@@ -232,17 +235,18 @@ function addStepEventListeners(html: JQuery<HTMLElement>, button: JQuery<HTMLEle
 
   // Configure button
   button.find("[data-action='configure']").on("click", () => {
-    editStepDialog(config)
-      .then(newConfig => {
-        if (newConfig) {
-          // Replace button
-          return upsertStepButton(html, newConfig)
-        }
-      }).then(() => {
-      }).catch(err => {
-        ui.notifications?.error((err as Error).message, { console: false })
-        console.error(err);
-      })
+    // TODO: Implement embedded config
+    // editStepDialog(config)
+    //   .then(newConfig => {
+    //     if (newConfig) {
+    //       // Replace button
+    //       return upsertStepButton(html, newConfig)
+    //     }
+    //   }).then(() => {
+    //   }).catch(err => {
+    //     ui.notifications?.error((err as Error).message, { console: false })
+    //     console.error(err);
+    //   })
   });
 }
 
