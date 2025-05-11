@@ -1,13 +1,11 @@
 import { BackgroundTransition, TransitionConfiguration } from '../steps';
-import { getSortedSteps, getStepClassByKey, localize, shouldUseAppV2, uploadJSON } from '../utils';
+import { getSortedSteps, getStepClassByKey, localize, uploadJSON } from '../utils';
 import { AddStepDialog } from './AddStepDialog';
 import { StepContext } from './types';
 import { InvalidTransitionError } from '../errors';
 import { BackgroundType } from '../types';
 
 export async function addStepDialog(): Promise<string | null> {
-  // if (shouldUseAppV2()) return AddStepDialogV2.prompt();
-  // else return AddStepDialogV1.prompt();
   return AddStepDialog.prompt();
 }
 
@@ -18,18 +16,11 @@ export function getStepsForCategory(category: string, hidden: boolean = false): 
 }
 
 export async function confirm(title: string, content: string): Promise<boolean> {
-  if (shouldUseAppV2()) {
-    return foundry.applications.api.DialogV2.confirm({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      window: ({ title } as any),
-      content
-    });
-  } else {
-    return Dialog.confirm({
-      title,
-      content
-    }).then(val => !!val);
-  }
+  return foundry.applications.api.DialogV2.confirm({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    window: ({ title } as any),
+    content
+  });
 }
 
 export function buildTransitionFromForm(html: JQuery<HTMLElement>) {
@@ -91,37 +82,6 @@ export function updateConfigurationOption(option: HTMLOptionElement, config: Tra
 }
 
 export async function customDialog(title: string, content: string, buttons: Record<string, DialogButton>, onRender?: (element: JQuery<HTMLElement>) => void, onClose?: (element: JQuery<HTMLElement>) => void): Promise<JQuery<HTMLElement>> {
-  if (shouldUseAppV2()) return customDialogV2(title, content, buttons, onRender, onClose);
-  else return customDialogV1(title, content, buttons, onRender, onClose);
-}
-
-async function customDialogV1(title: string, content: string, buttons: Record<string, DialogButton>, onRender?: (element: JQuery<HTMLElement>) => void, onClose?: (element: JQuery<HTMLElement>) => void): Promise<JQuery<HTMLElement>> {
-  return new Promise<JQuery<HTMLElement>>((resolve) => {
-    let CLOSE_HOOK_ID: number = 0;
-    const dialog = new Dialog({
-      title: localize(title),
-      content,
-      buttons,
-      render(elem: HTMLElement | JQuery<HTMLElement>) {
-        if (onRender) onRender($(elem));
-      },
-      close(elem: HTMLElement | JQuery<HTMLElement>) {
-        const jq = $(elem);
-        resolve(jq);
-        if (onClose) onClose(jq);
-        CLOSE_HOOK_ID = Hooks.on("closeDialog", (closed: Dialog) => {
-          if (closed.id === dialog.id) {
-            Hooks.off("closeDialog", CLOSE_HOOK_ID);
-            if (onClose) onClose(jq);
-          }
-        })
-      },
-    });
-    dialog.render(true);
-  })
-}
-
-async function customDialogV2(title: string, content: string, buttons: Record<string, DialogButton>, onRender?: (element: JQuery<HTMLElement>) => void, onClose?: (element: JQuery<HTMLElement>) => void): Promise<JQuery<HTMLElement>> {
   return new Promise<JQuery<HTMLElement>>((resolve, reject) => {
     let CLOSE_HOOK_ID: number = 0;
     const dialog = new foundry.applications.api.DialogV2({

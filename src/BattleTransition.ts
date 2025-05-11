@@ -6,7 +6,7 @@ import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfigurati
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture, shouldUseAppV2 } from "./utils";
+import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./dialogs";
 import { filters } from "./filters";
@@ -97,49 +97,27 @@ export class BattleTransition {
       }, [] as { id: string, name: string }[])
     });
 
-    if (shouldUseAppV2()) {
-      return foundry.applications.api.DialogV2.wait({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        window: ({ title: localize("BATTLETRANSITIONS.DIALOGS.SCENESELECTOR.TITLE") } as any),
-        content,
-        rejectClose: false,
-        buttons: [
-          {
-            label: `<i class="fas fa-times"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")}`,
-            action: "cancel",
-            callback: () => Promise.resolve(undefined)
-          },
-          {
-            label: `<i class="fas fa-check"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK")}`,
-            action: "ok",
-            callback: (event: Event, button: HTMLButtonElement, dialog: HTMLDialogElement) => {
-              return Promise.resolve(game.scenes?.get($(dialog).find("#scene").val() as string) ?? undefined);
-            }
-          }
-        ]
-      }).then(result => result instanceof Scene ? result : undefined)
-    } else {
-      return Dialog.wait({
-        title: localize("BATTLETRANSITIONS.DIALOGS.SCENESELECTOR.TITLE"),
-        content,
-        default: "ok",
-        buttons: {
-          cancel: {
-            icon: `<i class="fas fa-times"></i>`,
-            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
-            callback: () => undefined
-          },
-          ok: {
-            icon: `<i class="fas fa-check"></i>`,
-            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
-            callback: (html) => game.scenes?.get($(html).find("#scene").val() as string) ?? undefined
+    return foundry.applications.api.DialogV2.wait({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      window: ({ title: localize("BATTLETRANSITIONS.DIALOGS.SCENESELECTOR.TITLE") } as any),
+      content,
+      rejectClose: false,
+      buttons: [
+        {
+          label: `<i class="fas fa-times"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")}`,
+          action: "cancel",
+          callback: () => Promise.resolve(undefined)
+        },
+        {
+          label: `<i class="fas fa-check"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK")}`,
+          action: "ok",
+          callback: (event: Event, button: HTMLButtonElement, dialog: HTMLDialogElement) => {
+            return Promise.resolve(game.scenes?.get($(dialog).find("#scene").val() as string) ?? undefined);
           }
         }
-      }).then(result => result instanceof Scene ? result : undefined)
-        // Really shouldn't be suppressing all errors, but I cannot dig up a way to check to make sure
-        // it isn't just the dialog being closed without checking the message property which is a bad idea
-        .catch(() => undefined)
-    }
+      ]
+    }).then(result => result instanceof Scene ? result : undefined)
+
   }
 
   public static HideLoadingBar = false;

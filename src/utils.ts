@@ -357,10 +357,6 @@ export function serializeTexture(texture: any): string | TextureBuffer | DataURL
   throw new InvalidTextureError();
 }
 
-export function shouldUseAppV2(): boolean {
-  return (game.release?.isNewer("12") ?? false) && !!foundry.applications.api.ApplicationV2;
-}
-
 export function sizeOf(obj: unknown) {
   const objectList: unknown[] = [];
   const stack = [obj];
