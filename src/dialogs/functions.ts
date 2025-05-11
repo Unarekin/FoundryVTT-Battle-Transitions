@@ -132,12 +132,16 @@ export async function selectItem(parent: HTMLElement, id: string) {
   const step = getStepClassByKey(deserialized.type);
   if (!step) throw new InvalidTransitionError(deserialized.type);
 
-  const content = await step.RenderTemplate({
-    ...deserialized,
-    isV1: false
-  } as TransitionConfiguration);
+  if (!step.skipConfig) {
+    const content = await step.RenderTemplate({
+      ...deserialized,
+      isV1: false
+    } as TransitionConfiguration);
 
-  configArea.innerHTML = content;
+    configArea.innerHTML = content;
+  } else {
+    configArea.innerHTML = "";
+  }
   setEnabledButtons(parent);
   setBackgroundType(parent, (deserialized as unknown as BackgroundTransition).backgroundType ?? "");
   setTargetConfig(parent);

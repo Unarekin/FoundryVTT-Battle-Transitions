@@ -159,15 +159,19 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       const step = getStepClassByKey(deserialized.type);
       if (!step) throw new InvalidTransitionError(deserialized.type);
 
-      const content = await step.RenderTemplate({
-        ...deserialized,
-        isV1: false
-      } as TransitionConfiguration);
-
       const config = this.element.querySelector(`[data-role="transition-config"]`);
       if (!(config instanceof HTMLElement)) return;
+      if (!step.skipConfig) {
 
-      config.innerHTML = content;
+        const content = await step.RenderTemplate({
+          ...deserialized,
+          isV1: false
+        } as TransitionConfiguration);
+
+        config.innerHTML = content;
+      } else {
+        config.innerHTML = "";
+      }
       this.setEnabledButtons();
       setBackgroundType(this.element, (deserialized as unknown as BackgroundTransition).backgroundType ?? "");
       setTargetConfig(this.element);
