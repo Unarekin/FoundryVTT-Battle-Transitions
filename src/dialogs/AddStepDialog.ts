@@ -43,7 +43,9 @@ export class AddStepDialog {
         buttons: [
           {
 
-            label: `<i class="fas fa-times"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")}`,
+            // icon: `<i class="fas fa-times"></i>`,
+            icon: "fas fa-times",
+            label: "Cancel",
             action: "cancel",
             callback: () => {
               resolve(null);
