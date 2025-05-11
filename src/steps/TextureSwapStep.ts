@@ -35,7 +35,7 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
   // #region Public Static Methods (6)
 
   public static async RenderTemplate(config?: TextureSwapConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${TextureSwapStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${TextureSwapStep.template}.hbs`, {
       ...TextureSwapStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

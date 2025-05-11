@@ -38,7 +38,7 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
       ...(config ? config : {})
     }.style);
 
-    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${LoadingTipStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${LoadingTipStep.template}.hbs`, {
       ...LoadingTipStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

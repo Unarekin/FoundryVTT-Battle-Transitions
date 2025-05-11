@@ -39,7 +39,7 @@ export class ReverseStep extends TransitionStep<ReverseConfiguration> {
   }
 
   public static RenderTemplate(config?: ReverseConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${ReverseStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${ReverseStep.template}.hbs`, {
       ...ReverseStep.DefaultSettings,
       ...(config ? config : {})
     });

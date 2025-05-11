@@ -90,7 +90,7 @@ export class BattleTransition {
   }
 
   public static async SelectScene(omitCurrent: boolean = false): Promise<Scene | undefined> {
-    const content = await (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
+    const content = await (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
       scenes: (game.scenes?.contents ?? []).reduce((prev, curr) => {
         if (omitCurrent && curr.id === game.scenes?.current?.id) return prev;
         return [...prev, { id: curr.id, name: curr.name }]

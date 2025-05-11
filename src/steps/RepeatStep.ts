@@ -45,7 +45,7 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: RepeatConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${RepeatStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${RepeatStep.template}.hbs`, {
       ...RepeatStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
@@ -281,7 +281,7 @@ async function upsertStepButton(html: JQuery<HTMLElement>, config: TransitionCon
   const totalDuration = await sequenceDuration(outerSequence);
   html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
 
-  const buttonContent = await (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
+  const buttonContent = await (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
     ...step.DefaultSettings,
     ...config,
     name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),

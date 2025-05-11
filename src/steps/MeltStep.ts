@@ -36,7 +36,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: MeltConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${MeltStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${MeltStep.template}.hbs`, {
       ...MeltStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

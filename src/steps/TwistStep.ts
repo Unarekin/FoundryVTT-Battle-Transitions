@@ -32,7 +32,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
   // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: TwistConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${TwistStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${TwistStep.template}.hbs`, {
       ...TwistStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

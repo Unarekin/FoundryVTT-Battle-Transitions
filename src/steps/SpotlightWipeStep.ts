@@ -54,7 +54,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
       radialSelect: generateRadialDirectionSelectOptions()
     };
 
-    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${SpotlightWipeStep.template}.hbs`, renderConfig);
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${SpotlightWipeStep.template}.hbs`, renderConfig);
   }
 
   public static from(config: SpotlightWipeConfiguration): SpotlightWipeStep

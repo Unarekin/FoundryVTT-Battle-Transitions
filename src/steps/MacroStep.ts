@@ -26,7 +26,7 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
   // #region Public Static Methods (6)
 
   public static RenderTemplate(config?: MacroConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${MacroStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${MacroStep.template}.hbs`, {
       ...MacroStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

@@ -30,7 +30,7 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
   // #region Public Static Methods (6)
 
   public static RenderTemplate(config?: SceneChangeConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${SceneChangeStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${SceneChangeStep.template}.hbs`, {
       ...SceneChangeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {})

@@ -59,7 +59,7 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
       ...formatActor(actor),
       selected: config?.actor === actor.uuid
     }));
-    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${BossSplashStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${BossSplashStep.template}.hbs`, {
       ...BossSplashStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
