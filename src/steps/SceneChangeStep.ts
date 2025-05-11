@@ -2,7 +2,7 @@ import { CUSTOM_HOOKS } from "../constants";
 import { InvalidSceneError, SequenceTimedOutError } from "../errors";
 import { TransitionSequence } from "../interfaces";
 import { activateScene, hideTransitionCover } from "../transitionUtils";
-import { awaitHook, parseConfigurationFormElements } from "../utils";
+import { awaitHook, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SceneChangeConfiguration } from "./types";
 
@@ -30,7 +30,7 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
   // #region Public Static Methods (6)
 
   public static RenderTemplate(config?: SceneChangeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SceneChangeStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${SceneChangeStep.template}.hbs`, {
       ...SceneChangeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {})

@@ -1,10 +1,10 @@
-import { localize } from "../utils";
+import { localize, renderTemplateFunc } from "../utils";
 import { clearSearchResults, handleSearchInput } from "./addStepFunctions";
 import { getStepsForCategory } from "./functions";
 
 export class AddStepDialogV2 {
   public static async prompt(): Promise<string | null> {
-    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/dialogs/AddStepDialogV2.hbs`, {
+    const content = await renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/dialogs/AddStepDialogV2.hbs`, {
       tabs: [
         {
           icon: "",

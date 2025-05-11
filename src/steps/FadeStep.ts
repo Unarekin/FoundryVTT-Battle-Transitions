@@ -1,6 +1,6 @@
 import { FadeTransitionFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, log, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, log, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { FadeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
@@ -35,7 +35,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: FadeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${FadeStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${FadeStep.template}.hbs`, {
       ...FadeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

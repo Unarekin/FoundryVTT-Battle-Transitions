@@ -1,6 +1,6 @@
 import { AngularWipeConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
-import { createColorTexture, parseConfigurationFormElements } from '../utils';
+import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from '../utils';
 import { AngularWipeFilter } from '../filters';
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
 import { reconcileBackground } from './functions';
@@ -35,7 +35,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: AngularWipeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${AngularWipeStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${AngularWipeStep.template}.hbs`, {
       ...AngularWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

@@ -1,7 +1,7 @@
 import { TransitionStep } from "./TransitionStep";
 import { SoundConfiguration, TransitionConfiguration } from "./types";
 import { TransitionSequence } from "../interfaces";
-import { parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { FileNotFoundError } from "../errors";
 
 export class SoundStep extends TransitionStep<SoundConfiguration> {
@@ -30,7 +30,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   // #region Public Static Methods (8)
 
   public static async RenderTemplate(config?: SoundConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SoundStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${SoundStep.template}.hbs`, {
       ...SoundStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {})

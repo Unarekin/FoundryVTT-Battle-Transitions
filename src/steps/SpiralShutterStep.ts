@@ -1,5 +1,5 @@
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SpiralShutterConfiguration } from "./types";
 import { SpiralShutterFilter } from "../filters";
@@ -38,7 +38,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
   // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: SpiralShutterConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpiralShutterStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${SpiralShutterStep.template}.hbs`, {
       ...SpiralShutterStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

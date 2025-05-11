@@ -1,5 +1,6 @@
 import { customDialog } from "../dialogs";
 import { InvalidTargetError } from "../errors";
+import { renderTemplateFunc } from "../utils";
 import { generateTargetTypeSelectOptions } from "./selectOptions";
 import { TargetedTransition, TargetType, TransitionConfiguration } from "./types";
 
@@ -337,7 +338,7 @@ export async function validateTarget(config: TransitionConfiguration & TargetedT
 
   } else if (typeof target === "string") {
     // Empty string, prompt
-    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/target-selector.hbs`, {
+    const content = await renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/target-selector.hbs`, {
       ...generateTargetTypeSelectOptions(oldScene, newScene),
       pointX: 0.5,
       pointY: 0.5

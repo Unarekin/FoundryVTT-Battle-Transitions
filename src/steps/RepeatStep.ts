@@ -3,7 +3,7 @@ import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from 
 import { InvalidTransitionError, NoPreviousStepError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { formatDuration, getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
+import { formatDuration, getStepClassByKey, localize, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { getPreviousStep } from "./functions";
 import { TransitionStep } from "./TransitionStep";
 import { RepeatConfiguration, TransitionConfiguration, WaitConfiguration } from './types';
@@ -45,7 +45,7 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: RepeatConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${RepeatStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${RepeatStep.template}.hbs`, {
       ...RepeatStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
@@ -277,7 +277,7 @@ async function upsertStepButton(html: JQuery<HTMLElement>, config: TransitionCon
   const totalDuration = await sequenceDuration(outerSequence);
   html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
 
-  const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
+  const buttonContent = await renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
     ...step.DefaultSettings,
     ...config,
     name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),

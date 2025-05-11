@@ -1,7 +1,7 @@
 import { TextureSwapFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
-import { createColorTexture, parseConfigurationFormElements, wait } from '../utils';
+import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc, wait } from '../utils';
 import { reconcileBackground } from "./functions";
 import { generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
@@ -35,7 +35,7 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: FlashConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${FlashStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${FlashStep.template}.hbs`, {
       ...FlashStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

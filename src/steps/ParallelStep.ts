@@ -3,7 +3,7 @@ import { addStepDialog, confirm, editStepDialog } from "../dialogs";
 import { InvalidTransitionError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { formatDuration, getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
+import { formatDuration, getStepClassByKey, localize, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration, TransitionConfiguration } from './types';
 
@@ -34,7 +34,7 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
   // #region Public Static Methods (6)
 
   public static RenderTemplate(config?: ParallelConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ParallelStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${ParallelStep.template}.hbs`, {
       ...ParallelStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
@@ -174,7 +174,7 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 async function addSequence(html: JQuery<HTMLElement>, sequence: TransitionConfiguration[] = []) {
   const index = html.find("#sequence-list .sequence-item").length;
 
-  const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/sequence-item.hbs`, {
+  const content = await renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/sequence-item.hbs`, {
     index,
     sequence,
     serialized: JSON.stringify(sequence),
@@ -322,7 +322,7 @@ async function upsertStepButton(html: JQuery<HTMLElement>, config: TransitionCon
   const totalDuration = await sequenceDuration(outerSequence);
   html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
 
-  const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
+  const buttonContent = await renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
     ...step.DefaultSettings,
     ...config,
     name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),

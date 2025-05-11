@@ -1,6 +1,6 @@
 import { LinearWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { LinearWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions } from './selectOptions';
@@ -43,7 +43,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: LinearWipeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${LinearWipeStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${LinearWipeStep.template}.hbs`, {
       ...LinearWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

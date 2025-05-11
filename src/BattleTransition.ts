@@ -6,7 +6,7 @@ import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfigurati
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, serializeTexture, shouldUseAppV2 } from "./utils";
+import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture, shouldUseAppV2 } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./dialogs";
 import { filters } from "./filters";
@@ -90,7 +90,7 @@ export class BattleTransition {
   }
 
   public static async SelectScene(omitCurrent: boolean = false): Promise<Scene | undefined> {
-    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
+    const content = await renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
       scenes: (game.scenes?.contents ?? []).reduce((prev, curr) => {
         if (omitCurrent && curr.id === game.scenes?.current?.id) return prev;
         return [...prev, { id: curr.id, name: curr.name }]

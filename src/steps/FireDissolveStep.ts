@@ -1,6 +1,6 @@
 import { FireDissolveFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { FireDissolveConfiguration } from "./types";
 import { generateEasingSelectOptions } from './selectOptions';
@@ -30,7 +30,7 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: FireDissolveConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${FireDissolveStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${FireDissolveStep.template}.hbs`, {
       ...FireDissolveStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

@@ -1,6 +1,6 @@
 import { SpotlightWipeFilter } from "../filters";
 import { TransitionSequence } from '../interfaces';
-import { createColorTexture, log, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SpotlightWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
@@ -53,8 +53,8 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
       bgTypeSelect: generateBackgroundTypeSelectOptions(),
       radialSelect: generateRadialDirectionSelectOptions()
     };
-    log("Render config:", renderConfig);
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpotlightWipeStep.template}.hbs`, renderConfig);
+
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${SpotlightWipeStep.template}.hbs`, renderConfig);
   }
 
   public static from(config: SpotlightWipeConfiguration): SpotlightWipeStep

@@ -1,6 +1,6 @@
 import { MeltFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { MeltConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
@@ -36,7 +36,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: MeltConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${MeltStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${MeltStep.template}.hbs`, {
       ...MeltStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

@@ -1,6 +1,6 @@
 import { InvalidTransitionError, StepNotReversibleError } from "../errors";
 import { TransitionSequence, PreparedTransitionHash } from "../interfaces";
-import { getStepClassByKey, parseConfigurationFormElements, wait } from "../utils";
+import { getStepClassByKey, parseConfigurationFormElements, renderTemplateFunc, wait } from "../utils";
 import { getPreviousStep } from "./functions";
 import { TransitionStep } from "./TransitionStep";
 import { ReverseConfiguration, TransitionConfiguration } from "./types";
@@ -39,7 +39,7 @@ export class ReverseStep extends TransitionStep<ReverseConfiguration> {
   }
 
   public static RenderTemplate(config?: ReverseConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ReverseStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${ReverseStep.template}.hbs`, {
       ...ReverseStep.DefaultSettings,
       ...(config ? config : {})
     });

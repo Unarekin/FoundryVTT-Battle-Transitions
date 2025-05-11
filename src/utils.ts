@@ -640,3 +640,6 @@ export function mimeType(path: string) {
   else if (mimeDB[ext]) return mimeDB[ext];
   else return "application/octet-stream";
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+export const renderTemplateFunc: typeof renderTemplate = game?.release?.isNewer("13") ? (foundry.applications as any).handlebars.renderTemplate : renderTemplate;

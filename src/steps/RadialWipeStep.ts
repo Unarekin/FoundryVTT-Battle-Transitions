@@ -1,5 +1,5 @@
 import { RadialWipeFilter } from "../filters";
-import { createColorTexture, getTargetType, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, getTargetType, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { RadialWipeConfiguration, SceneChangeConfiguration, TransitionConfiguration } from "./types";
@@ -46,7 +46,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
       ...(config ? config : {})
     }, oldScene, newScene);
 
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${RadialWipeStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${RadialWipeStep.template}.hbs`, {
       ...RadialWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

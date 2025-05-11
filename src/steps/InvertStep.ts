@@ -1,7 +1,7 @@
 import { InvertFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
-import { parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { generateDualStyleSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { InvertConfiguration } from "./types";
@@ -29,7 +29,7 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
   // #region Public Static Methods (6)
 
   public static RenderTemplate(config?: InvertConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${InvertStep.template}.hbs`, {
+    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${InvertStep.template}.hbs`, {
       ...InvertStep.DefaultSettings,
       ...(config ? config : {}),
       dualStyleSelect: generateDualStyleSelectOptions(),
