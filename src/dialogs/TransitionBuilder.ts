@@ -1,5 +1,5 @@
 import { EmptyObject } from "Foundry-VTT/src/types/utils.mjs";
-import { downloadJSON, formatDuration, getStepClassByKey, localize, log } from "../utils";
+import { downloadJSON, formatDuration, formDataExtendedClass, getStepClassByKey, localize, log } from "../utils";
 import { addStepDialog, buildTransitionFromForm, confirm, importSequence, setBackgroundType, setTargetConfig } from "./functions";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
@@ -66,7 +66,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
   _onChangeForm(): void {
     try {
       if (!(this.element instanceof HTMLFormElement)) throw new InvalidTransitionError(typeof undefined);
-      const data = foundry.utils.expandObject(new FormDataExtended(this.element).object) as Record<string, unknown>;
+      const data = foundry.utils.expandObject(new (formDataExtendedClass())(this.element).object) as Record<string, unknown>;
 
       // Parse current step
       const currentStep = data.step as Record<string, unknown>;

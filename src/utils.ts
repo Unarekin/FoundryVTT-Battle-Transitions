@@ -637,5 +637,13 @@ export function mimeType(path: string) {
   else return "application/octet-stream";
 }
 
+// Simple wrapper to handle difference in namespace between Foundry v12 and v13
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 export const renderTemplateFunc: typeof renderTemplate = game?.release?.isNewer("13") ? (foundry.applications as any).handlebars.renderTemplate : renderTemplate;
+
+// Simple wrapper to handle difference in namespace between Foundry v12 and v13
+export function formDataExtendedClass(): typeof FormDataExtended {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  if (game?.release?.isNewer("13")) return (foundry.applications as any).ux.FormDataExtended;
+  else return FormDataExtended;
+}

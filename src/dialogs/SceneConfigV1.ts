@@ -1,7 +1,7 @@
 import { ConfigurationHandler } from "../ConfigurationHandler";
 import { InvalidTransitionError } from "../errors";
 import { TransitionConfiguration } from "../steps";
-import { downloadJSON, getStepClassByKey, localize } from "../utils";
+import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize } from "../utils";
 import { importSequence, buildTransitionFromForm, setEnabledButtons, selectItem, setBackgroundType, deleteSelectedStep, addStep, createConfigurationOption, confirm, } from "./functions";
 export async function injectSceneConfigV1(app: SceneConfig) {
   // Add tab
@@ -144,7 +144,7 @@ function addEventListeners(parent: HTMLElement, app: SceneConfig) {
   const submitButton = parent.querySelector(`footer button[type="submit"]`);
   if (submitButton instanceof HTMLButtonElement) {
     submitButton.addEventListener("click", () => {
-      const data = foundry.utils.expandObject(new FormDataExtended(app.form as HTMLFormElement).object) as Record<string, unknown>;
+      const data = foundry.utils.expandObject(new (formDataExtendedClass())(app.form as HTMLFormElement).object) as Record<string, unknown>;
       const sequence = buildTransitionFromForm($(parent));
 
       if (data.step) {

@@ -2,7 +2,7 @@ import { ConfigurationHandler } from "../ConfigurationHandler";
 import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
-import { downloadJSON, getStepClassByKey, localize } from "../utils";
+import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize } from "../utils";
 import { buildTransitionFromForm, createConfigurationOption, importSequence, setEnabledButtons, setBackgroundType, selectItem, deleteSelectedStep, confirm, addStep, setTargetConfig } from "./functions";
 
 export function injectSceneConfigV2() {
@@ -182,7 +182,7 @@ function onChangeForm(this: foundry.applications.api.ApplicationV2, wrapped: Fun
     const change = wrapped(...args);
 
 
-    const parsed = foundry.utils.expandObject(new FormDataExtended(this.element as HTMLFormElement).object) as Record<string, unknown>;
+    const parsed = foundry.utils.expandObject(new (formDataExtendedClass())(this.element as HTMLFormElement).object) as Record<string, unknown>;
 
     const step = parsed.step as TransitionConfiguration | undefined;
 
@@ -226,7 +226,7 @@ function onSubmitForm(this: foundry.applications.api.ApplicationV2, wrapped: Fun
   const form = (this as any).form as HTMLFormElement;
   if (form instanceof HTMLFormElement) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    const data = foundry.utils.expandObject(((foundry.applications as any).ux.FormDataExtended ? new (foundry.applications as any).ux.FormDataExtended(form) : new FormDataExtended(form)).object) as Record<string, unknown>;
+    const data = new (formDataExtendedClass())(form).object as Record<string, unknown>;
 
     // Parse step list
     const sequence = buildTransitionFromForm($(this.element));
