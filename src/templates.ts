@@ -47,8 +47,7 @@ export function registerHelpers() {
 
 export async function registerTemplates() {
 
-
-  return loadTemplates([
+  return (game?.release?.isNewer("13") ? (foundry.applications as any).handlebars.loadTemplates : loadTemplates)([
     `/modules/${__MODULE_ID__}/templates/scene-config.hbs`,
     ...["step-item",
       "background-selector",
@@ -63,5 +62,5 @@ export async function registerTemplates() {
     `/modules/${__MODULE_ID__}/templates/transition-steps.hbs`,
     `/modules/${__MODULE_ID__}/templates/font-selector.hbs`,
     `/modules/${__MODULE_ID__}/templates/actor-selector.hbs`
-  ]);
+  ]) as Promise<Handlebars.TemplateDelegate[]>;
 }
