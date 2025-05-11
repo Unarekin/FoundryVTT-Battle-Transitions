@@ -40,7 +40,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: ClockWipeConfiguration): Promise<string> {
-    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${ClockWipeStep.template}.hbs`, {
+    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${ClockWipeStep.template}.hbs`, {
       ...ClockWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

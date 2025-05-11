@@ -35,7 +35,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: FadeConfiguration): Promise<string> {
-    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${FadeStep.template}.hbs`, {
+    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${FadeStep.template}.hbs`, {
       ...FadeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

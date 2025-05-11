@@ -36,7 +36,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
   // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: WaveWipeConfiguration): Promise<string> {
-    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${WaveWipeStep.template}.hbs`, {
+    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${WaveWipeStep.template}.hbs`, {
       ...WaveWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

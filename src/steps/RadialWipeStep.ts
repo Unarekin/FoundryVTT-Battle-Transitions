@@ -46,7 +46,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
       ...(config ? config : {})
     }, oldScene, newScene);
 
-    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${RadialWipeStep.template}.hbs`, {
+    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${RadialWipeStep.template}.hbs`, {
       ...RadialWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

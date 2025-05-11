@@ -31,7 +31,7 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
   // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: PixelateConfiguration): Promise<string> {
-    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${PixelateStep.template}.hbs`, {
+    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${PixelateStep.template}.hbs`, {
       ...PixelateStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

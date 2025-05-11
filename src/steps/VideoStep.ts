@@ -46,7 +46,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
       ...(config ? config : {})
     };
 
-    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${VideoStep.template}.hbs`, {
+    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${VideoStep.template}.hbs`, {
       ...VideoStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

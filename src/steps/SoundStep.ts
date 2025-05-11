@@ -30,7 +30,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   // #region Public Static Methods (8)
 
   public static async RenderTemplate(config?: SoundConfiguration): Promise<string> {
-    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${SoundStep.template}.hbs`, {
+    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${SoundStep.template}.hbs`, {
       ...SoundStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {})

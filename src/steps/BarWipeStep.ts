@@ -39,7 +39,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: BarWipeConfiguration): Promise<string> {
-    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${BarWipeStep.template}.hbs`, {
+    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${BarWipeStep.template}.hbs`, {
       ...BarWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

@@ -35,7 +35,7 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: FlashConfiguration): Promise<string> {
-    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${FlashStep.template}.hbs`, {
+    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${FlashStep.template}.hbs`, {
       ...FlashStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

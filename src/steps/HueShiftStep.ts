@@ -32,7 +32,7 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: HueShiftConfiguration): Promise<string> {
-    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${HueShiftStep.template}.hbs`, {
+    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${HueShiftStep.template}.hbs`, {
       ...HueShiftStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

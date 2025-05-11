@@ -39,7 +39,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: BilinearWipeConfiguration): Promise<string> {
-    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${BilinearWipeStep.template}.hbs`, {
+    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${BilinearWipeStep.template}.hbs`, {
       ...BilinearWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

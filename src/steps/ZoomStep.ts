@@ -53,7 +53,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       ...(config ? config : {})
     }, oldScene, newScene);
 
-    return renderTemplateFunc(`/modules/${__MODULE_ID__}/templates/config/${ZoomStep.template}.hbs`, {
+    return (renderTemplateFunc())(`/modules/${__MODULE_ID__}/templates/config/${ZoomStep.template}.hbs`, {
       ...ZoomStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
