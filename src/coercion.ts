@@ -55,3 +55,15 @@ export function coerceMacro(arg: unknown): Macro | undefined {
     if (arg.split(".")[0] === "Macro") return (game as Game).macros?.get(arg.split(".").slice(1).join("."));
   }
 }
+
+export function coerceUser(arg: unknown): User | undefined {
+  if (arg instanceof User) return arg;
+  if (typeof arg === "string") {
+    let user: User | undefined = game?.users?.get(arg);
+    if (user instanceof User) return user;
+    user = game?.users?.getName(arg);
+    if (user instanceof User) return user;
+    user = (fromUuidSync(arg) as User | undefined);
+    if (user instanceof User) return user;
+  }
+}

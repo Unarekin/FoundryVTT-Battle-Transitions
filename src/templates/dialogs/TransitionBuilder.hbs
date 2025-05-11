@@ -11,6 +11,14 @@
   {{/if}}
   {{#if oldScene}}<input type="hidden" name="oldScene" id="oldScene" value="{{oldScene}}">{{/if}}
   <div class="form-group">
+    <label for="users">{{localize "DOCUMENT.Users"}}</label>
+    <multi-select name="users" id="users">
+      {{selectOptions usersSelect }}
+    </multi-select>
+  </div>
+  <p class="notes">{{localize "BATTLETRANSITIONS.DIALOGS.TRANSITIONBUILDER.USERS.HINT"}}</p>
+  
+  <div class="form-group">
     <label for="import">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.LABEL"}}</label>
     <div class="right-align">
       <i class="fas fa-fw fa-upload link" data-action="importJson" style="position:relative"></i>

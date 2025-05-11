@@ -1,5 +1,5 @@
 import { EmptyObject } from "Foundry-VTT/src/types/utils.mjs";
-import { downloadJSON, formatDuration, formDataExtendedClass, getStepClassByKey, localize, log } from "../utils";
+import { downloadJSON, formatDuration, formDataExtendedClass, getStepClassByKey, localize } from "../utils";
 import { addStepDialog, buildTransitionFromForm, confirm, importSequence, setBackgroundType, setTargetConfig } from "./functions";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
@@ -7,6 +7,7 @@ import { InvalidTransitionError } from "../errors";
 
 type BuilderResponse = {
   scene: string,
+  users: string[],
   sequence: TransitionConfiguration[]
 };
 
@@ -224,15 +225,12 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     }
 
     formData.sequence = sequence;
-    log("Submitting:", {
-      scene: formData.scene as string,
-      sequence
-    });
 
     if (this.#resolve) {
       this.#resolve({
         scene: formData.scene as string,
-        sequence
+        sequence,
+        users: formData.users as string[] ?? []
       });
     }
   }
@@ -397,6 +395,19 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     context.oldScene = game?.scenes?.current?.id ?? "";
 
     context.newScene = this.scene ? this.scene.id : "";
+
+    context.usersSelect = Object.fromEntries(
+      (game?.users?.contents ?? []).reduce((prev, curr) => {
+        if (curr.active) return [...prev, [curr.id, curr.name]];
+        else return prev;
+      }, [] as [string, string][])
+    )
+
+    // context.usersSelect = (game?.users ?? []).map((user: User) => ({
+    //   value: user.id,
+    //   label: user.name
+    // }));
+
 
     context.buttons = [
       { type: "button", icon: "fas fa-times", label: "Cancel", action: "cancel" },

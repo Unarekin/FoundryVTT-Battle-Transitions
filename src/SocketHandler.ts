@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import { BattleTransition } from "./BattleTransition";
+import { coerceUser } from "./coercion";
 import { DataMigration } from "./DataMigration";
 import { TransitionSequence } from "./interfaces";
 import { StartPlaylistConfiguration, StartPlaylistStep, TransitionConfiguration } from "./steps";
@@ -21,7 +22,7 @@ class SocketHandler {
     await BattleTransition.prepareSequence(sequence);
   }
 
-  public async execute(sequence: TransitionConfiguration[]): Promise<void> {
+  public async execute(sequence: TransitionConfiguration[], forUsers?: string[]): Promise<void> {
     try {
       const id = foundry.utils.randomID();
 
@@ -47,8 +48,15 @@ class SocketHandler {
 
       const expectedDuration = await sequenceDuration(actual.sequence);
 
-      const users = (game.users?.contents.filter(user => user.active) as User[]) ?? []
+      const users = Array.isArray(forUsers)
+        ? forUsers.reduce((prev, curr) => {
+          const user = coerceUser(curr);
+          if (user instanceof User) return [...prev, user];
+          else return prev;
+        }, [] as User[])
+        : (game.users?.contents.filter(user => user.active) as User[]) ?? []
 
+      // const users = (game.users?.contents.filter(user => user.active) as User[]) ?? []
       const usersPrepared: User[] = [];
 
       // Prepare

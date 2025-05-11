@@ -1,4 +1,4 @@
-import { coerceColorHex, coerceMacro, coerceScene } from "./coercion";
+import { coerceColorHex, coerceMacro, coerceScene, coerceUser } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
 import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
@@ -54,18 +54,18 @@ export class BattleTransition {
       if (arg) {
         const scene = coerceScene(arg);
         if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
-        if (scene.id !== canvas?.scene?.id) {
-          // if (scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
-          const changeStep = getStepClassByKey("scenechange");
-          if (!changeStep) throw new InvalidTransitionError("scenechange");
+        // if (scene.id !== canvas?.scene?.id) {
+        // if (scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
+        const changeStep = getStepClassByKey("scenechange");
+        if (!changeStep) throw new InvalidTransitionError("scenechange");
 
-          this.#sequence.push({
-            ...changeStep?.DefaultSettings,
-            id: foundry.utils.randomID(),
-            scene: scene.id
-          } as SceneChangeConfiguration);
-          // this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
-        }
+        this.#sequence.push({
+          ...changeStep?.DefaultSettings,
+          id: foundry.utils.randomID(),
+          scene: scene.id
+        } as SceneChangeConfiguration);
+        // this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
+        // }
       }
     } catch (err) {
       ui.notifications?.error((err as Error).message);
@@ -88,7 +88,10 @@ export class BattleTransition {
     await app.render(true);
     const config = await app.closed;
 
-    if (config) await new BattleTransition(config.scene).executeSequence(config.sequence);
+    if (config) {
+
+      await new BattleTransition(config.scene).executeSequence(config.sequence, config.users);
+    }
   }
 
   public static async SelectScene(omitCurrent: boolean = false): Promise<Scene | undefined> {
@@ -254,8 +257,10 @@ export class BattleTransition {
     return this;
   }
 
-  public executeSequence(sequence: TransitionConfiguration[]): Promise<void> {
-    return this.addSequence(sequence).execute();
+  public executeSequence(sequence: TransitionConfiguration[], users?: string[]): Promise<void> {
+    this.addSequence(sequence);
+    if (Array.isArray(users) && users.length) return this.execute(...users);
+    else return this.execute();
   }
 
   /**
@@ -569,13 +574,30 @@ export class BattleTransition {
     return this;
   }
 
+
   /**
    * Executes the transition sequence built for this {@link BattleTransition} instance.
    * @returns {Promise} - A promise that resolves when the transition is done for all users
    */
-  public async execute(): Promise<void> {
+  public async execute(...users: string[]): Promise<void> {
     if (!(Array.isArray(this.#sequence) && this.#sequence.length)) throw new InvalidTransitionError(typeof this.#sequence);
-    await SocketHandler.execute(this.#sequence)
+
+    if (Array.isArray(users) && users.length) {
+      // Get a list of Users that are active
+      const actualUsers = users.filter(id => coerceUser(id) instanceof User);
+
+      // Change all scenechange steps to viewscene steps.  This could probably be cleaner.
+      for (const step of this.#sequence) {
+        if (step.type === "scenechange") {
+          step.type = "viewscene";
+          step.version = "2.0.0";
+        }
+      }
+
+      await SocketHandler.execute(this.#sequence, actualUsers);
+    } else {
+      await SocketHandler.execute(this.#sequence)
+    }
   }
 
   /**

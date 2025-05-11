@@ -1,4 +1,4 @@
-import { AngularWipeMigrator, BarWipeMirator, BilinearWipeMigrator, BossSplashMigrator, ClearEffectsMigrator, ClockWipeMigrator, DiamondWipeMigrator, FadeMigrator, FireDissolveMigrator, FlashMigrator, HueShiftMigrator, InvertMigrator, LinearWipeMigrator, LoadingTipMigrator, MacroMigrator, MeltMigrator, ParallelMigrator, PixelateMigrator, RadialWipeMigrator, RemoveOverlayMigrator, RepeatMigrator, RestoreOverlayMigrator, ReverseMigrator, SceneChangeMigrator, SoundMigrator, SpiralShutterMigrator, SpiralWipeMigrator, SpotlightWipeMigrator, StartPlaylistMigrator, TextureSwapMigrator, TwistMigrator, VideoMigrator, WaitMigrator, WaveWipeMigrator, ZoomBlurMigrator, ZoomMigrator } from "./steps";
+import { AngularWipeMigrator, BarWipeMirator, BilinearWipeMigrator, BossSplashMigrator, ClearEffectsMigrator, ClockWipeMigrator, DiamondWipeMigrator, FadeMigrator, FireDissolveMigrator, FlashMigrator, HueShiftMigrator, InvertMigrator, LinearWipeMigrator, LoadingTipMigrator, MacroMigrator, MeltMigrator, ParallelMigrator, PixelateMigrator, RadialWipeMigrator, RemoveOverlayMigrator, RepeatMigrator, RestoreOverlayMigrator, ReverseMigrator, SceneChangeMigrator, SoundMigrator, SpiralShutterMigrator, SpiralWipeMigrator, SpotlightWipeMigrator, StartPlaylistMigrator, TextureSwapMigrator, TwistMigrator, VideoMigrator, ViewSceneMigrator, WaitMigrator, WaveWipeMigrator, ZoomBlurMigrator, ZoomMigrator } from "./steps";
 
 const TransitionSteps = {
   angularwipe: new AngularWipeMigrator(),
@@ -33,6 +33,7 @@ const TransitionSteps = {
   textureswap: new TextureSwapMigrator(),
   twist: new TwistMigrator(),
   video: new VideoMigrator(),
+  viewscene: new ViewSceneMigrator(),
   wait: new WaitMigrator(),
   wavewipe: new WaveWipeMigrator(),
   zoomblur: new ZoomBlurMigrator(),

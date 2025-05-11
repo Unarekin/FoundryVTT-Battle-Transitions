@@ -135,6 +135,10 @@ export type SceneChangeConfiguration = TransitionConfiguration & ({
   scene: string;
 })
 
+export type ViewSceneConfiguration = TransitionConfiguration & ({
+  scene: string;
+});
+
 export interface MacroConfiguration extends TransitionConfiguration {
   macro: string;
 }

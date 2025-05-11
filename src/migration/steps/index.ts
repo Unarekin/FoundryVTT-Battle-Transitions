@@ -30,6 +30,7 @@ export * from './StartPlaylist';
 export * from './TextureSwap';
 export * from './Twist';
 export * from './Video';
+export * from './ViewScene';
 export * from './Wait';
 export * from './WaveWipe';
 export * from './Zoom';
