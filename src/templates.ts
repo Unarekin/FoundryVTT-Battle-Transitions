@@ -42,6 +42,14 @@ export function registerHelpers() {
     else return options.inverse(this);
   });
 
+  Handlebars.registerHelper("json", function (context: any) {
+    try {
+      return JSON.stringify(context);
+    } catch (err) {
+      console.error(err);
+      ui.notifications?.error(err instanceof Error ? err.message : typeof err === "string" ? err : typeof err, { console: false, localize: true });
+    }
+  })
 
 }
 
