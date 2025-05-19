@@ -1,4 +1,4 @@
-import { createColorTexture } from "./utils";
+import { createColorTexture, gameClass } from "./utils";
 
 export function coerceColor(source: unknown): PIXI.Color | undefined {
   try {
@@ -24,7 +24,7 @@ export function coerceTexture(source: unknown): PIXI.Texture | undefined {
 }
 
 export function coerceScene(arg: unknown): Scene | undefined {
-  if (!((game instanceof Game) && game.scenes)) return;
+  if (!((game instanceof gameClass()) && game.scenes)) return;
 
   if (typeof arg === "string") {
     let scene = game.scenes.get(arg);

@@ -650,3 +650,9 @@ export function formDataExtendedClass(): typeof FormDataExtended {
   if (game?.release?.isNewer("13")) return (foundry.applications as any).ux.FormDataExtended;
   else return FormDataExtended;
 }
+
+export function gameClass(): typeof Game {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  if (game?.release?.isNewer("13")) return ((foundry as any).Game);
+  else return Game;
+}
