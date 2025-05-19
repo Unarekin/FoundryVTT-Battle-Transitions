@@ -64,7 +64,11 @@ export class AddStepDialog {
 
 function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>, resolve: (key: string | null) => void) {
   // Set up tabs
-  const tabs = new Tabs({
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+  const tabClass: typeof Tabs = game?.release?.isNewer("13") ? (foundry.applications as any).ux.Tabs : Tabs;
+
+  const tabs = new tabClass({
     contentSelector: ".tab-content",
     navSelector: ".tabs[data-group='primary-tabs']",
     initial: "wipes",
