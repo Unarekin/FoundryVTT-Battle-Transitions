@@ -3,7 +3,7 @@ import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize } from "../utils";
-import { buildTransitionFromForm, createConfigurationOption, importSequence, setEnabledButtons, setBackgroundType, selectItem, deleteSelectedStep, confirm, addStep, setTargetConfig } from "./functions";
+import { buildTransitionFromForm, createConfigurationOption, importSequence, setEnabledButtons, setBackgroundType, selectItem, deleteSelectedStep, confirm, addStep, setTargetConfig, editSequenceItem } from "./functions";
 
 export function injectSceneConfigV2() {
 
@@ -109,6 +109,28 @@ export function injectSceneConfigV2() {
     }
   }
 
+  // Edit sequence for Parallel and Repeat
+  actions.editSequence = async function (this: foundry.applications.api.ApplicationV2, e: PointerEvent, elem: HTMLElement) {
+    try {
+      const index = elem.dataset.index as string;
+      await editSequenceItem(this.element, parseInt(index));
+    } catch (err) {
+      console.error(err);
+      if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
+    }
+  }
+
+  // Delete sequence for Parallel and Repeat
+  // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
+  actions.deleteSequence = async function (this: foundry.applications.api.ApplicationV2, e: PointerEvent, elem: HTMLElement) {
+    try {
+      // TODO
+    } catch (err) {
+      console.error(err);
+      if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
+    }
+  }
+
   // Add event listeners
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   libWrapper.register(__MODULE_ID__, "foundry.applications.sheets.SceneConfig.prototype._onRender", onRender);
@@ -183,7 +205,6 @@ function onChangeForm(this: foundry.applications.api.ApplicationV2, wrapped: Fun
 
 
     const parsed = foundry.utils.expandObject(new (formDataExtendedClass())(this.element as HTMLFormElement).object) as Record<string, unknown>;
-
     const step = parsed.step as TransitionConfiguration | undefined;
 
     if (step) {
@@ -192,15 +213,19 @@ function onChangeForm(this: foundry.applications.api.ApplicationV2, wrapped: Fun
         const stepType = typeElem.dataset.transitionType as string;
         const stepClass = getStepClassByKey(stepType);
         if (!stepClass) throw new InvalidTransitionError(stepType);
-        const config = {
-          ...stepClass.DefaultSettings,
-          id: foundry.utils.randomID(),
-          ...(step as Partial<TransitionConfiguration>),
-          type: stepType
-        };
+
+        const config = stepClass.from(this.element as HTMLFormElement).config;
+
+        // const config = {
+        //   ...stepClass.DefaultSettings,
+        //   id: foundry.utils.randomID(),
+        //   ...(step as Partial<TransitionConfiguration>),
+        //   type: stepType
+        // };
 
         const option = this.element.querySelector(`select#stepList [data-id="${config.id}"]`);
         if (option instanceof HTMLOptionElement) {
+          option.value = JSON.stringify(config);
           option.dataset.serialized = JSON.stringify(config);
         }
       }
@@ -226,18 +251,28 @@ function onSubmitForm(this: foundry.applications.api.ApplicationV2, wrapped: Fun
   const form = (this as any).form as HTMLFormElement;
   if (form instanceof HTMLFormElement) {
 
-    const data = new (formDataExtendedClass())(form).object as Record<string, unknown>;
+    const data = foundry.utils.expandObject(new (formDataExtendedClass())(form).object) as Record<string, unknown>;
+    //const data = foundry.utils.expandObject(new (formDataExtendedClass())(app.form as HTMLFormElement).object) as Record<string, unknown>;
 
     // Parse step list
     const sequence = buildTransitionFromForm($(this.element));
 
-    // Handle current step
-    // if (data.step) {
-    //   const step = data.step as TransitionConfiguration;
-    //   const index = sequence.findIndex(obj => obj.id === step.id);
-    //   if (index !== -1) sequence.splice(index, 1, step);
-    //   else sequence.push(step);
-    // }
+    if (data.step) {
+      const configElem = form.querySelector(`[data-role="transition-config"] [data-transition-type]`);
+      if (configElem instanceof HTMLElement) {
+        const stepClass = getStepClassByKey(configElem.dataset.transitionType ?? "");
+        if (!stepClass) throw new InvalidTransitionError(configElem.dataset.transitionType ?? "");
+
+        const config = {
+          ...stepClass.DefaultSettings,
+          ...stepClass.from(form).config
+        };
+
+        const index = sequence.findIndex(item => item.id === config.id);
+        if (index === -1) sequence.push(config);
+        else sequence.splice(index, 1, config);
+      }
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     void ConfigurationHandler.SetSceneConfiguration((this as any).document as Scene, {

@@ -30,6 +30,11 @@
       "EDITSTEP": {
         "TITLE": "Edit {name}"
       },
+      "SEQUENCE": {
+        "ADD": "Add Sequence",
+        "EDIT": "Edit Sequence",
+        "NAME": "Sequence {index}"
+      },
       "REMOVECONFIRM": {
         "CONTENT": "Are you sure you wish to remove {name}?",
         "TITLE": "Remove {name}"

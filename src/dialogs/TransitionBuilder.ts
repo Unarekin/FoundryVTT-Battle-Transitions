@@ -1,6 +1,6 @@
 import { EmptyObject } from "Foundry-VTT/src/types/utils.mjs";
 import { downloadJSON, formatDuration, formDataExtendedClass, getStepClassByKey, localize } from "../utils";
-import { addStepDialog, buildTransitionFromForm, confirm, deleteSelectedStep, importSequence, setBackgroundType, setTargetConfig } from "./functions";
+import { addStepDialog, buildTransitionFromForm, confirm, deleteSelectedStep, editSequenceItem, importSequence, setBackgroundType, setTargetConfig } from "./functions";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
 import { InvalidTransitionError } from "../errors";
@@ -49,7 +49,11 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       // eslint-disable-next-line @typescript-eslint/unbound-method
       changeTargetType: TransitionBuilder.ChangeTargetType,
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      deleteStep: TransitionBuilder.DeleteStep
+      deleteStep: TransitionBuilder.DeleteStep,
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      editSequence: TransitionBuilder.EditSequence,
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      deleteSequence: TransitionBuilder.DeleteSequence
 
     }
   }
@@ -63,6 +67,43 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       template: "templates/generic/form-footer.hbs"
     }
   };
+
+
+  public static async EditSequence(this: TransitionBuilder, e: Event, elem: HTMLElement) {
+    try {
+      const index = elem.dataset.index as string;
+      await editSequenceItem(this.element, parseInt(index));
+    } catch (err) {
+      console.error(err);
+      if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
+    }
+  }
+
+
+  public static async DeleteSequence(this: TransitionBuilder, e: Event, elem: HTMLElement) {
+    try {
+      const index = parseInt(elem.dataset.index ?? "0")
+
+      const seqElem = this.element.querySelector(`[data-role="sequence-item"][data-index="${elem.dataset.index}"]`);
+      if (!(seqElem instanceof HTMLElement)) return;
+
+      const name = localize("BATTLETRANSITIONS.DIALOGS.SEQUENCE.NAME", { index: index + 1 });
+
+      const confirmed = await confirm(
+        localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name }),
+        localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name })
+      );
+      if (!confirmed) return;
+
+      seqElem.remove();
+
+      const formElem = this.element.querySelector(`input`);
+      if (formElem instanceof HTMLInputElement) formElem.dispatchEvent(new Event("change", { bubbles: true }));
+    } catch (err) {
+      console.error(err);
+      if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
+    }
+  }
 
   public get closed() { return this.#closed; }
 
@@ -181,6 +222,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
         } as TransitionConfiguration);
 
         config.innerHTML = content;
+        step.addEventListeners(config, deserialized);
       } else {
         config.innerHTML = "";
       }

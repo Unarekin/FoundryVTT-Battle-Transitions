@@ -2,7 +2,7 @@ import { ConfigurationHandler } from "../ConfigurationHandler";
 import { InvalidTransitionError } from "../errors";
 import { TransitionConfiguration } from "../steps";
 import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize } from "../utils";
-import { importSequence, buildTransitionFromForm, setEnabledButtons, selectItem, setBackgroundType, deleteSelectedStep, addStep, createConfigurationOption, confirm, } from "./functions";
+import { importSequence, buildTransitionFromForm, setEnabledButtons, selectItem, setBackgroundType, deleteSelectedStep, addStep, createConfigurationOption, confirm, editSequenceItem, } from "./functions";
 export async function injectSceneConfigV1(app: SceneConfig) {
   // Add tab
   const tab = `<a class="item" data-tab="transition">
@@ -148,11 +148,24 @@ function addEventListeners(parent: HTMLElement, app: SceneConfig) {
       const sequence = buildTransitionFromForm($(parent));
 
       if (data.step) {
-        const step = data.step as TransitionConfiguration;
-        const index = sequence.findIndex(obj => obj.id === step.id);
-        if (index !== -1) sequence.splice(index, 1, step);
-        else sequence.push(step);
+        const configElem = parent.querySelector(`[data-role="transition-config"] [data-transition-type]`);
+        if (configElem instanceof HTMLElement) {
+          const stepClass = getStepClassByKey(configElem.dataset.transitionType ?? "");
+          if (!stepClass) throw new InvalidTransitionError(configElem.dataset.transitionType ?? "");
+
+          const config = {
+            ...stepClass.DefaultSettings,
+            ...stepClass.from(app.form as HTMLFormElement).config
+          };
+
+          const index = sequence.findIndex(item => item.id === config.id);
+
+          // Really probably shouldn't be adding one here.
+          if (index === -1) sequence.push(config);
+          else sequence.splice(index, 1, config);
+        }
       }
+
       ConfigurationHandler.SetSceneConfiguration(app.document, {
         ...data.transition as Partial<TransitionConfiguration>,
         sequence
@@ -170,7 +183,22 @@ function setConfigEventListeners(parent: HTMLElement) {
   const bgSelect = parent.querySelector(`select[name="step.backgroundType"]`);
 
   if (bgSelect instanceof HTMLSelectElement) {
-    setBackgroundType(parent, bgSelect.value);
-    bgSelect.addEventListener("input", () => { setBackgroundType(parent, bgSelect.value); });
+    setBackgroundType(parent, bgSelect.value as "image" | "color" | "overlay");
+    bgSelect.addEventListener("input", () => { setBackgroundType(parent, bgSelect.value as "image" | "color" | "overlay"); });
+  }
+
+  const editSequenceItems = parent.querySelectorAll(`[data-action="editSequence"]`);
+  for (const item of editSequenceItems) {
+    item.addEventListener("click", () => {
+      try {
+        if (item instanceof HTMLElement) {
+          const index = item.dataset.index as string;
+          void editSequenceItem(parent, parseInt(index));
+        }
+      } catch (err) {
+        console.error(err);
+        if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: false });
+      }
+    })
   }
 }

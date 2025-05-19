@@ -1,9 +1,10 @@
 import { BackgroundTransition, TransitionConfiguration } from '../steps';
-import { getSortedSteps, getStepClassByKey, localize, uploadJSON } from '../utils';
+import { getSortedSteps, getStepClassByKey, localize, renderTemplateFunc, renderTemplateFunc, uploadJSON } from '../utils';
 import { AddStepDialog } from './AddStepDialog';
 import { StepContext } from './types';
 import { InvalidTransitionError } from '../errors';
 import { BackgroundType } from '../types';
+import { editSequence } from './EditSequence';
 
 export async function addStepDialog(): Promise<string | null> {
   return AddStepDialog.prompt();
@@ -139,6 +140,8 @@ export async function selectItem(parent: HTMLElement, id: string) {
     } as TransitionConfiguration);
 
     configArea.innerHTML = content;
+
+    step.addEventListeners(configArea, deserialized);
   } else {
     configArea.innerHTML = "";
   }
@@ -251,4 +254,64 @@ export async function addStep(html: HTMLElement): Promise<TransitionConfiguratio
   const stepList = html.querySelector(`#stepList`)
   if (stepList instanceof HTMLSelectElement) stepList.options.add(option);
   return config;
+}
+
+export async function renderSequenceItem(sequence: TransitionConfiguration[], index: number): Promise<HTMLElement> {
+  const content = await (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/sequence-item.hbs`, {
+    index,
+    name: localize("BATTLETRANSITIONS.DIALOGS.SEQUENCE.NAME", { index: index + 1 }),
+    serialized: JSON.stringify(sequence)
+  });
+  const elem = document.createElement("section");
+  elem.innerHTML = content;
+  return elem;
+}
+
+export async function deleteSequenceItem(parent: HTMLElement, index: number): Promise<void> {
+  const name = localize("BATTLETRANSITIONS.DIALOGS.SEQUENCE.NAME", { index: index + 1 });
+  const confirmed = await confirm(
+    localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name }),
+    localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name })
+  );
+  if (!confirmed) return;
+
+  const seqElem = parent.querySelector(`[data-role="sequence-item"][data-index="${index}"]`);
+  if (seqElem instanceof HTMLElement) seqElem.remove();
+
+  // Trigger form change
+  const formElem = parent.querySelector("input");
+  if (formElem instanceof HTMLInputElement) formElem.dispatchEvent(new Event("change", { bubbles: true }));
+}
+
+export async function editSequenceItem(parent: HTMLElement, index: number): Promise<void> {
+  const sequenceElem = parent.querySelector(`[data-role="sequence-item"][data-index="${index.toString()}"]`);
+
+  if (!(sequenceElem instanceof HTMLElement)) return
+
+  const sequence = JSON.parse(sequenceElem.dataset.sequence as string ?? "") as TransitionConfiguration[];
+
+  const edited = await editSequence(sequence);
+  if (!edited) return;
+
+  sequenceElem.dataset.sequence = JSON.stringify(edited);
+  // Update parent item?
+  // if (parent instanceof HTMLFormElement) parent.dispatchEvent(new Event("change"));
+
+}
+
+export function setupSequenceList(parent: HTMLElement, sequence: TransitionConfiguration[]) {
+  const stepList = parent.querySelector(`#stepList`);
+  if (stepList instanceof HTMLSelectElement) {
+    stepList.innerHTML = "";
+    for (const step of sequence) {
+      const stepClass = getStepClassByKey(step.type);
+      if (!stepClass) throw new InvalidTransitionError(step.type);
+      const option = createConfigurationOption({
+        ...stepClass.DefaultSettings,
+        ...step
+      });
+      option.innerText = localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`);
+      stepList.options.add(option);
+    }
+  }
 }
