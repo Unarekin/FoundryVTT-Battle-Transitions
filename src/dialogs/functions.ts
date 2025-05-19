@@ -366,3 +366,41 @@ export function setupSequenceList(parent: HTMLElement, sequence: TransitionConfi
     }
   }
 }
+
+
+export function iterateElements(parent: HTMLElement, selector: string, func: (elem: HTMLElement) => void) {
+  const elements = parent.querySelectorAll(selector);
+  for (const element of elements) {
+    if (element instanceof HTMLElement) func(element);
+  }
+}
+
+export function showElements(parent: HTMLElement, selector: string) {
+  iterateElements(parent, selector, elem => { elem.style.display = "block"; });
+}
+
+export function hideElements(parent: HTMLElement, selector: string) {
+  iterateElements(parent, selector, elem => { elem.style.display = "none"; });
+}
+
+export function addClassToElements(parent: HTMLElement, selector: string, className: string) {
+  iterateElements(parent, selector, elem => { elem.classList.add(className); });
+}
+
+export function removeClassFromElements(parent: HTMLElement, selector: string, className: string) {
+  iterateElements(parent, selector, elem => { elem.classList.remove(className); });
+}
+
+export function enableElements(parent: HTMLElement, selector: string) {
+  iterateElements(parent, selector, elem => {
+    if (elem instanceof HTMLInputElement) elem.disabled = false;
+    else elem.classList.remove("disabled");
+  });
+}
+
+export function disableElements(parent: HTMLElement, selector: string) {
+  iterateElements(parent, selector, elem => {
+    if (elem instanceof HTMLInputElement) elem.disabled = true;
+    else elem.classList.add("disabled");
+  })
+}

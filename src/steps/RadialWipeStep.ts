@@ -65,12 +65,12 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
-  public static async addEventListeners(html: JQuery<HTMLElement>, config?: RadialWipeConfiguration) {
+  public static async addEventListeners(html: HTMLElement, config?: RadialWipeConfiguration) {
     setTargetSelectEventListeners(html);
   }
 
   public static editDialogClosed(element: HTMLElement | JQuery<HTMLElement>): void {
-    onTargetSelectDialogClosed($(element));
+    onTargetSelectDialogClosed($(element)[0]);
   }
 
   public static from(config: RadialWipeConfiguration): RadialWipeStep
