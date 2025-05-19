@@ -1,12 +1,12 @@
 import { coerceColorHex, coerceMacro, coerceScene, coerceUser } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
-import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
+import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidElementError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
 import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, AngularWipeStep, LinearWipeStep, FadeStep } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture } from "./utils";
+import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./dialogs";
 import { filters } from "./filters";
@@ -109,15 +109,20 @@ export class BattleTransition {
       rejectClose: false,
       buttons: [
         {
-          label: `<i class="fas fa-times"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")}`,
+          icon: "fas fa-times",
+          label: localize("Cancel"),
           action: "cancel",
           callback: () => Promise.resolve(undefined)
         },
         {
-          label: `<i class="fas fa-check"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK")}`,
+          icon: "fas fa-check",
+          label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
           action: "ok",
-          callback: (event: Event, button: HTMLButtonElement, dialog: HTMLDialogElement) => {
-            return Promise.resolve(game.scenes?.get($(dialog).find("#scene").val() as string) ?? undefined);
+          callback: (event: Event, button: HTMLButtonElement, dialog: HTMLDialogElement | foundry.applications.api.DialogV2) => {
+            const form = dialog instanceof foundry.applications.api.DialogV2 ? dialog.element.querySelector("form") : dialog.querySelector("form");
+            if (!(form instanceof HTMLFormElement)) throw new InvalidElementError();
+            const formData = foundry.utils.expandObject((new (formDataExtendedClass())(form)).object) as Record<string, unknown>
+            return Promise.resolve(coerceScene(formData.scene));
           }
         }
       ]
