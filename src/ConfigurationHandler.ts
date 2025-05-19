@@ -15,8 +15,7 @@ const DEFAULT_CONFIG: SceneConfiguration = {
 
 export class ConfigurationHandler {
   public static AddToNavigationBar(buttons: any[]) {
-    log("Adding to navigation bar:", buttons);
-    const iconClasses = game?.release?.isNewer("13") ? [] : ["v12"];
+    const iconClasses = game?.release?.isNewer("13") ? ["v13"] : ["v12"];
     buttons.push(
       {
         name: "BATTLETRANSITIONS.NAVIGATION.TRIGGER",

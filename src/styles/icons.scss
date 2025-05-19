@@ -7,12 +7,27 @@
   mask-position: center;
 }
 
-nav {
-  .bt-icon {
+// Context menu
+#context-menu {
+  // v12
+  .v12.bt-icon {
+    background-color: var(--color-text-light-1);
+  }
+  // v13
+  .v13.bt-icon {
     background-color: var(--text-color);
-    &.v12 {
-      background-color: var(--color-text-light-1);
-    }
+  }
+}
+
+// Tab bar
+nav.tabs {
+  // v12
+  .v12.bt-icon {
+    background-color: var(--color-text-dark-primary);
+  }
+  // v13
+  .v13.bt-icon {
+    background-color: var(--color-text-secondary);
   }
 }
 

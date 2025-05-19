@@ -24,7 +24,7 @@ export function injectSceneConfigV2() {
 
   // Add tab
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-  config.TABS.sheet.tabs.push({ id: "transition", icon: "fa-solid bt-icon crossed-swords fa-fw scene-config-icon" });
+  config.TABS.sheet.tabs.push({ id: "transition", icon: "fa-solid bt-icon crossed-swords fa-fw v13" });
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type, @typescript-eslint/no-unsafe-member-access
   const actions = config.DEFAULT_OPTIONS.actions as Record<string, Function>;

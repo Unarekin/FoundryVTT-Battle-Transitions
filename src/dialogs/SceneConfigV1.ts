@@ -6,7 +6,7 @@ import { importSequence, buildTransitionFromForm, setEnabledButtons, selectItem,
 export async function injectSceneConfigV1(app: SceneConfig) {
   // Add tab
   const tab = `<a class="item" data-tab="transition">
-    <i class="fa-solid bt-icon crossed-swords fa-fw v1"></i>
+    <i class="fa-solid bt-icon crossed-swords fa-fw v12"></i>
     ${localize("SCENE.TABS.SHEET.transition")}
   </a>`
 
