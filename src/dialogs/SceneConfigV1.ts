@@ -2,7 +2,7 @@ import { ConfigurationHandler } from "../ConfigurationHandler";
 import { InvalidTransitionError } from "../errors";
 import { TransitionConfiguration } from "../steps";
 import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize } from "../utils";
-import { importSequence, buildTransitionFromForm, setEnabledButtons, selectItem, setBackgroundType, deleteSelectedStep, addStep, createConfigurationOption, confirm, editSequenceItem, } from "./functions";
+import { importSequence, buildTransitionFromForm, setEnabledButtons, selectItem, setBackgroundType, deleteSelectedStep, addStep, createConfigurationOption, confirm, editSequenceItem, generateMacro, } from "./functions";
 export async function injectSceneConfigV1(app: SceneConfig) {
   // Add tab
   const tab = `<a class="item" data-tab="transition">
@@ -17,7 +17,8 @@ export async function injectSceneConfigV1(app: SceneConfig) {
 
   const content = await renderTemplate(`modules/${__MODULE_ID__}/templates/scene-config.hbs`, {
     isV1: true,
-    transition: config
+    transition: config,
+    canCreateMacro: Macro.canUserCreate(game.user as User)
   });
   app.element.find(`footer`).before($(content));
 
@@ -62,6 +63,16 @@ function addEventListeners(parent: HTMLElement, app: SceneConfig) {
       const sequence = buildTransitionFromForm($(parent));
       downloadJSON(sequence, `${localize("BATTLETRANSITIONS.COMMON.TRANSITION")}.json`);
     });
+  }
+
+  const saveMacro = parent.querySelector(`[data-action="saveMacro"]`);
+  if (saveMacro instanceof HTMLElement) {
+    saveMacro.addEventListener("click", () => {
+      const sequence = buildTransitionFromForm($(parent));
+      const formData = foundry.utils.expandObject(new (formDataExtendedClass())(app.form as HTMLFormElement).object) as Record<string, unknown>
+      const macro = generateMacro(sequence, formData.users as string[] ?? [], app.document);
+      void Macro.createDialog({ type: "script", command: macro });
+    })
   }
 
   const stepList = parent.querySelector(`#stepList`);
