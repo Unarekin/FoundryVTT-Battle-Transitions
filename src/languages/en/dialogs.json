@@ -48,6 +48,12 @@
       "SCENESELECTOR": {
         "DESCRIPTION": "Please select a scene below:",
         "TITLE": "Scene Selector"
+      },
+      "SAVEMACRO": {
+        "TITLE": "Save as Macro",
+        "SCENE": {
+          "HINT": "The scene to which to transition.  If none is specified, the generated macro will prompt to select the scene."
+        }
       }
     }
   }

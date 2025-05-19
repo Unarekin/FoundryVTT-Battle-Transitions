@@ -1,6 +1,6 @@
 import { EmptyObject } from "Foundry-VTT/src/types/utils.mjs";
 import { downloadJSON, formatDuration, formDataExtendedClass, getStepClassByKey, localize } from "../utils";
-import { addStepDialog, buildTransitionFromForm, confirm, deleteSelectedStep, editSequenceItem, importSequence, setBackgroundType, setTargetConfig } from "./functions";
+import { addStepDialog, buildTransitionFromForm, confirm, deleteSelectedStep, editSequenceItem, generateMacro, importSequence, setBackgroundType, setTargetConfig } from "./functions";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
 import { InvalidTransitionError } from "../errors";
@@ -53,8 +53,9 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       // eslint-disable-next-line @typescript-eslint/unbound-method
       editSequence: TransitionBuilder.EditSequence,
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      deleteSequence: TransitionBuilder.DeleteSequence
-
+      deleteSequence: TransitionBuilder.DeleteSequence,
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      saveMacro: TransitionBuilder.SaveMacro
     }
   }
 
@@ -68,6 +69,18 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     }
   };
 
+
+  public static SaveMacro(this: TransitionBuilder) {
+    try {
+      const sequence = this.parseSequence();
+      const formData = foundry.utils.expandObject(new (formDataExtendedClass())(this.element as HTMLFormElement).object) as Record<string, unknown>
+      const macro = generateMacro(sequence, formData.users as string[] ?? [], formData.scene);
+      void Macro.createDialog({ type: "script", command: macro });
+    } catch (err) {
+      console.error(err);
+      if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
+    }
+  }
 
   public static async EditSequence(this: TransitionBuilder, e: Event, elem: HTMLElement) {
     try {
@@ -248,13 +261,13 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     this.#reject = undefined;
   }
 
-  public static onSubmit(this: TransitionBuilder, e: Event | SubmitEvent, elem: HTMLFormElement, data: FormDataExtended) {
-    const formData = foundry.utils.expandObject(data.object) as Record<string, unknown>;
+  protected parseSequence(): TransitionConfiguration[] {
+    const formData = foundry.utils.expandObject(new (formDataExtendedClass())(this.element as HTMLFormElement).object) as Record<string, unknown>;
     delete formData.stepList;
 
     const sequence: TransitionConfiguration[] = [];
 
-    const stepOptions = elem.querySelectorAll(`select#stepList option`);
+    const stepOptions = this.element.querySelectorAll(`select#stepList option`);
     for (const option of stepOptions) {
       if (option instanceof HTMLOptionElement) {
         const serialized = option.dataset.serialized;
@@ -266,16 +279,23 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     }
 
     // Parse current step
-    const typeElem = elem.querySelector(`[data-role="transition-config"] [data-transition-type]`);
+    const typeElem = this.element.querySelector(`[data-role="transition-config"] [data-transition-type]`);
     if (typeElem instanceof HTMLElement) {
       const transitionType = typeElem.dataset.transitionType ?? "";
       const step = getStepClassByKey(transitionType);
       if (!step) throw new InvalidTransitionError(transitionType);
-      const stepData = step.from(elem).config as TransitionConfiguration;
+      const stepData = step.from(this.element as HTMLFormElement).config as TransitionConfiguration;
       const index = sequence.findIndex(obj => obj.id === stepData.id);
       if (index !== -1) sequence.splice(index, 1, stepData);
       else sequence.push(stepData);
     }
+
+    return sequence;
+  }
+
+  public static onSubmit(this: TransitionBuilder, e: Event | SubmitEvent, elem: HTMLFormElement, data: FormDataExtended) {
+    const formData = foundry.utils.expandObject(data.object) as Record<string, unknown>;
+    const sequence = this.parseSequence();
 
     formData.sequence = sequence;
 
@@ -291,23 +311,27 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
   protected setEnabledButtons() {
     const sequence = buildTransitionFromForm($(this.element));
 
-    // Export
-    const exportButton = this.element.querySelector(`[data-action="exportJson"]`);
-    if (exportButton instanceof HTMLElement) {
-      if (sequence.length) exportButton.classList.remove("disabled");
-      else exportButton.classList.add("disabled");
+    const enabledWithSteps = this.element.querySelectorAll(`[data-action="exportJson"],[data-action="saveMacro"],[data-action="clearSteps"],[data-action="ok"]`);
+    for (const elem of enabledWithSteps) {
+      if (sequence.length) {
+        if (elem instanceof HTMLButtonElement) elem.disabled = false;
+        else elem.classList.remove("disabled")
+      } else {
+        if (elem instanceof HTMLButtonElement) elem.disabled = true;
+        else elem.classList.add("disabled");
+      }
     }
 
-    // Clear
-    const clearButton = this.element.querySelector(`[data-action="clearSteps"]`);
-    if (clearButton instanceof HTMLElement) {
-      if (sequence.length) clearButton.classList.remove("disabled");
-      else clearButton.classList.add("disabled");
-    }
+    // // Clear
+    // const clearButton = this.element.querySelector(`[data-action="clearSteps"]`);
+    // if (clearButton instanceof HTMLElement) {
+    //   if (sequence.length) clearButton.classList.remove("disabled");
+    //   else clearButton.classList.add("disabled");
+    // }
 
     // Transition
-    const okButton = this.element.querySelector(`[data-action="ok"]`)
-    if (okButton instanceof HTMLButtonElement) okButton.disabled = sequence.length === 0;
+    // const okButton = this.element.querySelector(`[data-action="ok"]`)
+    // if (okButton instanceof HTMLButtonElement) okButton.disabled = sequence.length === 0;
 
     // Remove
     const removeButton = this.element.querySelector(`[data-action="deleteStep"]`);
@@ -462,6 +486,8 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
         else return prev;
       }, [] as [string, string][])
     )
+
+    context.canCreateMacro = Macro.canUserCreate(game.user as User);
 
     // context.usersSelect = (game?.users ?? []).map((user: User) => ({
     //   value: user.id,

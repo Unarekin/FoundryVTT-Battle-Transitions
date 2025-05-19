@@ -1,10 +1,12 @@
 import { BackgroundTransition, TransitionConfiguration } from '../steps';
-import { getSortedSteps, getStepClassByKey, localize, renderTemplateFunc, renderTemplateFunc, uploadJSON } from '../utils';
+import { getSortedSteps, getStepClassByKey, localize, renderTemplateFunc, uploadJSON } from '../utils';
 import { AddStepDialog } from './AddStepDialog';
 import { StepContext } from './types';
 import { InvalidTransitionError } from '../errors';
 import { BackgroundType } from '../types';
 import { editSequence } from './EditSequence';
+import { coerceScene, coerceUser } from '../coercion';
+import { LOG_ICON } from '../constants';
 
 export async function addStepDialog(): Promise<string | null> {
   return AddStepDialog.prompt();
@@ -254,6 +256,55 @@ export async function addStep(html: HTMLElement): Promise<TransitionConfiguratio
   const stepList = html.querySelector(`#stepList`)
   if (stepList instanceof HTMLSelectElement) stepList.options.add(option);
   return config;
+}
+
+export function generateMacro(sequence: TransitionConfiguration[], users: string[] = [], scene: unknown = undefined): string {
+  const generated = new Intl.DateTimeFormat("default", Object.fromEntries(["year", "month", "day", "hour", "minute", "second"].map(elem => [elem, "numeric"]))).format(new Date());
+
+
+
+  const macro = [
+    "/**",
+    ` * ${LOG_ICON} ${__MODULE_TITLE__} Auto-Generated Macro`,
+    ` * Generated: ${generated}`,
+    ` * Version: ${__MODULE_VERSION__}`,
+    ` * User: ${game?.user?.name ?? typeof undefined}`,
+    ' */',
+    ``,
+    `try {`
+  ];
+
+  const actualScene = scene ? coerceScene(scene) : undefined;
+  if (!(actualScene instanceof Scene)) {
+    macro.push(
+      `  const scene = await BattleTransition.SelectScene();`,
+      `  if (!(scene instanceof Scene)) return;`
+    )
+  } else {
+    macro.push(`  const scene = "${actualScene.id}";`);
+  }
+
+  macro.push("");
+
+  if (Array.isArray(users) && users.length) {
+    const actualUsers = users.reduce((prev, curr) => {
+      const user = coerceUser(curr);
+      if (!(user instanceof User)) return prev;
+      return [...prev, user.id ?? ""];
+    }, [] as string[]);
+    macro.push(`  await new BattleTransition(scene).addSequence(${JSON.stringify(sequence, null, 2)}).execute(${JSON.stringify(actualUsers)})`);
+  } else {
+    macro.push(`  await new BattleTransition(scene).addSequence(${JSON.stringify(sequence, null, 2)}).execute();`);
+  }
+
+  macro.push(
+    `} catch (err) {`,
+    `  console.error(err);`,
+    `  if (err instanceof Error) ui.notifications.error(err.message, { console: false, localize: true });`,
+    `}`
+  )
+
+  return macro.join("\n");
 }
 
 export async function renderSequenceItem(sequence: TransitionConfiguration[], index: number): Promise<HTMLElement> {

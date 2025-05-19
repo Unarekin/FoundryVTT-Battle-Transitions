@@ -256,6 +256,10 @@
         "HINT": "Download a copy of this sequence as a .json file.",
         "LABEL": "Export Sequence"
       },
+      "MACRO": {
+        "HINT": "Save this sequence as a macro.",
+        "LABEL": "Save as Macro"
+      },
       "FIREDISSOLVE": {
         "BURNSIZE": {
           "HINT": "Size of the burn holes during transiton",
