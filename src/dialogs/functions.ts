@@ -184,16 +184,16 @@ export function setEnabledButtons(parent: HTMLElement) {
   // empty
   const sequence = buildTransitionFromForm($(parent));
 
-  const exportButton = parent.querySelector(`[data-action="exportJson"]`);
-  if (exportButton instanceof HTMLElement) {
-    if (sequence.length) exportButton.classList.remove("disabled");
-    else exportButton.classList.add("disabled");
-  }
+  const enabledWithSteps = parent.querySelectorAll(`[data-action="exportJson"],[data-action="clearSteps"],[data-action="saveMacro"]`);
 
-  const clearButton = parent.querySelector(`[data-action="clearSteps"]`);
-  if (clearButton instanceof HTMLElement) {
-    if (sequence.length) clearButton.classList.remove("disabled");
-    else clearButton.classList.add("disabled");
+  for (const elem of enabledWithSteps) {
+    if (sequence.length) {
+      if (elem instanceof HTMLButtonElement) elem.disabled = false;
+      else elem.classList.remove("disabled")
+    } else {
+      if (elem instanceof HTMLButtonElement) elem.disabled = true;
+      else elem.classList.add("disabled");
+    }
   }
 
   const deleteButton = parent.querySelector(`[data-action="deleteStep"]`);

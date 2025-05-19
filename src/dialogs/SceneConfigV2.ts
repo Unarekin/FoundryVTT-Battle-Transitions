@@ -3,7 +3,7 @@ import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize } from "../utils";
-import { buildTransitionFromForm, createConfigurationOption, importSequence, setEnabledButtons, setBackgroundType, selectItem, deleteSelectedStep, confirm, addStep, setTargetConfig, editSequenceItem } from "./functions";
+import { buildTransitionFromForm, createConfigurationOption, importSequence, setEnabledButtons, setBackgroundType, selectItem, deleteSelectedStep, confirm, addStep, setTargetConfig, editSequenceItem, generateMacro } from "./functions";
 
 export function injectSceneConfigV2() {
 
@@ -48,6 +48,19 @@ export function injectSceneConfigV2() {
     } catch (err) {
       console.error(err);
       ui.notifications?.error((err as Error).message, { console: false, localize: true });
+    }
+  }
+
+  actions.saveMacro = function (this: SceneConfig) {
+    try {
+      const sequence = buildTransitionFromForm($(this.element));
+      const formData = foundry.utils.expandObject(new (formDataExtendedClass())(this.form as HTMLFormElement).object) as Record<string, unknown>
+      const macro = generateMacro(sequence, formData.users as string[] ?? [], this.document);
+      void Macro.createDialog({ type: "script", command: macro });
+
+    } catch (err) {
+      console.error(err);
+      if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
     }
   }
 
@@ -158,6 +171,8 @@ async function prepareContext(this: foundry.applications.api.ApplicationV2, wrap
   const config = ConfigurationHandler.GetSceneConfiguration((this as any).document);
 
   context.transition = config;
+
+  context.canCreateMacro = Macro.canUserCreate(game.user as User);
   return context;
 }
 
@@ -165,7 +180,6 @@ async function prepareContext(this: foundry.applications.api.ApplicationV2, wrap
 function onRender(this: foundry.applications.api.ApplicationV2, wrapped: Function, context: Record<string, unknown>, options: unknown) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const render = wrapped(context, options);
-  setEnabledButtons(this.element);
 
   const stepList = this.element.querySelector(`#stepList`);
   if (stepList instanceof HTMLSelectElement) {
@@ -191,6 +205,7 @@ function onRender(this: foundry.applications.api.ApplicationV2, wrapped: Functio
 
   setTargetConfig(this.element);
 
+  setEnabledButtons(this.element);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return render;
 }

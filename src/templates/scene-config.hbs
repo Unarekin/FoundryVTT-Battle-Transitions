@@ -17,6 +17,17 @@
       <i class="fas fa-fw fa-download link" data-action="exportJson"></i>
     </div>
   </div>
+
+  {{#if canCreateMacro}}
+    <div class="form-group">
+      <label for="macro">{{localize "BATTLETRANSITIONS.SCENECONFIG.MACRO.LABEL"}}</label>
+      <div class="right-align">
+        <i class="fas fa-fw fa-code link" data-action="saveMacro" style="position:relative"></i>
+      </div>
+    </div>
+    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.MACRO.HINT"}}</p>
+  {{/if}}
+
   <hr />
   {{> "/modules/battle-transitions/templates/transition-steps.hbs" this}}
 </div>
