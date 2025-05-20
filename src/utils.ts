@@ -652,6 +652,10 @@ export function formDataExtendedClass(): typeof FormDataExtended {
   else return FormDataExtended;
 }
 
+export function getFormDataExtended(form: HTMLFormElement): FormDataExtended {
+  return (new (formDataExtendedClass())(form));
+}
+
 export function gameClass(): typeof Game {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
   if (game?.release?.isNewer("13")) return ((foundry as any).Game);

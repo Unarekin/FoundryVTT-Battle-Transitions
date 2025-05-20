@@ -1,7 +1,7 @@
 import { FileNotFoundError } from "../errors";
 import { ChromaKeyFilter, TextureSwapFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { createColorTexture, getFormDataExtended, renderTemplateFunc } from "../utils";
 import { generateBackgroundTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { VideoConfiguration } from "./types";
@@ -73,26 +73,16 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
   }
 
   public static fromFormElement(form: HTMLFormElement): VideoStep {
-    const file = $(form).find("#file").val() as string ?? "";
-    const volume = $(form).find("#volume input[type='number'],input[type='range'][name='volume']").val() as number ?? 100;
-    const backgroundImage = $(form).find("#backgroundImage").val() as string ?? ""
-    // const chromaRange: [number, number] = [parseFloat($(form).find("#keyRangeX").val() as number ?? 0, $(form).find("#keyRangeY").val() as number ?? 0];
+    const formData = getFormDataExtended(form);
+    const data = (foundry.utils.expandObject(formData.object) as Record<string, unknown>).step as Partial<VideoConfiguration>;
 
-    const range = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "keyRangeX", "keyRangeY");
-
-
-    const enableChromaKey = $(form).find("#enableChromaKey").is(":checked");
+    // data.chromaRange = [(data as any).keyRangeX, (data as any).keyRangeY];
 
     return new VideoStep({
       ...VideoStep.DefaultSettings,
-      ...(file ? { file } : {}),
-      // ...(volume ? { volume: volume / 100 } : {}),
-      volume,
-      backgroundImage,
-      ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "background", "backgroundType", "backgroundColor", "label", "chromaKey", "clear"),
-      chromaRange: [range.keyRangeX, range.keyRangeY],
-      enableChromaKey
-    })
+      id: foundry.utils.randomID(),
+      ...data
+    });
   }
 
 
