@@ -69,7 +69,8 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
 
   //public static getDuration(config: PixelateConfiguration): number { return { ...PixelateStep.DefaultSettings, ...config }.duration }
   public static async getDuration(config: SoundConfiguration): Promise<number> {
-    const exist = await srcExists(config.file);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    const exist = await (game?.release?.isNewer("13") ? (foundry as any).canvas.srcExists(config.file) : srcExists(config.file));
     if (!exist) return 0;
 
     return new Promise<number>((resolve, reject) => {

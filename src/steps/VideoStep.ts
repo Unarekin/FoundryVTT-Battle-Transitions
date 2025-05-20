@@ -89,7 +89,8 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
   // #endregion Public Static Methods (6)
 
   public static async getDuration(config: VideoConfiguration): Promise<number> {
-    const exist = await srcExists(config.file);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    const exist = await (game?.release?.isNewer("13") ? (foundry as any).canvas.srcExists(config.file) : srcExists(config.file));
     if (!exist) return 0;
 
     return new Promise<number>((resolve, reject) => {
