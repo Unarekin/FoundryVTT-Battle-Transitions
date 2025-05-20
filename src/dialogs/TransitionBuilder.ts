@@ -301,8 +301,6 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
     formData.sequence = sequence;
 
-    log("Submitted:", JSON.parse(JSON.stringify(formData)));
-
     if (this.#resolve) {
       this.#resolve({
         scene: formData.scene as string,

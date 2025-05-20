@@ -6,7 +6,7 @@ import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfigurati
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture } from "./utils";
+import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, getStepClassByKey, isColor, localize, log, renderTemplateFunc, serializeTexture } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./dialogs";
 import { filters } from "./filters";
@@ -88,9 +88,10 @@ export class BattleTransition {
     await app.render(true);
     const config = await app.closed;
 
+    log("Built:", config);
     if (config) {
-
-      await new BattleTransition(config.scene).executeSequence(config.sequence, config.users);
+      if (!config.scene || (config.scene && config.scene !== canvas?.scene?.id)) await new BattleTransition(config.scene).executeSequence(config.sequence, config.users);
+      else await new BattleTransition().executeSequence(config.sequence, config.users);
     }
   }
 
