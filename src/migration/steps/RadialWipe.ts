@@ -7,7 +7,7 @@ import { v115EasingFix } from "./functions";
 export class RadialWipeMigrator extends Migrator<RadialWipeConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => RadialWipeConfiguration; } = {
     "<2.0.0": (old: any) => ({
-      falloff: 0,
+      ...({ falloff: 0 }),
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       ...v115EasingFix(old),
       version: "2.0.0"

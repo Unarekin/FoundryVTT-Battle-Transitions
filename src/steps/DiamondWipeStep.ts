@@ -18,7 +18,8 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
-    backgroundColor: "#00000000"
+    backgroundColor: "#00000000",
+    falloff: 0
   }
 
   public static category = "wipe";

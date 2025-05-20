@@ -5,7 +5,7 @@ import { v115EasingFix } from "./functions";
 export class WaveWipeMigrator extends Migrator<WaveWipeConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => WaveWipeConfiguration } = {
     "<2.0.0": (old: any) => ({
-      falloff: 0,
+      ...({ falloff: 0 }),  // This is entirely to trick TSC
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       ...v115EasingFix(old),
       version: "2.0.0"

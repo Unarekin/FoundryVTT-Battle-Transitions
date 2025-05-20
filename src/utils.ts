@@ -191,7 +191,8 @@ export function getSortedSteps(): (typeof TransitionStep)[] {
 }
 
 export function getStepClassByKey(key: string): (typeof TransitionStep) | undefined {
-  return Object.values(steps).find(obj => obj.key === key) as (typeof TransitionStep) | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return Object.values(steps).find((obj: any) => obj.key === key) as (typeof TransitionStep) | undefined;
 }
 
 /**

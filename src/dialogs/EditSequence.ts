@@ -1,8 +1,10 @@
-import { DeepPartial } from "Foundry-VTT/src/types/utils.mjs";
 import { TransitionConfiguration } from "../steps";
 import { formDataExtendedClass, getStepClassByKey, localize, renderTemplateFunc } from "../utils";
 import { addStep, deleteSelectedStep, selectItem, setEnabledButtons, setupSequenceList } from "./functions";
 import { InvalidTransitionError } from "../errors";
+import { DeepPartial } from "./types";
+
+
 
 export async function addSequence(): Promise<TransitionConfiguration[] | undefined> {
   return sequenceEditDialog([], {

@@ -1,4 +1,4 @@
-import { EmptyObject } from "Foundry-VTT/src/types/utils.mjs";
+import { EmptyObject } from "./types";
 import { downloadJSON, formatDuration, formDataExtendedClass, getStepClassByKey, localize, log } from "../utils";
 import { addStepDialog, buildTransitionFromForm, confirm, deleteSelectedStep, editSequenceItem, generateMacro, importSequence, setBackgroundType, setTargetConfig } from "./functions";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";

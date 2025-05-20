@@ -73,15 +73,15 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
 
   // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
   public static async addEventListeners(html: JQuery<HTMLElement>, config?: ZoomConfiguration) {
-    setTargetSelectEventListeners(html);
-    setBackgroundSelector(html);
+    setTargetSelectEventListeners($(html)[0]);
+    setBackgroundSelector($(html));
 
-    html.find("#clampBounds").on("change", () => { setBackgroundSelector(html); })
+    $(html).find("#clampBounds").on("change", () => { setBackgroundSelector($(html)); })
   }
 
   //public static editDialogClosed(element: HTMLElement | JQuery<HTMLElement>, config?: TransitionConfiguration): void { }
   public static editDialogClosed(element: HTMLElement | JQuery<HTMLElement>): void {
-    onTargetSelectDialogClosed($(element));
+    onTargetSelectDialogClosed($(element)[0]);
   }
 
   public static from(config: ZoomConfiguration): ZoomStep
