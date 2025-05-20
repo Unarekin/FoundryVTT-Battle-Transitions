@@ -7,19 +7,19 @@
       <label for="step.label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
       <input type="text" name="step.label" id="step.label" value="{{label}}">
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
 
     <div class="form-group">
       <label for="step.amount">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.AMOUNT.LABEL"}}</label>
       <input type="number" name="step.amount" id="step.amount" value="{{amount}}" min="0" step="any" required >
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.AMOUNT.HINT"}}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.AMOUNT.HINT"}}</p>
 
     <div class="form-group">
       <label for="step.clampBounds">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.CLAMPBOUNDS.LABEL"}}</label>
       <input type="checkbox" name="step.clampBounds" id="step.clampBounds" {{checked clampBounds}}>
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.CLAMPBOUNDS.HINT"}}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.CLAMPBOUNDS.HINT"}}</p>
     
     {{> "/modules/battle-transitions/templates/config/target-selector.hbs" this}}
 
@@ -33,6 +33,6 @@
         {{selectOptions easingSelect selected=easing localize=true}}
       </select>
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.HINT"}}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.HINT"}}</p>
   </form>
 </div>

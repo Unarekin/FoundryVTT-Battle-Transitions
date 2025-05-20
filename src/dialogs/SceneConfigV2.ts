@@ -56,7 +56,7 @@ export function injectSceneConfigV2() {
       const sequence = buildTransitionFromForm($(this.element));
       const formData = foundry.utils.expandObject(new (formDataExtendedClass())(this.form as HTMLFormElement).object) as Record<string, unknown>
       const macro = generateMacro(sequence, formData.users as string[] ?? [], this.document);
-      void Macro.createDialog({ type: "script", command: macro });
+      void Macro.createDialog({ type: "script", command: macro, img: `modules/${__MODULE_ID__}/assets/icons/crossed-swords.svg` });
 
     } catch (err) {
       console.error(err);

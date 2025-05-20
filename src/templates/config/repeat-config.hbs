@@ -1,43 +1,102 @@
-<div class="flexcol step-config-item" data-transition-type="repeat" data-id="{{id}}">
+<div
+  class="flexcol step-config-item"
+  data-transition-type="repeat"
+  data-id="{{id}}"
+>
   <form>
-    <input type="hidden" id="step.id" name="step.id" value="{{id}}">
-    <input type="hidden" name="step.oldScene" id="step.oldScene" value="{{oldScene}}" />
-    <input type="hidden" name="step.newScene" id="step.newScene" value="{{newScene}}" />
+    <input type="hidden" id="step.id" name="step.id" value="{{id}}" />
+    <input
+      type="hidden"
+      name="step.oldScene"
+      id="step.oldScene"
+      value="{{oldScene}}"
+    />
+    <input
+      type="hidden"
+      name="step.newScene"
+      id="step.newScene"
+      value="{{newScene}}"
+    />
     <p>{{localize "BATTLETRANSITIONS.REPEAT.DESCRIPTION"}}</p>
 
     <div class="form-group">
-      <label for="step.label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
-      <input type="text" name="step.label" id="step.label" value="{{label}}">
+      <label for="step.label">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"
+        }}</label>
+      <input type="text" name="step.label" id="step.label" value="{{label}}" />
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+    <p class="hint">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"
+      }}</p>
 
     <div class="form-group">
-      <label for="step.iterations">{{localize "BATTLETRANSITIONS.SCENECONFIG.REPEAT.ITERATIONS.LABEL"}}</label>
-      <input type="number" min="2" step="1" value="{{iterations}}" id="step.iterations" name="step.iterations">
+      <label for="step.iterations">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.REPEAT.ITERATIONS.LABEL"
+        }}</label>
+      <input
+        type="number"
+        min="2"
+        step="1"
+        value="{{iterations}}"
+        id="step.iterations"
+        name="step.iterations"
+      />
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.REPEAT.ITERATIONS.HINT"}}</p>
+    <p class="hint">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.REPEAT.ITERATIONS.HINT"
+      }}</p>
 
     <div class="form-group">
-      <label for="step.delay">{{localize "BATTLETRANSITIONS.SCENECONFIG.REPEAT.DELAY.LABEL"}}</label>
-      <input type="number" min="0" step="1" value="{{delay}}" id="step.delay" name="step.delay">
+      <label for="step.delay">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.REPEAT.DELAY.LABEL"
+        }}</label>
+      <input
+        type="number"
+        min="0"
+        step="1"
+        value="{{delay}}"
+        id="step.delay"
+        name="step.delay"
+      />
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.REPEAT.DELAY.HINT"}}</p>
+    <p class="hint">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.REPEAT.DELAY.HINT"
+      }}</p>
 
     <div class="form-group">
-      <label for="step.style">{{localize "BATTLETRANSITIONS.SCENECONFIG.REPEAT.STYLE.LABEL"}}</label>
+      <label for="step.style">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.REPEAT.STYLE.LABEL"
+        }}</label>
       <select name="step.style" id="step.style">
         {{selectOptions styleSelect selected=style localize=true}}
       </select>
     </div>
-    <p class="notes" style="display:none;" data-repeat-style="previous">{{localize "BATTLETRANSITIONS.SCENECONFIG.REPEAT.PREVIOUS.HINT"}}</p>
-    <p class="notes" style="display:none;" data-repeat-style="sequence">{{localize "BATTLETRANSITIONS.SCENECONFIG.REPEAT.SEQUENCE.HINT"}}</p>
+    <p
+      class="hint"
+      style="display:none;"
+      data-repeat-style="previous"
+    >{{localize "BATTLETRANSITIONS.SCENECONFIG.REPEAT.PREVIOUS.HINT"}}</p>
+    <p
+      class="hint"
+      style="display:none;"
+      data-repeat-style="sequence"
+    >{{localize "BATTLETRANSITIONS.SCENECONFIG.REPEAT.SEQUENCE.HINT"}}</p>
 
     <section data-role="sequence-container" style="display:none">
-      <button type="button" data-action="editSequence" style="width:100%" data-index="0">
+      <button
+        type="button"
+        data-action="editSequence"
+        style="width:100%"
+        data-index="0"
+      >
         <i class="fas fa-fw fa-repeat"></i>
         {{localize "BATTLETRANSITIONS.DIALOGS.SEQUENCE.EDIT"}}
       </button>
-      <section data-index="0" data-role="sequence-item" data-sequence="{{json sequence}}"></section>
+      <section
+        data-index="0"
+        data-role="sequence-item"
+        data-sequence="{{json sequence}}"
+      ></section>
     </section>
   </form>
 </div>

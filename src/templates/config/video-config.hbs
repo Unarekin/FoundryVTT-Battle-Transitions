@@ -21,7 +21,7 @@
           <label for="step.label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
           <input type="text" name="step.label" id="step.label" value="{{label}}">
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
 
         <div class="form-group">
           <label for="step.file">{{localize
@@ -40,7 +40,7 @@
             ></file-picker>
           {{/if}}
         </div>
-        <p class="notes">{{localize
+        <p class="hint">{{localize
             "BATTLETRANSITIONS.SCENECONFIG.VIDEO.FILE.HINT"
           }}</p>
         <div class="form-group">
@@ -67,7 +67,7 @@
             ></range-picker>
           {{/if}}
         </div>
-        <p class="notes">{{localize
+        <p class="hint">{{localize
             "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.HINT"
           }}</p>
 
@@ -75,13 +75,13 @@
           <label for="step.clear">{{localize "BATTLETRANSITIONS.SCENECONFIG.VIDEO.CLEAR.LABEL"}}</label>
           <input type="checkbox" name="step.clear" id="step.clear" {{checked clear}}>
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.VIDEO.CLEAR.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.VIDEO.CLEAR.HINT"}}</p>
 
         {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
       </div>
 
       <div class="tab" data-tab="chromakey" data-group="config">
-        <p class="notes">{{localize "BATTLETRANSITIONS.CHROMAKEY.DESCRIPTION"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.CHROMAKEY.DESCRIPTION"}}</p>
         <div class="form-group">
           <label for="step.enableChromaKey">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.ENABLE.LABEL"}}</label>
           <input type="checkbox" {{checked enableChromaKey}} id="step.enableChromaKey" name="step.enableChromaKey">
@@ -91,18 +91,18 @@
           <label for="step.chromaKey">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.KEYCOLOR.LABEL"}}</label>
           <input type="text" data-color-picker="{}" name="step.chromaKey" id="step.chromaKey" value="{{chromaKey}}">
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.KEYCOLOR.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.KEYCOLOR.HINT"}}</p>
         
         <div class="form-group">
           <label>{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.RANGE.LABEL"}}</label>
           <div class="flexrow">
             <div class="center">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.RANGE.X"}}</div>
-            <input type="number" value="{{keyRangeX}}" min="0" max="1" step="any" name="step.keyRangeX" id="step.keyRangeX">
+            <input type="number" value="{{keyRangeX}}" min="0" max="1" step="any" name="step.keyRange" id="step.keyRangeX">
             <div class="center">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.RANGE.Y"}}</div>
-            <input type="number" name="step.keyRangeY" id="step.keyRangeY" value="{{keyRangeY}}" min="0" max="1" step="any">
+            <input type="number" name="step.keyRange" id="step.keyRangeY" value="{{keyRangeY}}" min="0" max="1" step="any">
           </div>
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.RANGE.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.RANGE.HINT"}}</p>
       </div>
     </section>
   </form>

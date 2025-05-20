@@ -6,7 +6,7 @@
       <label for="step.label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
       <input type="text" name="step.label" id="step.label" value="{{label}}">
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
 
     <section class="dialog-content sheet">
       <nav class="sheet-tabs tabs" data-group="primary-tabs">
@@ -23,13 +23,13 @@
           <label for="step.message">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.MESSAGE.LABEL"}}</label>
           <input type="text" name="step.message" id="step.message" value="{{message}}">
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.MESSAGE.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.MESSAGE.HINT"}}</p>
         
         <div class="form-group">
           <label for="step.subText">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBTEXT.LABEL"}}</label>
           <input type="text" name="step.subText" id="step.subText" value="{{subText}}" />
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBTEXT.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBTEXT.HINT"}}</p>
         
         {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
 
@@ -37,13 +37,13 @@
           <label for="step.animationDelay">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.ANIMATIONDELAY.LABEL"}}</label>
           <input type="number" min="0" step="1" value="{{animationDelay}}" name="step.animationDelay" id="step.animationDelay" required>
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.ANIMATIONDELAY.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.ANIMATIONDELAY.HINT"}}</p>
 
         <div class="form-group">
           <label for="step.animationDuration">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.ANIMATIONDURATION.LABEL"}}</label>
           <input type="number" min="0" step="1" value="{{animationDuration}}" name="step.animationDuration" id="step.animationDuration" required>
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.ANIMATIONDURATION.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.ANIMATIONDURATION.HINT"}}</p>
       </div>
 
       <div class="tab" data-tab="colors" data-group="primary-tabs">
@@ -51,43 +51,43 @@
           <label for="step.topColor">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.TOPCOLOR.LABEL"}}</label>
           <input type="text" value="{{topColor}}" id="step.topColor" name="step.topColor" data-color-picker="{alphaChannel: false}">
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.TOPCOLOR.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.TOPCOLOR.HINT"}}</p>
         
         <div class="form-group">
           <label for="step.midColor">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.MIDCOLOR.LABEL"}}</label>
           <input type="text" value="{{midColor}}" id="step.midColor" name="step.midColor" data-color-picker="{alphaChannel: false}">
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.MIDCOLOR.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.MIDCOLOR.HINT"}}</p>
         
         <div class="form-group">
           <label for="step.botColor">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.BOTCOLOR.LABEL"}}</label>
           <input type="text" value="{{botColor}}" id="step.botColor" name="step.botColor" data-color-picker="{alphaChannel: false}">
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.BOTCOLOR.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.BOTCOLOR.HINT"}}</p>
 
         <div class="form-group">
           <label for="step.fontColor">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONTCOLOR.LABEL"}}</label>
           <input type="text" data-color-picker="{alphaChannel: false}" value="{{fontColor}}">
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONTCOLOR.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONTCOLOR.HINT"}}</p>
 
         <div class="form-group">
           <label for="step.fontShadow">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONTSHADOW.LABEL"}}</label>
           <input type="text" data-color-picker="{alphaChannel: false}" value="{{fontShadow}}">
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONTSHADOW.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONTSHADOW.HINT"}}</p>
 
         <div class="form-group">
           <label for="step.subColor">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBCOLOR.LABEL"}}</label>
           <input type="text" data-color-picker="{alphaChannel: false}" value="{{subColor}}">
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBCOLOR.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBCOLOR.HINT"}}</p>
 
         <div class="form-group">
           <label for="step.subShadow">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBSHADOW.LABEL"}}</label>
           <input type="text" data-color-picker="{alphaChannel: false}" value="{{subShadow}}">
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBSHADOW.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBSHADOW.HINT"}}</p>
 
       </div>
 
@@ -98,19 +98,19 @@
             {{selectOptions fontSelect selected=font}}
           </select>
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONT.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONT.HINT"}}</p>
 
         <div class="form-group">
           <label for="step.fontSize">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONTSIZE.LABEL"}}</label>
           <input type="text" name="step.fontSize" id="step.fontSize" value="{{fontSize}}" min="1" step="1" required>
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONTSIZE.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONTSIZE.HINT"}}</p>
 
         <div class="form-group">
           <label for="step.subSize">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBSIZE.LABEL"}}</label>
           <input type="text" name="step.subSize" id="step.subSize" value="{{subSize}}" min="1" step="1" required>
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBSIZE.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBSIZE.HINT"}}</p>
       </div>
 
     </section>

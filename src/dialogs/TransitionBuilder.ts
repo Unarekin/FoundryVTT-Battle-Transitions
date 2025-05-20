@@ -1,6 +1,6 @@
 import { EmptyObject } from "./types";
 import { downloadJSON, formatDuration, formDataExtendedClass, getStepClassByKey, localize, log } from "../utils";
-import { addStepDialog, buildTransitionFromForm, confirm, deleteSelectedStep, editSequenceItem, generateMacro, importSequence, setBackgroundType, setTargetConfig } from "./functions";
+import { addStepDialog, buildTransitionFromForm, confirm, deleteSelectedStep, editSequenceItem, generateMacro, importSequence, selectItem, setBackgroundType, setTargetConfig } from "./functions";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
 import { InvalidTransitionError } from "../errors";
@@ -55,7 +55,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       // eslint-disable-next-line @typescript-eslint/unbound-method
       deleteSequence: TransitionBuilder.DeleteSequence,
       // eslint-disable-next-line @typescript-eslint/unbound-method
-      saveMacro: TransitionBuilder.SaveMacro
+      saveMacro: TransitionBuilder.SaveMacro,
     }
   }
 
@@ -69,13 +69,12 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     }
   };
 
-
   public static SaveMacro(this: TransitionBuilder) {
     try {
       const sequence = this.parseSequence();
       const formData = foundry.utils.expandObject(new (formDataExtendedClass())(this.element as HTMLFormElement).object) as Record<string, unknown>
       const macro = generateMacro(sequence, formData.users as string[] ?? [], formData.scene);
-      void Macro.createDialog({ type: "script", command: macro });
+      void Macro.createDialog({ type: "script", command: macro, img: `modules/${__MODULE_ID__}/assets/icons/crossed-swords.svg` });
     } catch (err) {
       console.error(err);
       if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
@@ -143,7 +142,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
             option.dataset.serialized = JSON.stringify(config);
           }
         }
-
+        setBackgroundType(this.element, (currentStep as unknown as BackgroundTransition).backgroundType ?? "");
       }
 
       this.setEnabledButtons();
@@ -218,35 +217,36 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
   public async selectItem(id: string) {
     try {
-      const option = this.element.querySelector(`select#stepList option[data-id="${id}"]`);
-      if (!(option instanceof HTMLOptionElement)) return;
+      await selectItem(this.element, id);
+      // const option = this.element.querySelector(`select#stepList option[data-id="${id}"]`);
+      // if (!(option instanceof HTMLOptionElement)) return;
 
-      const serialized = option.dataset.serialized as string;
-      const deserialized = JSON.parse(serialized) as TransitionConfiguration;
+      // const serialized = option.dataset.serialized as string;
+      // const deserialized = JSON.parse(serialized) as TransitionConfiguration;
 
-      const step = getStepClassByKey(deserialized.type);
-      if (!step) throw new InvalidTransitionError(deserialized.type);
+      // const step = getStepClassByKey(deserialized.type);
+      // if (!step) throw new InvalidTransitionError(deserialized.type);
 
-      const config = this.element.querySelector(`[data-role="transition-config"]`);
-      if (!(config instanceof HTMLElement)) return;
-      if (!step.skipConfig) {
+      // const config = this.element.querySelector(`[data-role="transition-config"]`);
+      // if (!(config instanceof HTMLElement)) return;
+      // if (!step.skipConfig) {
 
-        const content = await step.RenderTemplate({
-          ...deserialized,
-          isV1: false
-        } as TransitionConfiguration);
+      //   const content = await step.RenderTemplate({
+      //     ...deserialized,
+      //     isV1: false
+      //   } as TransitionConfiguration);
 
-        config.innerHTML = content;
-        step.addEventListeners(config, deserialized);
-      } else {
-        config.innerHTML = "";
-      }
-      this.setEnabledButtons();
-      setBackgroundType(this.element, (deserialized as unknown as BackgroundTransition).backgroundType ?? "");
-      setTargetConfig(this.element);
+      //   config.innerHTML = content;
+      //   step.addEventListeners(config, deserialized);
+      // } else {
+      //   config.innerHTML = "";
+      // }
+      // this.setEnabledButtons();
+      // setBackgroundType(this.element, (deserialized as unknown as BackgroundTransition).backgroundType ?? "");
+      // setTargetConfig(this.element);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      ColorPicker.install();
+      // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      // ColorPicker.install();
     } catch (err) {
       console.error(err);
       ui.notifications?.error((err as Error).message, { console: false, localize: true });
@@ -300,8 +300,6 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     const sequence = this.parseSequence();
 
     formData.sequence = sequence;
-
-    log("Submitted:", JSON.parse(JSON.stringify(formData)));
 
     if (this.#resolve) {
       this.#resolve({
