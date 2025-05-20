@@ -1,0 +1,27 @@
+{
+  "name": "Transition Builder",
+  "type": "script",
+  "_id": "4ynmmqrxsnctpWHT",
+  "author": "EWXMWWsbLjRVVnzu",
+  "img": "modules/battle-transitions/assets/icons/hammer.svg",
+  "scope": "global",
+  "command": "await BattleTransition.BuildTransition();",
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0,
+    "EWXMWWsbLjRVVnzu": 3
+  },
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.331",
+    "systemId": "worldbuilding",
+    "systemVersion": "0.8.2",
+    "createdTime": 1729782293476,
+    "modifiedTime": 1729782352316,
+    "lastModifiedBy": "EWXMWWsbLjRVVnzu"
+  },
+  "_key": "!macros!4ynmmqrxsnctpWHT"
+}

@@ -240,9 +240,9 @@ function generateTexture(direction: WipeDirection, radial: RadialDirection): PIX
 }
 
 export class SpotlightWipeFilter extends TextureWipeFilter {
-  constructor(direction: WipeDirection, radial: RadialDirection, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent") {
+  constructor(direction: WipeDirection, radial: RadialDirection, bg: PIXI.TextureSource | PIXI.ColorSource = "transparent", falloff: number) {
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
     const wipeTexture = generateTexture(direction, radial);
-    super(wipeTexture, bgTexture);
+    super(wipeTexture, falloff, bgTexture);
   }
 }

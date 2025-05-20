@@ -1,7 +1,8 @@
 import { coerceTexture } from '../../coercion';
 import { InvalidDirectionError } from '../../errors';
-import { WipeDirection } from '../../types';
+import { TextureLike, WipeDirection } from '../../types';
 import { createColorTexture, createGradientTexture } from '../../utils';
+import { isValidWipeDirection } from '../../validation';
 import { TextureWipeFilter } from '../TextureWipe/TextureWipeFilter';
 
 //#region Texture Generation
@@ -120,9 +121,17 @@ function generateTexture(direction: WipeDirection): PIXI.Texture {
 
 export class LinearWipeFilter extends TextureWipeFilter {
 
-  constructor(direction: WipeDirection, bg: PIXI.TextureSource | PIXI.ColorSource) {
+  constructor(direction: WipeDirection)
+  constructor(direction: WipeDirection, falloff: number)
+  constructor(direction: WipeDirection, bg: TextureLike)
+  constructor(direction: WipeDirection, falloff: number, bg: TextureLike)
+  constructor(direction: WipeDirection, ...args: unknown[]) {
+    if (!isValidWipeDirection(direction)) throw new InvalidDirectionError(direction);
+
+    const falloff = typeof args[0] === "number" ? args[0] : 0;
+    const bg = args.length === 0 || typeof args[args.length - 1] === "number" ? "transparent" : args[args.length - 1] ?? "transparent";
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
     const wipeTexture = generateTexture(direction);
-    super(wipeTexture, bgTexture);
+    super(wipeTexture, falloff, bgTexture);
   }
 }

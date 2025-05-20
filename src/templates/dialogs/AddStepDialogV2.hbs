@@ -1,9 +1,9 @@
 <div class="dialog-content sheet transition-config v2 bt">
   <div class="dialog-header">
     <section class="search-box">
+      {{!-- <i class="fas fa-search search-icon" style="position:absolute;right:4px;top:8px"></i> --}}
+      <i class="fas fa-circle-xmark search-cancel" id="clear-search" title="{{localize "BATTLETRANSITIONS.DIALOGS.BUTTONS.CLEARSEARCH"}}" style="position:absolute;right:4px;top:8px;display:none"></i>
       <input type="text" id="search-text" name="search-text" class="search-text" placeholder="{{localize "BATTLETRANSITIONS.DIALOGS.ADDSTEP.SEARCH.PLACEHOLDER"}}">
-      <i class="fas fa-search search-icon"></i>
-      <i class="fas fa-circle-xmark search-cancel" id="clear-search" title="{{localize "BATTLETRANSITIONS.DIALOGS.BUTTONS.CLEARSEARCH"}}"></i>
     </section>
   </div>
 

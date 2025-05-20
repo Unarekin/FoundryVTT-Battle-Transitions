@@ -1,6 +1,6 @@
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
-import { parseConfigurationFormElements } from '../utils';
+import { parseConfigurationFormElements, renderTemplateFunc } from '../utils';
 import { generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
 import { TransitionStep } from './TransitionStep';
 import { PixelateConfiguration } from './types';
@@ -31,7 +31,7 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
   // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: PixelateConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${PixelateStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${PixelateStep.template}.hbs`, {
       ...PixelateStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

@@ -1,6 +1,6 @@
 import { WaveWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { WaveWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
@@ -19,7 +19,8 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
-    backgroundColor: "#00000000"
+    backgroundColor: "#00000000",
+    falloff: 0
   }
 
   public static category = "wipe";
@@ -35,7 +36,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
   // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: WaveWipeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${WaveWipeStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${WaveWipeStep.template}.hbs`, {
       ...WaveWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
@@ -63,7 +64,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     return new WaveWipeStep({
       ...WaveWipeStep.DefaultSettings,
       backgroundImage,
-      ...parseConfigurationFormElements(elem, "id", "label", "duration", "backgroundType", "backgroundColor", "easing", "direction")
+      ...parseConfigurationFormElements(elem, "id", "label", "duration", "backgroundType", "backgroundColor", "easing", "direction", "falloff")
     })
   }
 
@@ -85,7 +86,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
       ...this.config
     }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new WaveWipeFilter(config.direction, background.baseTexture);
+    const filter = new WaveWipeFilter(config.direction, background.baseTexture, config.falloff);
     this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);

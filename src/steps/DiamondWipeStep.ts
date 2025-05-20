@@ -1,5 +1,5 @@
 import { DiamondTransitionFilter } from "../filters";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { DiamondWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
@@ -34,7 +34,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: DiamondWipeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${DiamondWipeStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${DiamondWipeStep.template}.hbs`, {
       ...DiamondWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

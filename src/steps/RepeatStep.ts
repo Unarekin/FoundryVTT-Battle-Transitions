@@ -1,9 +1,9 @@
 import { BattleTransition } from "../BattleTransition";
-import { addStepDialog, editStepDialog, confirm, buildTransitionFromForm } from "../dialogs";
+import { addSequence, hideElements, iterateElements, renderSequenceItem, showElements } from "../dialogs";
 import { InvalidTransitionError, NoPreviousStepError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { formatDuration, getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
+import { getStepClassByKey, log, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { getPreviousStep } from "./functions";
 import { TransitionStep } from "./TransitionStep";
 import { RepeatConfiguration, TransitionConfiguration, WaitConfiguration } from './types';
@@ -22,7 +22,8 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
     version: "1.1.0",
     style: "previous",
     delay: 0,
-    iterations: 2
+    iterations: 2,
+    sequence: []
   }
 
   public static category = "technical";
@@ -45,7 +46,7 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: RepeatConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${RepeatStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${RepeatStep.template}.hbs`, {
       ...RepeatStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
@@ -58,37 +59,49 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
     })
   }
 
-  public static addEventListeners(elem: HTMLElement | JQuery<HTMLElement>, config?: RepeatConfiguration): void {
-    const html = $(elem);
-    setStyle(html);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static addEventListeners(parent: HTMLElement, config?: RepeatConfiguration): void {
+    setStyle(parent);
 
-    html.find("#style").on("input", () => {
-      setStyle(html);
+    const styleSelect = parent.querySelector(`select[name="step.style"]`);
+    if (styleSelect instanceof HTMLSelectElement) {
+      styleSelect.addEventListener("change", () => { setStyle(parent); });
+    }
+
+    iterateElements(parent, `[data-action="addSequence"]`, elem => {
+      elem.addEventListener("click", () => { void addSequenceItem(parent); });
     });
 
-    html.find("[data-action='add-step']").on("click", e => {
-      e.preventDefault();
-      void addStep(html);
-    });
+    // const html = $(elem);
+    // setStyle(html);
+
+    // html.find("#style").on("input", () => {
+    //   setStyle(html);
+    // });
+
+    // html.find("[data-action='add-step']").on("click", e => {
+    //   e.preventDefault();
+    //   void addStep(html);
+    // });
 
 
-    html.find("[data-action='clear-steps']").on("click", e => {
-      if ($(e.currentTarget).is(":visible")) {
-        e.preventDefault();
-        void clearButtonhandler(html);
-      }
-    })
-    setClearDisabled(html);
+    // html.find("[data-action='clear-steps']").on("click", e => {
+    //   if ($(e.currentTarget).is(":visible")) {
+    //     e.preventDefault();
+    //     void clearButtonhandler(html);
+    //   }
+    // })
+    // setClearDisabled(html);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    (html.find("#transition-step-list") as any).sortable({
-      handle: ".drag-handle",
-      containment: "parent",
-      axis: "y"
-    });
+    // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    // (html.find("#transition-step-list") as any).sortable({
+    //   handle: ".drag-handle",
+    //   containment: "parent",
+    //   axis: "y"
+    // });
 
-    // upsert sequence
-    void addSequence(html, config?.sequence ?? []);
+    // // upsert sequence
+    // void addSequence(html, config?.sequence ?? []);
   }
 
 
@@ -106,14 +119,12 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): RepeatStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
-
-    const sequence = buildTransition(elem);
-
+    const parsed = parseConfigurationFormElements<RepeatConfiguration>(elem, "id", "iterations", "style", "delay", "label");
     return new RepeatStep({
       ...RepeatStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      ...parseConfigurationFormElements(elem, "id", "iterations", "style", "delay", "label"),
-      sequence
+      ...parsed,
+      sequence: buildTransition(form)
     });
   }
 
@@ -195,142 +206,57 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
 
 // #region Functions (5)
 
-async function addStep(html: JQuery<HTMLElement>) {
-  const key = await addStepDialog();
-  if (!key) return;
-
-  const step = getStepClassByKey(key);
-  if (!step) throw new InvalidTransitionError(key);
-
-  const oldScene = html.find("#oldScene").val() as string ?? "";
-  const newScene = html.find("#newScene").val() as string ?? "";
-
-  const config = step.skipConfig ? { ...step.DefaultSettings, id: foundry.utils.randomID() } : await editStepDialog(step.DefaultSettings, game.scenes?.get(oldScene), game.scenes?.get(newScene));
-  if (!config) return;
-
-  void upsertStepButton(html, config);
-}
-
-function addStepEventListeners(html: JQuery<HTMLElement>, button: JQuery<HTMLElement>, config: TransitionConfiguration) {
-  // Remove button
-  button.find("[data-action='remove']").on("click", () => {
-    const step = getStepClassByKey(config.type);
-    if (!step) throw new InvalidTransitionError(config.type);
-    confirm(
-      localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) }),
-      localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) })
-    )
-      .then(confirm => {
-        if (confirm) {
-          button.remove();
-        }
-      }).catch(err => {
-        ui.notifications?.error((err as Error).message, { console: false });
-        console.error(err);
-      });
-  });
-
-  // Configure button
-  button.find("[data-action='configure']").on("click", () => {
-    editStepDialog(config)
-      .then(newConfig => {
-        if (newConfig) {
-          // Replace button
-          return upsertStepButton(html, newConfig)
-        }
-      }).then(() => {
-      }).catch(err => {
-        ui.notifications?.error((err as Error).message, { console: false })
-        console.error(err);
-      })
-  });
-}
-
-function buildTransition(html: JQuery<HTMLElement>): TransitionConfiguration[] {
-  const sequence: TransitionConfiguration[] = [];
-
-  html.find("#transition-step-list [data-transition-type]").each((index, element) => {
-    const flag = element.dataset.flag ?? "";
-    if (!flag) return;
-    const step = JSON.parse(flag) as TransitionConfiguration;
-    sequence.push(step);
-  });
-  return sequence;
-}
-
-function setStyle(html: JQuery<HTMLElement>) {
-  const style = html.find("#style").val() as string;
-
-  html.find("[data-repeat-style='previous']").css("display", style === "previous" ? "block" : "none");
-  html.find("[data-repeat-style='sequence']").css("display", style === "sequence" ? "block" : "none");
-  html.find("#sequenceContainer").css("display", style === "sequence" ? "block" : "none");
-}
-
-async function upsertStepButton(html: JQuery<HTMLElement>, config: TransitionConfiguration) {
-  const step = getStepClassByKey(config.type);
-  if (!step) throw new InvalidTransitionError(config.type);
-
-  const outerSequence = [...buildTransitionFromForm(html), config];
-  const durationRes = step.getDuration(config, outerSequence);
-  const calculatedDuration = (durationRes instanceof Promise) ? (await durationRes) : durationRes;
-
-  const totalDuration = await sequenceDuration(outerSequence);
-  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
-
-  const buttonContent = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/step-item.hbs`, {
-    ...step.DefaultSettings,
-    ...config,
-    name: localize(`BATTLETRANSITIONS.${step.name}.NAME`),
-    description: localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`),
-    calculatedDuration,
-    type: step.key,
-    flag: JSON.stringify({
-      ...step.DefaultSettings,
-      ...config
-    })
-  });
-
-  const button = $(buttonContent);
-
-  const extant = html.find(`[data-id="${config.id}"]`);
-  if (extant.length) extant.replaceWith(button);
-  else html.find("#transition-step-list").append(button);
-
-  addStepEventListeners(html, button, config);
-
-  // Update serialized version on parent
-  const index = button.parents("[data-index]").data("index") as number;
-
-  const sequence = buildTransition(html);
-  html.find(`#sequence-list [data-index="${index}"]`).attr("data-sequence", JSON.stringify(sequence));
-  setClearDisabled(html);
-}
-
-// #endregion Functions (5)
-
-async function clearButtonhandler(html: JQuery<HTMLElement>) {
-  const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
-  if (!confirmed) return;
-  html.find("#transition-step-list").children().remove();
-  await updateTotalDuration(html);
-  setClearDisabled(html);
-}
-
-function setClearDisabled(html: JQuery<HTMLElement>) {
-  const sequence = buildTransitionFromForm(html);
-  if (!sequence.length) html.find("#clear-steps").attr("disabled", "true");
-  else html.find("#clear-steps").removeAttr("disabled");
-}
-
-async function updateTotalDuration(html: JQuery<HTMLElement>) {
-  const sequence = buildTransitionFromForm(html);
-  const totalDuration = await sequenceDuration(sequence);
-  html.find("#total-duration").text(localize("BATTLETRANSITIONS.SCENECONFIG.TOTALDURATION", { duration: formatDuration(totalDuration) }));
+function buildTransition(html: HTMLElement): TransitionConfiguration[] {
+  const sequenceItem = html.querySelector(`[data-role="sequence-item"]`);
+  if (sequenceItem instanceof HTMLElement) return JSON.parse(sequenceItem.dataset.sequence ?? "[]") as TransitionConfiguration[];
+  else return [];
 }
 
 
-async function addSequence(html: JQuery<HTMLElement>, sequence: TransitionConfiguration[]) {
-  for (const item of sequence) {
-    await upsertStepButton(html, item);
+function setStyle(parent: HTMLElement) {
+  const select = parent.querySelector(`select[name="step.style"]`);
+  if (select instanceof HTMLSelectElement) {
+    if (select.value === "sequence") showElements(parent, `[data-role="sequence-container"]`);
+    else hideElements(parent, `[data-role="sequence-container"]`);
+  }
+}
+
+function addSequenceItemEventListeners(parent: HTMLElement, index: number) {
+  try {
+    log("Adding sequence item event listeners:", index);
+    // const element = parent.querySelector(`[data-role="sequence-item"][data-index="${index}"]`);
+    // if (!(element instanceof HTMLElement)) throw new InvalidElementError();
+    // const deleteButton = element.querySelectorAll(`[data-action="deleteSequence"]`);
+
+    // for (const button of deleteButton)
+    //   button.addEventListener("click", () => { void deleteSequenceItem(parent, index); });
+
+    // const editButton = element.querySelectorAll(`[data-action="editSequence"]`);
+    // for (const button of editButton)
+    //   button.addEventListener("click", () => { void editSequenceItem(parent, index); });
+  } catch (err) {
+    console.error(err);
+    if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
+  }
+}
+
+
+async function addSequenceItem(parent: HTMLElement) {
+  try {
+    const sequence = await addSequence();
+    // If it is canceled, or an empty sequence is submitted, bail.
+    if (!sequence || !sequence.length) return;
+
+
+    const container = parent.querySelector(`[data-role="sequence-list"]`);
+    if (container instanceof HTMLElement) {
+      const count = parent.querySelectorAll(`[data-role="sequence-item"]`).length;
+      const elem = await renderSequenceItem(sequence, count);
+      container.appendChild(elem);
+      addSequenceItemEventListeners(parent, count);
+    }
+  } catch (err) {
+    console.error(err);
+    if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
   }
 }

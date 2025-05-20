@@ -9,7 +9,7 @@
     <table class="no-margins">
       <tr>
         <td style="width:50%" valign="top">
-          <select name="backgroundType" id="backgroundType">
+          <select name="step.backgroundType" id="step.backgroundType">
             {{selectOptions bgTypeSelect selected=backgroundType localize=true}}
           </select>
         </td>
@@ -19,23 +19,18 @@
               type="text"
               data-color-picker="{alphaChannel: true}"
               value="{{backgroundColor}}"
-              id="backgroundColor"
-              name="backgroundColor"
+              id="step.backgroundColor"
+              name="step.backgroundColor"
             />
           </section>
           <section data-background-type="image">
-            {{#if isV1}}
-              <input type="text" name="backgroundImage" id="backgroundImage" required value="{{backgroundImage}}" />
-              {{filePicker type="imagevideo" target="file"}}
-            {{else}}
-              <file-picker
-                id="backgroundImage"
-                name="backgroundImage"
-                type="imagevideo"
-                value="{{backgroundImage}}"
-              ></file-picker>
-            {{/if}}
-            <section id="backgroundImagePreview"></section>
+            <file-picker
+              id="step.backgroundImage"
+              name="step.backgroundImage"
+              type="imagevideo"
+              value="{{backgroundImage}}"
+            ></file-picker>
+            <section id="step.backgroundImagePreview"></section>
             </section>
           </section>
           <section data-background-type="overlay">

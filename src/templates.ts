@@ -42,13 +42,20 @@ export function registerHelpers() {
     else return options.inverse(this);
   });
 
+  Handlebars.registerHelper("json", function (context: any) {
+    try {
+      return JSON.stringify(context);
+    } catch (err) {
+      console.error(err);
+      ui.notifications?.error(err instanceof Error ? err.message : typeof err === "string" ? err : typeof err, { console: false, localize: true });
+    }
+  })
 
 }
 
 export async function registerTemplates() {
 
-
-  return loadTemplates([
+  return (game?.release?.isNewer("13") ? (foundry.applications as any).handlebars.loadTemplates : loadTemplates)([
     `/modules/${__MODULE_ID__}/templates/scene-config.hbs`,
     ...["step-item",
       "background-selector",
@@ -56,11 +63,12 @@ export async function registerTemplates() {
       "add-step-button",
       "sequence-item",
       "target-selector",
-      "dualtransition-selector"
+      "dualtransition-selector",
+      "falloff-config"
     ].map(name => `/modules/${__MODULE_ID__}/templates/config/${name}.hbs`),
     `/modules/${__MODULE_ID__}/templates/scene-selector.hbs`,
     `/modules/${__MODULE_ID__}/templates/transition-steps.hbs`,
     `/modules/${__MODULE_ID__}/templates/font-selector.hbs`,
     `/modules/${__MODULE_ID__}/templates/actor-selector.hbs`
-  ]);
+  ]) as Promise<Handlebars.TemplateDelegate[]>;
 }

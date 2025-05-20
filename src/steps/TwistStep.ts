@@ -1,6 +1,6 @@
 import { TransitionSequence, PreparedTransitionHash } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
-import { parseConfigurationFormElements } from '../utils';
+import { parseConfigurationFormElements, renderTemplateFunc } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { TwistConfiguration } from './types';
 import { generateClockDirectionSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
@@ -32,7 +32,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
   // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: TwistConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${TwistStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${TwistStep.template}.hbs`, {
       ...TwistStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

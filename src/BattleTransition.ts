@@ -1,14 +1,14 @@
-import { coerceColorHex, coerceMacro, coerceScene } from "./coercion";
+import { coerceColorHex, coerceMacro, coerceScene, coerceUser } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants";
-import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, PermissionDeniedError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
+import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidElementError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, AngularWipeStep } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, AngularWipeStep, LinearWipeStep, FadeStep } from "./steps";
 import SocketHandler from "./SocketHandler";
-import { cleanupTransition, hideLoadingBar, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
+import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deepCopy, deserializeTexture, getStepClassByKey, isColor, localize, serializeTexture, shouldUseAppV2 } from "./utils";
+import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
-import { transitionBuilderDialog } from "./dialogs";
+import { TransitionBuilder } from "./dialogs";
 import { filters } from "./filters";
 import { isValidBilinearDirection, isValidClockDirection, isValidEasing, isValidRadialDirection, isValidWipeDirection } from "./validation";
 
@@ -54,7 +54,8 @@ export class BattleTransition {
       if (arg) {
         const scene = coerceScene(arg);
         if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
-        if (scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
+        // if (scene.id !== canvas?.scene?.id) {
+        // if (scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
         const changeStep = getStepClassByKey("scenechange");
         if (!changeStep) throw new InvalidTransitionError("scenechange");
 
@@ -64,6 +65,7 @@ export class BattleTransition {
           scene: scene.id
         } as SceneChangeConfiguration);
         // this.#sequence.push({ type: "scenechange", scene: scene.id } as SceneChangeConfiguration);
+        // }
       }
     } catch (err) {
       ui.notifications?.error((err as Error).message);
@@ -82,62 +84,53 @@ export class BattleTransition {
   // #region Public Static Methods (7)
 
   public static async BuildTransition(scene?: Scene): Promise<void> {
-    const transition = await transitionBuilderDialog(scene);
-    if (transition) await BattleTransition.ExecuteSequence(transition);
+    const app = new TransitionBuilder(scene);
+    await app.render(true);
+    const config = await app.closed;
+
+    if (config) {
+
+      await new BattleTransition(config.scene).executeSequence(config.sequence, config.users);
+    }
   }
 
   public static async SelectScene(omitCurrent: boolean = false): Promise<Scene | undefined> {
-    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
+    const content = await (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
       scenes: (game.scenes?.contents ?? []).reduce((prev, curr) => {
         if (omitCurrent && curr.id === game.scenes?.current?.id) return prev;
         return [...prev, { id: curr.id, name: curr.name }]
       }, [] as { id: string, name: string }[])
     });
 
-    if (shouldUseAppV2()) {
-      return foundry.applications.api.DialogV2.wait({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        window: ({ title: localize("BATTLETRANSITIONS.DIALOGS.SCENESELECTOR.TITLE") } as any),
-        content,
-        rejectClose: false,
-        buttons: [
-          {
-            label: `<i class="fas fa-times"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")}`,
-            action: "cancel",
-            callback: () => Promise.resolve(undefined)
-          },
-          {
-            label: `<i class="fas fa-check"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK")}`,
-            action: "ok",
-            callback: (event: Event, button: HTMLButtonElement, dialog: HTMLDialogElement) => {
-              return Promise.resolve(game.scenes?.get($(dialog).find("#scene").val() as string) ?? undefined);
-            }
-          }
-        ]
-      }).then(result => result instanceof Scene ? result : undefined)
-    } else {
-      return Dialog.wait({
-        title: localize("BATTLETRANSITIONS.DIALOGS.SCENESELECTOR.TITLE"),
-        content,
-        default: "ok",
-        buttons: {
-          cancel: {
-            icon: `<i class="fas fa-times"></i>`,
-            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL"),
-            callback: () => undefined
-          },
-          ok: {
-            icon: `<i class="fas fa-check"></i>`,
-            label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
-            callback: (html) => game.scenes?.get($(html).find("#scene").val() as string) ?? undefined
+    return foundry.applications.api.DialogV2.wait({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      window: ({ title: localize("BATTLETRANSITIONS.DIALOGS.SCENESELECTOR.TITLE") } as any),
+      content,
+      rejectClose: false,
+      buttons: [
+        {
+          icon: "fas fa-times",
+          label: localize("Cancel"),
+          action: "cancel",
+          callback: () => Promise.resolve(undefined)
+        },
+        {
+          icon: "fas fa-check",
+          label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+          action: "ok",
+          callback: (event: Event, button: HTMLButtonElement, dialog: HTMLDialogElement | foundry.applications.api.DialogV2) => {
+            const form = dialog instanceof foundry.applications.api.DialogV2 ? dialog.element.querySelector("form") : dialog.querySelector("form");
+            if (!(form instanceof HTMLFormElement)) throw new InvalidElementError();
+            const formData = foundry.utils.expandObject((new (formDataExtendedClass())(form)).object) as Record<string, unknown>
+            return Promise.resolve(coerceScene(formData.scene));
           }
         }
-      }).then(result => result instanceof Scene ? result : undefined)
-        // Really shouldn't be suppressing all errors, but I cannot dig up a way to check to make sure
-        // it isn't just the dialog being closed without checking the message property which is a bad idea
-        .catch(() => undefined)
-    }
+      ]
+    }).then(result => result instanceof Scene ? result : undefined)
+
   }
+
+  public static HideLoadingBar = false;
 
   public static async executePreparedSequence(id: string): Promise<void> {
     const prepared = PreparedSequences[id];
@@ -157,6 +150,11 @@ export class BattleTransition {
       hideLoadingBar();
 
       BattleTransition.SuppressSoundUpdates = true;
+
+      // if (sceneChange) Hooks.once(CUSTOM_HOOKS.SCENE_ACTIVATED, () => { hideTransitionCover(); });
+      if (!sceneChange) hideTransitionCover();
+
+
       // Execute
       for (const step of prepared.prepared.sequence) {
         const stepClass = getStepClassByKey(step.config.type ?? "");
@@ -242,12 +240,12 @@ export class BattleTransition {
       sequence.unshift(sceneStep);
     }
 
-    // Validate the target scene
-    const scene = (game.scenes?.get((sequence[0] as SceneChangeConfiguration).scene)) as Scene;
-    if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof (sequence[0] as SceneChangeConfiguration).scene === "string" ? (sequence[0] as SceneChangeConfiguration).scene : typeof (sequence[0] as SceneChangeConfiguration).scene);
+    // // Validate the target scene
+    // const scene = (game.scenes?.get((sequence[0] as SceneChangeConfiguration).scene)) as Scene;
+    // if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof (sequence[0] as SceneChangeConfiguration).scene === "string" ? (sequence[0] as SceneChangeConfiguration).scene : typeof (sequence[0] as SceneChangeConfiguration).scene);
 
-    // Make sure we have permission to activate the new scene
-    if (!scene.canUserModify(game.user as User, "update")) throw new PermissionDeniedError();
+    // // Make sure we have permission to activate the new scene
+    // if (!scene.canUserModify(game.user as User, "update")) throw new PermissionDeniedError();
 
     // Socket time baybee
     await SocketHandler.execute(sequence);
@@ -264,8 +262,10 @@ export class BattleTransition {
     return this;
   }
 
-  public executeSequence(sequence: TransitionConfiguration[]): Promise<void> {
-    return this.addSequence(sequence).execute();
+  public executeSequence(sequence: TransitionConfiguration[], users?: string[]): Promise<void> {
+    this.addSequence(sequence);
+    if (Array.isArray(users) && users.length) return this.execute(...users);
+    else return this.execute();
   }
 
   /**
@@ -284,6 +284,7 @@ export class BattleTransition {
         // Handle steps with backgrounds
         if (Object.prototype.hasOwnProperty.call(step, "backgroundType")) {
           const bgStep = step as unknown as BackgroundTransition;
+
           if (bgStep.serializedTexture) {
             bgStep.deserializedTexture = deserializeTexture(bgStep.serializedTexture);
           } else {
@@ -578,13 +579,30 @@ export class BattleTransition {
     return this;
   }
 
+
   /**
    * Executes the transition sequence built for this {@link BattleTransition} instance.
    * @returns {Promise} - A promise that resolves when the transition is done for all users
    */
-  public async execute(): Promise<void> {
+  public async execute(...users: string[]): Promise<void> {
     if (!(Array.isArray(this.#sequence) && this.#sequence.length)) throw new InvalidTransitionError(typeof this.#sequence);
-    await SocketHandler.execute(this.#sequence)
+
+    if (Array.isArray(users) && users.length) {
+      // Get a list of Users that are active
+      const actualUsers = users.filter(id => coerceUser(id) instanceof User);
+
+      // Change all scenechange steps to viewscene steps.  This could probably be cleaner.
+      for (const step of this.#sequence) {
+        if (step.type === "scenechange") {
+          step.type = "viewscene";
+          step.version = "2.0.0";
+        }
+      }
+
+      await SocketHandler.execute(this.#sequence, actualUsers);
+    } else {
+      await SocketHandler.execute(this.#sequence)
+    }
   }
 
   /**
@@ -596,14 +614,22 @@ export class BattleTransition {
    */
   public fade(duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
-    this.#sequence.push({
+    const bgType = backgroundType(background);
+
+    const config: FadeConfiguration = {
+      ...FadeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       type: "fade",
       serializedTexture,
-      backgroundType: backgroundType(background),
       duration,
-      easing
-    } as FadeConfiguration)
+      easing,
+      backgroundType: bgType,
+      backgroundColor: bgType === "color" ? coerceColorHex(background) ?? "" : "",
+      backgroundImage: bgType === "image" ? background as string : "",
+    };
+
+    this.#sequence.push(config);
+
     return this;
   }
 
@@ -690,15 +716,22 @@ export class BattleTransition {
   public linearWipe(direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
 
-    this.#sequence.push({
+    const bgType = backgroundType(background);
+
+    const config: LinearWipeConfiguration = {
+      ...LinearWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       type: "linearwipe",
       serializedTexture,
       direction,
       duration,
-      backgroundType: backgroundType(background),
-      easing
-    } as LinearWipeConfiguration)
+      backgroundType: bgType,
+      backgroundColor: bgType === "color" ? coerceColorHex(background) ?? "" : "",
+      backgroundImage: bgType === "image" ? background as string : "",
+      easing,
+    };
+
+    this.#sequence.push(config);
     return this;
   }
 

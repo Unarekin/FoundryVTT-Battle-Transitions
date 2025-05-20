@@ -1,10 +1,11 @@
 import { LinearWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { LinearWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions } from './selectOptions';
 import { reconcileBackground } from "./functions";
+
 
 export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   // #region Properties (10)
@@ -21,11 +22,12 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
     duration: 1000,
     easing: "none",
     direction: "left",
-    version: "1.1.6",
+    version: "1.2.0",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
-    backgroundColor: "#00000000"
+    backgroundColor: "#00000000",
+    falloff: 0
   }
 
   public static category = "wipe";
@@ -41,7 +43,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: LinearWipeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${LinearWipeStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${LinearWipeStep.template}.hbs`, {
       ...LinearWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
@@ -63,8 +65,8 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   }
 
   public static fromFormElement(form: HTMLFormElement): LinearWipeStep {
-    const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "easing", "backgroundType", "backgroundColor", "label");
+    const backgroundImage = $(form).find(`[name="step.backgroundImage"]`).val() as string ?? "";
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "easing", "backgroundType", "backgroundColor", "label", "falloff");
     return new LinearWipeStep({
       ...LinearWipeStep.DefaultSettings,
       ...elem,
@@ -85,7 +87,8 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
       ...this.config
     }
     const background = config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new LinearWipeFilter(config.direction, background.baseTexture);
+
+    const filter = new LinearWipeFilter(config.direction, config.falloff, background.baseTexture);
     this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);

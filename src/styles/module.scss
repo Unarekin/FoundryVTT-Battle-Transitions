@@ -11,13 +11,22 @@
   }
 }
 
-[data-action="export-json"].disabled {
+[data-action].disabled {
   color: #808080;
   pointer-events: none;
 }
 
-.transition-builder .dialog-buttons {
-  max-height: 36px;
+.transition-builder {
+  .dialog-buttons {
+    max-height: 36px;
+  }
+
+  .step-body {
+    display: grid;
+    grid-template-columns: 0.5fr 1fr;
+    grid-gap: 5px;
+    grid-auto-rows: max-content;
+  }
 }
 
 [data-tab="battle-transitions"] {
@@ -53,6 +62,18 @@
 
   .two-columns {
     columns: 2;
+    button {
+      width: 100%;
+      position: relative;
+
+      i {
+        position: absolute;
+        left: 4px;
+        &.bt-icon {
+          background-color: var(--button-text-color);
+        }
+      }
+    }
   }
 }
 

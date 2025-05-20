@@ -108,6 +108,10 @@
           "HINT": "",
           "LABEL": "Actor"
         },
+        "FALLOFF": {
+          "LABEL": "Edge Fade",
+          "HINT": "How far from the edge of the transition to start fading out.  0 is no fade, 1 will start fading from the very end of the fade."
+        },
         "TARGET": {
           "HINT": "Screen point or scene element on which to center this effect.",
           "LABEL": "Target"
@@ -252,6 +256,10 @@
         "HINT": "Download a copy of this sequence as a .json file.",
         "LABEL": "Export Sequence"
       },
+      "MACRO": {
+        "HINT": "Save this sequence as a macro.",
+        "LABEL": "Save as Macro"
+      },
       "FIREDISSOLVE": {
         "BURNSIZE": {
           "HINT": "Size of the burn holes during transiton",
@@ -311,7 +319,8 @@
       },
       "PARALLEL": {
         "ADDSEQUENCE": "Add Sequence",
-        "SEQUENCE": "Sequence {index}"
+        "SEQUENCE": "Sequence {index}",
+        "SEQUENCES": "Sequences"
       },
       "PIXELATE": {
         "MAXSIZE": {

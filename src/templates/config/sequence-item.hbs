@@ -2,7 +2,22 @@
   class="flexrow sequence-item"
   data-index="{{index}}"
   data-sequence="{{serialized}}"
+  data-role="sequence-item"
 >
-  <div><span class="link" data-action="configure">{{name}}</span></div>
-  <i class="fas fa-trash fa-fw step-button flex0 link" data-action="remove"></i>
+  <div
+    class="link flex1"
+    data-action="editSequence"
+    data-index="{{index}}"
+  >{{name}}</div>
+  <div class="flex0"><i
+      class="fas fa-fw fa-cogs link"
+      data-action="editSequence"
+      data-index="{{index}}"
+    ></i></div>
+  <div class="flex0"><i
+      class="fas fa-fw fa-trash-alt link"
+      data-action="deleteSequence"
+      data-index="{{index}}"
+    ></i></div>
+
 </div>

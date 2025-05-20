@@ -1,5 +1,5 @@
 import { RadialWipeFilter } from "../filters";
-import { createColorTexture, getTargetType, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, getTargetType, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { RadialWipeConfiguration, SceneChangeConfiguration, TransitionConfiguration } from "./types";
@@ -24,7 +24,8 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000",
-    target: [0.5, 0.5]
+    target: [0.5, 0.5],
+    falloff: 0
   }
 
   public static category = "wipe";
@@ -45,7 +46,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
       ...(config ? config : {})
     }, oldScene, newScene);
 
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${RadialWipeStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${RadialWipeStep.template}.hbs`, {
       ...RadialWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
@@ -64,12 +65,12 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
-  public static async addEventListeners(html: JQuery<HTMLElement>, config?: RadialWipeConfiguration) {
+  public static async addEventListeners(html: HTMLElement, config?: RadialWipeConfiguration) {
     setTargetSelectEventListeners(html);
   }
 
   public static editDialogClosed(element: HTMLElement | JQuery<HTMLElement>): void {
-    onTargetSelectDialogClosed($(element));
+    onTargetSelectDialogClosed($(element)[0]);
   }
 
   public static from(config: RadialWipeConfiguration): RadialWipeStep
@@ -139,7 +140,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     }
 
     const background = config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new RadialWipeFilter(config.radial, this.#screenLocation[0], this.#screenLocation[1], background.baseTexture);
+    const filter = new RadialWipeFilter(config.radial, this.#screenLocation[0], this.#screenLocation[1], background.baseTexture, config.falloff);
     this.addFilter(container, filter);
     this.#filter = filter;
     await this.simpleTween(filter);

@@ -1,19 +1,19 @@
 <div class="flexcol step-config-item" data-transition-type="melt" data-id="{{id}}">
   <form>
-    <input type="hidden" value="{{id}}" name="id" id="id">
+    <input type="hidden" value="{{id}}" name="step.id" id="step.id">
     <p>{{localize "BATTLETRANSITIONS.MELT.DESCRIPTION"}}</p>
 
     <div class="form-group">
-      <label for="label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
-      <input type="text" name="label" id="label" value="{{label}}">
+      <label for="step.label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
+      <input type="text" name="step.label" id="step.label" value="{{label}}">
     </div>
     <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
 
     {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
     {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
     <div class="form-group">
-      <label for="easing">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL"}}</label>
-      <select name="easing" id="easing">
+      <label for="step.easing">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL"}}</label>
+      <select name="step.easing" id="step.easing">
         {{selectOptions easingSelect selected=easing localize=true}}
       </select>
     </div>

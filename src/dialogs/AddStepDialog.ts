@@ -1,10 +1,10 @@
-import { localize } from "../utils";
+import { localize, renderTemplateFunc } from "../utils";
 import { clearSearchResults, handleSearchInput } from "./addStepFunctions";
 import { getStepsForCategory } from "./functions";
 
-export class AddStepDialogV2 {
+export class AddStepDialog {
   public static async prompt(): Promise<string | null> {
-    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/dialogs/AddStepDialogV2.hbs`, {
+    const content = await (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/dialogs/AddStepDialogV2.hbs`, {
       tabs: [
         {
           icon: "",
@@ -43,7 +43,9 @@ export class AddStepDialogV2 {
         buttons: [
           {
 
-            label: `<i class="fas fa-times"></i> ${localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.CANCEL")}`,
+            // icon: `<i class="fas fa-times"></i>`,
+            icon: "fas fa-times",
+            label: "Cancel",
             action: "cancel",
             callback: () => {
               resolve(null);
@@ -62,7 +64,11 @@ export class AddStepDialogV2 {
 
 function addEventListeners(dialog: foundry.applications.api.DialogV2, html: JQuery<HTMLElement>, resolve: (key: string | null) => void) {
   // Set up tabs
-  const tabs = new Tabs({
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+  const tabClass: typeof Tabs = game?.release?.isNewer("13") ? (foundry.applications as any).ux.Tabs : Tabs;
+
+  const tabs = new tabClass({
     contentSelector: ".tab-content",
     navSelector: ".tabs[data-group='primary-tabs']",
     initial: "wipes",

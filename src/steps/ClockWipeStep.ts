@@ -1,7 +1,7 @@
 import { ClockWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
 import { Easing } from "../types";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ClockWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions } from './selectOptions';
@@ -23,6 +23,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
+    falloff: 0,
     backgroundColor: "#00000000"
   }
 
@@ -39,7 +40,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: ClockWipeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${ClockWipeStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${ClockWipeStep.template}.hbs`, {
       ...ClockWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
@@ -63,7 +64,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): ClockWipeStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "clockDirection", "easing", "backgroundType", "backgroundColor", "label");
+    const elem = parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "clockDirection", "easing", "backgroundType", "backgroundColor", "label", "falloff");
 
     return new ClockWipeStep({
       ...ClockWipeStep.DefaultSettings,
@@ -85,7 +86,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
       ...this.config
     }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new ClockWipeFilter(config.clockDirection, config.direction, background.baseTexture);
+    const filter = new ClockWipeFilter(config.clockDirection, config.direction, background.baseTexture, config.falloff);
     this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);

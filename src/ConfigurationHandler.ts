@@ -1,6 +1,5 @@
 import { SceneConfiguration } from "./interfaces";
 import { SceneChangeConfiguration, SceneChangeStep, TransitionConfiguration } from "./steps";
-import { SceneConfigV11, SceneConfigV12 } from "./dialogs";
 import { BattleTransition } from "./BattleTransition";
 import { InvalidSceneError, UnableToMigrateError } from "./errors";
 
@@ -16,16 +15,17 @@ const DEFAULT_CONFIG: SceneConfiguration = {
 
 export class ConfigurationHandler {
   public static AddToNavigationBar(buttons: any[]) {
+    const iconClasses = game?.release?.isNewer("13") ? ["v13"] : ["v12"];
     buttons.push(
       {
         name: "BATTLETRANSITIONS.NAVIGATION.TRIGGER",
-        icon: `<i class="fas bt-icon fa-fw crossed-swords"></i>`,
-        condition: (li: JQuery<HTMLLIElement>) => {
+        icon: `<i class="fas bt-icon fa-fw crossed-swords ${iconClasses.join(" ")}"></i>`,
+        condition: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
           try {
             const scene = getScene(li);
             if (!scene) return false;
 
-            if (scene.id === game?.scenes?.active?.id) return false;
+            // if (scene.id === game?.scenes?.active?.id) return false;
             return ConfigurationHandler.HasTransition(scene, true);
             // const steps = this.GetSceneTransition(scene) ?? [];
             // return Array.isArray(steps) && steps.length;
@@ -34,40 +34,48 @@ export class ConfigurationHandler {
             console.error(err as Error)
           }
         },
-        callback: (li: JQuery<HTMLLIElement>) => {
+        callback: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
           const scene = getScene(li);
-          if (!scene) throw new InvalidSceneError(typeof li.data("sceneId") === "string" ? li.data("sceneId") as string : typeof li.data("sceneId"));
+          if (!(scene instanceof Scene)) {
+            if (li instanceof HTMLLIElement) throw new InvalidSceneError(typeof li.dataset.sceneId === "string" ? li.dataset.sceneId : typeof li.dataset.sceneId);
+            else throw new InvalidSceneError(typeof li.data("sceneId") === "string" ? li.data("sceneId") as string : typeof li.data("sceneId"));
+          }
+
           if (!ConfigurationHandler.HasTransition(scene, true)) return;
-          const sequence = this.GetSceneTransition(scene) ?? [];
+          const sequence = [...this.GetSceneTransition(scene) ?? []];
 
-          const sceneChange = new SceneChangeStep({ scene: scene.id ?? "" });
-          const step: SceneChangeConfiguration = {
-            ...SceneChangeStep.DefaultSettings,
-            id: foundry.utils.randomID(),
-            ...sceneChange.config
-          };
+          if (scene !== canvas?.scene) {
+            const sceneChange = new SceneChangeStep({ scene: scene.id ?? "" });
+            const step: SceneChangeConfiguration = {
+              ...SceneChangeStep.DefaultSettings,
+              id: foundry.utils.randomID(),
+              ...sceneChange.config
+            };
+            sequence.unshift(step);
+          }
 
-          void BattleTransition.ExecuteSequence([
-            step,
-            ...sequence
-          ])
+          void BattleTransition.ExecuteSequence(sequence);
         }
       },
       {
         name: "BATTLETRANSITIONS.NAVIGATION.CUSTOM",
         icon: "<i class='fas fa-fw fa-hammer'></i>",
-        condition: (li: JQuery<HTMLLIElement>) => {
+        condition: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
           const scene = getScene(li);
           if (!scene) return false;
-          return scene.id !== game?.scenes?.active?.id
+          // return scene.id !== game?.scenes?.active?.id
+          return true;
         },
-        callback: (li: JQuery<HTMLLIElement>) => {
-          const sceneId = li.data("sceneId") as string;
-          const scene = game.scenes?.get(sceneId);
-          if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId)
+        callback: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
+          const scene = getScene(li);
+          // const sceneId = li.data("sceneId") as string;
+          // const scene = game.scenes?.get(sceneId);
+          if (!(scene instanceof Scene)) {
+            if (li instanceof HTMLLIElement) throw new InvalidSceneError(typeof li.dataset.sceneId === "string" ? li.dataset.sceneId : typeof li.dataset.sceneId);
+            else throw new InvalidSceneError(typeof li.data("sceneId") === "string" ? li.data("sceneId") as string : typeof li.data("sceneId"));
+          }
           if (scene.canUserModify(game.user as User, "update"))
             void BattleTransition.BuildTransition(scene);
-
         }
       }
     )
@@ -100,8 +108,12 @@ export class ConfigurationHandler {
   //   }
   // }
 
-  public static SetSceneConfiguration(scene: Scene, config: SceneConfiguration): Promise<Scene | undefined> {
-    const newConfig: { [x: string]: unknown } = { ...config };
+  public static SetSceneConfiguration(scene: Scene, config: Partial<SceneConfiguration>): Promise<Scene | undefined> {
+    // const newConfig: { [x: string]: unknown } = { ...config };
+    const newConfig: Record<string, unknown> = {
+      ...DEFAULT_CONFIG,
+      ...config
+    };
 
     const oldFlag = scene.flags[__MODULE_ID__] as object;
     for (const key in oldFlag) {
@@ -177,12 +189,6 @@ export class ConfigurationHandler {
     return config.sequence;
   }
 
-  public static async InjectSceneConfig(app: SceneConfig, html: JQuery<HTMLElement>, options: any) {
-    const config = ConfigurationHandler.GetSceneConfiguration(app.object);
-
-    if (game.release?.isNewer("12")) await SceneConfigV12.inject(app, html, options, config);
-    else await SceneConfigV11.inject(app, html, options, ConfigurationHandler.GetSceneConfiguration(app.object));
-  }
 
   public static BuildTransitionFromForm(html: JQuery<HTMLElement>) {
     const sequence: TransitionConfiguration[] = [];
@@ -197,8 +203,8 @@ export class ConfigurationHandler {
 }
 
 
-function getScene(li: JQuery<HTMLLIElement>): Scene | undefined {
-  const sceneId = li.data("sceneId") as string | undefined;
+function getScene(li: JQuery<HTMLLIElement> | HTMLLIElement): Scene | undefined {
+  const sceneId = (li instanceof HTMLLIElement ? li.dataset.sceneId : li.data("sceneId")) as string | undefined;
   if (!sceneId) return undefined;
   if (!sceneId) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
   const scene = game.scenes?.get(sceneId);

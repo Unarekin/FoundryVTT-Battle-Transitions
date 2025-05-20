@@ -1,7 +1,7 @@
 import { HueShiftConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
 import { HueShiftFilter } from '../filters';
-import { parseConfigurationFormElements } from '../utils';
+import { parseConfigurationFormElements, renderTemplateFunc } from '../utils';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
@@ -32,7 +32,7 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: HueShiftConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${HueShiftStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${HueShiftStep.template}.hbs`, {
       ...HueShiftStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

@@ -34,7 +34,9 @@ export type AnimatedTransition = DurationTransition & ({
   easing: Easing;
 })
 
-type WipeTransition = DurationTransition & BackgroundTransition & TransitionConfiguration & AnimatedTransition;
+type WipeTransition = DurationTransition & BackgroundTransition & TransitionConfiguration & AnimatedTransition & ({
+  falloff: number;
+})
 
 export type BilinearWipeConfiguration = WipeTransition & ({
   direction: BilinearDirection;
@@ -132,6 +134,10 @@ export type RepeatConfiguration = TransitionConfiguration & ({
 export type SceneChangeConfiguration = TransitionConfiguration & ({
   scene: string;
 })
+
+export type ViewSceneConfiguration = TransitionConfiguration & ({
+  scene: string;
+});
 
 export interface MacroConfiguration extends TransitionConfiguration {
   macro: string;

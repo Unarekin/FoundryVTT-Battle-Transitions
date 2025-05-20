@@ -146,8 +146,7 @@ function isNumeric(value: unknown): boolean {
   if (typeof value === "number") return true;
 
   if (typeof value === "string") {
-    const temp = parseFloat(value);
-    return temp.toString() === value;
+    return !isNaN(parseFloat(value));
   }
   return false;
 }
@@ -274,7 +273,7 @@ export function parseConfigurationFormElements<t = any>(form: JQuery<HTMLFormEle
   const serialized = form.serializeArray();
 
   const elem = Object.fromEntries(
-    elements.map(key => [key, findFormValue(serialized, key)])
+    elements.map(key => [key, findFormValue(serialized, `step.${key}`)])
   );
   return elem as Partial<t>;
 }
@@ -356,10 +355,6 @@ export function serializeTexture(texture: any): string | TextureBuffer | DataURL
 
   console.error(texture);
   throw new InvalidTextureError();
-}
-
-export function shouldUseAppV2(): boolean {
-  return (game.release?.isNewer("12") ?? false) && !!foundry.applications.api.ApplicationV2;
 }
 
 export function sizeOf(obj: unknown) {
@@ -640,4 +635,24 @@ export function mimeType(path: string) {
   if (!ext) return "application/octet-stream";
   else if (mimeDB[ext]) return mimeDB[ext];
   else return "application/octet-stream";
+}
+
+// Simple wrapper to handle difference in namespace between Foundry v12 and v13
+export function renderTemplateFunc(): typeof renderTemplate {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+  if (game?.release?.isNewer("13")) return (foundry.applications as any).handlebars.renderTemplate;
+  else return renderTemplate;
+}
+
+// Simple wrapper to handle difference in namespace between Foundry v12 and v13
+export function formDataExtendedClass(): typeof FormDataExtended {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  if (game?.release?.isNewer("13")) return (foundry.applications as any).ux.FormDataExtended;
+  else return FormDataExtended;
+}
+
+export function gameClass(): typeof Game {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  if (game?.release?.isNewer("13")) return ((foundry as any).Game);
+  else return Game;
 }

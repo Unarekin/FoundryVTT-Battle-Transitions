@@ -30,16 +30,30 @@
       "EDITSTEP": {
         "TITLE": "Edit {name}"
       },
+      "SEQUENCE": {
+        "ADD": "Add Sequence",
+        "EDIT": "Edit Sequence",
+        "NAME": "Sequence {index}"
+      },
       "REMOVECONFIRM": {
         "CONTENT": "Are you sure you wish to remove {name}?",
         "TITLE": "Remove {name}"
       },
       "TRANSITIONBUILDER": {
-        "TITLE": "Transition Builder"
+        "TITLE": "Transition Builder",
+        "USERS": {
+          "HINT": "Only show the transition for select users.  If none are selected, it will be executed for everyone."
+        }
       },
       "SCENESELECTOR": {
         "DESCRIPTION": "Please select a scene below:",
         "TITLE": "Scene Selector"
+      },
+      "SAVEMACRO": {
+        "TITLE": "Save as Macro",
+        "SCENE": {
+          "HINT": "The scene to which to transition.  If none is specified, the generated macro will prompt to select the scene."
+        }
       }
     }
   }

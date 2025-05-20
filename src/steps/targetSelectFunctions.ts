@@ -1,16 +1,23 @@
-import { customDialog } from "../dialogs";
+import { customDialog, hideElements, iterateElements, showElements } from "../dialogs";
 import { InvalidTargetError } from "../errors";
+import { renderTemplateFunc } from "../utils";
 import { generateTargetTypeSelectOptions } from "./selectOptions";
 import { TargetedTransition, TargetType, TransitionConfiguration } from "./types";
 
 // #region Functions (21)
 
-function clearSelectMode(html: JQuery<HTMLElement>) {
-  html.find("button[data-action] i.fa-spinner").css("display", "none");
-  const mode = html.find("[data-select-mode]").data("select-mode") as TargetType || "0";
-  const hook = parseInt(html.find("[data-select-hook]").data("select-hook") as string || "0") || 0;
-  const hint = parseInt(html.find("[data-select-hint]").data("select-hint") as string || "0") || 0;
-  // const sceneId = html.find("[data-select-scene]").data("select-scene") as string || "";
+function clearSelectMode(html: HTMLElement) {
+  const spinner = html.querySelector(`button[data-action] i.fa-spinner`);
+  if (spinner instanceof HTMLElement) spinner.style.display = "none";
+
+  const modeSelect = html.querySelector(`[data-select-mode]`);
+  const mode = modeSelect instanceof HTMLElement ? modeSelect.dataset.mode as TargetType : "point";
+
+  const hookElem = html.querySelector(`[data-select-hook]`);
+  const hook = hookElem instanceof HTMLElement ? parseInt(hookElem.dataset.selectHook as string) : 0;
+  const hintElem = html.querySelector(`[data-select-hint]`);
+  const hint = hintElem instanceof HTMLElement ? parseInt(hintElem.dataset.selectHint as string) : 0;
+
 
   switch (mode) {
     case "oldtoken":
@@ -35,9 +42,11 @@ function clearSelectMode(html: JQuery<HTMLElement>) {
       break;
   }
 
-  html.find("[data-select-hook]").data("select-hook", "");
-  html.find("[data-select-hint]").data("select-hint", "");
-  html.find("[data-select-scene]").data("select-scene", "");
+  if (hookElem instanceof HTMLElement) hookElem.dataset.selectHook = "";
+  if (hintElem instanceof HTMLElement) hintElem.dataset.selectHint = "";
+
+  const sceneElem = html.querySelector(`[data-select-scene]`);
+  if (sceneElem instanceof HTMLElement) sceneElem.dataset.selectScene = "";
 }
 
 export function getObjectSize(item: unknown): [number, number] {
@@ -57,36 +66,38 @@ export function getObjectSize(item: unknown): [number, number] {
  * @returns - {@link TargetType}
  */
 export function getTargetFromForm(html: JQuery<HTMLElement>) {
-  const targetType = html.find("#targetType").val() as TargetType ?? "point";
+  const targetType = html.find(`[name="step.targetType"]`).val() as TargetType ?? "point";
   switch (targetType) {
     case "oldtoken":
-      return html.find("#selectedOldToken").val() as string;
+      return html.find(`[name="step.selectedOldToken"]`).val() as string;
     case "newtoken":
-      return html.find("#selectedNewToken").val() as string;
+      return html.find(`[name="step.selectedNewToken"]`).val() as string;
     case "oldtile":
-      return html.find("#selectedOldTile").val() as string;
+      return html.find(`[name="step.selectedOldTile"]`).val() as string;
     case "newtile":
-      return html.find("#selectedNewTile").val() as string;
+      return html.find(`[name="step.selectedNewTile"]`).val() as string;
     case "olddrawing":
-      return html.find("#selectedOldDrawing").val() as string;
+      return html.find(`[name="step.selectedOldDrawing"]`).val() as string;
     case "newdrawing":
-      return html.find("#selectedNewDrawing").val() as string;
+      return html.find(`[name="step.selectedNewDrawing"]`).val() as string;
     case "oldnote":
-      return html.find("#selectedOldNote").val() as string;
+      return html.find(`[name="step.selectedOldNote"]`).val() as string;
     case "newnote":
-      return html.find("#selectedNewNote").val() as string;
+      return html.find(`[name="step.selectedNewNote"]`).val() as string;
     case "prompt":
       return "";
     case "point":
       return [
-        parseFloat(html.find("#pointX").val() as string),
-        parseFloat(html.find("#pointY").val() as string)
+        parseFloat(html.find(`[name="step.pointX"]`).val() as string),
+        parseFloat(html.find(`[name="step.pointY"]`).val() as string)
       ] as [number, number]
   }
 }
 
-function getTargetType(html: JQuery<HTMLElement>): TargetType {
-  return html.find("#targetType").val() as TargetType ?? "point";
+function getTargetType(html: HTMLElement): TargetType {
+  const elem = html.querySelector(`[name="step.targetType"]`);
+  if (elem instanceof HTMLInputElement || elem instanceof HTMLSelectElement) return elem.value as TargetType ?? "point";
+  else return "point";
 }
 
 function isNormalized(val: [number, number]): boolean {
@@ -129,164 +140,212 @@ export function normalizePosition(target: unknown): [number, number] {
   throw new InvalidTargetError(target);
 }
 
-export function onTargetSelectDialogClosed(html: JQuery<HTMLElement>) {
+export function onTargetSelectDialogClosed(html: HTMLElement) {
   clearSelectMode(html);
 }
 
-function selectNewDrawing(html: JQuery<HTMLElement>) {
+
+function selectNewDrawing(html: HTMLElement) {
   clearSelectMode(html);
-  html.find("[data-action='select-new-drawing'] i").css("display", "block");
-  html.find("[data-select-mode]").data("select-mode", "newdrawing");
+
+  showElements(html, `[data-action='select-new-drawing'] i`);
+  iterateElements(html, `[data-select-mode]`, elem => { elem.dataset.selectMode = "newdrawing"; });
+
   const hook = Hooks.on("controlDrawing", (drawing: Drawing, controlled: boolean) => {
     if (controlled) {
       clearSelectMode(html);
-      html.find("#selectedNewDrawing").val(drawing.document.uuid);
+      const elem = html.querySelector(`[name="step.selectedNewDrawing"]`);
+      if (elem instanceof HTMLInputElement || elem instanceof HTMLSelectElement) elem.value = drawing.document.uuid;
     }
   });
-  html.find("[data-select-hook]").data("select-hook", hook);
+  const hookElem = html.querySelector(`[data-select-hook]`);
+  if (hookElem instanceof HTMLElement) hookElem.dataset.selectHook = hook.toString();
   setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.SELECTHINT");
 }
 
-function selectNewNote(html: JQuery<HTMLElement>) {
+function selectNewNote(html: HTMLElement) {
   clearSelectMode(html);
-  html.find("[data-action='select-new-note']").css("display", "block");
-  html.find("[data-select-mode]").data("select-mode", "newnote");
+  showElements(html, `[data-action="select-new-note"] i`);
+  iterateElements(html, `[data-select-mode]`, elem => { elem.dataset.selectMode = "newnote"; });
+
   const hook = Hooks.on("activateNote", (note: Note) => {
     clearSelectMode(html);
-    html.find("#selectedNewNote").val(note.document.uuid);
+    const elem = html.querySelector(`[name="step.selectedNewNote"]`);
+    if (elem instanceof HTMLInputElement || elem instanceof HTMLSelectElement) elem.value = note.document.uuid;
   });
-  html.find("[data-select-hook]").data("select-hook", hook);
-  setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.SElECTHINT");
-}
+  const hookElem = html.querySelector(`[data-select-hook]`);
+  if (hookElem instanceof HTMLElement) hookElem.dataset.selectHook = hook.toString();
 
-function selectNewTile(html: JQuery<HTMLElement>) {
-  clearSelectMode(html);
-  html.find("[data-action='select-new-tile'] i").css("display", "block");
-  html.find("[data-select-mode]").data("select-mode", "newtile");
-  const hook = Hooks.on("controlTile", (tile: Tile, controlled: boolean) => {
-    if (controlled) {
-      clearSelectMode(html);
-      html.find("#selectedNewTile").val(tile.document.uuid);
-    }
-  })
-  html.find("[data-select-hook]").data("select-hook", hook);
-  setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.SELECTHINT");
-}
-
-function selectNewToken(html: JQuery<HTMLElement>) {
-  clearSelectMode(html);
-  html.find("[data-action='select-new-token'] i").css("display", "block");
-  html.find("[data-select-mode]").data("select-mode", "newtoken");
-
-  const hook = Hooks.on("controlToken", (token: Token, controlled: boolean) => {
-    if (controlled) {
-      clearSelectMode(html);
-      html.find("#selectedNewToken").val(token.document?.uuid ?? "");
-    }
-  });
-  html.find("[data-select-hook]").data("select-hook", hook);
-  setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.SELECTHINT");
-}
-
-function selectOldDrawing(html: JQuery<HTMLElement>) {
-  clearSelectMode(html);
-  html.find("[data-action='select-old-drawing'] i").css("display", "block");
-  html.find("[data-select-mode]").data("select-mode", "olddrawing");
-  const hook = Hooks.on("controlDrawing", (drawing: Drawing, controlled: boolean) => {
-    if (controlled) {
-      clearSelectMode(html);
-      html.find("#selectedOldDrawing").val(drawing.document.uuid);
-    }
-  });
-  html.find("[data-select-hook]").data("select-hook", hook);
-  setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.SELECTHINT");
-}
-
-function selectOldNote(html: JQuery<HTMLElement>) {
-  clearSelectMode(html);
-  html.find("[data-action='select-old-note'] i").css("display", "block");
-  html.find("[data-select-mode]").data("select-mode", "oldnote");
-  const hook = Hooks.on("activateNote", (note: Note) => {
-    clearSelectMode(html);
-    html.find("#selectedOldNote").val(note.document.uuid);
-  });
-  html.find("[data-select-hook]").data("select-hook", hook);
   setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.SELECTHINT");
 }
 
-function selectOldTile(html: JQuery<HTMLElement>) {
+function selectNewTile(html: HTMLElement) {
   clearSelectMode(html);
-  html.find("[data-action='select-old-tile'] i").css("display", "block");
-  html.find("[data-select-mode]").data("select-mode", "oldtile");
+  showElements(html, `[data-action="select-new-tile"] i`);
+  iterateElements(html, `[data-select-mode]`, elem => { elem.dataset.selectMode = "newtile"; });
 
   const hook = Hooks.on("controlTile", (tile: Tile, controlled: boolean) => {
     if (controlled) {
       clearSelectMode(html);
-      html.find("#selectedOldTile").val(tile.document.uuid);
+      const elem = html.querySelector(`[name="step.selectedNewTile"]`);
+      if (elem instanceof HTMLInputElement || elem instanceof HTMLSelectElement) elem.value = tile.document.uuid;
     }
-  });
-  html.find("[data-select-hook]").data("select-hook", hook);
+  })
+
+  const hookElem = html.querySelector(`[data-select-hook]`);
+  if (hookElem instanceof HTMLElement) hookElem.dataset.selectHook = hook.toString();
+
   setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.SELECTHINT");
 }
 
-function selectOldToken(html: JQuery<HTMLElement>) {
+function selectNewToken(html: HTMLElement) {
   clearSelectMode(html);
-  html.find("[data-action='select-old-token'] i").css("display", "block");
-  html.find("[data-select-mode]").data("select-mode", "oldtoken");
+
+  showElements(html, `[data-action="select-new-token"] i`);
+  iterateElements(html, `[data-select-mode]`, elem => { elem.dataset.selectMode = "newtoken"; });
 
   const hook = Hooks.on("controlToken", (token: Token, controlled: boolean) => {
     if (controlled) {
       clearSelectMode(html);
-      html.find("#selectedOldToken").val(token.document.uuid);
+      const elem = html.querySelector(`[name="step.selectedNewToken"]`);
+      if (elem instanceof HTMLInputElement || elem instanceof HTMLSelectElement) elem.value = token.document?.uuid ?? "";
     }
   });
-  html.find("[data-select-hook]").data("select-hook", hook);
+
+  const hookElem = html.querySelector(`[data-select-hook]`);
+  if (hookElem instanceof HTMLElement) hookElem.dataset.selectHook = hook.toString();
+
   setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.SELECTHINT");
 }
 
-function setSelectHint(html: JQuery<HTMLElement>, hint: string) {
+function selectOldDrawing(html: HTMLElement) {
+  clearSelectMode(html);
+
+  showElements(html, `[data-action="select-old-drawing"] i`);
+  iterateElements(html, `[data-select-mode]`, elem => { elem.dataset.selectMode = "olddrawing"; });
+
+  const hook = Hooks.on("controlDrawing", (drawing: Drawing, controlled: boolean) => {
+    if (controlled) {
+      clearSelectMode(html);
+      const elem = html.querySelector(`[name="step.selectedOldDrawing"]`);
+      if (elem instanceof HTMLInputElement || elem instanceof HTMLSelectElement) elem.value = drawing.document.uuid;
+    }
+  });
+
+  const hookElem = html.querySelector(`[data-select-hook]`);
+  if (hookElem instanceof HTMLElement) hookElem.dataset.selectHook = hook.toString();
+
+  setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.SELECTHINT");
+}
+
+function selectOldNote(html: HTMLElement) {
+  clearSelectMode(html);
+  showElements(html, `[data-action="select-old-note"] i`);
+  iterateElements(html, `[data-select-mode]`, elem => { elem.dataset.selectMode = "oldnote"; });
+
+  const hook = Hooks.on("activateNote", (note: Note) => {
+    clearSelectMode(html);
+    const elem = html.querySelector(`[name="step.selectedOldNote"]`);
+    if (elem instanceof HTMLInputElement || elem instanceof HTMLSelectElement) elem.value = note.document.uuid;
+  });
+
+  const hookElem = html.querySelector(`[data-select-hook]`);
+  if (hookElem instanceof HTMLElement) hookElem.dataset.selectHook = hook.toString();
+
+  setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.SELECTHINT");
+}
+
+function selectOldTile(html: HTMLElement) {
+  clearSelectMode(html);
+  showElements(html, `[data-action="select-old-tile"] i`);
+  iterateElements(html, `[data-select-mode]`, elem => { elem.dataset.selectMode = "oldtile"; });
+
+
+  const hook = Hooks.on("controlTile", (tile: Tile, controlled: boolean) => {
+    if (controlled) {
+      clearSelectMode(html);
+      const elem = html.querySelector(`[name="step.selectedOldTile"]`);
+      if (elem instanceof HTMLInputElement || elem instanceof HTMLSelectElement) elem.value = tile.document.uuid;
+    }
+  });
+
+  const hookElem = html.querySelector(`[data-select-hook]`);
+  if (hookElem instanceof HTMLElement) hookElem.dataset.selectHook = hook.toString();
+
+  setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.SELECTHINT");
+}
+
+function selectOldToken(html: HTMLElement) {
+  clearSelectMode(html);
+
+  showElements(html, `[data-action="select-old-token"] i`);
+  iterateElements(html, `[data-select-mode]`, elem => { elem.dataset.selectMode = "oldtoken"; });
+
+  const hook = Hooks.on("controlToken", (token: Token, controlled: boolean) => {
+    if (controlled) {
+      clearSelectMode(html);
+      const elem = html.querySelector(`[name="step.selectedOldToken"]`);
+      if (elem instanceof HTMLInputElement || elem instanceof HTMLSelectElement) elem.value = token.document.uuid;
+    }
+  });
+
+  const hookElem = html.querySelector(`[data-select-hook]`);
+  if (hookElem instanceof HTMLElement) hookElem.dataset.selectHook = hook.toString();
+
+  setSelectHint(html, "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.SELECTHINT");
+}
+
+function setSelectHint(html: HTMLElement, hint: string) {
   if (ui.notifications) {
     const id = ui.notifications.info(hint, { console: false, localize: true, permanent: true });
-    html.find("[data-select-hint]").data("select-hint", id);
+    const elem = html.querySelector(`[data-select-hint]`);
+    if (elem instanceof HTMLElement) elem.dataset.selectHint = id.toString();
   }
 }
 
-export function setTargetSelectEventListeners(html: JQuery<HTMLElement>) {
+export function setTargetSelectEventListeners(html: HTMLElement) {
   swapTargetSection(html);
 
-  html.find("#targetType").on("input", () => { swapTargetSection(html); });
-  html.find("button[data-action] i.fa-spinner").css("display", "none");
-  html.find("button[data-action] i.fa-spinner").parent().on("click", e => {
-    e.preventDefault();
-    const target = $(e.currentTarget) as JQuery<HTMLButtonElement>;
-    const action = target.data("action") as string || "";
-    switch (action) {
-      case "select-old-token":
-        selectOldToken(html);
-        break;
-      case "select-new-token":
-        selectNewToken(html);
-        break;
-      case "select-old-tile":
-        selectOldTile(html);
-        break;
-      case "select-new-tile":
-        selectNewTile(html);
-        break;
-      case "select-old-note":
-        selectOldNote(html);
-        break;
-      case "select-new-note":
-        selectNewNote(html);
-        break;
-      case "select-old-drawing":
-        selectOldDrawing(html);
-        break;
-      case "select-new-drawing":
-        selectNewDrawing(html);
-        break;
-    }
-  });
+  const targetType = html.querySelector(`[name="step.targetType"]`);
+  if (targetType instanceof HTMLElement)
+    targetType.addEventListener("change", () => { swapTargetSection(html); });
+
+  const spinner = html.querySelector(`button[data-action] i.fa-spinner`);
+  if (spinner instanceof HTMLElement) {
+    spinner.style.display = "none";
+    spinner.parentElement?.addEventListener("click", e => {
+      e.preventDefault();
+      const target = e.currentTarget as HTMLButtonElement;
+
+      const action = target.dataset.action as string || "";
+      switch (action) {
+        case "select-old-token":
+          selectOldToken(html);
+          break;
+        case "select-new-token":
+          selectNewToken(html);
+          break;
+        case "select-old-tile":
+          selectOldTile(html);
+          break;
+        case "select-new-tile":
+          selectNewTile(html);
+          break;
+        case "select-old-note":
+          selectOldNote(html);
+          break;
+        case "select-new-note":
+          selectNewNote(html);
+          break;
+        case "select-old-drawing":
+          selectOldDrawing(html);
+          break;
+        case "select-new-drawing":
+          selectNewDrawing(html);
+          break;
+      }
+    });
+  }
 }
 
 
@@ -308,14 +367,14 @@ const requiredFields = {
  * Sets the correct HTML section for the current target type
  * @param {JQuery<HTMLElement>} html - JQuery<HTMLElement>
  */
-function swapTargetSection(html: JQuery<HTMLElement>) {
-  html.find(`section[data-target-type]`).css("display", "none");
-  html.find("section[data-target-type] input, section[data-target-type] select").removeAttr("required");
+function swapTargetSection(html: HTMLElement) {
+  hideElements(html, `section[data-target-type]`);
+
+  iterateElements(html, `section[data-target-type] input, section[data-target-type] select`, elem => { elem.removeAttribute("required"); });
+
   const targetType = getTargetType(html);
-  html.find(`section[data-target-type="${targetType}"]`).css("display", "block");
-  if (requiredFields[targetType]) {
-    html.find(requiredFields[targetType]).attr("required", "true");
-  }
+  showElements(html, `section[data-target-type="${targetType}"]`);
+  if (requiredFields[targetType]) iterateElements(html, requiredFields[targetType], elem => { elem.setAttribute("required", "true"); });
 }
 
 export async function validateTarget(config: TransitionConfiguration & TargetedTransition, oldScene?: Scene, newScene?: Scene): Promise<[number, number] | string> {
@@ -337,7 +396,7 @@ export async function validateTarget(config: TransitionConfiguration & TargetedT
 
   } else if (typeof target === "string") {
     // Empty string, prompt
-    const content = await renderTemplate(`/modules/${__MODULE_ID__}/templates/config/target-selector.hbs`, {
+    const content = await (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/target-selector.hbs`, {
       ...generateTargetTypeSelectOptions(oldScene, newScene),
       pointX: 0.5,
       pointY: 0.5
@@ -353,7 +412,7 @@ export async function validateTarget(config: TransitionConfiguration & TargetedT
         callback: () => { throw new InvalidTargetError(undefined); }
       }
     },
-      html => { setTargetSelectEventListeners(html); }
+      html => { setTargetSelectEventListeners(html[0]); }
     );
     return getTargetFromForm(form);
   }

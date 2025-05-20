@@ -40,10 +40,10 @@ function generateTexture(direction: WipeDirection, clockDirection: ClockDirectio
 
 export class ClockWipeFilter extends TextureWipeFilter {
 
-  constructor(clockDirection: ClockDirection, direction: WipeDirection, bg: PIXI.ColorSource | PIXI.TextureSource) {
+  constructor(clockDirection: ClockDirection, direction: WipeDirection, bg: PIXI.ColorSource | PIXI.TextureSource, falloff: number = 0) {
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
     const wipeTexture = generateTexture(direction, clockDirection);
 
-    super(wipeTexture, bgTexture);
+    super(wipeTexture, falloff, bgTexture);
   }
 }

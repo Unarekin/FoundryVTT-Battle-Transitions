@@ -4,7 +4,7 @@
   data-id="{{id}}"
 >
   <form>
-    <input type="hidden" name="id" id="id" value="{{id}}" />
+    <input type="hidden" name="step.id" id="step.id" value="{{id}}" />
     <p>{{localize "BATTLETRANSITIONS.LOADINGTIP.DESCRIPTION"}}</p>
 
     <section class="dialog-content sheet">
@@ -17,14 +17,14 @@
     <section class="tab-content no-row-gap">
       <div class="tab" data-tab="basics" data-group="primary-tabs">
         <div class="form-group">
-          <label for="label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
-          <input type="text" name="label" id="label" value="{{label}}" />
+          <label for="step.label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
+          <input type="text" name="step.label" id="step.label" value="{{label}}" />
         </div>
         <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
 
         <div class="form-group">
-          <label for="sourceType">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.SOURCETYPE.LABEL"}}</label>
-          <select name="sourceType" id="sourceType">
+          <label for="step.sourceType">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.SOURCETYPE.LABEL"}}</label>
+          <select name="step.sourceType" id="step.sourceType">
             {{selectOptions sourceSelect selected=sourceType localize=true}}
           </select>
         </div>
@@ -33,16 +33,16 @@
 
         <section data-source-type="string">
           <div class="form-group">
-            <label for="message">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.MESSAGE.LABEL"}}</label>
-            <input type="text" name="message" id="message" value="{{message}}">
+            <label for="step.message">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.MESSAGE.LABEL"}}</label>
+            <input type="text" name="step.message" id="step.message" value="{{message}}">
           </div>
           <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.MESSAGE.HINT"}}</p>
         </section>
 
         <section data-source-type="rolltable">
           <div class="form-group">
-            <label for="table">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.ROLLTABLE.LABEL"}}</label>
-            <select name="table" id="table">
+            <label for="step.table">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.ROLLTABLE.LABEL"}}</label>
+            <select name="step.table" id="step.table">
               <option value=""></option>
               {{selectOptions tableSelect selected=table localize=false}}
             </select>
@@ -51,8 +51,8 @@
         </section>
         
         <div class="form-group">
-          <label for="location">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.LABEL"}}</label>
-          <select name="location" id="location">
+          <label for="step.location">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.LABEL"}}</label>
+          <select name="step.location" id="step.location">
             {{selectOptions locationSelect selected=location localize=true}}
           </select>
         </div>
@@ -65,15 +65,15 @@
         {{> "/modules/battle-transitions/templates/font-selector.hbs" this}}
 
         <div class="form-group">
-          <label for="fontSize">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.FONTSIZE.LABEL"}}</label>
-          <input type="number" name="fontSize" id="fontSize" value="{{fontSize}}" min="8" step="1" required>
+          <label for="step.fontSize">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.FONTSIZE.LABEL"}}</label>
+          <input type="number" name="step.fontSize" id="step.fontSize" value="{{fontSize}}" min="8" step="1" required>
         </div>
         <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.FONTSIZE.HINT"}}</p>
 
 
         <div class="form-group">
-          <label for="fontColor">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.FONTCOLOR.LABEL"}}</label>
-          <input type="text" id="fontColor" name="fontColor" value="{{fontColor}}" data-color-picker="{alphaChannel: false}">
+          <label for="step.fontColor">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.FONTCOLOR.LABEL"}}</label>
+          <input type="text" id="step.fontColor" name="step.fontColor" value="{{fontColor}}" data-color-picker="{alphaChannel: false}">
         </div>
         <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.FONTCOLOR.HINT"}}</p>
       </div>

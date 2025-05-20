@@ -1,32 +1,83 @@
-<input type="hidden" data-select-hint="" data-select-hook="" data-select-mode="" data-select-scene="">
+<input
+  type="hidden"
+  data-select-hint=""
+  data-select-hook=""
+  data-select-mode=""
+  data-select-scene=""
+/>
 
-<input type="hidden" name="oldScene" id="oldScene" value="{{oldScene}}">
-<input type="hidden" name="newScene" id="newScene" value="{{newScene}}">
+<input
+  type="hidden"
+  name="step.oldScene"
+  id="step.oldScene"
+  value="{{oldScene}}"
+/>
+<input
+  type="hidden"
+  name="step.newScene"
+  id="step.newScene"
+  value="{{newScene}}"
+/>
 
 <label>{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGET.LABEL"}}</label>
-<p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGET.HINT"}}</p>
+<p class="notes">{{localize
+    "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGET.HINT"
+  }}</p>
 
-<select name="targetType" id="targetType" value="{{targetType}}" style="width:100%">
+<select
+  name="step.targetType"
+  id="step.targetType"
+  value="{{targetType}}"
+  style="width:100%"
+>
   {{selectOptions targetTypeSelect localize=true selected=targetType}}
 </select>
 
-{{!-- Point --}}
+{{! Point }}
 <section data-target-type="point">
-  <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.HINT"}}</p>
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.HINT"
+    }}</p>
   <div class="flexrow">
-    <div class="center">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.X"}}</div>
-    <input type="number" value="{{pointX}}" min="0" max="1" step="any" name="pointX" id="pointX">
-    <div class="center">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.Y"}}</div>
-    <input type="number" name="pointY" id="pointY" value="{{pointY}}" min="0" max="1" step="any">
+    <div class="center">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.X"
+      }}</div>
+    <input
+      type="number"
+      value="{{pointX}}"
+      min="0"
+      max="1"
+      step="any"
+      name="step.pointX"
+      id="step.pointX"
+    />
+    <div class="center">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.Y"
+      }}</div>
+    <input
+      type="number"
+      name="step.pointY"
+      id="step.pointY"
+      value="{{pointY}}"
+      min="0"
+      max="1"
+      step="any"
+    />
   </div>
 </section>
 
-{{!-- Token --}}
+{{! Token }}
 <section data-target-type="oldtoken">
-  <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.CURRENTSCENE.HINT"}}</p>
-  <select name="selectedOldToken" id="selectedOldToken" value="{{selectedTarget}}">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.CURRENTSCENE.HINT"
+    }}</p>
+  <select
+    name="step.selectedOldToken"
+    id="step.selectedOldToken"
+    value="{{selectedTarget}}"
+  >
     <option></option>
-    {{selectOptions oldTokenSelect selected=selectedTarget }}
+    {{selectOptions oldTokenSelect selected=selectedTarget}}
   </select>
   <button data-action="select-old-token">
     <i class="fas fa-fw fa-spinner fa-spin-pulse"></i>
@@ -34,10 +85,16 @@
   </button>
 </section>
 <section data-target-type="newtoken">
-  <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.NEWSCENE.HINT"}}</p>
-  <select name="selectedNewToken" id="selectedNewToken" value="{{selectedTarget}}">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.NEWSCENE.HINT"
+    }}</p>
+  <select
+    name="step.selectedNewToken"
+    id="step.selectedNewToken"
+    value="{{selectedTarget}}"
+  >
     <option></option>
-    {{selectOptions newTokenSelect selected=selectedTarget }}
+    {{selectOptions newTokenSelect selected=selectedTarget}}
   </select>
   <button data-action="select-new-token">
     <i class="fas fa-fw fa-spinner fa-spin-pulse"></i>
@@ -45,12 +102,18 @@
   </button>
 </section>
 
-{{!-- Tile --}}
+{{! Tile }}
 <section data-target-type="oldtile">
-  <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.CURRENTSCENE.HINT"}}</p>
-  <select name="selectedOldTile" id="selectedOldTile" value="{{selectedTarget}}">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.CURRENTSCENE.HINT"
+    }}</p>
+  <select
+    name="step.selectedOldTile"
+    id="step.selectedOldTile"
+    value="{{selectedTarget}}"
+  >
     <option></option>
-    {{selectOptions oldTileSelect selected=selectedTarget }}
+    {{selectOptions oldTileSelect selected=selectedTarget}}
   </select>
   <button data-action="select-old-tile">
     <i class="fas fa-fw fa-spinner fa-spin-pulse"></i>
@@ -58,43 +121,73 @@
   </button>
 </section>
 <section data-target-type="newtile">
-  <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.NEWSCENE.HINT"}}</p>
-  <select name="selectedNewTile" id="selectedNewTile" value="{{selectedTarget}}">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.NEWSCENE.HINT"
+    }}</p>
+  <select
+    name="step.selectedNewTile"
+    id="step.selectedNewTile"
+    value="{{selectedTarget}}"
+  >
     <option></option>
-    {{selectOptions newTileSelect selected=selectedTarget }}
+    {{selectOptions newTileSelect selected=selectedTarget}}
   </select>
   <button data-action="select-new-tile">
     <i class="fas fa-fw fa-spinner fa-spin-pulse"></i>
   </button>
 </section>
 
-{{!-- Drawing --}}
+{{! Drawing }}
 <section data-target-type="olddrawing">
-  <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.CURRENTSCENE.HINT"}}</p>
-  <select name="selectedOldDrawing" id="selectedOldDrawing" value="{{selectedTarget}}">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.CURRENTSCENE.HINT"
+    }}</p>
+  <select
+    name="step.selectedOldDrawing"
+    id="step.selectedOldDrawing"
+    value="{{selectedTarget}}"
+  >
     <option></option>
     {{selectOptions oldDrawingSelect selected=selectedTarget}}
   </select>
 </section>
 <section data-target-type="newdrawing">
-  <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.NEWSCENE.HINT"}}</p>
-  <select name="selectedNewDrawing" id="selectedNewDrawing" value="{{selectedTarget}}">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.NEWSCENE.HINT"
+    }}</p>
+  <select
+    name="step.selectedNewDrawing"
+    id="step.selectedNewDrawing"
+    value="{{selectedTarget}}"
+  >
     <option></option>
     {{selectOptions newDrawingSelect selected=selectedTarget}}
   </select>
 </section>
 
-{{!-- Note --}}
+{{! Note }}
 <section data-target-type="oldnote">
-  <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.CURRENTSCENE.HINT"}}</p>
-  <select name="selectedOldNote" id="selectedOldNote" value="{{selectedTarget}}">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.CURRENTSCENE.HINT"
+    }}</p>
+  <select
+    name="step.selectedOldNote"
+    id="step.selectedOldNote"
+    value="{{selectedTarget}}"
+  >
     <option></option>
     {{selectOptions oldNoteSelect selected=selectedTarget}}
   </select>
 </section>
 <section data-target-type="newnote">
-  <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.NEWSCENE.HINT"}}</p>
-  <select name="selectedNewNote" id="selectedNewNote" value="{{selectedTarget}}">
+  <p class="notes">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.NEWSCENE.HINT"
+    }}</p>
+  <select
+    name="step.selectedNewNote"
+    id="step.selectedNewNote"
+    value="{{selectedTarget}}"
+  >
     <option></option>
     {{selectOptions newNoteSelect selected=selectedTarget}}
   </select>

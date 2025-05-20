@@ -1,13 +1,13 @@
 import { TransitionStep } from "./TransitionStep";
 import { SoundConfiguration, TransitionConfiguration } from "./types";
 import { TransitionSequence } from "../interfaces";
-import { parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { FileNotFoundError } from "../errors";
 
 export class SoundStep extends TransitionStep<SoundConfiguration> {
   // #region Properties (8)
 
-  #sound: Sound | null = null;
+  // #sound: Sound | null = null;
 
   public static DefaultSettings: SoundConfiguration = {
     id: "",
@@ -30,7 +30,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   // #region Public Static Methods (8)
 
   public static async RenderTemplate(config?: SoundConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SoundStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${SoundStep.template}.hbs`, {
       ...SoundStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {})
@@ -55,8 +55,9 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
 
   public static fromFormElement(form: HTMLFormElement): SoundStep {
     const elem = $(form) as JQuery<HTMLFormElement>;
-    const file = elem.find("#file").val() as string ?? "";
-    const volume = elem.find("#volume,input[type='range'][name='volume']").val() as number ?? 100;
+    const file = elem.find(`[name="step.file"]`).val() as string ?? "";
+
+    const volume = elem.find("[name='step.volume']").val() as number ?? 100;
 
     return new SoundStep({
       ...SoundStep.DefaultSettings,
@@ -107,12 +108,17 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
     }
 
     if (foundry.audio?.AudioHelper) {
+      // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      // const sound = await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true) as Sound;
+      // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      // const sound = await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true) as Sound;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      const sound = await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true) as Sound;
-      this.#sound = sound;
+      await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true);
+      // this.#sound = sound;
     } else {
-      const sound = await AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true);
-      this.#sound = sound;
+      // const sound = await AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true);
+      await AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true);
+      // this.#sound = sound;
     }
   }
 
@@ -126,7 +132,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
   }
 
   public teardown(): void {
-    this.#sound?.stop();
+    // this.#sound?.stop();
   }
 
   // #endregion Public Methods (3)

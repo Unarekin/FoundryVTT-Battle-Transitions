@@ -1,5 +1,5 @@
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SpiralShutterConfiguration } from "./types";
 import { SpiralShutterFilter } from "../filters";
@@ -21,6 +21,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
     version: "1.1.6",
     backgroundType: "color",
     backgroundImage: "",
+    falloff: 0,
     backgroundColor: "#00000000"
   }
 
@@ -37,7 +38,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
   // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: SpiralShutterConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${SpiralShutterStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${SpiralShutterStep.template}.hbs`, {
       ...SpiralShutterStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
@@ -66,7 +67,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
     return new SpiralShutterStep({
       ...SpiralShutterStep.DefaultSettings,
       backgroundImage,
-      ...parseConfigurationFormElements(elem, "id", "duration", "easing", "backgroundType", "backgroundColor", "direction", "radial", "label")
+      ...parseConfigurationFormElements(elem, "id", "duration", "easing", "backgroundType", "backgroundColor", "direction", "radial", "label", "falloff")
     })
   }
 
@@ -88,7 +89,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
       ...this.config
     };
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new SpiralShutterFilter(config.direction, config.radial, background.baseTexture);
+    const filter = new SpiralShutterFilter(config.direction, config.radial, background.baseTexture, config.falloff);
     this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter);

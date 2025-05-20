@@ -1,6 +1,6 @@
 import { BilinearWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { BilinearWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateBilinearDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
@@ -16,6 +16,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     type: "bilinearwipe",
     duration: 1000,
     easing: "none",
+    falloff: 0,
     radial: "inside",
     direction: "vertical",
     version: "1.1.6",
@@ -38,7 +39,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: BilinearWipeConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${BilinearWipeStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${BilinearWipeStep.template}.hbs`, {
       ...BilinearWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
@@ -48,6 +49,11 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
       radialSelect: generateRadialDirectionSelectOptions(),
       bgTypeSelect: generateBackgroundTypeSelectOptions()
     });
+  }
+
+  public serialize(): BilinearWipeConfiguration | Promise<BilinearWipeConfiguration> {
+    const config = super.serialize();
+    return config
   }
 
   public static from(config: BilinearWipeConfiguration): BilinearWipeStep
@@ -62,12 +68,13 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
 
   public static fromFormElement(form: HTMLFormElement): BilinearWipeStep {
     const backgroundImage = $(form).find("#backgroundImage").val() as string ?? "";
-    const elem = parseConfigurationFormElements<BilinearWipeConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "radial", "easing", "backgroundType", "backgroundColor", "label")
-    return new BilinearWipeStep({
+    const elem = parseConfigurationFormElements<BilinearWipeConfiguration>($(form) as JQuery<HTMLFormElement>, "id", "duration", "direction", "radial", "easing", "backgroundType", "backgroundColor", "label", "falloff");
+    const step = new BilinearWipeStep({
       ...BilinearWipeStep.DefaultSettings,
       ...elem,
       backgroundImage
     });
+    return step;
   }
 
   public static getDuration(config: BilinearWipeConfiguration): number { return { ...BilinearWipeStep.DefaultSettings, ...config }.duration }
@@ -83,7 +90,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
       ...this.config
     }
     const background = this.config.deserializedTexture ?? createColorTexture("transparent");
-    const filter = new BilinearWipeFilter(config.direction, config.radial, background.baseTexture);
+    const filter = new BilinearWipeFilter(config.direction, config.radial, background.baseTexture, config.falloff);
     this.#filter = filter;
     this.addFilter(container, filter);
     await this.simpleTween(filter)

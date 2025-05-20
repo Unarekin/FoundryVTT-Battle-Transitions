@@ -4,63 +4,46 @@
   data-id="{{id}}"
 >
   <form>
-    <input type="hidden" name="id" id="id" value="{{id}}" />
+    <input type="hidden" name="step.id" id="step.id" value="{{id}}" />
     <p>{{localize "BATTLETRANSITIONS.SOUND.DESCRIPTION"}}</p>
 
     <div class="form-group">
-      <label for="label">{{localize
+      <label for="step.label">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"
         }}</label>
-      <input type="text" name="label" id="label" value="{{label}}" />
+      <input type="text" name="step.label" id="step.label" value="{{label}}" />
     </div>
     <p class="notes">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"
       }}</p>
 
     <div class="form-group">
-      <label for="file">{{localize
+      <label for="step.file">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.SOUND.FILE.LABEL"
         }}</label>
-
-      {{#if isV1}}
-        <input type="text" name="file" id="file" required value="{{file}}" />
-        {{filePicker type="audio" target="file"}}
-      {{else}}
-        <file-picker
-          name="file"
-          id="file"
-          type="audio"
-          value="{{file}}"
-          required
-        ></file-picker>
-      {{/if}}
+      <file-picker
+        name="step.file"
+        id="step.file"
+        type="audio"
+        value="{{file}}"
+        required
+      ></file-picker>
     </div>
     <p class="notes">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.SOUND.FILE.HINT"
       }}</p>
     <div class="form-group">
-      <label for="volume">{{localize
+      <label for="step.volume">{{localize
           "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.LABEL"
         }}</label>
-      {{#if isV1}}
-        {{rangePicker
-          name="volume"
-          value=volume
-          min=0
-          max=100
-          step=1
-          id="volume"
-        }}
-      {{else}}
-        <range-picker
-          value="100"
-          min="0"
-          max="100"
-          step="1"
-          id="volume"
-          name="volume"
-        ></range-picker>
-      {{/if}}
+      <range-picker
+        value="{{volume}}"
+        min="0"
+        max="100"
+        step="1"
+        id="step.volume"
+        name="step.volume"
+      ></range-picker>
     </div>
     <p class="notes">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.HINT"

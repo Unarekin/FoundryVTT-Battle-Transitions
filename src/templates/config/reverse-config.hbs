@@ -4,12 +4,24 @@
   data-id="{{id}}"
 >
   <form>
-    <input type="hidden" name="id" id="id" value="{{id}}" />
+    <input type="hidden" name="step.id" id="step.id" value="{{id}}" />
     <p>{{localize "BATTLETRANSITIONS.REVERSE.DESCRIPTION"}}</p>
     <div class="form-group">
-      <label for="delay">{{localize "BATTLETRANSITIONS.SCENECONFIG.REVERSE.DELAY.LABEL"}}</label>
-      <input type="number" min="0" step="any" required name="delay" id="delay" value="{{delay}}">
+      <label for="step.delay">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.REVERSE.DELAY.LABEL"
+        }}</label>
+      <input
+        type="number"
+        min="0"
+        step="any"
+        required
+        name="step.delay"
+        id="step.delay"
+        value="{{delay}}"
+      />
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.REVERSE.DELAY.HINT"}}</p>
+    <p class="notes">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.REVERSE.DELAY.HINT"
+      }}</p>
   </form>
 </div>

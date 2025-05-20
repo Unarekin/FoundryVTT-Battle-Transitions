@@ -8,8 +8,8 @@ import SocketHandler from "./SocketHandler";
 import { BattleTransition } from "./BattleTransition";
 import semver from "semver";
 import { awaitHook, log } from './utils';
-import { libWrapper } from "./vendor/libwrapper.shim";
 import { SceneChangeStep } from './steps';
+import { injectSceneConfigV1, injectSceneConfigV2 } from "./dialogs";
 
 (window as any).semver = semver;
 (window as any).BattleTransition = BattleTransition;
@@ -27,7 +27,7 @@ Hooks.once("init", async () => {
 
   if (typeof libWrapper === "function") {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-function-type
-    (libWrapper as any).register(__MODULE_ID__, "Scene.prototype.update", function (this: Scene, wrapped: Function, ...args: unknown[]) {
+    libWrapper.register(__MODULE_ID__, "Scene.prototype.update", function (this: Scene, wrapped: Function, ...args: unknown[]) {
 
       const delta = args[0] as Partial<Scene>;
 
@@ -50,24 +50,63 @@ Hooks.once("init", async () => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return wrapped(delta);
     }, "MIXED");
+
+    // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-function-type
+    // libWrapper.register(__MODULE_ID__, "TextureLoader.loadSceneTextures", function (this: TextureLoader, wrapped: Function, ...args: unknown[]) {
+    //   log("loadSceneTextures:", args);
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    //   return wrapped(...args);
+    // });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-function-type
+    libWrapper.register(__MODULE_ID__, "TextureLoader.prototype.load", function (this: TextureLoader, wrapped: Function, ...args: unknown[]) {
+
+      if (BattleTransition.HideLoadingBar) {
+        const opt = args[1] as Record<string, unknown>;
+        opt.displayProgress = false;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return wrapped(...args);
+    });
   }
 });
 
 Hooks.once("ready", () => {
   // void ConfigurationHandler.MigrateAllScenes();
+
+  if (game?.release?.isNewer("13")) {
+    injectSceneConfigV2();
+  } else {
+    // Set up renderSceneConfig hook to inject configuration for v12
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Hooks.on("renderSceneConfig", (app: SceneConfig, html: JQuery<HTMLElement>, options: any) => {
+      // void ConfigurationHandler.InjectSceneConfig(app, html, options);
+      injectSceneConfigV1(app)
+        .catch((err: Error) => {
+          console.error(err);
+          ui.notifications?.error(err.message, { console: false, localize: true });
+        });
+    });
+  }
+
 })
 
-Hooks.on("renderSceneConfig", (app: SceneConfig, html: JQuery<HTMLElement>, options: any) => {
-  void ConfigurationHandler.InjectSceneConfig(app, html, options);
-});
 
 Hooks.once("socketlib.ready", () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   SocketHandler.register(socketlib.registerModule(__MODULE_ID__));
 });
 
+
 Hooks.on("getSceneNavigationContext", (html: JQuery<HTMLElement>, buttons: any[]) => {
+  console.log("getSceneNavigationContext");
   ConfigurationHandler.AddToNavigationBar(buttons);
+});
+
+Hooks.on("getSceneContextOptions", (directory: SceneDirectory, options: ContextMenuEntry[]) => {
+  ConfigurationHandler.AddToNavigationBar(options);
+  return options;
 });
 
 Hooks.on("preUpdatePlaylist", (playlist: Playlist, delta: Partial<Playlist>) => {

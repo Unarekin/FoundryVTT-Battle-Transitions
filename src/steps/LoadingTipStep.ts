@@ -1,6 +1,6 @@
 import { TransitionStep } from './TransitionStep';
 import { LoadingTipConfiguration, LoadingTipSource } from './types';
-import { deepCopy, parseConfigurationFormElements } from '../utils';
+import { deepCopy, parseConfigurationFormElements, renderTemplateFunc } from '../utils';
 import { InvalidRollTableError, InvalidTipLocationError } from '../errors';
 import { generateFontSelectOptions } from './selectOptions';
 
@@ -38,7 +38,7 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
       ...(config ? config : {})
     }.style);
 
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${LoadingTipStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${LoadingTipStep.template}.hbs`, {
       ...LoadingTipStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

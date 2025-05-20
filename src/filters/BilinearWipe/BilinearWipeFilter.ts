@@ -131,11 +131,11 @@ function generateTexture(direction: BilinearDirection, radial: RadialDirection):
 
 export class BilinearWipeFilter extends TextureWipeFilter {
 
-  constructor(direction: BilinearDirection, radial: RadialDirection, bg: PIXI.TextureSource | PIXI.ColorSource) {
+  constructor(direction: BilinearDirection, radial: RadialDirection, bg: PIXI.TextureSource | PIXI.ColorSource, falloff: number) {
     const bgTexture = coerceTexture(bg) ?? createColorTexture("transparent");
 
     const wipeTexture = generateTexture(direction, radial);
     if (!wipeTexture) throw new InvalidDirectionError(`${direction}-${radial}`);
-    super(wipeTexture, bgTexture);
+    super(wipeTexture, falloff, bgTexture);
   }
 }

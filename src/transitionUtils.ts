@@ -5,6 +5,7 @@ import { awaitHook, getStepClassByKey, log } from "./utils";
 import { coerceScene } from "./coercion";
 import { TransitionConfiguration } from "./steps";
 import { PreparedTransitionSequence } from "./interfaces";
+import { BattleTransition } from "./BattleTransition";
 
 
 
@@ -123,14 +124,17 @@ export function cleanupTransition(container?: PIXI.DisplayObject) {
 export function hideLoadingBar() {
   const loadingBar = document.getElementById('loading');
   if (loadingBar) loadingBar.style.opacity = "0";
+  BattleTransition.HideLoadingBar = true;
 }
 
 export function showLoadingBar() {
   const loadingBar = document.getElementById("loading");
   if (loadingBar) loadingBar.style.removeProperty("opacity");
+  BattleTransition.HideLoadingBar = false;
 }
 
 export function hideTransitionCover() {
+  log("Hiding transition cover");
   transitionCover.style.display = "none";
   transitionCover.style.removeProperty("backgroundImage");
 }

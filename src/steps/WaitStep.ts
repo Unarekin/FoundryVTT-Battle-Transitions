@@ -1,6 +1,6 @@
 import { WaitConfiguration } from "./types";
 import { TransitionStep } from "./TransitionStep";
-import { parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 
 const CURRENT_VERSION = "1.1.0";
 
@@ -26,7 +26,7 @@ export class WaitStep extends TransitionStep<WaitConfiguration> {
   // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: WaitConfiguration): Promise<string> {
-    return renderTemplate(`/modules/${__MODULE_ID__}/templates/config/${WaitStep.template}.hbs`, {
+    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${WaitStep.template}.hbs`, {
       ...WaitStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {})

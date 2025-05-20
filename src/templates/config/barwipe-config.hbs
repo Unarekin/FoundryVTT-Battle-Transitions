@@ -1,34 +1,35 @@
 <div class="flexcol step-config-item" data-transition-type="barwipe" data-id="{{id}}">
   <form>
-    <input type="hidden" name="id" id="id" value="{{id}}">
+    <input type="hidden" name="step.id" id="step.id" value="{{id}}">
     <p>{{localize "BATTLETRANSITIONS.BARWIPE.DESCRIPTION"}}</p>
 
     <div class="form-group">
-      <label for="label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
-      <input type="text" name="label" id="label" value="{{label}}">
+      <label for="step.label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
+      <input type="text" name="step.label" id="step.label" value="{{label}}">
     </div>
     <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
 
     <div class="form-group">
-      <label for="bars">{{localize "BATTLETRANSITIONS.SCENECONFIG.BARWIPE.BARS.LABEL"}}</label>
-      <input type="number" min="2" step="1" value="{{bars}}" name="bars" id="bars" required>
+      <label for="step.bars">{{localize "BATTLETRANSITIONS.SCENECONFIG.BARWIPE.BARS.LABEL"}}</label>
+      <input type="number" min="2" step="1" value="{{bars}}" name="step.bars" id="step.bars" required>
     </div>
     <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.BARWIPE.BARS.HINT"}}</p>
 
     <div class="form-group">
-      <label for="direction">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.LABEL"}}</label>
-      <select name="direction" id="direction">
+      <label for="step.direction">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.LABEL"}}</label>
+      <select name="step.direction" id="step.direction">
         {{selectOptions directionSelect selected=direction localize=true}}
       </select>
     </div>
     <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.HINT"}}</p>
 
     {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
+    {{> "/modules/battle-transitions/templates/config/falloff-config.hbs" this}}
     {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
 
     <div class="form-group">
-      <label for="easing">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL" }}</label>
-      <select name="easing" id="easing">
+      <label for="step.easing">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL" }}</label>
+      <select name="step.easing" id="step.easing">
         {{selectOptions easingSelect selected=easing localize=true}}
       </select>
     </div>

@@ -31,6 +31,7 @@ export * from './TextureSwapStep';
 export * from './TransitionStep';
 export * from './TwistStep';
 export * from './VideoStep';
+export * from './ViewSceneStep';
 export * from './WaitStep';
 export * from './WaveWipeStep';
 export * from './ZoomBlurStep';

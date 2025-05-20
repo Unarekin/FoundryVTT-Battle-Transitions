@@ -5,13 +5,13 @@ import { TextureWipeFilter } from "../TextureWipe/TextureWipeFilter";
 
 
 export class SpiralWipeFilter extends TextureWipeFilter {
-  constructor(clock: ClockDirection, radial: RadialDirection, direction: WipeDirection, background: TextureLike) {
+  constructor(clock: ClockDirection, radial: RadialDirection, direction: WipeDirection, background: TextureLike, falloff: number) {
     const bg = coerceTexture(background);
     if (!(bg instanceof PIXI.Texture)) throw new InvalidTextureError();
     const wipeTexture = PIXI.Texture.from(`/modules/${__MODULE_ID__}/assets/wipes/spiral-linear-${clock}-${direction}-${radial}.webp`);
     if (!(wipeTexture instanceof PIXI.Texture)) throw new InvalidTextureError();
 
-    super(wipeTexture, bg);
+    super(wipeTexture, falloff, bg);
   }
 }
 

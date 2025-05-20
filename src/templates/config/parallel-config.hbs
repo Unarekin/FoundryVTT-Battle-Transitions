@@ -3,46 +3,36 @@
   data-transition-type="parallel"
   data-id="{{id}}"
 >
-  <form>
-    <input type="hidden" name="id" id="id" value="{{id}}" />
-    <input type="hidden" name="oldScene" id="oldScene" value="{{oldScene}}" />
-    <input type="hidden" name="newScene" id="newScene" value="{{newScene}}" />
-    <p class="notes">{{localize "BATTLETRANSITIONS.PARALLEL.DESCRIPTION"}}</p>
+  <input type="hidden" name="step.id" id="step.id" value="{{id}}" />
 
-    <div class="form-group">
-      <label for="label">{{localize
-          "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"
-        }}</label>
-      <input type="text" name="label" id="label" value="{{label}}" />
+  <p class="hint">{{localize "BATTLETRANSITIONS.PARALLEL.DESCRIPTION"}}</p>
+
+  <div class="form-group">
+    <label for="step.label">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"
+      }}</label>
+    <input type="text" name="step.label" id="step.label" value="{{label}}" />
+  </div>
+  <p class="hint">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"
+    }}</p>
+
+  <div class="flexrow">
+    <div class="flex1">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.PARALLEL.SEQUENCES"
+      }}</div>
+    <div class="flex0">
+      <i
+        class="fas fa-fw fa-plus link"
+        data-action="addSequence"
+        title="{{localize
+          'BATTLETRANSITIONS.SCENECONFIG.PARALLEL.ADDSEQUENCE'
+        }}"
+      ></i>
     </div>
-    <p class="notes">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"
-      }}</p>
+  </div>
+  <hr />
+  <div class="flexcol" data-role="sequence-list">
 
-    <table class="no-margins">
-      <tr>
-        <td id="sequence-list">
-
-          <button data-action="add-sequence">
-            <i class="fas fa-plus"></i>
-            {{localize "BATTLETRANSITIONS.SCENECONFIG.PARALLEL.ADDSEQUENCE"}}
-          </button>
-        </td>
-        <td class="flexcol" id="selected-sequence" data-index="">
-          <div class="flex0 centered full-width" id="sequence-name"></div>
-          <div id="selected-sequence-steps" class="flex1">
-
-          </div>
-          <div class="right-align" id="total-duration"></div>
-          <div class="flex0">
-            <button data-action="add-step" id="add-step" name="add-step"><i
-                class="fas fa-plus"
-              ></i>{{localize
-                "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.ADDSTEP"
-              }}</button>
-          </div>
-        </td>
-      </tr>
-    </table>
-  </form>
+  </div>
 </div>

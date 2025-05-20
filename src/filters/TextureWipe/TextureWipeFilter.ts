@@ -1,25 +1,24 @@
 import frag from "./texturewipe.frag";
 import { CustomFilter } from '../CustomFilter';
-import { createColorTexture } from '../../utils';
 
 type TextureWipeUniforms = {
   progress: number;
   wipeSampler: PIXI.Texture;
   bgSampler: PIXI.Texture;
+  falloff: number;
 }
 
 
-const transparentTexture = createColorTexture(new PIXI.Color("#00000000"));
+// const transparentTexture = createColorTexture(new PIXI.Color("#00000000"));
 
 export class TextureWipeFilter extends CustomFilter<TextureWipeUniforms> {
 
-  constructor(wipeSampler: PIXI.Texture, bgSampler?: PIXI.Texture) {
-    const uniforms: TextureWipeUniforms = {
+  constructor(wipeSampler: PIXI.Texture, falloff: number, bg: PIXI.Texture) {
+    super(undefined, frag, {
       progress: 0,
       wipeSampler,
-      bgSampler: bgSampler ?? transparentTexture
-    }
-
-    super(undefined, frag, uniforms);
+      falloff,
+      bgSampler: bg
+    });
   }
 }
