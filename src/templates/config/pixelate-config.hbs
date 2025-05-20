@@ -7,13 +7,13 @@
       <label for="step.label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
       <input type="text" name="step.label" id="step.label" value="{{label}}">
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
 
     <div class="form-group">
       <label for="step.maxSize">{{localize "BATTLETRANSITIONS.SCENECONFIG.PIXELATE.MAXSIZE.LABEL"}}</label>
       <input type="number" name="step.maxSize" id="step.maxSize" value="{{maxSize}}" step="1" required>
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.PIXELATE.MAXSIZE.HINT"}}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.PIXELATE.MAXSIZE.HINT"}}</p>
     {{> "/modules/battle-transitions/templates/config/dualtransition-selector.hbs" this}}
     {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
     <div class="form-group">
@@ -22,6 +22,6 @@
         {{selectOptions easingSelect selected=easing localize=true}}
       </select>
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.HINT"}}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.HINT"}}</p>
   </form>
 </div>

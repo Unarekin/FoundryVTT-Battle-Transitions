@@ -20,7 +20,7 @@
           <label for="step.label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
           <input type="text" name="step.label" id="step.label" value="{{label}}" />
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
 
         <div class="form-group">
           <label for="step.sourceType">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.SOURCETYPE.LABEL"}}</label>
@@ -28,15 +28,15 @@
             {{selectOptions sourceSelect selected=sourceType localize=true}}
           </select>
         </div>
-        <p class="notes" data-source-type="string">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.SOURCETYPE.STRING.HINT"}}</p>
-        <p class="notes" data-source-type="rolltable">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.SOURCETYPE.ROLLTABLE.HINT"}}</p>
+        <p class="hint" data-source-type="string">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.SOURCETYPE.STRING.HINT"}}</p>
+        <p class="hint" data-source-type="rolltable">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.SOURCETYPE.ROLLTABLE.HINT"}}</p>
 
         <section data-source-type="string">
           <div class="form-group">
             <label for="step.message">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.MESSAGE.LABEL"}}</label>
             <input type="text" name="step.message" id="step.message" value="{{message}}">
           </div>
-          <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.MESSAGE.HINT"}}</p>
+          <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.MESSAGE.HINT"}}</p>
         </section>
 
         <section data-source-type="rolltable">
@@ -47,7 +47,7 @@
               {{selectOptions tableSelect selected=table localize=false}}
             </select>
           </div>
-          <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.ROLLTABLE.HINT"}}</p>
+          <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.ROLLTABLE.HINT"}}</p>
         </section>
         
         <div class="form-group">
@@ -56,7 +56,7 @@
             {{selectOptions locationSelect selected=location localize=true}}
           </select>
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.HINT"}}</p>
 
 
         {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
@@ -68,14 +68,14 @@
           <label for="step.fontSize">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.FONTSIZE.LABEL"}}</label>
           <input type="number" name="step.fontSize" id="step.fontSize" value="{{fontSize}}" min="8" step="1" required>
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.FONTSIZE.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.FONTSIZE.HINT"}}</p>
 
 
         <div class="form-group">
           <label for="step.fontColor">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.FONTCOLOR.LABEL"}}</label>
           <input type="text" id="step.fontColor" name="step.fontColor" value="{{fontColor}}" data-color-picker="{alphaChannel: false}">
         </div>
-        <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.FONTCOLOR.HINT"}}</p>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.FONTCOLOR.HINT"}}</p>
       </div>
     </section>
   </form>

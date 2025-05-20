@@ -20,7 +20,7 @@
 />
 
 <label>{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGET.LABEL"}}</label>
-<p class="notes">{{localize
+<p class="hint">{{localize
     "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGET.HINT"
   }}</p>
 
@@ -35,7 +35,7 @@
 
 {{! Point }}
 <section data-target-type="point">
-  <p class="notes">{{localize
+  <p class="hint">{{localize
       "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.HINT"
     }}</p>
   <div class="flexrow">
@@ -68,7 +68,7 @@
 
 {{! Token }}
 <section data-target-type="oldtoken">
-  <p class="notes">{{localize
+  <p class="hint">{{localize
       "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.CURRENTSCENE.HINT"
     }}</p>
   <select
@@ -85,7 +85,7 @@
   </button>
 </section>
 <section data-target-type="newtoken">
-  <p class="notes">{{localize
+  <p class="hint">{{localize
       "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.NEWSCENE.HINT"
     }}</p>
   <select
@@ -104,7 +104,7 @@
 
 {{! Tile }}
 <section data-target-type="oldtile">
-  <p class="notes">{{localize
+  <p class="hint">{{localize
       "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.CURRENTSCENE.HINT"
     }}</p>
   <select
@@ -121,7 +121,7 @@
   </button>
 </section>
 <section data-target-type="newtile">
-  <p class="notes">{{localize
+  <p class="hint">{{localize
       "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.NEWSCENE.HINT"
     }}</p>
   <select
@@ -139,7 +139,7 @@
 
 {{! Drawing }}
 <section data-target-type="olddrawing">
-  <p class="notes">{{localize
+  <p class="hint">{{localize
       "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.CURRENTSCENE.HINT"
     }}</p>
   <select
@@ -152,7 +152,7 @@
   </select>
 </section>
 <section data-target-type="newdrawing">
-  <p class="notes">{{localize
+  <p class="hint">{{localize
       "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.NEWSCENE.HINT"
     }}</p>
   <select
@@ -167,7 +167,7 @@
 
 {{! Note }}
 <section data-target-type="oldnote">
-  <p class="notes">{{localize
+  <p class="hint">{{localize
       "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.CURRENTSCENE.HINT"
     }}</p>
   <select
@@ -180,7 +180,7 @@
   </select>
 </section>
 <section data-target-type="newnote">
-  <p class="notes">{{localize
+  <p class="hint">{{localize
       "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.NEWSCENE.HINT"
     }}</p>
   <select
@@ -192,4 +192,4 @@
     {{selectOptions newNoteSelect selected=selectedTarget}}
   </select>
 </section>
-<p class="notes"></p>
+<p class="hint"></p>

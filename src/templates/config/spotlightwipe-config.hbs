@@ -13,7 +13,7 @@
       <label for="step.label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
       <input type="text" name="step.label" id="step.label" value="{{label}}">
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
 
     <div class="form-group">
       <label for="step.direction">{{localize
@@ -23,7 +23,7 @@
         {{selectOptions directionSelect selected=direction localize=true}}
       </select>
     </div>
-    <p class="notes">{{localize
+    <p class="hint">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.HINT"
       }}</p>
     <div class="form-group">
@@ -34,7 +34,7 @@
         {{selectOptions radialSelect selected=radial localize=true}}
       </select>
     </div>
-    <p class="notes">{{localize
+    <p class="hint">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.COMMON.RADIAL.HINT"
       }}</p>
       {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
@@ -48,7 +48,7 @@
         {{selectOptions easingSelect selected=easing localize=true}}
       </select>
     </div>
-    <p class="notes">{{localize
+    <p class="hint">{{localize
         "BATTLETRANSITIONS.SCENECONFIG.EASING.HINT"
       }}</p>
   </form>

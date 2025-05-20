@@ -7,7 +7,7 @@
       <label for="step.label">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"}}</label>
       <input type="text" name="step.label" id="step.label" value="{{label}}">
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"}}</p>
 
     <div class="form-group">
       <label for="step.direction">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.LABEL"}}</label>
@@ -15,18 +15,18 @@
         {{selectOptions directionSelect selected=direction localize=true}}
       </select>
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.HINT"}}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.HINT"}}</p>
     <div class="form-group">
       <label for="step.radial">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.RADIAL.LABEL" }}</label>
       <select name="step.radial" id="step.radial">{{selectOptions radialSelect selected=radial localize=true}}</select>
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.RADIAL.HINT"}}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.RADIAL.HINT"}}</p>
     <div class="form-group">
       <label for="step.clockDirection">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.CLOCKDIRECTION.LABEL"}}</label>
       <select name="step.clockDirection" id="step.clockDirection">{{selectOptions clockDirectionSelect selected=clockDirection localize=true}}
       </select>
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.CLOCKDIRECTION.HINT" }}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.CLOCKDIRECTION.HINT" }}</p>
     {{> "/modules/battle-transitions/templates/config/duration-selector.hbs" this}}
     {{> "/modules/battle-transitions/templates/config/falloff-config.hbs" this}}
     {{> "/modules/battle-transitions/templates/config/background-selector.hbs" this}}
@@ -36,6 +36,6 @@
         {{selectOptions easingSelect selected=easing localize=true}}
       </select>
     </div>
-    <p class="notes">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.HINT"}}</p>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.HINT"}}</p>
   </form>
 </div>
