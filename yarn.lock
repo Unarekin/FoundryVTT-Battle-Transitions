@@ -1232,13 +1232,12 @@ esbuild-copy-static-files@^0.1.0:
   resolved "https://registry.yarnpkg.com/esbuild-copy-static-files/-/esbuild-copy-static-files-0.1.0.tgz#4bb4987b5b554d2fc122a45f077d74663b4dbcf0"
   integrity sha512-KlpmYqANA1t2nZavEdItfcOjJC6wbHA21v35HJWN32DddGTWKNNGDKljUzbCPojmpD+wAw8/DXr5abJ4jFCE0w==
 
-esbuild-node-externals@^1.14.0:
-  version "1.14.0"
-  resolved "https://registry.yarnpkg.com/esbuild-node-externals/-/esbuild-node-externals-1.14.0.tgz#fc2950c67a068dc2b538fd1381ad7d8e20a6f54d"
-  integrity sha512-jMWnTlCII3cLEjR5+u0JRSTJuP+MgbjEHKfwSIAI41NgLQ0ZjfzjchlbEn0r7v2u5gCBMSEYvYlkO7GDG8gG3A==
+esbuild-node-externals@^1.18.0:
+  version "1.18.0"
+  resolved "https://registry.yarnpkg.com/esbuild-node-externals/-/esbuild-node-externals-1.18.0.tgz#a7dd8ea8e1bcdc43b81daa668453f6a585b21ecd"
+  integrity sha512-suFVX3SzZlXrGIS9Yqx+ZaHL4w1p0e/j7dQbOM9zk8SfFpnAGnDplHUKXIf9kcPEAfZRL66JuYeVSVlsSEQ5Eg==
   dependencies:
     find-up "^5.0.0"
-    tslib "^2.4.1"
 
 esbuild-plugin-clean@^1.0.1:
   version "1.0.1"
@@ -1270,7 +1269,7 @@ esbuild-sass-plugin@^3.3.1:
     safe-identifier "^0.4.2"
     sass "^1.71.1"
 
-esbuild@^0.25.0:
+esbuild@^0.25.4:
   version "0.25.4"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.25.4.tgz#bb9a16334d4ef2c33c7301a924b8b863351a0854"
   integrity sha512-8pgjLUcUjcgDg+2Q4NYXnPbo/vncAY4UmyaCm0jZevERqCHZIaWwdJHkf8XQtu4AxSKCdvrUbT0XUr1IdZzI8Q==
@@ -3154,11 +3153,6 @@ ts-loader@^9.5.1:
     micromatch "^4.0.0"
     semver "^7.3.4"
     source-map "^0.7.4"
-
-tslib@^2.4.1:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.7.0.tgz#d9b40c5c40ab59e8738f297df3087bf1a2690c01"
-  integrity sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
