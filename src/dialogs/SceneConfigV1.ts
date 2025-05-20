@@ -71,7 +71,7 @@ function addEventListeners(parent: HTMLElement, app: SceneConfig) {
       const sequence = buildTransitionFromForm($(parent));
       const formData = foundry.utils.expandObject(new (formDataExtendedClass())(app.form as HTMLFormElement).object) as Record<string, unknown>
       const macro = generateMacro(sequence, formData.users as string[] ?? [], app.document);
-      void Macro.createDialog({ type: "script", command: macro });
+      void Macro.createDialog({ type: "script", command: macro, img: `modules/${__MODULE_ID__}/assets/icons/crossed-swords.svg` });
     })
   }
 

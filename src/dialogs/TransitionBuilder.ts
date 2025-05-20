@@ -75,7 +75,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       const sequence = this.parseSequence();
       const formData = foundry.utils.expandObject(new (formDataExtendedClass())(this.element as HTMLFormElement).object) as Record<string, unknown>
       const macro = generateMacro(sequence, formData.users as string[] ?? [], formData.scene);
-      void Macro.createDialog({ type: "script", command: macro });
+      void Macro.createDialog({ type: "script", command: macro, img: `modules/${__MODULE_ID__}/assets/icons/crossed-swords.svg` });
     } catch (err) {
       console.error(err);
       if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
