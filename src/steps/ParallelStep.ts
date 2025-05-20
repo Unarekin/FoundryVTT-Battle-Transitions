@@ -3,7 +3,7 @@ import { addSequence, deleteSequenceItem, editSequenceItem, renderSequenceItem }
 import { InvalidElementError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { log, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { parseConfigurationFormElements, renderTemplateFunc } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration, TransitionConfiguration } from './types';
 
@@ -185,7 +185,6 @@ function addEventListeners(html: HTMLElement) {
 async function addSequenceItem(parent: HTMLElement) {
   try {
     const sequence = await addSequence();
-    log("Adding sequence:", sequence);
     // If it is canceled, or an empty sequence is submitted, bail.
     if (!sequence || !sequence.length) return;
 

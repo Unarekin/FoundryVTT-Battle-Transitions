@@ -1,5 +1,5 @@
 import { EmptyObject } from "Foundry-VTT/src/types/utils.mjs";
-import { downloadJSON, formatDuration, formDataExtendedClass, getStepClassByKey, localize } from "../utils";
+import { downloadJSON, formatDuration, formDataExtendedClass, getStepClassByKey, localize, log } from "../utils";
 import { addStepDialog, buildTransitionFromForm, confirm, deleteSelectedStep, editSequenceItem, generateMacro, importSequence, setBackgroundType, setTargetConfig } from "./functions";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
@@ -84,7 +84,9 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
   public static async EditSequence(this: TransitionBuilder, e: Event, elem: HTMLElement) {
     try {
+
       const index = elem.dataset.index as string;
+      log("EditSequence:", index);
       await editSequenceItem(this.element, parseInt(index));
     } catch (err) {
       console.error(err);
@@ -298,6 +300,8 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     const sequence = this.parseSequence();
 
     formData.sequence = sequence;
+
+    log("Submitted:", JSON.parse(JSON.stringify(formData)));
 
     if (this.#resolve) {
       this.#resolve({
