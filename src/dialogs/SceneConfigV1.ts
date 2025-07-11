@@ -2,7 +2,7 @@ import { ConfigurationHandler } from "../ConfigurationHandler";
 import { InvalidTransitionError } from "../errors";
 import { TransitionConfiguration } from "../steps";
 import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize } from "../utils";
-import { importSequence, buildTransitionFromForm, setEnabledButtons, selectItem, setBackgroundType, deleteSelectedStep, addStep, createConfigurationOption, confirm, editSequenceItem, generateMacro, } from "./functions";
+import { importSequence, buildTransitionFromForm, setEnabledButtons, selectItem, setBackgroundType, deleteSelectedStep, addStep, createConfigurationOption, confirm, editSequenceItem, generateMacro, updateConfigurationOption, } from "./functions";
 export async function injectSceneConfigV1(app: SceneConfig) {
   // Add tab
   const tab = `<a class="item" data-tab="transition">
@@ -42,7 +42,39 @@ export async function injectSceneConfigV1(app: SceneConfig) {
 }
 
 
+function onChangeForm(form: HTMLFormElement) {
+  const list = form.querySelector(`#stepList`);
+  if (!(list instanceof HTMLSelectElement)) return
+
+  const data = foundry.utils.expandObject(new (formDataExtendedClass())(form).object) as Record<string, unknown>
+  // If a step is selected, make sure its configuration is reflected in the step list
+  if (data.step) {
+    const step = data.step as TransitionConfiguration;
+    const option = list.querySelector(`option[data-id="${step.id}"]`);
+
+    if (!(option instanceof HTMLOptionElement)) return
+    if (!option.dataset.type) throw new InvalidTransitionError(option.dataset.type ?? typeof undefined);
+    const typeClass = getStepClassByKey(option.dataset.type);
+
+    if (!typeClass) throw new InvalidTransitionError(step.type);
+
+    const config = {
+      ...typeClass.DefaultSettings,
+      id: option.dataset.id,
+      ...typeClass.from(step).config
+    }
+    updateConfigurationOption(option, config as TransitionConfiguration);
+  }
+}
+
 function addEventListeners(parent: HTMLElement, app: SceneConfig) {
+  const form = parent.querySelector(`form`);
+  if (form instanceof HTMLFormElement) {
+    form.addEventListener("change", () => {
+      onChangeForm(form);
+    });
+  }
+
   const importButton = parent.querySelector(`[data-action="importJson"]`);
   if (importButton instanceof HTMLElement) {
     importButton.addEventListener("click", () => {
