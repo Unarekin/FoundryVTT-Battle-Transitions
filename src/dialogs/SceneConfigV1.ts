@@ -1,7 +1,7 @@
 import { ConfigurationHandler } from "../ConfigurationHandler";
 import { InvalidTransitionError } from "../errors";
 import { TransitionConfiguration } from "../steps";
-import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize, log } from "../utils";
+import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize } from "../utils";
 import { importSequence, buildTransitionFromForm, setEnabledButtons, selectItem, setBackgroundType, deleteSelectedStep, addStep, createConfigurationOption, confirm, editSequenceItem, generateMacro, updateConfigurationOption, } from "./functions";
 export async function injectSceneConfigV1(app: SceneConfig) {
   // Add tab
