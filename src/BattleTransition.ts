@@ -137,7 +137,7 @@ export class BattleTransition {
     const prepared = PreparedSequences[id];
     if (!prepared) throw new InvalidTransitionError(typeof prepared);
 
-    const sceneChange = prepared.original.sequence.find(item => item.type === "scenechange") as SceneChangeConfiguration | undefined;
+    const sceneChange = prepared.original.sequence.find(item => item.type === "scenechange" || item.type === "viewscene") as SceneChangeConfiguration | undefined;
     const skipTransition = sceneChange && sceneChange.scene === canvas?.scene?.id;
 
     Hooks.callAll(CUSTOM_HOOKS.TRANSITION_START, prepared.original);
