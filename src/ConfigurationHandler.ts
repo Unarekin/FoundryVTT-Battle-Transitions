@@ -64,7 +64,7 @@ export class ConfigurationHandler {
           const scene = getScene(li);
           if (!scene) return false;
           // return scene.id !== game?.scenes?.active?.id
-          return true;
+          return scene.canUserModify(game.user as User, "update");
         },
         callback: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
           const scene = getScene(li);
