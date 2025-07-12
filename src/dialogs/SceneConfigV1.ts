@@ -230,6 +230,14 @@ function setConfigEventListeners(parent: HTMLElement) {
     bgSelect.addEventListener("input", () => { setBackgroundType(parent, bgSelect.value as "image" | "color" | "overlay"); });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const tabs = new (game?.release?.isNewer("13") ? (foundry.applications as any).ux.Tabs as typeof Tabs : Tabs)({
+    contentSelector: ".tab-content",
+    navSelector: `.tabs [data-group="config"]`,
+    initial: "basics"
+  });
+  tabs.bind(parent);
+
   const editSequenceItems = parent.querySelectorAll(`[data-action="editSequence"]`);
   for (const item of editSequenceItems) {
     item.addEventListener("click", () => {
