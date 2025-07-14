@@ -172,7 +172,6 @@ function setConfigEventListeners(parent: HTMLElement) {
     initial: "basics"
   });
   tabs.bind(parent);
-  tabs.activate("basics");
 }
 
 export function setBackgroundType(parent: HTMLElement, backgroundType: BackgroundType) {
