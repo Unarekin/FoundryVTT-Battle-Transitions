@@ -8,8 +8,8 @@ import SocketHandler from "./SocketHandler";
 import { BattleTransition } from "./BattleTransition";
 import semver from "semver";
 import { awaitHook, log } from './utils';
-import { SceneChangeStep } from './steps';
 import { injectSceneConfigV1, injectSceneConfigV2 } from "./dialogs";
+import { SceneChangeStep } from './steps';
 
 (window as any).semver = semver;
 (window as any).BattleTransition = BattleTransition;
@@ -28,7 +28,6 @@ Hooks.once("init", async () => {
   if (typeof libWrapper === "function") {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-function-type
     libWrapper.register(__MODULE_ID__, "Scene.prototype.update", function (this: Scene, wrapped: Function, ...args: unknown[]) {
-
       const delta = args[0] as Partial<Scene>;
 
       if (delta.active && ConfigurationHandler.ShouldAutoTrigger(this)) {
@@ -48,15 +47,8 @@ Hooks.once("init", async () => {
         if (Object.keys(delta).length === 0) return false;
       }
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return wrapped(delta);
+      return wrapped(...args);
     }, "MIXED");
-
-    // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-function-type
-    // libWrapper.register(__MODULE_ID__, "TextureLoader.loadSceneTextures", function (this: TextureLoader, wrapped: Function, ...args: unknown[]) {
-    //   log("loadSceneTextures:", args);
-    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    //   return wrapped(...args);
-    // });
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-function-type
     libWrapper.register(__MODULE_ID__, "TextureLoader.prototype.load", function (this: TextureLoader, wrapped: Function, ...args: unknown[]) {
