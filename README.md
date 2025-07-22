@@ -17,6 +17,9 @@
 - [Support](#support)
 
 
+![Transition Sample](https://github.com/user-attachments/assets/aa516048-74b0-4046-82df-8cbbbd98d9dd)
+
+
 # Battle Transitions
 Battle Transitions seeks to empower GMs with the ability to configure interesting, dynamic transitions from one scene to another, geared towards reproducing some of the effects that you might see when starting a random battle in your favorite JRPG-style games.
 
