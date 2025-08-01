@@ -22,6 +22,7 @@ export class ConfigurationHandler {
         icon: `<i class="fas bt-icon fa-fw crossed-swords ${iconClasses.join(" ")}"></i>`,
         condition: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
           try {
+            console.log("Checking navigation trigger context item:", li, getScene(li));
             const scene = getScene(li);
             if (!scene) return false;
 
@@ -202,9 +203,16 @@ export class ConfigurationHandler {
 
 }
 
+function getSceneId(li: JQuery<HTMLLIElement> | HTMLLIElement): string | undefined {
+  const elem = li instanceof HTMLLIElement ? li : li[0];
+  if (elem.dataset.sceneId) return elem.dataset.sceneId;
+  else if (elem.dataset.entryId) return elem.dataset.entryId;
+
+}
 
 function getScene(li: JQuery<HTMLLIElement> | HTMLLIElement): Scene | undefined {
-  const sceneId = (li instanceof HTMLLIElement ? li.dataset.sceneId : li.data("sceneId")) as string | undefined;
+  // const sceneId = (li instanceof HTMLLIElement ? li.dataset.sceneId : li.data("sceneId")) as string | undefined;
+  const sceneId = getSceneId(li);
   if (!sceneId) return undefined;
   if (!sceneId) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
   const scene = game.scenes?.get(sceneId);

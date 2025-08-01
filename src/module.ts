@@ -92,7 +92,6 @@ Hooks.once("socketlib.ready", () => {
 
 
 Hooks.on("getSceneNavigationContext", (html: JQuery<HTMLElement>, buttons: any[]) => {
-  console.log("getSceneNavigationContext");
   ConfigurationHandler.AddToNavigationBar(buttons);
 });
 
@@ -100,6 +99,11 @@ Hooks.on("getSceneContextOptions", (directory: SceneDirectory, options: ContextM
   ConfigurationHandler.AddToNavigationBar(options);
   return options;
 });
+
+Hooks.on("getSceneDirectoryEntryContext", (directory: SceneDirectory, options: ContextMenuEntry[]) => {
+  ConfigurationHandler.AddToNavigationBar(options);
+  return options;
+})
 
 Hooks.on("preUpdatePlaylist", (playlist: Playlist, delta: Partial<Playlist>) => {
   if (delta.playing) {
