@@ -1,6 +1,6 @@
 import { ConfigurationHandler } from "../ConfigurationHandler";
 import { addStepDialog, confirm } from "../dialogs";
-import { InvalidTransitionError } from "../errors";
+import { InvalidTransitionError, LocalizedError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
 import { getStepClassByKey, localize } from "../utils";
@@ -14,8 +14,6 @@ export function SceneConfigMixin(Base: typeof SceneConfig) {
     async _renderInner(data: ReturnType<this["getData"]>): Promise<JQuery<HTMLElement>> {
       const html = await super._renderInner(data);
 
-
-      console.log("Config:", this._config);
       // Append tab
       html
         .find(`nav.tabs[data-group="main"]`)
@@ -97,6 +95,37 @@ export function SceneConfigMixin(Base: typeof SceneConfig) {
       }
     }
 
+    async editStep(e: JQuery.ClickEvent): Promise<void> {
+      try {
+        const id = (e.currentTarget as HTMLElement)?.dataset.step as string ?? "";
+        if (!id) throw new InvalidTransitionError(id);
+
+        const original = this._config?.sequence.find(config => config.id === id);
+        if (!original) throw new InvalidTransitionError(id);
+
+        const stepClass = getStepClassByKey(original.type);
+        if (!stepClass) throw new InvalidTransitionError(original.type);
+        if (stepClass.skipConfig) return;
+
+        if (!stepClass.ConfigurationApplication) throw new LocalizedError("NOCONFIGAPP");
+
+
+        const app = new stepClass.ConfigurationApplication(foundry.utils.deepClone({
+          ...stepClass.DefaultSettings,
+          ...original
+        }));
+        const updated = await app.configure();
+        if (updated && this._config?.sequence) {
+          const index = this._config.sequence.findIndex(config => config.id === updated.id);
+          if (index !== -1) this._config.sequence.splice(index, 1, updated);
+          this.render();
+        }
+      } catch (err) {
+        console.error(err);
+        if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
+      }
+    }
+
     async addStep(): Promise<void> {
       try {
         const key = await addStepDialog();
@@ -107,6 +136,12 @@ export function SceneConfigMixin(Base: typeof SceneConfig) {
         let config: TransitionConfiguration | null = null;
         if (!step.skipConfig) {
           // Edit dialog
+          if (step.ConfigurationApplication) {
+            const app = new step.ConfigurationApplication(step.DefaultSettings);
+            config = await app.configure() ?? null;
+          } else {
+            throw new LocalizedError("NOCONFIGAPP");
+          }
         } else {
           config = {
             ...step.DefaultSettings,
@@ -133,6 +168,7 @@ export function SceneConfigMixin(Base: typeof SceneConfig) {
       html.find(`[data-action="removeStep"]`).on("click", e => { void this.removeStep(e); });
       html.find(`[data-action="clearSteps"]`).on("click", () => { void this.clearSteps(); });
       html.find(`[data-action="addStep"]`).on("click", () => { void this.addStep(); });
+      html.find(`[data-action="editStep"]`).on("click", e => { void this.editStep(e); });
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       (html.find(`[data-role="transition-steps"]`) as any).sortable({

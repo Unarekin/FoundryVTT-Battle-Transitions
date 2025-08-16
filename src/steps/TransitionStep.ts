@@ -2,6 +2,7 @@ import { NotImplementedError } from "../errors";
 import { CustomFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { AnimatedTransition, TransitionConfiguration } from "./types";
+import { StepConfigApplication } from "../applications/steps"
 
 export abstract class TransitionStep<t extends TransitionConfiguration = TransitionConfiguration> {
   // #region Properties (6)
@@ -18,6 +19,8 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   public static template: string = "";
   public static icon: string = "";
   public static category: string = "";
+
+  public static readonly ConfigurationApplication: typeof StepConfigApplication | undefined = undefined;
 
   public static reversible = false;
   public static skipWhenSceneViewed = true;

@@ -83,6 +83,12 @@ export function registerHelpers() {
     return new Handlebars.SafeString(`<section data-role="template-item" data-step="${config.id}" data-render-id="${tempId}"></section>`);
   });
 
+  Handlebars.registerHelper("shouldConfigureStep", function (config: TransitionConfiguration) {
+    const stepClass = getStepClassByKey(config.type);
+    if (!stepClass) throw new InvalidTransitionError(config.type);
+    return !stepClass.skipConfig
+  })
+
   Handlebars.registerHelper("stepName", function (config: TransitionConfiguration) {
     const stepClass = getStepClassByKey(config.type);
     if (!stepClass) throw new InvalidTransitionError(config.type);

@@ -27,6 +27,7 @@
       "NEWERVERSION": "Data appears to be from a newer version: {version}",
       "NOAPPLICATION": "No PIXI Application",
       "NOBACKGROUNDPROVIDED": "No background image or color provided.",
+      "NOCONFIGAPP": "No configuration application configured.",
       "NOCOVERELEMENT": "Unable to locate transition cover facade",
       "NOFILE": "No file loaded.",
       "NOIMAGEPROVIDED": "No image provided.",
