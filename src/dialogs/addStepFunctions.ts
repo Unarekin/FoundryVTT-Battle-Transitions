@@ -1,6 +1,6 @@
 import { TransitionStep } from "../steps";
 import { getSortedSteps, getStepClassByKey, localize } from "../utils";
-import lunr from "lunr";
+
 
 // #region Functions (9)
 

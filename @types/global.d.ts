@@ -16,7 +16,6 @@ declare global {
   declare var TweenMax: gsapType.TweenMax;
   declare var TweenLite: gsapType.TweenLite;
 
-
   declare module '*.frag' {
     const content: string;
     export default content;
