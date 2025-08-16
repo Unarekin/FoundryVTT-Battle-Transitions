@@ -1,5 +1,5 @@
 
-<div class="tab{{#if tab.active}} active{{/if}}" data-group="{{#if transition.isV1}}main{{else}}sheet{{/if}}" data-tab="transition" data-application-part="transition">
+<div class="tab{{#if tab.active}} active{{/if}}" data-group="{{#if transition.isV1}}main{{else}}sheet{{/if}}" data-tab="transition" data-application-part="transition" style="overflow-y:auto">
   {{#with transition }}
     <div class="form-group">
       <label for="transition.autoTrigger">{{localize "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.LABEL"}}</label>
@@ -46,11 +46,11 @@
       </div>
     </div>
     
-    <section data-role="transition-steps" style="position:relative">
+    <div data-role="transition-steps" style="position:relative;">
       {{#each transition.sequence as |step|}}
         {{> "modules/battle-transitions/templates/transition-step.hbs" step}}
       {{/each}}
-    </section>
+    </div>
     <p></p>
   {{/with}}
 </div>
