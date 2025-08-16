@@ -40,13 +40,13 @@
   .step-config-item {
     margin-bottom: 5px;
   }
+}
 
-  .ui-sortable-helper {
-    background-image: url("/ui/parchment.jpg");
-    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    margin: 2px;
-  }
+.ui-sortable-helper {
+  background-image: url("/ui/parchment.jpg");
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  margin: 2px;
 }
 
 .transition-config {
@@ -192,6 +192,7 @@ button[data-transition] {
 
 [data-role="transition-steps"] {
   .step-item {
-    padding-top: 1em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
   }
 }

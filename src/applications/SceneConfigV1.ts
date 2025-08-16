@@ -2,7 +2,8 @@ import { ConfigurationHandler } from "../ConfigurationHandler";
 import { addStepDialog, confirm } from "../dialogs";
 import { InvalidTransitionError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
-import { getStepClassByKey, localize, log } from "../utils";
+import { TransitionConfiguration } from "../steps";
+import { getStepClassByKey, localize } from "../utils";
 
 
 export function SceneConfigMixin(Base: typeof SceneConfig) {
@@ -98,8 +99,23 @@ export function SceneConfigMixin(Base: typeof SceneConfig) {
 
     async addStep(): Promise<void> {
       try {
-        const result = await addStepDialog();
-        log("Add:", result);
+        const key = await addStepDialog();
+        if (!key) return;
+
+        const step = getStepClassByKey(key);
+        if (!step) throw new InvalidTransitionError(key);
+        let config: TransitionConfiguration | null = null;
+        if (!step.skipConfig) {
+          // Edit dialog
+        } else {
+          config = {
+            ...step.DefaultSettings,
+            id: foundry.utils.randomID()
+          }
+        }
+        if (!config) return;
+        if (this._config) this._config.sequence.push(config);
+        this.render();
       } catch (err) {
         console.error(err);
         if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
@@ -117,12 +133,19 @@ export function SceneConfigMixin(Base: typeof SceneConfig) {
       html.find(`[data-action="removeStep"]`).on("click", e => { void this.removeStep(e); });
       html.find(`[data-action="clearSteps"]`).on("click", () => { void this.clearSteps(); });
       html.find(`[data-action="addStep"]`).on("click", () => { void this.addStep(); });
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      (html.find(`[data-role="transition-steps"]`) as any).sortable({
+        handle: ".drag-handle",
+        containment: "parent",
+        axis: "y",
+        classes: "ui-sortable-helper"
+      });
     }
 
     constructor(...args: any[]) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       super(...args);
-      console.log("SceneConfig constructor");
     }
   }
 }
