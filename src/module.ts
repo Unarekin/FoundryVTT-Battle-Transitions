@@ -8,9 +8,8 @@ import SocketHandler from "./SocketHandler";
 import { BattleTransition } from "./BattleTransition";
 import semver from "semver";
 import { awaitHook, getGame, log } from './utils';
-import { injectSceneConfigV2 } from "./dialogs";
 import { SceneChangeStep } from './steps';
-import { SceneConfigMixin } from "./applications";
+import { SceneConfigV2Mixin, SceneConfigV1Mixin } from "./applications";
 
 (window as any).semver = semver;
 (window as any).BattleTransition = BattleTransition;
@@ -24,17 +23,11 @@ Hooks.once("canvasReady", () => {
 Hooks.once("ready", async () => {
   const game = await getGame();
 
-  if (game.release.isNewer("13")) {
-    // v13
-  } else {
-    // v12
-    // Mixin
-    const oldClass = CONFIG.Scene.sheetClasses.base["core.SceneConfig"].cls;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    const mixed = SceneConfigMixin(oldClass as any);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    CONFIG.Scene.sheetClasses.base["core.SceneConfig"].cls = mixed as any;
-  }
+  const oldClass = CONFIG.Scene.sheetClasses.base["core.SceneConfig"].cls;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const mixed = game.release.isNewer("13") ? SceneConfigV2Mixin(oldClass as any) : SceneConfigV1Mixin(oldClass as any);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  CONFIG.Scene.sheetClasses.base["core.SceneConfig"].cls = mixed as any;
 });
 
 Hooks.once("init", async () => {
@@ -80,25 +73,25 @@ Hooks.once("init", async () => {
   }
 });
 
-Hooks.once("ready", () => {
-  // void ConfigurationHandler.MigrateAllScenes();
+// Hooks.once("ready", () => {
+//   // void ConfigurationHandler.MigrateAllScenes();
 
-  if (game?.release?.isNewer("13")) {
-    injectSceneConfigV2();
-  } else {
-    // Set up renderSceneConfig hook to inject configuration for v12
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    // Hooks.on("renderSceneConfig", (app: SceneConfig, html: JQuery<HTMLElement>, options: any) => {
-    //   // void ConfigurationHandler.InjectSceneConfig(app, html, options);
-    //   injectSceneConfigV1(app)
-    //     .catch((err: Error) => {
-    //       console.error(err);
-    //       ui.notifications?.error(err.message, { console: false, localize: true });
-    //     });
-    // });
-  }
+//   if (game?.release?.isNewer("13")) {
+//     injectSceneConfigV2();
+//   } else {
+//     // Set up renderSceneConfig hook to inject configuration for v12
+//     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//     // Hooks.on("renderSceneConfig", (app: SceneConfig, html: JQuery<HTMLElement>, options: any) => {
+//     //   // void ConfigurationHandler.InjectSceneConfig(app, html, options);
+//     //   injectSceneConfigV1(app)
+//     //     .catch((err: Error) => {
+//     //       console.error(err);
+//     //       ui.notifications?.error(err.message, { console: false, localize: true });
+//     //     });
+//     // });
+//   }
 
-})
+// })
 
 
 Hooks.once("socketlib.ready", () => {

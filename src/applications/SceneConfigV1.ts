@@ -6,7 +6,7 @@ import { TransitionConfiguration } from "../steps";
 import { getStepClassByKey, localize } from "../utils";
 
 
-export function SceneConfigMixin(Base: typeof SceneConfig) {
+export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
   return class extends Base {
 
     _config: SceneConfiguration | null = null;
@@ -25,9 +25,11 @@ export function SceneConfigMixin(Base: typeof SceneConfig) {
         );
 
       const content = await renderTemplate(`modules/${__MODULE_ID__}/templates/scene-config.hbs`, {
-        isV1: true,
-        transition: this._config,
-        canCreateMacro: Macro.canUserCreate(game.user as User)
+        transition: {
+          isV1: true,
+          transition: this._config,
+          canCreateMacro: Macro.canUserCreate(game.user as User)
+        }
       });
 
       html.find(`.sheet-footer`)
@@ -175,7 +177,9 @@ export function SceneConfigMixin(Base: typeof SceneConfig) {
         handle: ".drag-handle",
         containment: "parent",
         axis: "y",
-        classes: "ui-sortable-helper"
+        classes: {
+          "ui-sortable-helper": "window-app ui-sortable-helper window-content"
+        }
       });
     }
 
