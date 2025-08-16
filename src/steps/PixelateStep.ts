@@ -81,8 +81,8 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
     }
 
     await Promise.all(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      this.#filters.map(filter => TweenMax.to(filter.uniforms.size, { 0: 1, 1: 1, duration: config.duration / 1000, ease: config.easing }))
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      this.#filters.map(filter => gsap.to(filter.uniforms.size, { 0: 1, 1: 1, duration: config.duration / 1000, ease: config.easing }))
     );
   }
 
@@ -116,8 +116,10 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
 
     this.#filters = [...filters];
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms.size, { 0: config.maxSize, 1: config.maxSize, duration: config.duration / 1000, ease: config.easing }) as Promise<void>));
+
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    await Promise.all(filters.map(filter => gsap.to(filter.uniforms.size, { 0: config.maxSize, 1: config.maxSize, duration: config.duration / 1000, ease: config.easing }).then()));
   }
 
   // #endregion Public Methods (1)

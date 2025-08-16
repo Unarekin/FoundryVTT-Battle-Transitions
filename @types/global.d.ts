@@ -1,21 +1,30 @@
-declare var __DEV__: boolean;
-declare var __MODULE_TITLE__: string;
-declare var __MODULE_ID__: string;
-declare var __MODULE_VERSION__: string;
+import * as gsapType from "gsap";
 
-declare var TweenMax: any;
-declare var gsap: any;
-declare var ColorPicker: any;
+declare global {
 
-declare var socketlib: any;
-declare var libWrapper: any;
+  declare var __DEV__: boolean;
+  declare var __MODULE_TITLE__: string;
+  declare var __MODULE_ID__: string;
+  declare var __MODULE_VERSION__: string;
 
-declare module '*.frag' {
-  const content: string;
-  export default content;
-}
+  declare var ColorPicker: any;
 
-declare module '*.vert' {
-  const content: string;
-  export default content;
+  declare var socketlib: any;
+  declare var libWrapper: any;
+
+  declare var gsap: gsapType;
+  declare var TweenMax: gsapType.TweenMax;
+  declare var TweenLite: gsapType.TweenLite;
+
+
+  declare module '*.frag' {
+    const content: string;
+    export default content;
+  }
+
+  declare module '*.vert' {
+    const content: string;
+    export default content;
+  }
+
 }

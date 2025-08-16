@@ -1,10 +1,12 @@
 import { TransitionStep } from "../steps";
 import { getSortedSteps, getStepClassByKey, localize } from "../utils";
+import lunr from "lunr";
 
 // #region Functions (9)
 
 export function buildIndex(): lunr.Index {
   const steps = getSortedSteps();
+
 
   return lunr(function (this: lunr.Builder) {
     this.field("name");

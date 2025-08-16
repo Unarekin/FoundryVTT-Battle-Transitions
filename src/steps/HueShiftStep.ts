@@ -88,8 +88,8 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
       ...this.config
     };
     await Promise.all(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      this.#filters.map(filter => TweenMax.to(filter.uniforms, { shift: 0, duration: config.duration / 1000, ease: config.easing }))
+
+      this.#filters.map(filter => gsap.to(filter.uniforms, { shift: 0, duration: config.duration / 1000, ease: config.easing }))
     );
   }
 
@@ -117,8 +117,8 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
 
 
     this.#filters = [...filters];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-    await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms, { shift: config.maxShift, duration: config.duration / 1000, ease: config.easing ?? "none" })));
+
+    await Promise.all(filters.map(filter => gsap.to(filter.uniforms, { shift: config.maxShift, duration: config.duration / 1000, ease: config.easing ?? "none" })));
   }
 
   // #endregion Public Methods (1)

@@ -92,8 +92,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     };
 
     await Promise.all(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-      this.#filters.map(filter => TweenMax.to(filter.uniforms, { uStrength: 0, duration: config.duration / 1000, ease: config.easing }))
+      this.#filters.map(filter => gsap.to(filter.uniforms, { uStrength: 0, duration: config.duration / 1000, ease: config.easing }))
     )
   }
 
@@ -134,8 +133,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     }
 
     this.#filters = [...filters];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-    await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms, { uStrength: config.maxStrength, duration: config.duration / 1000, ease: config.easing || "none" })));
+    await Promise.all(filters.map(filter => gsap.to(filter.uniforms, { uStrength: config.maxStrength, duration: config.duration / 1000, ease: config.easing || "none" })));
   }
 
   // #endregion Public Methods (1)

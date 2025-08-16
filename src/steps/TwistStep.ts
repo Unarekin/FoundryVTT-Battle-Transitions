@@ -87,8 +87,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
       ...this.config
     }
     await Promise.all(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-      this.#filters.map(filter => TweenMax.to(filter.uniforms, { angle: 0, duration: config.duration / 1000, ease: config.easing }))
+      this.#filters.map(filter => gsap.to(filter.uniforms, { angle: 0, duration: config.duration / 1000, ease: config.easing }))
     )
   }
 
@@ -129,8 +128,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
 
     this.#filters = [...filters];
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-    await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms, { angle: this.config.direction === "clockwise" ? config.maxAngle * -1 : this.config.maxAngle, duration: config.duration / 1000, ease: this.config.easing || "none" })));
+    await Promise.all(filters.map(filter => gsap.to(filter.uniforms, { angle: this.config.direction === "clockwise" ? config.maxAngle * -1 : this.config.maxAngle, duration: config.duration / 1000, ease: this.config.easing || "none" })));
   }
 
   // #endregion Public Methods (1)
