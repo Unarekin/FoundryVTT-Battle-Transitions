@@ -1,0 +1,33 @@
+<div class="flexcol step-item">
+  <div class="flexrow">
+    <div class="flex1">{{stepName this}}</div>
+    {{#if label}}
+      <div class="flex1">{{label}}</div>
+    {{/if}}
+    <div class="flex0">
+      <i
+        class="fa-solid fa-fw link fa-cogs"
+        data-action="editStep"
+        data-step="{{id}}"
+        data-tooltip="{{localize
+          'BATTLETRANSITIONS.SCENECONFIG.BUTTONS.CONFIGURE'
+          name=(stepName this)
+        }}"
+      ></i>
+    </div>
+    <div class="flex0">
+      <i
+        class="fa-solid fa-fw link fa-trash"
+        data-action="removeStep"
+        data-step="{{id}}"
+        data-tooltip="{{localize
+          'BATTLETRANSITIONS.SCENECONFIG.BUTTONS.REMOVE'
+          name=(stepName this)
+        }}"
+      ></i>
+    </div>
+  </div>
+  <div>
+    {{!-- {{stepDescription this}} --}}
+  </div>
+</div>

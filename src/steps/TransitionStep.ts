@@ -39,10 +39,25 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   // #region Public Static Methods (7)
 
+  /** @deprecated Implement {@link getRenderContext} instead */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/require-await
   public static async RenderTemplate(config?: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
     throw new NotImplementedError();
   }
+
+  /**
+   * Return the context used for rendering this item's configuration template.
+   * @param {TransitionConfiguration} config 
+   * @param {Scene} oldScene 
+   * @param {Scene} newScene 
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static getRenderContext(config?: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Record<string, unknown> {
+    const actual = foundry.utils.mergeObject({}, config);
+    return actual;
+  }
+
+
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static Upgrade(config: unknown): TransitionConfiguration { throw new NotImplementedError(); }

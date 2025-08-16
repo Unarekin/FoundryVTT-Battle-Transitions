@@ -3,8 +3,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
+import { InvalidTransitionError } from "./errors";
 import groupBy from "./lib/groupBy";
-import { formatDuration } from "./utils";
+import { TransitionConfiguration } from "./steps";
+import { formatDuration, getStepClassByKey, wait } from "./utils";
+
+
 
 export function registerHelpers() {
   Handlebars.registerHelper("switch", function (this: any, value, options) {
@@ -49,14 +53,48 @@ export function registerHelpers() {
       console.error(err);
       ui.notifications?.error(err instanceof Error ? err.message : typeof err === "string" ? err : typeof err, { console: false, localize: true });
     }
-  })
+  });
 
+  Handlebars.registerHelper("stepDescription", function (this: any, config: TransitionConfiguration) {
+
+    const step = getStepClassByKey(config.type);
+    if (!step) throw new InvalidTransitionError(config.type);
+    const template = `modules/${__MODULE_ID__}/templates/steps/${step.template}.hbs`;
+
+    const tempId = foundry.utils.randomID();
+    const context = step.getRenderContext(config);
+
+    wait(100)
+      .then(() => renderTemplate(template, context))
+      .then(content => {
+        console.log("Rendered:", content);
+        const container = document.body.querySelector(`[data-role="template-item"][data-step="${config.id}"][data-render-id="${tempId}"]`);
+        if (container instanceof HTMLElement)
+          container.innerHTML = content;
+      })
+      .catch((err: Error) => {
+        console.error(err);
+        const selector = `[data-role="template-item"][data-step="${config.id}"][data-render-id="${tempId}"]`;
+        const container = document.body.querySelector(selector);
+        if (container instanceof HTMLElement)
+          container.innerHTML = `<div class="error">${game.i18n?.localize(err.message)}</div>`;
+      })
+
+    return new Handlebars.SafeString(`<section data-role="template-item" data-step="${config.id}" data-render-id="${tempId}"></section>`);
+  });
+
+  Handlebars.registerHelper("stepName", function (config: TransitionConfiguration) {
+    const stepClass = getStepClassByKey(config.type);
+    if (!stepClass) throw new InvalidTransitionError(config.type);
+    return game.i18n?.localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`) ?? "";
+  })
 }
 
 export async function registerTemplates() {
 
   return (game?.release?.isNewer("13") ? (foundry.applications as any).handlebars.loadTemplates : loadTemplates)([
     `/modules/${__MODULE_ID__}/templates/scene-config.hbs`,
+    `modules/${__MODULE_ID__}/templates/transition-step.hbs`,
     ...["step-item",
       "background-selector",
       "duration-selector",

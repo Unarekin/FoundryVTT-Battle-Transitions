@@ -161,7 +161,12 @@ const buildResults = await build({
     sassPlugin(),
     ...copyPlugins,
     ...jsonMergers,
-    externalizeAllPackagesExcept(["semver", "handlebars-group-by", "lunr"]),
+    externalizeAllPackagesExcept([
+      "semver",
+      "handlebars-group-by",
+      "lunr",
+      "handlebars-async-helpers-ts",
+    ]),
     // externalizeAllPackagesExcept(["rxjs", "mini-rx-store", "tslib", "mime", "@pixi/gif"])
   ],
 });
