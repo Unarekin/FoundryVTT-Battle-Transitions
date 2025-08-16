@@ -1,9 +1,10 @@
 import { ConfigurationHandler } from "../ConfigurationHandler";
-import { DeepPartial, addStepDialog, confirm, generateMacro } from "../dialogs";
+import { DeepPartial } from "../dialogs";
+import { addStepDialog, confirm, generateMacro } from "./functions";
 import { InvalidTransitionError, LocalizedError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
-import { downloadJSON, getStepClassByKey, localize, uploadJSON } from "../utils";
+import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize, uploadJSON } from "../utils";
 
 type BaseType = typeof foundry.applications.api.DocumentSheetV2<Scene>;
 
@@ -30,7 +31,6 @@ export function SceneConfigV2Mixin(Base: BaseType) {
         editStep: Mixed.EditStep,
         // eslint-disable-next-line @typescript-eslint/unbound-method
         saveMacro: Mixed.SaveMacro
-
       }
     }
 
@@ -172,9 +172,33 @@ export function SceneConfigV2Mixin(Base: BaseType) {
       }
     }
 
+    async _onSubmitForm(formConfig: foundry.applications.api.ApplicationV2.FormConfiguration, event: Event | SubmitEvent): Promise<void> {
+
+      const form = (this as unknown as SceneConfig).form as HTMLFormElement | null;
+      if (!form) return;
+      const data = foundry.utils.mergeObject(
+        { transition: this.#sceneConfiguration },
+        foundry.utils.expandObject(new (formDataExtendedClass())(form).object)
+      ) as Record<string, unknown>;
+
+
+      if (data.transition) {
+        const config = data.transition as SceneConfiguration;
+        void ConfigurationHandler.SetSceneConfiguration((this as unknown as SceneConfig).document, config)
+          .catch((err: Error) => {
+            console.error(err);
+            if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
+          });
+      }
+
+      await super._onSubmitForm(formConfig, event);
+    }
+
+
     _onRender(context: any, options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       super._onRender(context, options);
+
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       ($(this.element).find(`[data-role="transition-steps"]`) as any).sortable({
@@ -223,7 +247,6 @@ export function SceneConfigV2Mixin(Base: BaseType) {
     id: "transition",
     icon: "fa-solid bt-icon fa-fw crossed-swords v13",
   });
-
 
   return Mixed
 
