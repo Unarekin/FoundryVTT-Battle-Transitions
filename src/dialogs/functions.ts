@@ -8,16 +8,16 @@ import { editSequence } from './EditSequence';
 import { coerceScene, coerceUser } from '../coercion';
 import { LOG_ICON } from '../constants';
 
+/** @deprecated Use function from applications instead */
 export async function addStepDialog(): Promise<string | null> {
   return AddStepDialog.prompt();
 }
-
-
 
 export function getStepsForCategory(category: string, hidden: boolean = false): StepContext[] {
   return getSortedSteps().reduce((prev, curr) => curr.category === category && (hidden ? true : curr.hidden === false) ? [...prev, { key: curr.key, name: `BATTLETRANSITIONS.${curr.name}.NAME`, description: `BATTLETRANSITIONS.${curr.name}.DESCRIPTION`, icon: curr.icon, tooltip: "", hasIcon: !!curr.icon }] : prev, [] as StepContext[]);
 }
 
+/** @deprecated use function from applications instead */
 export async function confirm(title: string, content: string): Promise<boolean> {
   return foundry.applications.api.DialogV2.confirm({
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -258,6 +258,7 @@ export async function addStep(html: HTMLElement): Promise<TransitionConfiguratio
   return config;
 }
 
+/** @deprecated Use generatedMacro from applications folder instead */
 export function generateMacro(sequence: TransitionConfiguration[], users: string[] = [], scene: unknown = undefined): string {
   const generated = new Intl.DateTimeFormat("default", Object.fromEntries(["year", "month", "day", "hour", "minute", "second"].map(elem => [elem, "numeric"]))).format(new Date());
 

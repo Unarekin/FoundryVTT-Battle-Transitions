@@ -1,5 +1,5 @@
 import { ConfigurationHandler } from "../ConfigurationHandler";
-import { addStepDialog, confirm } from "../dialogs";
+import { addStepDialog, confirm, generateMacro } from "./functions";
 import { InvalidTransitionError, LocalizedError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
@@ -159,6 +159,17 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
       }
     }
 
+    async saveMacro() {
+      try {
+        if (!this._config?.sequence.length) return;
+        const macro = generateMacro(this._config.sequence, [], this.document);
+        await Macro.createDialog({ type: "script", command: macro, img: `modules/${__MODULE_ID__}/assets/icons/crossed-swords.svg` });
+      } catch (err) {
+        console.error(err);
+        if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
+      }
+    }
+
     render(force?: boolean, options?: Application.RenderOptions<DocumentSheetOptions<Scene>>): this {
       if (force) this._config = foundry.utils.deepClone(ConfigurationHandler.GetSceneConfiguration(this.object));
       return super.render(force, options);
@@ -171,6 +182,7 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
       html.find(`[data-action="clearSteps"]`).on("click", () => { void this.clearSteps(); });
       html.find(`[data-action="addStep"]`).on("click", () => { void this.addStep(); });
       html.find(`[data-action="editStep"]`).on("click", e => { void this.editStep(e); });
+      html.find(`[data-action="saveMacro"]`).on("click", () => { void this.saveMacro(); });
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       (html.find(`[data-role="transition-steps"]`) as any).sortable({
