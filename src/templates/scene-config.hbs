@@ -1,33 +1,56 @@
-<div class="tab standard-form transition-builder{{#if tab.active}} active{{/if}}" data-group="{{#if isV1}}main{{else}}sheet{{/if}}" data-tab="transition" data-application-part="transition" style="row-gap:8px;">
-  <div class="form-group">
-    <label for="transition.autoTrigger">{{localize "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.LABEL"}}</label>
-    <input type="checkbox" name="transition.autoTrigger" id="transition.autoTrigger" {{checked transition.autoTrigger}}/>
-  </div>
 
-  <div class="form-group">
-    <label for="import">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.LABEL"}}</label>
-    <div class="right-align">
-      <i class="fas fa-fw fa-upload link" data-action="importJson"></i>
-    </div>
-  </div>
-
-  <div class="form-group">
-    <label for="export">{{localize "BATTLETRANSITIONS.SCENECONFIG.EXPORT.LABEL"}}</label>
-    <div class="right-align">
-      <i class="fas fa-fw fa-download link" data-action="exportJson"></i>
-    </div>
-  </div>
-
-  {{#if canCreateMacro}}
+<div class="tab{{#if tab.active}} active{{/if}}" data-group="{{#if transition.isV1}}main{{else}}sheet{{/if}}" data-tab="transition" data-application-part="transition" style="overflow-y:auto">
+  {{#with transition }}
     <div class="form-group">
-      <label for="macro">{{localize "BATTLETRANSITIONS.SCENECONFIG.MACRO.LABEL"}}</label>
+      <label for="transition.autoTrigger">{{localize "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.LABEL"}}</label>
+      <input type="checkbox" name="transition.autoTrigger" id="transition.autoTrigger" {{checked transition.autoTrigger}}>
+      <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.HINT"}}</p>
+    </div>
+
+    <div class="form-group">
+      <label for="import">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.LABEL"}}</label>
       <div class="right-align">
-        <i class="fas fa-fw fa-code link" data-action="saveMacro" style="position:relative"></i>
+        <i class="fa-solid fa-fw fa-upload link" data-action="importJson"></i>
+      </div>
+      <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.HINT"}}</p>
+    </div>
+
+    <div class="form-group">
+      <label for="export">{{localize "BATTLETRANSITIONS.SCENECONFIG.EXPORT.LABEL"}}</label>
+      <div class="right-align">
+        <i class="fa-solid fa-fw fa-download link" data-action="exportJson"></i>
+      </div>
+      <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.EXPORT.HINT"}}</p>
+    </div>
+    
+    {{#if canCreateMacro}}
+      <div class="form-group">
+        <label for="macro">{{localize "BATTLETRANSITIONS.SCENECONFIG.MACRO.LABEL"}}</label>
+        <div class="right-align">
+          <i class="fa-solid fa-fw fa-code link" data-action="saveMacro"></i>
+        </div>
+        <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.MACRO.HINT"}}</p>
+      </div>
+    {{/if}}
+
+    <hr>
+    <div class="flexrow">
+      <label class="flex1">
+        <h3>{{localize "BATTLETRANSITIONS.SCENECONFIG.TRANSITIONCONFIG.LABEL"}}</h3>
+      </label>
+      <div class="flex0">
+        <i class="fa-solid fa-fw fa-plus link" data-action="addStep" data-tooltip="{{localize "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.ADDSTEP"}}"></i>
+      </div>
+      <div class="flex0">
+        <i class="fa-solid fa-fw fa-trash link" data-action="clearSteps" data-tooltip="{{localize "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.CLEARSTEPS"}}"></i>
       </div>
     </div>
-    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.MACRO.HINT"}}</p>
-  {{/if}}
-
-  <hr />
-  {{> "/modules/battle-transitions/templates/transition-steps.hbs" this}}
+    
+    <div data-role="transition-steps" style="position:relative;">
+      {{#each transition.sequence as |step|}}
+        {{> "modules/battle-transitions/templates/transition-step.hbs" step}}
+      {{/each}}
+    </div>
+    <p></p>
+  {{/with}}
 </div>

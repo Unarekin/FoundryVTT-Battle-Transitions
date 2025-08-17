@@ -2,7 +2,8 @@
   "BATTLETRANSITIONS": {
     "ANGULARWIPE": {
       "DESCRIPTION": "A wipe that clears angled sections of the screen progressively closer to the center.",
-      "NAME": "Angular Wipe"
+      "NAME": "Angular Wipe",
+      "LABEL": "Wipe to {background} over {duration}ms"
     },
     "BARWIPE": {
       "DESCRIPTION": "A wipe that consists of a series of bars from alternating sides of the screen.",

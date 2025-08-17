@@ -2,6 +2,9 @@ import { NotImplementedError } from "../errors";
 import { CustomFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { AnimatedTransition, TransitionConfiguration } from "./types";
+import { StepConfigApplication } from "../applications/steps"
+import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from "./selectOptions";
+import { getStepClassByKey } from "../utils";
 
 export abstract class TransitionStep<t extends TransitionConfiguration = TransitionConfiguration> {
   // #region Properties (6)
@@ -15,13 +18,15 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   public static key: string = "unknown";
   public static name: string = "UNNAMED";
   public static skipConfig: boolean = false;
-  public static template: string = "";
   public static icon: string = "";
   public static category: string = "";
+
+  public static readonly ConfigurationApplication: typeof StepConfigApplication | undefined = undefined;
 
   public static reversible = false;
   public static skipWhenSceneViewed = true;
   public static addDurationToTotal: boolean = true;
+  public static preview: string = "";
 
   public reverse(): Promise<void> | void {
     throw new NotImplementedError();
@@ -39,10 +44,38 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   // #region Public Static Methods (7)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/require-await
-  public static async RenderTemplate(config?: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    throw new NotImplementedError();
+  /**
+   * Return the context used for rendering this item's configuration template.
+   * @param {TransitionConfiguration} config 
+   * @param {Scene} oldScene 
+   * @param {Scene} newScene 
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static getRenderContext(config?: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Record<string, unknown> {
+    console.log("Getting render context:", config);
+    let defaultSettings: TransitionConfiguration | undefined = undefined;
+    if (config) {
+      const stepClass = getStepClassByKey(config.type);
+      if (stepClass) defaultSettings = foundry.utils.deepClone(stepClass.DefaultSettings);
+    }
+
+    const context = foundry.utils.mergeObject(
+      {
+        ...(defaultSettings ? { config: defaultSettings } : {}),
+        ...(config ? { config: foundry.utils.deepClone(config) } : {})
+      }, {
+      easingSelect: generateEasingSelectOptions(),
+      bgTypeSelect: generateBackgroundTypeSelectOptions(),
+    });
+    console.log(context);
+    return context;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static getListDescription(config?: TransitionConfiguration): string {
+    return "";
+  }
+
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static Upgrade(config: unknown): TransitionConfiguration { throw new NotImplementedError(); }

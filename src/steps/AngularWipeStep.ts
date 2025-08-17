@@ -1,9 +1,9 @@
 import { AngularWipeConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from '../utils';
+import { createColorTexture, parseConfigurationFormElements } from '../utils';
 import { AngularWipeFilter } from '../filters';
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
-import { reconcileBackground } from './functions';
+import { AngularWipeConfigApplication } from '../applications';
 
 export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
   // #region Properties (9)
@@ -29,21 +29,26 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
   public static key = "angularwipe";
   public static name = "ANGULARWIPE";
   public static reversible = true;
-  public static template = "angularwipe-config";
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/AngularWipe.webm`;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = AngularWipeConfigApplication as any;
 
   // #endregion Properties (9)
 
   // #region Public Static Methods (7)
 
-  public static RenderTemplate(config?: AngularWipeConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${AngularWipeStep.template}.hbs`, {
-      ...AngularWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
+  public static getRenderContext(config?: AngularWipeConfiguration): Record<string, unknown> {
+    return {
+      ...super.getRenderContext(config),
       easingSelect: generateEasingSelectOptions(),
       bgTypeSelect: generateBackgroundTypeSelectOptions()
-    });
+    }
+  }
+
+  static getListDescription(config?: AngularWipeConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.ANGULARWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    else return "";
   }
 
   public static from(config: AngularWipeConfiguration): AngularWipeStep

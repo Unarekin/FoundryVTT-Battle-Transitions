@@ -1,0 +1,26 @@
+import { AngularWipeConfiguration, AngularWipeStep } from "../../steps";
+import { StepConfigApplication } from "./StepConfigApplication";
+
+export class AngularWipeConfigApplication extends StepConfigApplication<AngularWipeConfiguration> {
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public readonly StepClass = AngularWipeStep as any;
+
+
+  public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
+    main: {
+      template: `modules/${__MODULE_ID__}/templates/steps/angularwipe.hbs`,
+      templates: [
+        `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
+        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
+        `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`
+      ]
+    },
+    footer: {
+      template: "templates/generic/form-footer.hbs"
+    }
+  }
+
+
+
+}

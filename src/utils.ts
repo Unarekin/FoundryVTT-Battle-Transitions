@@ -29,6 +29,20 @@ export async function awaitHook(hook: string): Promise<unknown[]> {
 }
 
 /**
+ * Retrieves the game, ensuring it is ready.
+ * @returns 
+ */
+export async function getGame(): Promise<ReadyGame> {
+  if (game?.ready) return game;
+  gameReadyPromise ??= new Promise(resolve => {
+    Hooks.once("ready", () => { resolve(); });
+  });
+
+  await gameReadyPromise;
+  return game as unknown as ReadyGame;
+}
+
+/**
  * Generates a 1x1 {@link PIXI.Texture} with a given color
  * @param {PIXI.Color} color {@link PIXI.Color}
  * @returns 
@@ -172,7 +186,7 @@ export function formatBackgroundSummary(flag: any): string {
   return "";
   // return (flag.backgroundType === "image" ? flag.backgroundImage?.split("/").splice(-1)[0] : flag.backgroundColor) ?? "";
 }
-
+let gameReadyPromise: Promise<void> | undefined = undefined;
 
 
 export function getCanvasGroup(): ScreenSpaceCanvasGroup | undefined {

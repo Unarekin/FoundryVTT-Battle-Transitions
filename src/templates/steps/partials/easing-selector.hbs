@@ -1,0 +1,11 @@
+<section data-role="easing">
+  <div class="form-group">
+    <label for="easing">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.EASING.LABEL"
+      }}</label>
+    <select name="easing" id="easing">
+      {{selectOptions easingSelect selected=config.easing localize=true}}
+    </select>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.EASING.HINT"}}</p>
+  </div>
+</section>
