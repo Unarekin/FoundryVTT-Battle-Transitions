@@ -170,7 +170,10 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
         if (!step.skipConfig) {
           // Edit dialog
           if (step.ConfigurationApplication) {
-            const app = new step.ConfigurationApplication(step.DefaultSettings);
+            const app = new step.ConfigurationApplication(foundry.utils.mergeObject(
+              foundry.utils.deepClone(step.DefaultSettings),
+              { id: foundry.utils.randomID() }
+            ));
             config = await app.configure() ?? null;
           } else {
             throw new LocalizedError("NOCONFIGAPP");

@@ -6,7 +6,7 @@
 import { InvalidTransitionError } from "./errors";
 import groupBy from "./lib/groupBy";
 import { TransitionConfiguration } from "./steps";
-import { formatDuration, getStepClassByKey, wait } from "./utils";
+import { formatDuration, getStepClassByKey } from "./utils";
 
 
 
@@ -55,32 +55,10 @@ export function registerHelpers() {
     }
   });
 
-  Handlebars.registerHelper("stepDescription", function (this: any, config: TransitionConfiguration) {
-
-    const step = getStepClassByKey(config.type);
-    if (!step) throw new InvalidTransitionError(config.type);
-    const template = `modules/${__MODULE_ID__}/templates/steps/${step.template}.hbs`;
-
-    const tempId = foundry.utils.randomID();
-    const context = step.getRenderContext(config);
-
-    wait(100)
-      .then(() => renderTemplate(template, context))
-      .then(content => {
-        console.log("Rendered:", content);
-        const container = document.body.querySelector(`[data-role="template-item"][data-step="${config.id}"][data-render-id="${tempId}"]`);
-        if (container instanceof HTMLElement)
-          container.innerHTML = content;
-      })
-      .catch((err: Error) => {
-        console.error(err);
-        const selector = `[data-role="template-item"][data-step="${config.id}"][data-render-id="${tempId}"]`;
-        const container = document.body.querySelector(selector);
-        if (container instanceof HTMLElement)
-          container.innerHTML = `<div class="error">${game.i18n?.localize(err.message)}</div>`;
-      })
-
-    return new Handlebars.SafeString(`<section data-role="template-item" data-step="${config.id}" data-render-id="${tempId}"></section>`);
+  Handlebars.registerHelper("stepDescription", function (config: TransitionConfiguration) {
+    const stepClass = getStepClassByKey(config.type);
+    if (!stepClass) return "";
+    return new Handlebars.SafeString(stepClass.getListDescription(config));
   });
 
   Handlebars.registerHelper("shouldConfigureStep", function (config: TransitionConfiguration) {

@@ -124,8 +124,12 @@ export function SceneConfigV2Mixin(Base: BaseType) {
         let config: TransitionConfiguration | null = null;
         if (!stepClass.skipConfig) {
           if (!stepClass.ConfigurationApplication) throw new LocalizedError("NOCONFIGAPP");
-          const app = new stepClass.ConfigurationApplication(foundry.utils.deepClone(stepClass.DefaultSettings));
+          const app = new stepClass.ConfigurationApplication(foundry.utils.mergeObject(
+            foundry.utils.deepClone(stepClass.DefaultSettings),
+            { id: foundry.utils.randomID() }
+          ));
           config = await app.configure() ?? null;
+          console.log("Submitted:", config);
         } else {
           config = {
             ...foundry.utils.deepClone(stepClass.DefaultSettings),

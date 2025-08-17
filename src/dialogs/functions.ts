@@ -1,5 +1,5 @@
-import { BackgroundTransition, TransitionConfiguration } from '../steps';
-import { getSortedSteps, getStepClassByKey, localize, renderTemplateFunc, uploadJSON } from '../utils';
+import { BackgroundTransition, TransitionConfiguration, TransitionStep } from '../steps';
+import { getSortedSteps, getStepClassByKey, localize, mimeType, renderTemplateFunc, uploadJSON } from '../utils';
 import { AddStepDialog } from './AddStepDialog';
 import { StepContext } from './types';
 import { InvalidTransitionError } from '../errors';
@@ -14,7 +14,44 @@ export async function addStepDialog(): Promise<string | null> {
 }
 
 export function getStepsForCategory(category: string, hidden: boolean = false): StepContext[] {
-  return getSortedSteps().reduce((prev, curr) => curr.category === category && (hidden ? true : curr.hidden === false) ? [...prev, { key: curr.key, name: `BATTLETRANSITIONS.${curr.name}.NAME`, description: `BATTLETRANSITIONS.${curr.name}.DESCRIPTION`, icon: curr.icon, tooltip: "", hasIcon: !!curr.icon }] : prev, [] as StepContext[]);
+  return getSortedSteps().reduce((prev, curr) => curr.category === category && (hidden ? true : curr.hidden === false) ? [...prev, { key: curr.key, name: `BATTLETRANSITIONS.${curr.name}.NAME`, description: `BATTLETRANSITIONS.${curr.name}.DESCRIPTION`, icon: curr.icon, hasIcon: !!curr.icon, preview: curr.preview, tooltip: generatePreviewTooltip(curr) }] : prev, [] as StepContext[]);
+}
+
+function generatePreviewTooltip(step: typeof TransitionStep): string {
+  const tooltip = document.createElement("div");
+  tooltip.classList.add("toolclip", "themed", "theme-dark");
+
+  if (step.preview) {
+    const mime = mimeType(step.preview).split("/");
+    if (mime[0] === "video") {
+      const vid = document.createElement("video");
+      vid.style.height = "auto";
+      vid.autoplay = true;
+      vid.loop = true;
+      vid.muted = true;
+      const src = document.createElement("source");
+      src.src = step.preview;
+      vid.appendChild(src);
+
+      tooltip.appendChild(vid);
+    } else if (mime[0] === "image") {
+      const img = document.createElement("img");
+      img.src = step.preview;
+
+      tooltip.appendChild(img);
+    }
+
+  }
+
+  const title = document.createElement("h4");
+  title.innerText = game.i18n?.localize(`BATTLETRANSITIONS.${step.name}.NAME`) ?? "";
+  tooltip.appendChild(title);
+
+  const desc = document.createElement("p");
+  desc.innerText = game.i18n?.localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`) ?? "";
+  tooltip.appendChild(desc);
+
+  return tooltip.outerHTML;
 }
 
 /** @deprecated use function from applications instead */
@@ -116,6 +153,7 @@ export async function customDialog(title: string, content: string, buttons: Reco
 }
 
 
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function selectItem(parent: HTMLElement, id: string) {
 
   const configArea = parent.querySelector(`[data-role="transition-config"]`);
@@ -136,12 +174,12 @@ export async function selectItem(parent: HTMLElement, id: string) {
   if (!step) throw new InvalidTransitionError(deserialized.type);
 
   if (!step.skipConfig) {
-    const content = await step.RenderTemplate({
-      ...deserialized,
-      isV1: false
-    } as TransitionConfiguration);
+    // const content = await step.RenderTemplate({
+    //   ...deserialized,
+    //   isV1: false
+    // } as TransitionConfiguration);
 
-    configArea.innerHTML = content;
+    // configArea.innerHTML = content;
 
     step.addEventListeners(configArea, deserialized);
   } else {

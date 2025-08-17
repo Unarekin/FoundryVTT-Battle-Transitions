@@ -1,0 +1,21 @@
+<section data-role="duration">
+  {{#with config}}
+    <div class="form-group">
+      <label for="duration">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.DURATION.LABEL"
+        }}</label>
+      <input
+        type="number"
+        min="0"
+        step="1"
+        value="{{duration}}"
+        name="duration"
+        id="duration"
+        required
+      />
+    </div>
+    <p class="hint">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.DURATION.HINT"
+      }}</p>
+  {{/with}}
+</section>
