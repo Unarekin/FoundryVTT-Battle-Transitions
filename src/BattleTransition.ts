@@ -1105,7 +1105,7 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(background);
     this.#sequence.push({
       id: foundry.utils.randomID(),
-      type: "spiralradialwipe",
+      type: "spiralshutter",
       serializedTexture,
       duration,
       easing,
