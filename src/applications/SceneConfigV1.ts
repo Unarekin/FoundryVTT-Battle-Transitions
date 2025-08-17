@@ -3,13 +3,44 @@ import { addStepDialog, confirm, generateMacro } from "./functions";
 import { InvalidTransitionError, LocalizedError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
-import { getStepClassByKey, localize } from "../utils";
+import { formDataExtendedClass, getStepClassByKey, localize } from "../utils";
+
 
 
 export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
   return class extends Base {
 
     _config: SceneConfiguration | null = null;
+
+    async _onSubmit(event: Event, options?: FormApplication.OnSubmitOptions): Promise<Partial<any>> {
+
+      const form = this.element.find("form")[0];
+      if (form) {
+        const config: Record<string, unknown> = {};
+        // Merge form data
+        const data = foundry.utils.expandObject((new (formDataExtendedClass())(form)).object) as Record<string, unknown>;
+        // Merge in our existing config
+        foundry.utils.mergeObject(config, { transition: this._config });
+        foundry.utils.mergeObject(config, data);
+
+
+        // const data = foundry.utils.expandObject((new (formDataExtendedClass())(form)).object) as Record<string, unknown>;
+        // foundry.utils.mergeObject(config, data);
+
+        // if (this._config) foundry.utils.mergeObject(config, { transition: this._config });
+
+        if (config.transition) {
+          ConfigurationHandler
+            .SetSceneConfiguration(this.document, config.transition as TransitionConfiguration)
+            .catch((err: Error) => {
+              console.error(err);
+              ui.notifications?.error(err.message, { console: false })
+            })
+        }
+      }
+
+      return super._onSubmit(event, options);
+    }
 
     async _renderInner(data: ReturnType<this["getData"]>): Promise<JQuery<HTMLElement>> {
       const html = await super._renderInner(data);
