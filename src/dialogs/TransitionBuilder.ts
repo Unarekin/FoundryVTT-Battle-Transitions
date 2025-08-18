@@ -1,9 +1,10 @@
 import { EmptyObject } from "./types";
 import { downloadJSON, formatDuration, formDataExtendedClass, getStepClassByKey, localize, log } from "../utils";
-import { addStepDialog, buildTransitionFromForm, confirm, deleteSelectedStep, editSequenceItem, generateMacro, importSequence, selectItem, setBackgroundType, setTargetConfig } from "./functions";
+import { buildTransitionFromForm, confirm, deleteSelectedStep, editSequenceItem, generateMacro, importSequence, selectItem, setBackgroundType, setTargetConfig } from "./functions";
 import { BackgroundTransition, TransitionConfiguration } from "../steps";
 import { sequenceDuration } from "../transitionUtils";
 import { InvalidTransitionError } from "../errors";
+import { AddStepDialog } from "./AddStepDialog";
 
 type BuilderResponse = {
   scene: string,
@@ -194,7 +195,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
   public static async AddStep(this: TransitionBuilder) {
     try {
-      const key = await addStepDialog();
+      const key = await AddStepDialog.prompt()
       if (!key) return;
 
       const step = getStepClassByKey(key);

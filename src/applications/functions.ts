@@ -1,6 +1,5 @@
 import { coerceScene, coerceUser } from '../coercion';
 import { LOG_ICON } from '../constants';
-import { AddStepDialog } from '../dialogs';
 import { TransitionConfiguration } from '../steps';
 
 
@@ -10,10 +9,6 @@ export async function confirm(title: string, content: string): Promise<boolean> 
     window: ({ title } as any),
     content
   });
-}
-
-export function addStepDialog(): Promise<string | null> {
-  return AddStepDialog.prompt();
 }
 
 export function generateMacro(sequence: TransitionConfiguration[], users: string[] = [], scene: unknown = undefined): string {

@@ -8,13 +8,34 @@ import { editSequence } from './EditSequence';
 import { coerceScene, coerceUser } from '../coercion';
 import { LOG_ICON } from '../constants';
 
-/** @deprecated Use function from applications instead */
-export async function addStepDialog(): Promise<string | null> {
-  return AddStepDialog.prompt();
-}
+export function getStepsForCategory(category: string, sequence?: TransitionConfiguration[], hidden?: boolean): StepContext[] {
+  return getSortedSteps()
+    .reduce((prev, curr) => {
 
-export function getStepsForCategory(category: string, hidden: boolean = false): StepContext[] {
-  return getSortedSteps().reduce((prev, curr) => curr.category === category && (hidden ? true : curr.hidden === false) ? [...prev, { key: curr.key, name: `BATTLETRANSITIONS.${curr.name}.NAME`, description: `BATTLETRANSITIONS.${curr.name}.DESCRIPTION`, icon: curr.icon, hasIcon: !!curr.icon, preview: curr.preview, tooltip: generatePreviewTooltip(curr) }] : prev, [] as StepContext[]);
+      if (curr.category !== category) return prev;
+      // If hidden is false, then do not return hidden steps (like SceneChangeStep)
+      if (!hidden && curr.hidden) return prev;
+
+      let enabled = true;
+
+      if (Array.isArray(sequence)) {
+        const stepClass = getStepClassByKey(curr.key)
+        if (stepClass && !stepClass.canBeAddedToSequence(sequence)) enabled = false;
+      }
+
+      return [
+        ...prev,
+        {
+          key: curr.key,
+          name: `BATTLETRANSITIONS.${curr.name}.NAME`,
+          icon: curr.icon,
+          hasIcon: !!curr.icon,
+          preview: curr.preview,
+          tooltip: generatePreviewTooltip(curr),
+          enabled
+        }
+      ]
+    }, [] as StepContext[]);
 }
 
 function generatePreviewTooltip(step: typeof TransitionStep): string {
@@ -50,6 +71,20 @@ function generatePreviewTooltip(step: typeof TransitionStep): string {
   const desc = document.createElement("p");
   desc.innerText = game.i18n?.localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`) ?? "";
   tooltip.appendChild(desc);
+
+  if (step.reversible) {
+    const reversible = document.createElement("p");
+
+    const icon = document.createElement("i");
+    icon.classList.add("fa-solid", "fa-rotate-left", "fa-fw");
+    reversible.appendChild(icon);
+
+    const strong = document.createElement("strong");
+    reversible.appendChild(strong);
+
+    strong.innerHTML = game.i18n?.localize(`BATTLETRANSITIONS.DIALOGS.REVERSIBLE`) ?? "";
+    desc.appendChild(reversible);
+  }
 
   return tooltip.outerHTML;
 }
@@ -277,7 +312,7 @@ export function setTargetConfig(html: HTMLElement) {
 }
 
 export async function addStep(html: HTMLElement): Promise<TransitionConfiguration | undefined> {
-  const key = await addStepDialog();
+  const key = await AddStepDialog.prompt();
   if (!key) return;
   const step = getStepClassByKey(key);
   if (!step) throw new InvalidTransitionError(key);

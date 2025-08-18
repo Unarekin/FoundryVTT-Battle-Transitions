@@ -21,6 +21,18 @@ export class ReverseStep extends TransitionStep<ReverseConfiguration> {
   public static template: string = "reverse-config";
   public static skipConfig = false;
 
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static canBeAddedToSequence(sequence: TransitionConfiguration[], config?: TransitionConfiguration): boolean {
+    // Cannot reverse a non-step
+    if (sequence.length === 0) return false;
+
+    const prev = sequence[sequence.length - 1];
+    const stepClass = getStepClassByKey(prev.type);
+
+    return !!stepClass?.reversible;
+  }
+
   public static from(config: ReverseConfiguration): ReverseStep
   public static from(form: HTMLFormElement): ReverseStep
   public static from(form: JQuery<HTMLFormElement>): ReverseStep

@@ -1,34 +1,36 @@
+import { TransitionConfiguration } from "../steps";
 import { localize, renderTemplateFunc } from "../utils";
 import { clearSearchResults, handleSearchInput } from "./addStepFunctions";
 import { getStepsForCategory } from "./functions";
 
 export class AddStepDialog {
-  public static async prompt(): Promise<string | null> {
+  public static async prompt(sequence: TransitionConfiguration[] = []): Promise<string | null> {
+    console.log("Adding step:", sequence);
     const content = await (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/dialogs/AddStepDialogV2.hbs`, {
       tabs: [
         {
           icon: "",
           id: "wipes",
           title: "BATTLETRANSITIONS.DIALOGS.ADDSTEP.TABS.WIPES",
-          data: getStepsForCategory("wipe")
+          data: getStepsForCategory("wipe", sequence)
         },
         {
           icon: "",
           id: "warps",
           title: "BATTLETRANSITIONS.DIALOGS.ADDSTEP.TABS.WARPS",
-          data: getStepsForCategory("warp")
+          data: getStepsForCategory("warp", sequence)
         },
         {
           icon: "",
           id: "effects",
           title: "BATTLETRANSITIONS.DIALOGS.ADDSTEP.TABS.EFFECTS",
-          data: getStepsForCategory("effect")
+          data: getStepsForCategory("effect", sequence)
         },
         {
           icon: "",
           id: "technical",
           title: "BATTLETRANSITIONS.DIALOGS.ADDSTEP.TABS.TECHNICAL",
-          data: getStepsForCategory("technical")
+          data: getStepsForCategory("technical", sequence)
         }
       ]
     });

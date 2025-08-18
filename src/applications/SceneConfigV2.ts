@@ -1,6 +1,6 @@
 import { ConfigurationHandler } from "../ConfigurationHandler";
-import { DeepPartial } from "../dialogs";
-import { addStepDialog, confirm, generateMacro } from "./functions";
+import { AddStepDialog, DeepPartial } from "../dialogs";
+import { confirm, generateMacro } from "./functions";
 import { InvalidTransitionError, LocalizedError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
@@ -117,7 +117,7 @@ export function SceneConfigV2Mixin(Base: BaseType) {
 
     static async AddStep(this: Mixed) {
       try {
-        const key = await addStepDialog();
+        const key = await AddStepDialog.prompt(this.#sceneConfiguration?.sequence ?? []);
         if (!key) return;
         const stepClass = getStepClassByKey(key);
         if (!stepClass) throw new InvalidTransitionError(key);

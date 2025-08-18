@@ -1,6 +1,7 @@
 {
   "BATTLETRANSITIONS": {
     "DIALOGS": {
+      "REVERSIBLE": "This step is reversible",
       "IMPORTCONFIRM": {
         "TITLE": "Import Sequence",
         "MESSAGE": "Importing a sequence will overwrite the existing one, are you sure you want to do this?"

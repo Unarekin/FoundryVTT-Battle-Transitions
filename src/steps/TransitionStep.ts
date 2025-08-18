@@ -71,6 +71,19 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
     return context;
   }
 
+  /**
+   * Determines whether or not this particular step can be added to the current sequence.
+   * 
+   * This is mostly for the {@link ReverseStep} transition step.
+   * @param {TransitionConfiguration[]} sequence - The current sequence
+   * @param {TransitionConfiguration} config - {@link TransitionConfiguration} optional configuration for the step attempting to be added.
+   * @returns 
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static canBeAddedToSequence(sequence: TransitionConfiguration[], config?: TransitionConfiguration): boolean {
+    return true;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static getListDescription(config?: TransitionConfiguration): string {
     return "";

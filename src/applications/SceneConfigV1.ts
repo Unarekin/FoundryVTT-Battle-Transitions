@@ -1,9 +1,10 @@
 import { ConfigurationHandler } from "../ConfigurationHandler";
-import { addStepDialog, confirm, generateMacro } from "./functions";
+import { confirm, generateMacro } from "./functions";
 import { InvalidTransitionError, LocalizedError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
 import { formDataExtendedClass, getStepClassByKey, localize } from "../utils";
+import { AddStepDialog } from "../dialogs";
 
 
 
@@ -161,7 +162,7 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
 
     async addStep(): Promise<void> {
       try {
-        const key = await addStepDialog();
+        const key = await AddStepDialog.prompt(this._config?.sequence ?? []);
         if (!key) return;
 
         const step = getStepClassByKey(key);
