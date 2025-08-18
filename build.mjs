@@ -153,6 +153,9 @@ const buildResults = await build({
   loader: {
     ".frag": "text",
     ".vert": "text",
+    ".ttf": "file",
+    ".woff": "file",
+    ".svg": "file",
   },
   metafile: __DEV__,
   plugins: [

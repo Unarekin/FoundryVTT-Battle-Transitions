@@ -51,7 +51,7 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
   public static name = "BOSSSPLASH";
   public static template = "bosssplash-config";
   public static category = "effect";
-  public static icon = "<i class='bt-icon boss-splash fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-boss-splash fa-fw fas'></i>"
 
 
   public static RenderTemplate(config?: BossSplashConfiguration): Promise<string> {

@@ -32,7 +32,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
 
   public static category = "wipe";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon spotlight-wipe fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-spotlight-wipe fa-fw fas'></i>"
   public static key = "spotlightwipe";
   public static name = "SPOTLIGHTWIPE";
   public static template = "spotlightwipe-config";

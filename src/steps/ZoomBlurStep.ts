@@ -22,7 +22,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
 
   public static category = "warp";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon zoomblur fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-zoom-blur fa-fw fas'></i>"
   public static key = "zoomblur";
   public static name = "ZOOMBLUR";
   public static template = "zoomblur-config";

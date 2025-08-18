@@ -18,7 +18,7 @@ export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfigurati
   public static key = "restoreoverlay";
   public static name = "SHOWOVERLAY";
   public static skipConfig = true;
-  public static icon = "<i class='bt-icon show-overlay fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-show-overlay fa-fw fas'></i>"
   public static category = "technical";
 
   // #endregion Properties (6)

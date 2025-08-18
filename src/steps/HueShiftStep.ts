@@ -21,7 +21,7 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
   };
   public static category: string = "effect";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon hue-shift fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-hue-shift fa-fw fas'></i>"
   public static key: string = "hueshift";
   public static name: string = "HUESHIFT";
   public static template: string = "hueshift-config";

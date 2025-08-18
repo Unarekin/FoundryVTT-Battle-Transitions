@@ -24,7 +24,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
 
   public static category = "wipe";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon diamond-wipe fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-diamond-wipe fa-fw fas'></i>"
   public static key = "diamondwipe";
   public static name = "DIAMONDWIPE";
   public static template = "diamondwipe-config";

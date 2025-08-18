@@ -42,19 +42,6 @@
   }
 }
 
-// .ui-sortable-helper {
-//   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
-//   border: 1px solid rgba(0, 0, 0, 0.25);
-//   // margin: 2px;
-
-//   &.v1 {
-//     background-image: url("/ui/parchment.jpg");
-//   }
-//   &.v2 {
-//     background-color: white;
-//   }
-// }
-
 .transition-config {
   .search-box {
     position: relative;
@@ -75,9 +62,6 @@
       i {
         position: absolute;
         left: 4px;
-        &.bt-icon {
-          background-color: var(--button-text-color);
-        }
       }
     }
   }

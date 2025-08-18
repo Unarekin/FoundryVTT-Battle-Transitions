@@ -25,7 +25,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
 
   public static category = "warp";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon melt fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-melt fa-fw fas'></i>"
   public static key = "melt";
   public static name = "MELT";
   public static reversible: boolean = true;

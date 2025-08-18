@@ -13,7 +13,7 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
   public static DEFAULT_OPTIONS: DeepPartial<StepConfigConfiguration> = {
     window: {
       contentClasses: ["standard-form"],
-      icon: "fa-solid bt-icon crossed-swords"
+      icon: "fa-solid bt-icon bt-crossed-swords"
     },
     tag: "form",
     form: {

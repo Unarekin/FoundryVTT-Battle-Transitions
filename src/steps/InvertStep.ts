@@ -22,7 +22,7 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
   public static name = "INVERT";
   public static template = "invert-config";
   public static category = "effect";
-  public static icon = "<i class='bt-icon invert fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-invert fa-fw fas'></i>"
 
   // #endregion Properties (6)
 

@@ -249,7 +249,7 @@ export function SceneConfigV2Mixin(Base: BaseType) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   (Mixed as any).TABS.sheet.tabs.push({
     id: "transition",
-    icon: "fa-solid bt-icon fa-fw crossed-swords v13",
+    icon: "fa-solid bt-icon fa-fw bt-crossed-swords v13",
   });
 
   return Mixed

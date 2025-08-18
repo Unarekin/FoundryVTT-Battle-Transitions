@@ -25,7 +25,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
 
   public static category = "wipe";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon angular-wipe fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-angular-wipe fa-fw fas'></i>"
   public static key = "angularwipe";
   public static name = "ANGULARWIPE";
   public static reversible = true;

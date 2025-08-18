@@ -19,7 +19,7 @@ export class ConfigurationHandler {
     buttons.push(
       {
         name: "BATTLETRANSITIONS.NAVIGATION.TRIGGER",
-        icon: `<i class="fas bt-icon fa-fw crossed-swords ${iconClasses.join(" ")}"></i>`,
+        icon: `<i class="fas bt-icon fa-fw bt-crossed-swords ${iconClasses.join(" ")}"></i>`,
         condition: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
           try {
             const scene = getScene(li);
@@ -55,7 +55,7 @@ export class ConfigurationHandler {
       },
       {
         name: "BATTLETRANSITIONS.NAVIGATION.BYPASS",
-        icon: `<i class="fas bt-icon fa-fw step-over ${iconClasses.join(" ")}"></i>`,
+        icon: `<i class="fas bt-icon fa-fw bt-step-over ${iconClasses.join(" ")}"></i>`,
         condition: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
           try {
             const scene = getScene(li);

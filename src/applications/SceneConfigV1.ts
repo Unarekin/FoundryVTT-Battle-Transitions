@@ -53,7 +53,7 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
           $("<a>")
             .addClass("item")
             .attr("data-tab", "transition")
-            .append(`<i class="fa-solid bt-icon crossed-swords fa-fw v12"></i> ${localize("SCENE.TABS.SHEET.transition")}`)
+            .append(`<i class="fa-solid bt-icon bt-crossed-swords fa-fw v12"></i> ${localize("SCENE.TABS.SHEET.transition")}`)
         );
 
       const content = await renderTemplate(`modules/${__MODULE_ID__}/templates/scene-config.hbs`, {

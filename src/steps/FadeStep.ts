@@ -24,7 +24,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
 
   public static category = "effect";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon fade fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-fade fa-fw fas'></i>"
   public static key = "fade";
   public static name = "FADE";
   public static reversible: boolean = true;

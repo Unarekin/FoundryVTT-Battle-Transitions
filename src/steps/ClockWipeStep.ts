@@ -29,7 +29,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
 
   public static category = "wipe";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon clock-wipe fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-clock-wipe fa-fw fas'></i>"
   public static key = "clockwipe"
   public static name = "CLOCKWIPE";
   public static reversible: boolean = true;
