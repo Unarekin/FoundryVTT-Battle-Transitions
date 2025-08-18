@@ -144,7 +144,10 @@ Hooks.on(CUSTOM_HOOKS.TRANSITION_END, (...args: unknown[]) => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 Hooks.on("updateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
   if (delta.active) {
-    if (scene.canUserModify(game.user as User, "update")) void scene.unsetFlag(__MODULE_ID__, "isTriggered");
+    if (scene.canUserModify(game.user as User, "update")) {
+      void scene.unsetFlag(__MODULE_ID__, "isTriggered");
+      void scene.unsetFlag(__MODULE_ID__, "bypassTransition");
+    }
 
     awaitHook("canvasReady").then(() => { Hooks.callAll(CUSTOM_HOOKS.SCENE_ACTIVATED, scene); }).catch(console.error);
   }

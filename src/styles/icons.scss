@@ -143,4 +143,8 @@ nav.tabs {
   &.zoomblur {
     @include mask-icon("../assets/icons/zoom-blur.svg");
   }
+
+  &.step-over {
+    @include mask-icon("../assets/icons/step-over.svg");
+  }
 }

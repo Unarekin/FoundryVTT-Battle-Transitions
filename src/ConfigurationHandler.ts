@@ -22,14 +22,9 @@ export class ConfigurationHandler {
         icon: `<i class="fas bt-icon fa-fw crossed-swords ${iconClasses.join(" ")}"></i>`,
         condition: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
           try {
-            console.log("Checking navigation trigger context item:", li, getScene(li));
             const scene = getScene(li);
             if (!scene) return false;
-
-            // if (scene.id === game?.scenes?.active?.id) return false;
             return ConfigurationHandler.HasTransition(scene, true);
-            // const steps = this.GetSceneTransition(scene) ?? [];
-            // return Array.isArray(steps) && steps.length;
           } catch (err) {
             ui.notifications?.error((err as Error).message, { console: false });
             console.error(err as Error)
@@ -59,6 +54,41 @@ export class ConfigurationHandler {
         }
       },
       {
+        name: "BATTLETRANSITIONS.NAVIGATION.BYPASS",
+        icon: `<i class="fas bt-icon fa-fw step-over ${iconClasses.join(" ")}"></i>`,
+        condition: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
+          try {
+            const scene = getScene(li);
+            if (!scene) return false;
+            return !scene.active && ConfigurationHandler.HasTransition(scene, true);
+          } catch (err) {
+            ui.notifications?.error((err as Error).message, { console: false });
+            console.error(err as Error)
+          }
+        },
+
+        callback: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
+          try {
+            const scene = getScene(li);
+            if (!(scene instanceof Scene)) {
+              if (li instanceof HTMLLIElement) throw new InvalidSceneError(typeof li.dataset.sceneId === "string" ? li.dataset.sceneId : typeof li.dataset.sceneId);
+              else throw new InvalidSceneError(typeof li.data("sceneId") === "string" ? li.data("sceneId") as string : typeof li.data("sceneId"));
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+            ((scene as any).setFlag(__MODULE_ID__, "bypassTransition", true) as Promise<Scene>)
+              .then(() => scene.activate())
+              .catch((err: Error) => {
+                console.error(err);
+                ui.notifications?.error(err.message, { console: false });
+              })
+          } catch (err) {
+            console.error(err);
+            if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
+          }
+        }
+      },
+      {
         name: "BATTLETRANSITIONS.NAVIGATION.CUSTOM",
         icon: "<i class='fas fa-fw fa-hammer'></i>",
         condition: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
@@ -82,32 +112,6 @@ export class ConfigurationHandler {
     )
   }
 
-  // public static async MigrateAllScenes() {
-  //   const scenesToMigrate = game.scenes?.contents.filter(scene => {
-  //     if (!(game.user instanceof User)) return false;
-  //     if (!scene.flags[__MODULE_ID__]) return false;
-  //     if (!scene.canUserModify(game.user, "update")) return false;
-  //     return DataMigration.SceneConfiguration.NeedsMigration(scene.flags[__MODULE_ID__]);
-  //   }) ?? [];
-
-  //   if (scenesToMigrate.length) {
-  //     await Promise.all(scenesToMigrate.map(scene => ConfigurationHandler.MigrateScene(scene)));
-  //     ui.notifications?.info(localize("BATTLETRANSITIONS.INFO.SCENESMIGRATED", { count: scenesToMigrate.length }), { localize: true })
-  //   }
-  // }
-
-
-  // public static async MigrateScene(scene: Scene) {
-  //   const originalConfig = scene.flags[__MODULE_ID__];
-  //   if ((game.user instanceof User) &&
-  //     scene.canUserModify(game.user, "update") &&
-  //     DataMigration.SceneConfiguration.NeedsMigration(originalConfig)) {
-  //     log("Migrating scene:", scene.name, originalConfig);
-  //     const newConfig = ConfigurationHandler.GetSceneConfiguration(scene);
-  //     log(newConfig);
-  //     await ConfigurationHandler.SetSceneConfiguration(scene, newConfig);
-  //   }
-  // }
 
   public static SetSceneConfiguration(scene: Scene, config: Partial<SceneConfiguration>): Promise<Scene | undefined> {
     // const newConfig: { [x: string]: unknown } = { ...config };
@@ -139,6 +143,8 @@ export class ConfigurationHandler {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const flags = scene.flags[__MODULE_ID__] as any;
     if (!flags) return false;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (flags.bypassTransition) return false;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (flags.isTriggered || flags.autoTriggered) return false;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
