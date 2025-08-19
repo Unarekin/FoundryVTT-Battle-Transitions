@@ -52,7 +52,6 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static getRenderContext(config?: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Record<string, unknown> {
-    console.log("Getting render context:", config);
     let defaultSettings: TransitionConfiguration | undefined = undefined;
     if (config) {
       const stepClass = getStepClassByKey(config.type);

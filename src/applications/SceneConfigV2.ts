@@ -129,7 +129,6 @@ export function SceneConfigV2Mixin(Base: BaseType) {
             { id: foundry.utils.randomID() }
           ));
           config = await app.configure() ?? null;
-          console.log("Submitted:", config);
         } else {
           config = {
             ...foundry.utils.deepClone(stepClass.DefaultSettings),

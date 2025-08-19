@@ -5,7 +5,6 @@ import { getStepsForCategory } from "./functions";
 
 export class AddStepDialog {
   public static async prompt(sequence: TransitionConfiguration[] = []): Promise<string | null> {
-    console.log("Adding step:", sequence);
     const content = await (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/dialogs/AddStepDialogV2.hbs`, {
       tabs: [
         {

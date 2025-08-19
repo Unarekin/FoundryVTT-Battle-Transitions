@@ -20,7 +20,16 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
       closeOnSubmit: true,
       // eslint-disable-next-line @typescript-eslint/unbound-method
       handler: StepConfigApplication.onFormSubmit
+    },
+    actions: {
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      cancel: StepConfigApplication.Cancel
     }
+  }
+
+  static async Cancel(this: StepConfigApplication<any>) {
+    this.#submitted = false;
+    await this.close();
   }
 
   get title() {

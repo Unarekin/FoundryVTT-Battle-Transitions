@@ -1,0 +1,10 @@
+{
+  "BATTLETRANSITIONS": {
+    "TRANSITIONBUILDER": {
+      "TITLE": "Transition Builder",
+      "USERS": {
+        "HINT": "Only show the transition for select users.  If none are selected, it will be executed for everyone."
+      }
+    }
+  }
+}

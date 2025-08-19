@@ -40,12 +40,6 @@
         "CONTENT": "Are you sure you wish to remove {name}?",
         "TITLE": "Remove {name}"
       },
-      "TRANSITIONBUILDER": {
-        "TITLE": "Transition Builder",
-        "USERS": {
-          "HINT": "Only show the transition for select users.  If none are selected, it will be executed for everyone."
-        }
-      },
       "SCENESELECTOR": {
         "DESCRIPTION": "Please select a scene below:",
         "TITLE": "Scene Selector"

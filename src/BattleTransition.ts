@@ -6,9 +6,9 @@ import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfigurati
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, getStepClassByKey, isColor, localize, log, renderTemplateFunc, serializeTexture } from "./utils";
+import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
-import { TransitionBuilder } from "./dialogs";
+import { TransitionBuilder } from "./applications";
 import { filters } from "./filters";
 import { isValidBilinearDirection, isValidClockDirection, isValidEasing, isValidRadialDirection, isValidWipeDirection } from "./validation";
 
@@ -84,11 +84,8 @@ export class BattleTransition {
   // #region Public Static Methods (7)
 
   public static async BuildTransition(scene?: Scene): Promise<void> {
-    const app = new TransitionBuilder(scene);
-    await app.render(true);
-    const config = await app.closed;
+    const config = await TransitionBuilder.build(scene);
 
-    log("Built:", config);
     if (config) {
       if (!config.scene || (config.scene && config.scene !== canvas?.scene?.id)) await new BattleTransition(config.scene).executeSequence(config.sequence, config.users);
       else await new BattleTransition().executeSequence(config.sequence, config.users);
