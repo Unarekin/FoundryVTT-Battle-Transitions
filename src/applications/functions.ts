@@ -1,6 +1,10 @@
 import { coerceScene, coerceUser } from '../coercion';
 import { LOG_ICON } from '../constants';
-import { TransitionConfiguration } from '../steps';
+import { TransitionConfiguration, TransitionStep } from '../steps';
+import { getSortedSteps, getStepClassByKey, mimeType } from '../utils';
+import { StepContext } from './types';
+
+
 
 
 export async function confirm(title: string, content: string): Promise<boolean> {
@@ -58,4 +62,87 @@ export function generateMacro(sequence: TransitionConfiguration[], users: string
   )
 
   return macro.join("\n");
+}
+
+
+
+export function getStepsForCategory(category: string, sequence?: TransitionConfiguration[], hidden?: boolean): StepContext[] {
+  return getSortedSteps()
+    .reduce((prev, curr) => {
+
+      if (curr.category !== category) return prev;
+      // If hidden is false, then do not return hidden steps (like SceneChangeStep)
+      if (!hidden && curr.hidden) return prev;
+
+      let enabled = true;
+
+      if (Array.isArray(sequence)) {
+        const stepClass = getStepClassByKey(curr.key)
+        if (stepClass && !stepClass.canBeAddedToSequence(sequence)) enabled = false;
+      }
+
+      return [
+        ...prev,
+        {
+          key: curr.key,
+          name: `BATTLETRANSITIONS.${curr.name}.NAME`,
+          icon: curr.icon,
+          hasIcon: !!curr.icon,
+          preview: curr.preview,
+          tooltip: generatePreviewTooltip(curr),
+          enabled
+        }
+      ]
+    }, [] as StepContext[]);
+}
+
+function generatePreviewTooltip(step: typeof TransitionStep): string {
+  const tooltip = document.createElement("div");
+  tooltip.classList.add("toolclip", "themed", "theme-dark");
+
+  if (step.preview) {
+    const mime = mimeType(step.preview).split("/");
+    if (mime[0] === "video") {
+      const vid = document.createElement("video");
+      vid.style.height = "auto";
+      vid.autoplay = true;
+      vid.loop = true;
+      vid.muted = true;
+      const src = document.createElement("source");
+      src.src = step.preview;
+      vid.appendChild(src);
+
+      tooltip.appendChild(vid);
+    } else if (mime[0] === "image") {
+      const img = document.createElement("img");
+      img.src = step.preview;
+
+      tooltip.appendChild(img);
+    }
+
+  }
+
+  const title = document.createElement("h4");
+  title.innerText = game.i18n?.localize(`BATTLETRANSITIONS.${step.name}.NAME`) ?? "";
+  tooltip.appendChild(title);
+
+  const desc = document.createElement("p");
+  desc.innerText = game.i18n?.localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`) ?? "";
+  tooltip.appendChild(desc);
+
+  if (step.reversible) {
+    const reversible = document.createElement("p");
+
+    const icon = document.createElement("i");
+    icon.classList.add("fa-solid", "fa-rotate-left", "fa-fw");
+    reversible.appendChild(icon);
+
+    const strong = document.createElement("strong");
+    reversible.appendChild(strong);
+
+    strong.innerHTML = game.i18n?.localize(`BATTLETRANSITIONS.DIALOGS.REVERSIBLE`) ?? "";
+    desc.appendChild(reversible);
+  }
+
+  return tooltip.outerHTML;
 }

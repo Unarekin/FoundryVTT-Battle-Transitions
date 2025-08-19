@@ -1,9 +1,10 @@
 import { coerceScene } from "../coercion";
-import { AddStepDialog, DeepPartial } from "../dialogs";
 import { InvalidSceneError, InvalidTransitionError, LocalizedError } from "../errors";
 import { TransitionConfiguration } from "../steps";
 import { downloadJSON, getStepClassByKey, localize, uploadJSON } from "../utils";
+import { AddStepApplication } from "./AddStepApplication";
 import { generateMacro, confirm } from "./functions";
+import { DeepPartial } from "./types";
 
 type BuilderResponse = {
   scene: string,
@@ -60,6 +61,9 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       title: localize("BATTLETRANSITIONS.TRANSITIONBUILDER.TITLE"),
       icon: "fa-solid fa-hammer",
       contentClasses: ["standard-form", "transition-builder"]
+    },
+    position: {
+      width: 500
     },
     tag: "form",
     form: {
@@ -153,7 +157,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
   static async AddStep(this: TransitionBuilder) {
     try {
-      const key = await AddStepDialog.prompt(this.#response?.sequence ?? []);
+      const key = await AddStepApplication.add();
       if (!key) return;
       const stepClass = getStepClassByKey(key);
       if (!stepClass) throw new InvalidTransitionError(key);
@@ -172,7 +176,6 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
         }
       }
       if (!config) return;
-      console.log("Adding:", foundry.utils.deepClone(config));
       if (this.#response.sequence) this.#response.sequence.push(foundry.utils.deepClone(config));
       await this.render();
     } catch (err) {
