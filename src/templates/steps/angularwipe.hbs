@@ -6,16 +6,7 @@
   <input type="hidden" name="id" id="id" value="{{config.id}}" />
   <p>{{localize "BATTLETRANSITIONS.ANGULARWIPE.DESCRIPTION"}}</p>
 
-  <div class="form-group">
-    <label for="label">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.LABEL"
-      }}</label>
-    <input type="text" name="label" id="label" value="{{config.label}}" />
-
-    <p class="hint">{{localize
-        "BATTLETRANSITIONS.SCENECONFIG.COMMON.LABEL.HINT"
-      }}</p>
-  </div>
+  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
 
   {{! Duration }}
   {{> "modules/battle-transitions/templates/steps/partials/duration-selector.hbs" this}}

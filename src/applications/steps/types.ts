@@ -1,4 +1,4 @@
-import { TransitionConfiguration } from "../../steps/types"
+import { BarWipeConfiguration, TransitionConfiguration } from "../../steps/types"
 
 // TODO: When updating to v13 types, extend foundry.applications.api.ApplicationV2.RenderContext
 export interface StepConfigContext<t extends TransitionConfiguration = TransitionConfiguration> extends Record<string, unknown> {
@@ -9,4 +9,10 @@ export interface StepConfigContext<t extends TransitionConfiguration = Transitio
 
 export interface StepConfigConfiguration<t extends TransitionConfiguration = TransitionConfiguration> extends foundry.applications.api.ApplicationV2.Configuration {
   config: t;
+}
+
+export interface BarWipeContext extends StepConfigContext<BarWipeConfiguration> {
+  easingSelect: Record<string, string>;
+  bgTypeSelect: Record<string, string>;
+  directionSelect: Record<string, string>;
 }

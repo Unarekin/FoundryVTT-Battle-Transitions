@@ -1,10 +1,9 @@
 import { BarWipeFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { BarWipeConfiguration } from "./types";
-import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
-import { reconcileBackground } from "./functions";
+import { BarWipeConfigApplication } from "../applications";
 
 export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
   // #region Properties (9)
@@ -32,25 +31,25 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
   public static key: string = "barwipe";
   public static name: string = "BARWIPE";
   public static reversible: boolean = true;
-  public static template: string = "barwipe-config";
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = BarWipeConfigApplication as any;
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/BarWipe.webm`;
 
   // #endregion Properties (9)
 
   // #region Public Static Methods (7)
 
-  public static RenderTemplate(config?: BarWipeConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${BarWipeStep.template}.hbs`, {
-      ...BarWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      easingSelect: generateEasingSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      directionSelect: {
-        horizontal: "BATTLETRANSITIONS.DIRECTIONS.HORIZONTAL",
-        vertical: "BATTLETRANSITIONS.DIRECTIONS.VERTICAL"
-      }
-    })
+
+  public static getRenderContext(config?: BarWipeConfiguration, oldScene?: Scene, newScene?: Scene): Record<string, unknown> {
+    return {
+      ...foundry.utils.deepClone(BarWipeStep.DefaultSettings),
+      ...super.getRenderContext(config, oldScene, newScene),
+    }
+  }
+
+  static getListDescription(config?: BarWipeConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.BARWIPE.LABEL", { bars: config.bars, direction: config.direction, duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    else return "";
   }
 
   public static from(config: BarWipeConfiguration): BarWipeStep

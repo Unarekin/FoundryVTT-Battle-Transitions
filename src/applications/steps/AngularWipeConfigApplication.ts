@@ -11,6 +11,7 @@ export class AngularWipeConfigApplication extends StepConfigApplication<AngularW
     main: {
       template: `modules/${__MODULE_ID__}/templates/steps/angularwipe.hbs`,
       templates: [
+        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
         `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
         `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
         `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`
