@@ -2,7 +2,6 @@ import { AngularWipeConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
 import { createColorTexture, parseConfigurationFormElements } from '../utils';
 import { AngularWipeFilter } from '../filters';
-import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
 import { AngularWipeConfigApplication } from '../applications';
 
 export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
@@ -40,9 +39,8 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
 
   public static getRenderContext(config?: AngularWipeConfiguration): Record<string, unknown> {
     return {
-      ...super.getRenderContext(config),
-      easingSelect: generateEasingSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions()
+      ...foundry.utils.deepClone(AngularWipeStep.DefaultSettings),
+      ...super.getRenderContext(config)
     }
   }
 

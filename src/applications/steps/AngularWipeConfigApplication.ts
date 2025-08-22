@@ -1,4 +1,5 @@
-import { AngularWipeConfiguration, AngularWipeStep } from "../../steps";
+import { AngularWipeContext } from "..";
+import { AngularWipeConfiguration, AngularWipeStep, generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from "../../steps";
 import { StepConfigApplication } from "./StepConfigApplication";
 
 export class AngularWipeConfigApplication extends StepConfigApplication<AngularWipeConfiguration> {
@@ -22,6 +23,13 @@ export class AngularWipeConfigApplication extends StepConfigApplication<AngularW
     }
   }
 
+  protected async _prepareContext(options: foundry.applications.api.ApplicationV2.RenderOptions): Promise<AngularWipeContext> {
+    const context = (await super._prepareContext(options)) as AngularWipeContext;
 
+    context.easingSelect = generateEasingSelectOptions();
+    context.bgTypeSelect = generateBackgroundTypeSelectOptions();
+
+    return context;
+  }
 
 }

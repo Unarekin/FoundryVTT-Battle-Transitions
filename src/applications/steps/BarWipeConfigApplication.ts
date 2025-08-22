@@ -34,8 +34,6 @@ export class BarWipeConfigApplication extends StepConfigApplication<BarWipeConfi
     context.easingSelect = generateEasingSelectOptions();
     context.bgTypeSelect = generateBackgroundTypeSelectOptions();
 
-
-    console.log("Context:", context);
     return context;
   }
 
