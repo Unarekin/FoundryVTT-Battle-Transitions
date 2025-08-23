@@ -1,0 +1,12 @@
+<div class="form-group">
+  {{log this}}
+  <label for="{{id}}">{{localize
+      (concat "BATTLETRANSITIONS.SCENECONFIG." key ".LABEL")
+    }}</label>
+  <select name="{{id}}" id="{{id}}">
+    {{selectOptions options selected=selected localize=true}}
+  </select>
+  <p class="hint">{{localize
+      (concat "BATTLETRANSITIONS.SCENECONFIG." key ".HINT")
+    }}</p>
+</div>

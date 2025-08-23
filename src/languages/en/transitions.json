@@ -29,7 +29,8 @@
     },
     "CLOCKWIPE": {
       "DESCRIPTION": "Wipe the screen around the center point in either a clockwise or counterclockwise direction.",
-      "NAME": "Clock Wipe"
+      "NAME": "Clock Wipe",
+      "LABEL": "Wipe {clockDirection} from {direction} to {background} over {duration}ms"
     },
     "DIAMONDWIPE": {
       "DESCRIPTION": "Break the screen into diamond shapes that shrink over time, starting from the left to the right.",

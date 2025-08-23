@@ -2,9 +2,7 @@ import { NotImplementedError } from "../errors";
 import { CustomFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { AnimatedTransition, TransitionConfiguration } from "./types";
-import { StepConfigApplication } from "../applications/steps"
-import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from "./selectOptions";
-import { getStepClassByKey } from "../utils";
+import { StepConfigApplication } from "../applications/steps";
 
 export abstract class TransitionStep<t extends TransitionConfiguration = TransitionConfiguration> {
   // #region Properties (6)
@@ -43,32 +41,6 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   // #endregion Constructors (1)
 
   // #region Public Static Methods (7)
-
-  /**
-   * Return the context used for rendering this item's configuration template.
-   * @param {TransitionConfiguration} config 
-   * @param {Scene} oldScene 
-   * @param {Scene} newScene 
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public static getRenderContext(config?: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Record<string, unknown> {
-    let defaultSettings: TransitionConfiguration | undefined = undefined;
-    if (config) {
-      const stepClass = getStepClassByKey(config.type);
-      if (stepClass) defaultSettings = foundry.utils.deepClone(stepClass.DefaultSettings);
-    }
-
-    const context = foundry.utils.mergeObject(
-      {
-        ...(defaultSettings ? { config: defaultSettings } : {}),
-        ...(config ? { config: foundry.utils.deepClone(config) } : {})
-      }, {
-      easingSelect: generateEasingSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-    });
-    console.log(context);
-    return context;
-  }
 
   /**
    * Determines whether or not this particular step can be added to the current sequence.

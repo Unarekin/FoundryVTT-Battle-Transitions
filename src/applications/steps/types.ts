@@ -1,4 +1,4 @@
-import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, TransitionConfiguration } from "../../steps/types"
+import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, TransitionConfiguration } from "../../steps/types"
 
 // TODO: When updating to v13 types, extend foundry.applications.api.ApplicationV2.RenderContext
 export interface StepConfigContext<t extends TransitionConfiguration = TransitionConfiguration> extends Record<string, unknown> {
@@ -28,4 +28,11 @@ export interface BilinearWipeContext extends StepConfigContext<BilinearWipeConfi
   bgTypeSelect: Record<string, string>;
   directionSelect: Record<string, string>;
   radialSelect: Record<string, string>;
+}
+
+export interface ClockWipeContext extends StepConfigContext<ClockWipeConfiguration> {
+  easingSelect: Record<string, string>;
+  clockDirectionSelect: Record<string, string>;
+  bgTypeSelect: Record<string, string>;
+  directionSelect: Record<string, string>;
 }

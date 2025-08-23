@@ -79,8 +79,8 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
 
     if (this.config) context.config = this.config;
 
-    if (this.StepClass)
-      foundry.utils.mergeObject(context, foundry.utils.deepClone(this.StepClass.getRenderContext(this.config)));
+    // if (this.StepClass)
+    //   foundry.utils.mergeObject(context, foundry.utils.deepClone(this.StepClass.getRenderContext(this.config)));
 
     context.buttons = [
       { type: "button", icon: "fa-solid fa-times", label: "Cancel", action: "cancel" },

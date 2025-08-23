@@ -37,12 +37,6 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
 
   // #region Public Static Methods (7)
 
-  public static getRenderContext(config?: AngularWipeConfiguration): Record<string, unknown> {
-    return {
-      ...foundry.utils.deepClone(AngularWipeStep.DefaultSettings),
-      ...super.getRenderContext(config)
-    }
-  }
 
   static getListDescription(config?: AngularWipeConfiguration): string {
     if (config) return game.i18n?.format("BATTLETRANSITIONS.ANGULARWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";

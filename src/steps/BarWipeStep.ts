@@ -40,12 +40,6 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
   // #region Public Static Methods (7)
 
 
-  public static getRenderContext(config?: BarWipeConfiguration, oldScene?: Scene, newScene?: Scene): Record<string, unknown> {
-    return {
-      ...foundry.utils.deepClone(BarWipeStep.DefaultSettings),
-      ...super.getRenderContext(config, oldScene, newScene),
-    }
-  }
 
   static getListDescription(config?: BarWipeConfiguration): string {
     if (config) return game.i18n?.format("BATTLETRANSITIONS.BARWIPE.LABEL", { bars: config.bars, direction: config.direction, duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
