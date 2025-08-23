@@ -9,17 +9,16 @@
 
   <div class="form-group">
     <label for="bars">{{localize "BATTLETRANSITIONS.SCENECONFIG.BARWIPE.BARS.LABEL"}}</label>
-    <input type="number" min="2" step="1" value="{{bars}}" name="bars" id="bars" required>
+    <input type="number" min="2" step="1" value="{{config.bars}}" name="bars" id="bars" required>
     <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BARWIPE.BARS.HINT"}}</p>
   </div>
 
-  <div class="form-group">
-    <label for="direction">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.LABEL"}}</label>
-    <select name="direction" id="direction">
-      {{selectOptions directionSelect selected=direction localize=true}}
-    </select>
-    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.HINT"}}</p>
-  </div>
+  {{> "modules/battle-transitions/templates/steps/partials/simple-select.hbs"
+    key="COMMON.DIRECTION"
+    id="direction"
+    options=directionSelect
+    selected=config.direction
+  }}
 
   {{! Duration }}
   {{> "modules/battle-transitions/templates/steps/partials/duration-selector.hbs" this}}

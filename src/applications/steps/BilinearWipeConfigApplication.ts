@@ -14,7 +14,8 @@ export class BilinearWipeConfigApplication extends StepConfigApplication<Bilinea
         `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
         `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
         `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/falloff-config.hbs`
+        `modules/${__MODULE_ID__}/templates/steps/partials/falloff-config.hbs`,
+        `modules/${__MODULE_ID__}/templates/steps/partials/simple-select.hbs`
       ]
     },
     footer: {
