@@ -9,7 +9,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
 
   #filter: AngularWipeFilter | null = null;
 
-  public static DefaultSettings: AngularWipeConfiguration = {
+  public static DefaultSettings: AngularWipeConfiguration = Object.freeze({
     id: "",
     type: "angularwipe",
     duration: 1000,
@@ -20,7 +20,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
     backgroundImage: "",
     backgroundColor: "#00000000",
     falloff: 0
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;

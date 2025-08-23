@@ -12,7 +12,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
 
   #filter: ClockWipeFilter | null = null;
 
-  public static DefaultSettings: ClockWipeConfiguration = {
+  public static DefaultSettings: ClockWipeConfiguration = Object.freeze({
     id: "",
     type: "clockwipe",
     duration: 1000,
@@ -25,7 +25,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     backgroundImage: "",
     falloff: 0,
     backgroundColor: "#00000000"
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;

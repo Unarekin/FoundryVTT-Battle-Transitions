@@ -8,7 +8,7 @@ import { generateClockDirectionSelectOptions, generateDualStyleSelectOptions, ge
 export class TwistStep extends TransitionStep<TwistConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: TwistConfiguration = {
+  public static DefaultSettings: TwistConfiguration = Object.freeze({
     id: "",
     type: "twist",
     version: "1.1.6",
@@ -18,7 +18,9 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
     direction: "clockwise",
     applyToScene: false,
     applyToOverlay: true
-  };
+  });
+
+
   public static category = "warp";
   public static hidden: boolean = false;
   public static icon = "<i class='bt-icon bt-twist fa-fw fas'></i>"

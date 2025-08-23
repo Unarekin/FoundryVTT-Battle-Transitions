@@ -12,11 +12,11 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
 
   #filter: LinearWipeFilter | null = null;
 
-  public readonly defaultSettings: Partial<LinearWipeConfiguration> = {
+  public readonly defaultSettings: Partial<LinearWipeConfiguration> = Object.freeze({
     duration: 1000
-  }
+  })
 
-  public static DefaultSettings: LinearWipeConfiguration = {
+  public static DefaultSettings: LinearWipeConfiguration = Object.freeze({
     id: "",
     type: "linearwipe",
     duration: 1000,
@@ -28,7 +28,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
     backgroundImage: "",
     backgroundColor: "#00000000",
     falloff: 0
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;

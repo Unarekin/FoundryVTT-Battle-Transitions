@@ -13,7 +13,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   #filter: RadialWipeFilter | null = null;
   #screenLocation: [number, number] = [0.5, 0.5];
 
-  public static DefaultSettings: RadialWipeConfiguration = {
+  public static DefaultSettings: RadialWipeConfiguration = Object.freeze({
     id: "",
     type: "radialwipe",
     easing: "none",
@@ -24,9 +24,9 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000",
-    target: [0.5, 0.5],
+    target: [0.5, 0.5] as [number, number],
     falloff: 0
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;

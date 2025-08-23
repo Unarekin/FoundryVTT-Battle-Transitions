@@ -7,12 +7,12 @@ import { hideTransitionCover } from '../transitionUtils';
 
 export class ViewSceneStep extends TransitionStep<ViewSceneConfiguration> {
 
-  public static DefaultSettings: ViewSceneConfiguration = {
+  public static DefaultSettings: ViewSceneConfiguration = Object.freeze({
     id: "",
     type: "viewscene",
     version: "2.0.0",
     scene: ""
-  }
+  });
 
   public static hidden: boolean = true;
   public static key = "viewscene";

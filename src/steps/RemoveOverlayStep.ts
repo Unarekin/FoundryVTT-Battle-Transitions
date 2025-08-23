@@ -7,11 +7,11 @@ import { RemoveOverlayConfiguration } from './types';
 export class RemoveOverlayStep extends TransitionStep<RemoveOverlayConfiguration> {
   // #region Properties (6)
 
-  public static DefaultSettings: RemoveOverlayConfiguration = {
+  public static DefaultSettings: RemoveOverlayConfiguration = Object.freeze({
     id: "",
     type: "removeoverlay",
     version: "1.1.0"
-  };
+  });
   public static hidden: boolean = false;
   public static key = "removeoverlay";
   public static name = "HIDEOVERLAY";

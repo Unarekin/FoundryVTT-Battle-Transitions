@@ -9,11 +9,11 @@ import { getStepClassByKey } from "../utils";
 export abstract class TransitionStep<t extends TransitionConfiguration = TransitionConfiguration> {
   // #region Properties (6)
 
-  public static DefaultSettings: TransitionConfiguration = {
+  public static DefaultSettings: TransitionConfiguration = Object.freeze({
     id: "",
     type: "UNKNOWN",
     version: "1.1.0"
-  };
+  });
   public static hidden: boolean = true;
   public static key: string = "unknown";
   public static name: string = "UNNAMED";

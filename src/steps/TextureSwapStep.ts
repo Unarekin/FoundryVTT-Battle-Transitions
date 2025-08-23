@@ -12,7 +12,7 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
 
   public readonly defaultSettings: Partial<TextureSwapConfiguration> = {};
 
-  public static DefaultSettings: TextureSwapConfiguration = {
+  public static DefaultSettings: TextureSwapConfiguration = Object.freeze({
     id: "",
     type: "textureswap",
     version: "1.1.0",
@@ -22,7 +22,8 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
     backgroundColor: "#00000000",
     applyToScene: false,
     applyToOverlay: true
-  };
+  });
+
   public static hidden: boolean = false;
   public static key: string = "textureswap";
   public static name = "TEXTURESWAP";

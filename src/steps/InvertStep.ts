@@ -9,13 +9,13 @@ import { InvertConfiguration } from "./types";
 export class InvertStep extends TransitionStep<InvertConfiguration> {
   // #region Properties (6)
 
-  public static DefaultSettings: InvertConfiguration = {
+  public static DefaultSettings: InvertConfiguration = Object.freeze({
     id: "",
     type: "invert",
     version: "1.1.0",
     applyToOverlay: true,
     applyToScene: false
-  }
+  });
 
   public static hidden: boolean = false;
   public static key = "invert";

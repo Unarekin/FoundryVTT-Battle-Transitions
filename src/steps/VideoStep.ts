@@ -12,7 +12,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
   #preloadedVideo: PIXI.Texture | null = null;
   #videoContainer: PIXI.Container | null = null;
 
-  public static DefaultSettings: VideoConfiguration = {
+  public static DefaultSettings: VideoConfiguration = Object.freeze({
     id: "",
     type: "video",
     volume: 100,
@@ -27,7 +27,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
     chromaKey: "#0CA023",
     chromaRange: [0.11, 0.22],
     enableChromaKey: false
-  }
+  });
 
   public static hidden: boolean = false;
   public static key = "video";

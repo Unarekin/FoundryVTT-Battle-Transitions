@@ -15,7 +15,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
     easing: "none"
   }
 
-  public static DefaultSettings: SpotlightWipeConfiguration = {
+  public static DefaultSettings: SpotlightWipeConfiguration = Object.freeze({
     id: "",
     type: "spotlightwipe",
     duration: 1000,
@@ -28,7 +28,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
     backgroundImage: "",
     backgroundColor: "#00000000",
     falloff: 0
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;

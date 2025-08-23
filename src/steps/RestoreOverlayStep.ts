@@ -9,11 +9,12 @@ export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfigurati
 
   public static readonly template = "";
 
-  public static DefaultSettings: RestoreOverlayConfiguration = {
+  public static DefaultSettings: RestoreOverlayConfiguration = Object.freeze({
     id: "",
     type: "restoreoverlay",
     version: "1.1.0"
-  };
+  });
+
   public static hidden: boolean = false;
   public static key = "restoreoverlay";
   public static name = "SHOWOVERLAY";

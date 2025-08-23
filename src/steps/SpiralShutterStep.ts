@@ -10,7 +10,7 @@ import { reconcileBackground } from "./functions";
 export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: SpiralShutterConfiguration = {
+  public static DefaultSettings: SpiralShutterConfiguration = Object.freeze({
     id: "",
     type: "spiralshutter",
     duration: 1000,
@@ -23,7 +23,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
     backgroundImage: "",
     falloff: 0,
     backgroundColor: "#00000000"
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;

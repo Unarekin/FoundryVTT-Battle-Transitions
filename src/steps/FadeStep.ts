@@ -11,7 +11,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
 
   #filter: FadeTransitionFilter | null = null;
 
-  public static DefaultSettings: FadeConfiguration = {
+  public static DefaultSettings: FadeConfiguration = Object.freeze({
     id: "",
     type: "fade",
     duration: 1000,
@@ -20,7 +20,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
     backgroundType: "color",
     backgroundColor: "#00000000",
     easing: "none"
-  }
+  });
 
   public static category = "effect";
   public static hidden: boolean = false;

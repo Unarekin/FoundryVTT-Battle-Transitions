@@ -7,12 +7,12 @@ const CURRENT_VERSION = "1.1.0";
 export class WaitStep extends TransitionStep<WaitConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: WaitConfiguration = {
+  public static DefaultSettings: WaitConfiguration = Object.freeze({
     id: "",
     type: "wait",
     duration: 0,
     version: CURRENT_VERSION
-  }
+  });
 
   public static category = "technical";
   public static hidden: boolean = false;

@@ -9,13 +9,13 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
 
   // #sound: Sound | null = null;
 
-  public static DefaultSettings: SoundConfiguration = {
+  public static DefaultSettings: SoundConfiguration = Object.freeze({
     id: "",
     type: "sound",
     volume: 100,
     file: "",
     version: "1.1.0"
-  }
+  });
 
   public static category = "technical";
   public static hidden: boolean = false;

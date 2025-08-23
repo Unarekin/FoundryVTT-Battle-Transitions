@@ -9,7 +9,7 @@ import { generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions, ge
 export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: HueShiftConfiguration = {
+  public static DefaultSettings: HueShiftConfiguration = Object.freeze({
     id: "",
     type: "hueshift",
     duration: 0,
@@ -18,7 +18,8 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
     easing: "none",
     applyToOverlay: true,
     applyToScene: false
-  };
+  });
+
   public static category: string = "effect";
   public static hidden: boolean = false;
   public static icon = "<i class='bt-icon bt-hue-shift fa-fw fas'></i>"

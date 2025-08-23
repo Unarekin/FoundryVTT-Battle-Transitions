@@ -8,7 +8,7 @@ import { ZoomBlurConfiguration } from './types';
 export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: ZoomBlurConfiguration = {
+  public static DefaultSettings: ZoomBlurConfiguration = Object.freeze({
     id: "",
     type: "zoomblur",
     version: "1.1.6",
@@ -18,7 +18,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     innerRadius: 0,
     applyToOverlay: true,
     applyToScene: false
-  }
+  });
 
   public static category = "warp";
   public static hidden: boolean = false;

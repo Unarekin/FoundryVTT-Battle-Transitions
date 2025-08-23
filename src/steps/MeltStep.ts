@@ -11,7 +11,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
 
   #filter: MeltFilter | null = null;
 
-  public static DefaultSettings: MeltConfiguration = {
+  public static DefaultSettings: MeltConfiguration = Object.freeze({
     id: "",
     type: "melt",
     duration: 1000,
@@ -21,7 +21,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000"
-  }
+  });
 
   public static category = "warp";
   public static hidden: boolean = false;

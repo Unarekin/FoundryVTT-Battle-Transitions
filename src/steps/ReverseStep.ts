@@ -6,12 +6,12 @@ import { TransitionStep } from "./TransitionStep";
 import { ReverseConfiguration, TransitionConfiguration } from "./types";
 
 export class ReverseStep extends TransitionStep<ReverseConfiguration> {
-  public static DefaultSettings: ReverseConfiguration = {
+  public static DefaultSettings: ReverseConfiguration = Object.freeze({
     id: "",
     type: "reverse",
     version: "1.1.0",
     delay: 0
-  }
+  });
 
   public static category = "technical";
   public static hidden: boolean = false;

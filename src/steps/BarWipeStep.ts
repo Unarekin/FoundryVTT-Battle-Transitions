@@ -10,7 +10,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
 
   #filter: BarWipeFilter | null = null;
 
-  public static DefaultSettings: BarWipeConfiguration = {
+  public static DefaultSettings: BarWipeConfiguration = Object.freeze({
     id: "",
     type: "barwipe",
     duration: 1000,
@@ -23,7 +23,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
     backgroundImage: "",
     bgSizingMode: "stretch",
     bars: 4
-  }
+  });
 
   public static category: string = "wipe";
   public static hidden: boolean = false;

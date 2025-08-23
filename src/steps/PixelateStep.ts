@@ -8,7 +8,7 @@ import { PixelateConfiguration } from './types';
 export class PixelateStep extends TransitionStep<PixelateConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: PixelateConfiguration = {
+  public static DefaultSettings: PixelateConfiguration = Object.freeze({
     id: "",
     type: "pixelate",
     version: "1.1.0",
@@ -17,7 +17,8 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
     easing: "none",
     applyToScene: false,
     applyToOverlay: true
-  };
+  });
+
   public static category: string = "effect";
   public static hidden: boolean = false;
   public static icon = `<i class="fas fa-fw fa-image"></i>`

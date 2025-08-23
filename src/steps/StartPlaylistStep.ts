@@ -17,11 +17,11 @@ export class StartPlaylistStep extends TransitionStep<StartPlaylistConfiguration
 
   public static skipWhenSceneViewed = false;
 
-  public static DefaultSettings: StartPlaylistConfiguration = {
+  public static DefaultSettings: StartPlaylistConfiguration = Object.freeze({
     id: "",
     type: "startplaylist",
     version: "1.1.0"
-  };
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static RenderTemplate(config?: StartPlaylistConfiguration): Promise<string> {

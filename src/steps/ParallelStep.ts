@@ -14,12 +14,13 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
   #preparedSequences: TransitionStep[][] = [];
 
-  public static DefaultSettings: ParallelConfiguration = {
+  public static DefaultSettings: ParallelConfiguration = Object.freeze({
     id: "",
     type: "parallel",
     version: "1.1.0",
     sequences: []
-  };
+  });
+
   public static category = "technical";
   public static hidden: boolean = false;
   public static icon = `<i class="fas fa-fw fa-arrows-down-to-line"></i>`

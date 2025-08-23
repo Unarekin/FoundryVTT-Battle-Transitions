@@ -17,7 +17,7 @@ function getSplashSetting<t>(key: string, defaultSetting: t): t {
 export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
 
   public static get DefaultSettings(): BossSplashConfiguration {
-    return {
+    return Object.freeze({
       id: "",
       type: "bosssplash",
       version: "1.1.0",
@@ -42,7 +42,7 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
       subText: getSplashSetting<string>("subText", ""),
       animationDelay: getSplashSetting<number>("animationDelay", 0) * 1000,
       animationDuration: getSplashSetting<number>("animationDuration", 3) * 1000,
-    };
+    });
   }
 
 

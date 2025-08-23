@@ -9,7 +9,7 @@ import { reconcileBackground } from "./functions";
 export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: WaveWipeConfiguration = {
+  public static DefaultSettings: WaveWipeConfiguration = Object.freeze({
     id: "",
     type: "wavewipe",
     duration: 1000,
@@ -21,7 +21,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
     backgroundImage: "",
     backgroundColor: "#00000000",
     falloff: 0
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;

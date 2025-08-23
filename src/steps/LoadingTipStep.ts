@@ -7,7 +7,7 @@ import { generateFontSelectOptions } from './selectOptions';
 let ACTIVE_TEXT_ELEMENT: PIXI.HTMLText | null = null;
 
 export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
-  public static DefaultSettings: LoadingTipConfiguration = {
+  public static DefaultSettings: LoadingTipConfiguration = Object.freeze({
     id: "",
     type: "loadingtip",
     version: "1.1.0",
@@ -21,7 +21,7 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
       dropShadow: true,
       fontSize: 64
     }
-  };
+  });
 
 
 

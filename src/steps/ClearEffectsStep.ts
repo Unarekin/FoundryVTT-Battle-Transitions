@@ -4,13 +4,13 @@ import { TransitionStep } from './TransitionStep';
 import { ClearEffectsConfiguration } from './types';
 
 export class ClearEffectsStep extends TransitionStep<ClearEffectsConfiguration> {
-  public static DefaultSettings: ClearEffectsConfiguration = {
+  public static DefaultSettings: ClearEffectsConfiguration = Object.freeze({
     id: "",
     type: "cleareffects",
     version: "1.1.0",
     applyToOverlay: true,
     applyToScene: false
-  }
+  });
 
   public static hidden: boolean = false;
   public static key = "cleareffects";

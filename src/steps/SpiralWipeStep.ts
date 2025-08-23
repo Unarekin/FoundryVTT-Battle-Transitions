@@ -8,7 +8,7 @@ import { reconcileBackground } from './functions';
 export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: SpiralWipeConfiguration = {
+  public static DefaultSettings: SpiralWipeConfiguration = Object.freeze({
     id: "",
     type: "spiralwipe",
     duration: 1000,
@@ -22,7 +22,8 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
     backgroundImage: "",
     backgroundColor: "#00000000",
     falloff: 0
-  };
+  });
+
   public static category = "wipe";
   public static hidden: boolean = false;
   public static icon = `<i class="fas fa-fw fa-arrows-spin"></i>`

@@ -18,7 +18,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
   #sceneFilter: PIXI.Filter | null = null;
   #screenLocation: [number, number] = [0.5, 0.5];
 
-  public static DefaultSettings: ZoomConfiguration = {
+  public static DefaultSettings: ZoomConfiguration = Object.freeze({
     id: "",
     type: "zoom",
     duration: 1000,
@@ -29,10 +29,10 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
     easing: "none",
     amount: 0,
     clampBounds: false,
-    target: [0.5, 0.5],
+    target: [0.5, 0.5] as [number, number],
     applyToOverlay: true,
     applyToScene: false
-  }
+  });
 
   public static category: string = "warp";
   public static hidden: boolean = false;

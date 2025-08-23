@@ -10,7 +10,7 @@ import { FlashConfiguration } from "./types";
 export class FlashStep extends TransitionStep<FlashConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: FlashConfiguration = {
+  public static DefaultSettings: FlashConfiguration = Object.freeze({
     id: "",
     type: "flash",
     duration: 250,
@@ -21,7 +21,7 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
     backgroundColor: "#00000000",
     applyToOverlay: true,
     applyToScene: false
-  }
+  });
 
   public static category = "effect";
   public static hidden: boolean = false;

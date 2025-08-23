@@ -7,12 +7,12 @@ import { MacroConfiguration } from "./types";
 export class MacroStep extends TransitionStep<MacroConfiguration> {
   // #region Properties (5)
 
-  public static DefaultSettings: MacroConfiguration = {
+  public static DefaultSettings: MacroConfiguration = Object.freeze({
     id: "",
     type: "macro",
     macro: "",
     version: "1.1.0"
-  }
+  });
 
   public static hidden: boolean = false;
   public static key = "macro";

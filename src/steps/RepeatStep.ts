@@ -16,7 +16,7 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
 
   #preparedSequence: TransitionStep[] = [];
 
-  public static DefaultSettings: RepeatConfiguration = {
+  public static DefaultSettings: RepeatConfiguration = Object.freeze({
     id: "",
     type: "repeat",
     version: "1.1.0",
@@ -24,7 +24,7 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
     delay: 0,
     iterations: 2,
     sequence: []
-  }
+  });
 
   public static category = "technical";
   public static hidden: boolean = false;

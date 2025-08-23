@@ -9,12 +9,12 @@ import { SceneChangeConfiguration } from "./types";
 export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
   // #region Properties (5)
 
-  public static DefaultSettings = {
+  public static DefaultSettings = Object.freeze({
     id: "",
     type: "scenechange",
     scene: "",
     version: "1.1.0"
-  }
+  });
 
   public static hidden: boolean = true;
   public static key = "scenechange";

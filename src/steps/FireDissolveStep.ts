@@ -8,14 +8,14 @@ import { generateEasingSelectOptions } from './selectOptions';
 export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: FireDissolveConfiguration = {
+  public static DefaultSettings: FireDissolveConfiguration = Object.freeze({
     id: "",
     type: "firedissolve",
     duration: 1000,
     easing: "none",
     burnSize: 1.3,
     version: "1.1.6"
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;
