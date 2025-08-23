@@ -3,5 +3,6 @@ export * from './BarWipeConfigApplication';
 export * from './BilinearWipeConfigApplication';
 export * from './ClockWipeConfigApplication';
 export * from './DiamondWipeConfigApplication';
+export * from './FadeConfigApplication';
 export * from './StepConfigApplication';
 export * from './types';

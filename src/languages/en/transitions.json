@@ -39,7 +39,8 @@
     },
     "FADE": {
       "DESCRIPTION": "Fade from the current foreground to a specified background color.",
-      "NAME": "Fade"
+      "NAME": "Fade",
+      "LABEL": "Fade to {background} over {duration}ms"
     },
     "FIREDISSOLVE": {
       "DESCRIPTION": "Apply a burning effect to the screen, exposing the underlying background.",
