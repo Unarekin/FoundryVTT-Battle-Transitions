@@ -1,0 +1,34 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="bilinearwipe"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.BILINEARWIPE.DESCRIPTION"}}</p>
+  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+
+  <div class="form-group">
+    <label for="direction">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.LABEL"}}</label>
+    <select name="direction" id="direction">
+      {{selectOptions directionSelect selected=direction localize=true}}
+    </select>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.DIRECTION.HINT"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="radial">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.RADIAL.LABEL"}}</label>
+    <select name="radial" id="radial">
+      {{selectOptions radialSelect selected=radial localize=true}}
+    </select>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.RADIAL.HINT"}}</p>
+  </div>
+
+  {{! Duration }}
+  {{> "modules/battle-transitions/templates/steps/partials/duration-selector.hbs" this}}
+  {{! Falloff }}
+  {{> "modules/battle-transitions/templates/steps/partials/falloff-config.hbs" this}}
+  {{! Background }}
+  {{> "modules/battle-transitions/templates/steps/partials/background-selector.hbs" this}}
+  {{! Eeasing }}
+  {{> "modules/battle-transitions/templates/steps/partials/easing-selector.hbs" this}}
+</section>

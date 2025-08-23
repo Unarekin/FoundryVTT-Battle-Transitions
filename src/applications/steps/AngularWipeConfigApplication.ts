@@ -1,4 +1,4 @@
-import { AngularWipeContext } from "..";
+import { AngularWipeContext } from "./types";
 import { AngularWipeConfiguration, AngularWipeStep, generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from "../../steps";
 import { StepConfigApplication } from "./StepConfigApplication";
 

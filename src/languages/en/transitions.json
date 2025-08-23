@@ -12,7 +12,8 @@
     },
     "BILINEARWIPE": {
       "DESCRIPTION": "Two linear wipes along a horizontal, vertical, or diagonal axis originating from either the center or outer edges of the screen.",
-      "NAME": "Bilinear Wipe"
+      "NAME": "Bilinear Wipe",
+      "LABEL": "Wipe from {radial} / {direction} to {background} over {duration}ms"
     },
     "BOSSSPLASH": {
       "DESCRIPTION": "Trigger an animation from the Boss Splash Screen module.",
