@@ -34,7 +34,8 @@
     },
     "DIAMONDWIPE": {
       "DESCRIPTION": "Break the screen into diamond shapes that shrink over time, starting from the left to the right.",
-      "NAME": "Diamond Wipe"
+      "NAME": "Diamond Wipe",
+      "LABEL": "Wipe to {background} over {duration}ms"
     },
     "FADE": {
       "DESCRIPTION": "Fade from the current foreground to a specified background color.",
