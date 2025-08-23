@@ -215,15 +215,14 @@ export function SceneConfigV2Mixin(Base: BaseType) {
     }
 
     async _prepareContext(options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
-      if (options.isFirstRender) this.#sceneConfiguration = ConfigurationHandler.GetSceneConfiguration(this.document);
+      if (options.isFirstRender) this.#sceneConfiguration = foundry.utils.deepClone(ConfigurationHandler.GetSceneConfiguration(this.document));
       const context = await super._prepareContext(options) as Record<string, unknown>;
 
       context.transition = {
         isV1: false,
         canCreateMacro: Macro.canUserCreate(game.user as User),
-        transition: this.#sceneConfiguration
+        transition: foundry.utils.deepClone(this.#sceneConfiguration)
       }
-
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return context as any;
     }

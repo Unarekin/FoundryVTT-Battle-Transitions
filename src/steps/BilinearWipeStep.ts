@@ -10,7 +10,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
 
   #filter: BilinearWipeFilter | null = null;
 
-  public static DefaultSettings: BilinearWipeConfiguration = {
+  public static DefaultSettings: BilinearWipeConfiguration = Object.freeze({
     id: "",
     type: "bilinearwipe",
     duration: 1000,
@@ -23,7 +23,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000"
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;
