@@ -44,7 +44,8 @@
     },
     "FIREDISSOLVE": {
       "DESCRIPTION": "Apply a burning effect to the screen, exposing the underlying background.",
-      "NAME": "Fire Dissolve (Burn)"
+      "NAME": "Fire Dissolve (Burn)",
+      "LABEL": "Screen burn effect over {duration}ms"
     },
     "FLASH": {
       "DESCRIPTION": "Flashes the screen a given color or texture.",
