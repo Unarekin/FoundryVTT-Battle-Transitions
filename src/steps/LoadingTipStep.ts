@@ -1,8 +1,8 @@
 import { TransitionStep } from './TransitionStep';
 import { LoadingTipConfiguration, LoadingTipSource } from './types';
-import { deepCopy, parseConfigurationFormElements, renderTemplateFunc } from '../utils';
+import { deepCopy, localize, parseConfigurationFormElements } from '../utils';
 import { InvalidRollTableError, InvalidTipLocationError } from '../errors';
-import { generateFontSelectOptions } from './selectOptions';
+import { LoadingTipConfigApplication } from '../applications';
 
 let ACTIVE_TEXT_ELEMENT: PIXI.HTMLText | null = null;
 
@@ -30,37 +30,12 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
   public static icon = `<i class="fas fa-spinner"></i>`
   public static key = "loadingtip";
   public static name = "LOADINGTIP";
-  public static template = "loadingtip-config";
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = LoadingTipConfigApplication as any;
 
-  public static async RenderTemplate(config?: LoadingTipConfiguration): Promise<string> {
-    const style = styleFromJSON({
-      ...LoadingTipStep.DefaultSettings,
-      ...(config ? config : {})
-    }.style);
-
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${LoadingTipStep.template}.hbs`, {
-      ...LoadingTipStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      sourceSelect: {
-        "string": "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.SOURCETYPE.STRING.LABEL",
-        "rolltable": "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.SOURCETYPE.ROLLTABLE.LABEL"
-      },
-      locationSelect: {
-        "topleft": "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.TOPLEFT",
-        "topcenter": "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.TOPCENTER",
-        "topright": "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.TOPRIGHT",
-        "center": "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.CENTER",
-        "bottomleft": "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.BOTTOMLEFT",
-        "bottomcenter": "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.BOTTOMCENTER",
-        "bottomright": "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.BOTTOMRIGHT"
-      },
-      tableSelect: Object.fromEntries(getRollTables().map(table => [table.uuid, table.name])),
-      fontSelect: generateFontSelectOptions(),
-      fontFamily: style.fontFamily,
-      fontSize: style.fontSize,
-      fontColor: style.fill
-    });
+  public static getListDescription(config?: LoadingTipConfiguration): string {
+    if (config) return localize("BATTLETRANSITIONS.LOADINGTIP.LABEL", { location: localize(`BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.${config.location.toUpperCase()}`).toLocaleLowerCase() })
+    else return "";
   }
 
   public static getDuration(config: LoadingTipConfiguration): number {
@@ -240,12 +215,6 @@ function elementRight(selector: string): number {
 
 function elementBottom(selector: string): number {
   return (($(selector).offset() ?? { top: 0, left: 0 }).top ?? 0) + ($(selector).height() as number ?? 0);
-}
-
-function getRollTables(): RollTable[] {
-  return [
-    ...(game?.tables?.contents ?? [])
-  ]
 }
 
 function setMessageSource(html: JQuery<HTMLElement>, source: LoadingTipSource) {

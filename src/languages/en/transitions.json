@@ -73,7 +73,8 @@
     },
     "LOADINGTIP": {
       "DESCRIPTION": "Show text-based loading screen tips.",
-      "NAME": "Loading Tip"
+      "NAME": "Loading Tip",
+      "LABEL": "Show loading tip at {location}"
     },
     "MACRO": {
       "DESCRIPTION": "Execute a macro.  This will execute for each user with their own permissions, so please be sure they have permission at all.",
