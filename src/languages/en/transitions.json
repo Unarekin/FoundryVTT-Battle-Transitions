@@ -58,15 +58,13 @@
     },
     "HUESHIFT": {
       "DESCRIPTION": "Shift the screen's hue.",
-      "NAME": "Hue Shift"
+      "NAME": "Hue Shift",
+      "LABEL": "Shift hue of {target} by {maxShift} over {duration}ms"
     },
     "INVERT": {
       "DESCRIPTION": "Invert the current screen texture/color.",
       "NAME": "Invert",
-      "LABEL": "Invert colors on {target}",
-      "TARGETOVERLAY": "the overlay",
-      "TARGETSCENE": "the new scene",
-      "TARGETBOTH": "both the overlay and new scene"
+      "LABEL": "Invert colors on {target}"
     },
     "LINEARWIPE": {
       "DESCRIPTION": "A linear wipe from one side of the screen to the other, exposing a given background color along the way.",

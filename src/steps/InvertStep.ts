@@ -32,7 +32,7 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
   // #region Public Static Methods (6)
   static getListDescription(config?: InvertConfiguration): string {
     if (config) return game.i18n?.format("BATTLETRANSITIONS.INVERT.LABEL", {
-      target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.INVERT.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.INVERT.TARGETSCENE" : "BATTLETRANSITIONS.INVERT.TARGETOVERLAY")
+      target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
     }) ?? "";
     else return "";
   }

@@ -108,6 +108,9 @@
           "HINT": "",
           "LABEL": "Actor"
         },
+        "TARGETOVERLAY": "the overlay",
+        "TARGETSCENE": "the new scene",
+        "TARGETBOTH": "both the overlay and new scene",
         "FALLOFF": {
           "LABEL": "Edge Fade",
           "HINT": "How far from the edge of the transition to start fading out.  0 is no fade, 1 will start fading from the very end of the fade."

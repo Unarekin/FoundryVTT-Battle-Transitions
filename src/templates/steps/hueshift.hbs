@@ -1,0 +1,25 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="hueshift"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.HUESHIFT.DESCRIPTION"}}</p>
+
+  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+
+  <div class="form-group">
+    <label for="maxShift">{{localize "BATTLETRANSITIONS.SCENECONFIG.HUESHIFT.MAXSHIFT.LABEL"}}</label>
+    <range-picker value="{{config.maxShift}}" min="0" max="1" step=".1" id="maxShift" name="maxShift"></range-picker>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.HUESHIFT.MAXSHIFT.HINT"}}</p>
+  </div>
+
+  {{! Duration }}
+  {{> "modules/battle-transitions/templates/steps/partials/duration-selector.hbs" this}}
+
+  {{! Easing }}
+  {{> "modules/battle-transitions/templates/steps/partials/easing-selector.hbs" this }}
+  
+  {{! Dual style }}
+  {{> "modules/battle-transitions/templates/steps/partials/dualstyle-selector.hbs" this}}
+</section>
