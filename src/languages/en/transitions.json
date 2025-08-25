@@ -68,7 +68,8 @@
     },
     "LINEARWIPE": {
       "DESCRIPTION": "A linear wipe from one side of the screen to the other, exposing a given background color along the way.",
-      "NAME": "Linear Wipe"
+      "NAME": "Linear Wipe",
+      "LABEL": "Linear wipe from the {direction} to {background} over {duration}ms"
     },
     "LOADINGTIP": {
       "DESCRIPTION": "Show text-based loading screen tips.",
