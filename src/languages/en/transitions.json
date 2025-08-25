@@ -49,7 +49,8 @@
     },
     "FLASH": {
       "DESCRIPTION": "Flashes the screen a given color or texture.",
-      "NAME": "Flash"
+      "NAME": "Flash",
+      "LABEL": "Flash the screen {background} for {duration}ms"
     },
     "HIDEOVERLAY": {
       "DESCRIPTION": "Sets the transition overlay to invisible, exposing the new scene underneath.",

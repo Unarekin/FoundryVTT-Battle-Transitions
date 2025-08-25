@@ -1,4 +1,4 @@
-import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, TransitionConfiguration } from "../../steps/types"
+import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, TransitionConfiguration } from "../../steps/types"
 
 // TODO: When updating to v13 types, extend foundry.applications.api.ApplicationV2.RenderContext
 export interface StepConfigContext<t extends TransitionConfiguration = TransitionConfiguration> extends Record<string, unknown> {
@@ -44,9 +44,15 @@ export interface DiamondWipeContext extends StepConfigContext<DiamondWipeConfigu
 
 export interface FadeContext extends StepConfigContext<FadeConfiguration> {
   bgTypeSelect: Record<string, string>;
-  easingSelect: Record<string, string>
+  easingSelect: Record<string, string>;
 }
 
 export interface FireDissolveContext extends StepConfigContext<FireDissolveConfiguration> {
-  easingSelect: Record<string, string>
+  easingSelect: Record<string, string>;
+}
+
+export interface FlashContext extends StepConfigContext<FlashConfiguration> {
+  bgTypeSelect: Record<string, string>;
+  dualStyleSelect: Record<string, string>;
+  dualStyle: string;
 }

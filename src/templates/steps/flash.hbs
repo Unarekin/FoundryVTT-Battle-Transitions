@@ -1,0 +1,22 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="flash"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.FLASH.DESCRIPTION"}}</p>
+
+  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+
+  {{! Duration }}
+  {{> "modules/battle-transitions/templates/steps/partials/duration-selector.hbs" this}}
+  {{! Background }}
+  {{> "modules/battle-transitions/templates/steps/partials/background-selector.hbs" this}}
+  {{! Dual style }}
+  {{> "modules/battle-transitions/templates/steps/partials/simple-select.hbs"
+    key="COMMON.DUALSTYLE"
+    options=dualStyleSelect
+    selected=config.dualStyle
+    id="dualStyle"
+  }}  
+</section>
