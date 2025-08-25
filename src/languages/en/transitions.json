@@ -62,7 +62,11 @@
     },
     "INVERT": {
       "DESCRIPTION": "Invert the current screen texture/color.",
-      "NAME": "Invert"
+      "NAME": "Invert",
+      "LABEL": "Invert colors on {target}",
+      "TARGETOVERLAY": "the overlay",
+      "TARGETSCENE": "the new scene",
+      "TARGETBOTH": "both the overlay and new scene"
     },
     "LINEARWIPE": {
       "DESCRIPTION": "A linear wipe from one side of the screen to the other, exposing a given background color along the way.",

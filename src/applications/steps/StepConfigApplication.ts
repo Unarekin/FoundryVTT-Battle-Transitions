@@ -37,7 +37,7 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
     else return "";
   }
 
-  private config: t | undefined;
+  protected config: t | undefined;
   #resolve: ((config: t | undefined) => void) | null = null;
   // eslint-disable-next-line no-unused-private-class-members
   #reject: ((err: Error) => void) | null = null;

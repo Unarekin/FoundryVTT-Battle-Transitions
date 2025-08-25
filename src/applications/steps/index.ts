@@ -6,5 +6,6 @@ export * from './DiamondWipeConfigApplication';
 export * from './FadeConfigApplication';
 export * from './FireDissolveConfigApplication';
 export * from './FlashConfigApplication';
+export * from './InvertConfigApplication';
 export * from './StepConfigApplication';
 export * from './types';

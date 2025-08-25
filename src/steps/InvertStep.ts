@@ -1,8 +1,8 @@
+import { InvertConfigApplication } from "../applications";
 import { InvertFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
-import { parseConfigurationFormElements, renderTemplateFunc } from "../utils";
-import { generateDualStyleSelectOptions } from "./selectOptions";
+import { localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { InvertConfiguration } from "./types";
 
@@ -20,21 +20,21 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
   public static hidden: boolean = false;
   public static key = "invert";
   public static name = "INVERT";
-  public static template = "invert-config";
   public static category = "effect";
   public static icon = "<i class='bt-icon bt-invert fa-fw fas'></i>"
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/Invert.webm`;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = InvertConfigApplication as any;
 
   // #endregion Properties (6)
 
   // #region Public Static Methods (6)
-
-  public static RenderTemplate(config?: InvertConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${InvertStep.template}.hbs`, {
-      ...InvertStep.DefaultSettings,
-      ...(config ? config : {}),
-      dualStyleSelect: generateDualStyleSelectOptions(),
-      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
-    })
+  static getListDescription(config?: InvertConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.INVERT.LABEL", {
+      target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.INVERT.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.INVERT.TARGETSCENE" : "BATTLETRANSITIONS.INVERT.TARGETOVERLAY")
+    }) ?? "";
+    else return "";
   }
 
   public static from(config: InvertConfiguration): InvertStep
