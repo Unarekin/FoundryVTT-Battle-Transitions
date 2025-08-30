@@ -1,0 +1,37 @@
+<div class="tab {{tab.cssClass}}" data-tab="basics" data-group="primary">
+  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+
+  <div class="form-group">
+    <label for="source">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.SOURCETYPE.LABEL"}}</label>
+    <select name="source" id="source">
+      {{selectOptions sourceSelect selected=config.source localize=true}}
+    </select>
+    <p class="hint" data-source-type="string">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.SOURCETYPE.STRING.HINT"}}</p>
+    <p class="hint" data-source-type="rolltable">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.SOURCETYPE.ROLLTABLE.HINT"}}</p>
+  </div>
+
+  <section data-source-type="string" style="display:none">
+    <div class="form-group">
+      <label for="message">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.MESSAGE.LABEL"}}</label>
+      <input type="text" name="message" id="message" value="{{string}}">
+      <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.MESSAGE.HINT"}}</p>
+    </div>
+  </section>
+  <section data-source-type="rolltable" style="display:none">
+    <div class="form-group">
+      <label for="table">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.ROLLTABLE.LABEL"}}</label>
+      <document-picker type="rolltable" name="table" id="table" value="{{table}}"></document-picker>
+    </div>
+  </section>
+
+  <div class="form-group">
+    <label for="location">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.LABEL"}}</label>
+    <select name="location" id="location">
+      {{selectOptions locationSelect selected=config.location localize=true}}
+    </select>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.HINT"}}</p>
+  </div>
+
+  {{> "modules/battle-transitions/templates/steps/partials/duration-selector.hbs" this}}
+
+</div>

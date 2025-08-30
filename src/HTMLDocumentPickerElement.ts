@@ -77,13 +77,13 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
     if (this.value) return (fromUuidSync(this.value) as any) ?? undefined;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     // super.attributeChangedCallback(name, oldValue, newValue);
     switch (name) {
       case "value":
         this.setEnabledButtons();
         this.setTooltips();
+        if (this.#input) this.#input.value = newValue;
         break;
       case "type":
         this.setEnabledButtons();
@@ -107,6 +107,11 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
     if (this.#selectButton) this.#selectButton.addEventListener("click", this.selectButtonClicked.bind(this));
     if (this.#clearButton) this.#clearButton.addEventListener("click", this.clearButtonClicked.bind(this));
     if (this.#viewButton) this.#viewButton.addEventListener("click", this.viewButtonClicked.bind(this));
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    if (this.#input) this.#input.value = this.getAttribute("value") ?? "";
   }
 
   protected viewButtonClicked() {

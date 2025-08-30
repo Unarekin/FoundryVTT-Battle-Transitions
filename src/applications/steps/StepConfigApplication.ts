@@ -115,6 +115,17 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
       }
     }
 
+    // Set up font drop-down
+    const fontSelectors = Array.from(this.element.querySelectorAll(`[data-font-select]`)).filter(elem => elem instanceof HTMLSelectElement);
+    for (const select of fontSelectors) {
+      for (const option of select.options) {
+        option.style.fontFamily = option.value;
+      }
+      select.style.fontFamily = select.value;
+      select.addEventListener("change", () => { select.style.fontFamily = select.value; });
+    }
+
+
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     ColorPicker.install();
   }

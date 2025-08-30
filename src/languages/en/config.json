@@ -104,6 +104,24 @@
         }
       },
       "COMMON": {
+        "DROPSHADOW": {
+          "ENABLE": {
+            "LABEL": "Enable Drop Shadow",
+            "HINT": "Click to enable a drop shadow on the text."
+          },
+          "COLOR": {
+            "LABEL": "Drop Shadow Color",
+            "HINT": "The color of the drop shadow"
+          },
+          "DISTANCE": {
+            "LABEL": "Drop Shadow Distance",
+            "HINT": "Distance from the base text to display the drop shadow"
+          },
+          "BLUR": {
+            "LABEL": "Drop Shadow Blur",
+            "HINT": "Drop shadow blur radius"
+          }
+        },
         "ACTOR": {
           "HINT": "",
           "LABEL": "Actor"
