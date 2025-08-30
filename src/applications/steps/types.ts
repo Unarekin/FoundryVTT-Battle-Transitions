@@ -1,4 +1,4 @@
-import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, TransitionConfiguration } from "../../steps/types"
+import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, MacroConfiguration, TransitionConfiguration } from "../../steps/types"
 
 // TODO: When updating to v13 types, extend foundry.applications.api.ApplicationV2.RenderContext
 export interface StepConfigContext<t extends TransitionConfiguration = TransitionConfiguration> extends Record<string, unknown> {
@@ -83,4 +83,9 @@ export interface LoadingTipContext extends StepConfigContext<LoadingTipConfigura
   string: string;
   fontFamily: string;
   dropShadowColor: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface MacroContext extends StepConfigContext<MacroConfiguration> {
+
 }

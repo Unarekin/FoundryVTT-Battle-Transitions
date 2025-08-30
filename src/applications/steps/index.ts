@@ -10,5 +10,6 @@ export * from './HueShiftConfigApplication';
 export * from './InvertConfigApplication';
 export * from './LinearWipeConfigApplication';
 export * from './LoadingTipConfigApplication';
+export * from './MacroConfigApplication';
 export * from './StepConfigApplication';
 export * from './types';

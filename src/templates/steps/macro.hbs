@@ -1,0 +1,15 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="macro"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.MACRO.DESCRIPTION"}}</p>
+
+  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+
+  <div class="form-group">
+    <label for="macro">{{localize "BATTLETRANSITIONS.MACRO.NAME"}}</label>
+    <document-picker type="macro" name="macro" id="macro" value="{{macro}}"></document-picker>
+  </div>
+</section>

@@ -15,6 +15,9 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
       contentClasses: ["standard-form"],
       icon: "fa-solid bt-icon bt-crossed-swords"
     },
+    position: {
+      width: 500
+    },
     tag: "form",
     form: {
       closeOnSubmit: true,

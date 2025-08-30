@@ -78,7 +78,8 @@
     },
     "MACRO": {
       "DESCRIPTION": "Execute a macro.  This will execute for each user with their own permissions, so please be sure they have permission at all.",
-      "NAME": "Macro"
+      "NAME": "Macro",
+      "LABEL": "Execute macro: {macro}"
     },
     "MELT": {
       "DESCRIPTION": "Melt the screen like you may have seen in a certain demon-killing FPS.",
