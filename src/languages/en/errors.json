@@ -8,6 +8,7 @@
       "EXECUTECALLEDREPEAT": "Do not call execute function when creating repeated transition sequences",
       "FILENOTFOUND": "File not found: {file}",
       "INVALIDDIRECTION": "Invalid direction provided: {direction}",
+      "INVALIDDOCUMENTTYPE": "Invalid document type: {type}",
       "INVALIDDURATION": "Invalid duration provided: {duration}",
       "INVALIDEASING": "Invalid easing: {easing}",
       "INVALIDELEMENT": "Unable to locate HTML element",

@@ -10,6 +10,7 @@ import semver from "semver";
 import { awaitHook, getGame, log } from './utils';
 import { SceneChangeStep } from './steps';
 import { SceneConfigV2Mixin, SceneConfigV1Mixin } from "./applications";
+import "./HTMLDocumentPickerElement";
 
 (window as any).semver = semver;
 (window as any).BattleTransition = BattleTransition;
