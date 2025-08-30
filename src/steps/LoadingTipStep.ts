@@ -70,7 +70,7 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
       fontFamily: elem.find("#fontFamily").val() as string,
       fontSize: elem.find("#fontSize").val() as number,
       fill: elem.find("#fontColor").val() as string
-    }))) as object;
+    }))) as Record<string, unknown>;
 
 
 

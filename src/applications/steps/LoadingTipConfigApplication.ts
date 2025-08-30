@@ -24,7 +24,10 @@ export class LoadingTipConfigApplication extends StepConfigApplication<LoadingTi
     },
     font: {
       template: `modules/${__MODULE_ID__}/templates/steps/loadingtip-font.hbs`,
-      templates: [`modules/${__MODULE_ID__}/templates/steps/partials/font-selector.hbs`]
+      templates: [
+        `modules/${__MODULE_ID__}/templates/steps/partials/font-selector.hbs`,
+        `modules/${__MODULE_ID__}/templates/steps/partials/dropshadow-selector.hbs`
+      ]
     },
     footer: {
       template: "templates/generic/form-footer.hbs"
@@ -80,8 +83,67 @@ export class LoadingTipConfigApplication extends StepConfigApplication<LoadingTi
       }
     }
 
+    if (context.config.source === "rolltable")
+      context.table = context.config.message ?? "";
+    else if (context.config.source === "string")
+      context.string = context.config.message ?? "";
 
+    context.fontFamily = (context.config.style.fontFamily as string) ?? "";
+
+    const color = new PIXI.Color(context.config.style.dropShadowColor as string ?? "#000");
+    color.setAlpha(context.config.style.dropShadowAlpha as number ?? 1);
+    context.dropShadowColor = color.toHexa();
 
     return context;
+  }
+
+  _onRender(context: LoadingTipContext, options: foundry.applications.api.ApplicationV2.RenderOptions) {
+    super._onRender(context, options);
+
+    const sourceSelector = this.element.querySelector(`#source`);
+    if (sourceSelector instanceof HTMLSelectElement) {
+      sourceSelector.addEventListener("change", () => { this.setMessageSource(sourceSelector.value ?? ""); })
+    }
+
+    this.setMessageSource(context.config.source);
+  }
+
+  parseFormData(data: Record<string, unknown>): LoadingTipConfiguration {
+    const parsed = super.parseFormData(data);
+    if (parsed.source === "rolltable") {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      parsed.message = (parsed as any).table;
+      delete parsed.table;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    parsed.style.fontFamily = (parsed as any).fontFamily ?? "";
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    delete (parsed as any).fontFamily;
+
+    // Parse drop shadow
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const dropShadow = new PIXI.Color((parsed as any).dropShadowColor as string ?? "");
+    parsed.style.dropShadowColor = dropShadow.toHex();
+    parsed.style.dropShadowAlpha = dropShadow.alpha;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    delete (parsed as any).dropShadowColor;
+
+
+
+    console.log("Parsed:", parsed);
+    return parsed;
+  }
+
+
+  protected setMessageSource(value: string) {
+    const visible = this.element.querySelectorAll(`[data-source-type="${value}"]`);
+    for (const elem of visible)
+      if (elem instanceof HTMLElement) elem.style.display = "block";
+
+    const invisible = this.element.querySelectorAll(`[data-source-type]:not([data-source-type="${value}"])`);
+    for (const elem of invisible)
+      if (elem instanceof HTMLElement) elem.style.display = "none";
+
   }
 }

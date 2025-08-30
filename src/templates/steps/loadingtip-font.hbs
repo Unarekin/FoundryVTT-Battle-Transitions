@@ -1,3 +1,16 @@
 <div class="tab {{tab.cssClass}}" data-tab="font" data-group="primary">
-  font
+  {{> "modules/battle-transitions/templates/steps/partials/font-selector.hbs" this}}
+
+  <div class="form-group">
+    <label for="style.fontSize">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.FONTSIZE.LABEL"}}</label>
+    <input type="number" name="style.fontSize" id="style.fontSize" min="8" step="1" value="{{config.style.fontSize}}">
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.FONTSIZE.HINT"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="style.fill">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.FONTCOLOR.LABEL"}}</label>
+    <input type="text" name="style.fill" id="style.fill" value="{{config.style.fill}}" data-color-picker="{alphaChannel: false}">
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.FONTCOLOR.HINT"}}</p>
+  </div>
+  {{> "modules/battle-transitions/templates/steps/partials/dropshadow-selector.hbs" this}}
 </div>

@@ -225,5 +225,5 @@ export type LoadingTipConfiguration = TransitionConfiguration & ({
   table?: string;
   duration: number;
   location: LoadingTipLocation;
-  style: object;
+  style: Record<string, unknown>;
 });

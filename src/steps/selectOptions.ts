@@ -86,7 +86,7 @@ export function generateEasingSelectOptions(): { [x: string]: string } {
 }
 
 export function generateFontSelectOptions(): { [x: string]: string } {
-  return Object.fromEntries(FontConfig.getAvailableFonts().map(font => [font, font]));
+  return Object.fromEntries(FontConfig.getAvailableFonts().sort((a, b) => a.localeCompare(b)).map(font => [font, font]));
 }
 
 export function generateLinearDirectionSelectOptions(): { [x: string]: string } {

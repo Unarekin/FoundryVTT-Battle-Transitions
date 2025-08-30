@@ -79,4 +79,8 @@ export interface LoadingTipContext extends StepConfigContext<LoadingTipConfigura
   tableSelect: Record<string, string>;
   locationSelect: Record<string, string>;
   fontSelect: Record<string, string>;
+  table: string;
+  string: string;
+  fontFamily: string;
+  dropShadowColor: string;
 }
