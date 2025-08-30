@@ -83,7 +83,8 @@
     },
     "MELT": {
       "DESCRIPTION": "Melt the screen like you may have seen in a certain demon-killing FPS.",
-      "NAME": "Melt"
+      "NAME": "Melt",
+      "LABEL": "Melt the screen to {background} over {duration}ms"
     },
     "PARALLEL": {
       "DESCRIPTION": "Run multiple sequences of transition effects simultaneously.",

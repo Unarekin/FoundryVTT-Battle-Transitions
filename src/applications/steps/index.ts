@@ -11,5 +11,6 @@ export * from './InvertConfigApplication';
 export * from './LinearWipeConfigApplication';
 export * from './LoadingTipConfigApplication';
 export * from './MacroConfigApplication';
+export * from './MeltConfigApplication';
 export * from './StepConfigApplication';
 export * from './types';

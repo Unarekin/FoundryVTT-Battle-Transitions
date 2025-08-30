@@ -5,6 +5,7 @@ import { TransitionStep } from "./TransitionStep";
 import { MeltConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
 import { reconcileBackground } from "./functions";
+import { MeltConfigApplication } from "../applications";
 
 export class MeltStep extends TransitionStep<MeltConfiguration> {
   // #region Properties (9)
@@ -34,6 +35,17 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
   // #endregion Properties (9)
 
   // #region Public Static Methods (7)
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/Melt.webm`;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = MeltConfigApplication as any;
+
+
+
+  static getListDescription(config?: MeltConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.MELT.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    else return "";
+  }
 
   public static RenderTemplate(config?: MeltConfiguration): Promise<string> {
     return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${MeltStep.template}.hbs`, {
