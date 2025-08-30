@@ -1,10 +1,8 @@
 import { MeltFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { MeltConfiguration } from "./types";
-import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
-import { reconcileBackground } from "./functions";
 import { MeltConfigApplication } from "../applications";
 
 export class MeltStep extends TransitionStep<MeltConfiguration> {
@@ -45,17 +43,6 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
   static getListDescription(config?: MeltConfiguration): string {
     if (config) return game.i18n?.format("BATTLETRANSITIONS.MELT.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
     else return "";
-  }
-
-  public static RenderTemplate(config?: MeltConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${MeltStep.template}.hbs`, {
-      ...MeltStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      easingSelect: generateEasingSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions()
-    });
   }
 
   public static from(config: MeltConfiguration): MeltStep

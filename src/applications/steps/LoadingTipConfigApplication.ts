@@ -129,9 +129,6 @@ export class LoadingTipConfigApplication extends StepConfigApplication<LoadingTi
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     delete (parsed as any).dropShadowColor;
 
-
-
-    console.log("Parsed:", parsed);
     return parsed;
   }
 

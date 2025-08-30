@@ -1,0 +1,20 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="pixelate"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.PIXELATE.DESCRIPTION"}}</p>
+
+  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+
+  <div class="form-group">
+    <label for="maxSize">{{localize "BATTLETRANSITIONS.SCENECONFIG.PIXELATE.MAXSIZE.LABEL"}}</label>
+    <input type="number" name="maxSize" id="maxSize" value="{{config.maxSize}}" step="1" required>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.PIXELATE.MAXSIZE.HINT"}}</p>
+  </div>
+
+  {{> "modules/battle-transitions/templates/steps/partials/duration-selector.hbs" this}}
+  {{> "modules/battle-transitions/templates/steps/partials/dualstyle-selector.hbs" this}}
+  {{> "modules/battle-transitions/templates/steps/partials/easing-selector.hbs" this}}
+</section>

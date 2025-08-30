@@ -12,5 +12,6 @@ export * from './LinearWipeConfigApplication';
 export * from './LoadingTipConfigApplication';
 export * from './MacroConfigApplication';
 export * from './MeltConfigApplication';
+export * from './PixelateConfigApplication';
 export * from './StepConfigApplication';
 export * from './types';

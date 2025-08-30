@@ -92,7 +92,8 @@
     },
     "PIXELATE": {
       "DESCRIPTION": "Increase the displayed size of pixels in the overlay texture.",
-      "NAME": "Pixelate"
+      "NAME": "Pixelate",
+      "LABEL": "Pixelate {target} over {duration}ms"
     },
     "RADIALWIPE": {
       "DESCRIPTION": "Circular wipe, starting either from the inside or outside of the screen.",

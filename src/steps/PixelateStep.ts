@@ -1,7 +1,7 @@
+import { PixelateConfigApplication } from '../applications';
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
-import { parseConfigurationFormElements, renderTemplateFunc } from '../utils';
-import { generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { localize, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { PixelateConfiguration } from './types';
 
@@ -27,19 +27,20 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
   public static template: string = "pixelate-config";
   public static reversible: boolean = true;
 
-  // #endregion Properties (7)
-
   // #region Public Static Methods (7)
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/Pixelate.webm`;
 
-  public static async RenderTemplate(config?: PixelateConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${PixelateStep.template}.hbs`, {
-      ...PixelateStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      dualStyleSelect: generateDualStyleSelectOptions(),
-      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay",
-      easingSelect: generateEasingSelectOptions(),
-    });
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = PixelateConfigApplication as any;
+
+
+
+  static getListDescription(config?: PixelateConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.PIXELATE.LABEL", {
+      duration: config.duration,
+      target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
+    }) ?? "";
+    else return "";
   }
 
   public static from(config: PixelateConfiguration): PixelateStep
