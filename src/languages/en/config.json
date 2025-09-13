@@ -109,9 +109,10 @@
           "LABEL": "Actor"
         },
         "BACKGROUND": {
-          "COLOR": "Color",
+          "COLOR": "Background Color",
+          "STYLE": "Background Style",
           "HINT": "Background color or image to show behind this step",
-          "IMAGE": "Image",
+          "IMAGE": "Background Image",
           "LABEL": "Background",
           "OVERLAY": "Original overlay texture"
         },

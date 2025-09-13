@@ -1,43 +1,51 @@
-<fieldset class="background-selector" data-role="background-selector">
-  <legend>{{localize
-      "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.LABEL"
-    }}</legend>
-  <span class="hint">{{localize
-      "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.HINT"
-    }}</span>
+<section data-role="background-selector">
   <div class="form-group">
-    <table class="no-margins">
-      <tr>
-        <td style="width:50%" valign="top">
-          <select name="backgroundType" id="backgroundType">
-            {{selectOptions bgTypeSelect selected=config.backgroundType localize=true}}
-          </select>
-        </td>
-        <td valign="top">
-          <section data-background-type="color">
-            <input
-              type="text"
-              data-color-picker="{alphaChannel: true}"
-              value="{{config.backgroundColor}}"
-              id="backgroundColor"
-              name="backgroundColor"
-            />
-          </section>
-          <section data-background-type="image">
-            <file-picker
-              id="backgroundImage"
-              name="backgroundImage"
-              type="imagevideo"
-              value="{{config.backgroundImage}}"
-            ></file-picker>
-            <section id="backgroundImagePreview"></section>
-            </section>
-          </section>
-          <section data-background-type="overlay">
-
-          </section>
-        </td>
-      </tr>
-    </table>
+    <label for="backgroundType">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.STYLE"
+      }}</label>
+    <select name="backgroundType" id="backgroundType">
+      {{selectOptions
+        bgTypeSelect
+        selected=config.backgroundType
+        localize=true
+      }}
+    </select>
   </div>
-</fieldset>
+  <br />
+  <section data-background-type="color">
+    <div class="form-group">
+      <label for="backgroundColor">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.COLOR"
+        }}</label>
+      <input
+        type="text"
+        data-color-picker="{alphaChannel: true}"
+        value="{{config.backgroundColor}}"
+        id="backgroundColor"
+        name="backgroundColor"
+      />
+    </div>
+  </section>
+  <section data-background-type="image">
+    <div class="form-group">
+      <label for="backgroundImage">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.IMAGE"
+        }}</label>
+      <file-picker
+        id="backgroundImage"
+        name="backgroundImage"
+        type="imagevideo"
+        value="{{config.backgroundImage}}"
+      ></file-picker>
+    </div>
+    <section id="backgroundImagePreview"></section>
+  </section>
+  <section data-background-type="overlay">
+
+  </section>
+
+  <p class="hint">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.BACKGROUND.HINT"
+    }}</p>
+
+</section>
