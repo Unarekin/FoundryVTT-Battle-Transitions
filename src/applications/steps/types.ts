@@ -1,4 +1,4 @@
-import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, MacroConfiguration, MeltConfiguration, PixelateConfiguration, TransitionConfiguration } from "../../steps/types"
+import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, MacroConfiguration, MeltConfiguration, PixelateConfiguration, RadialWipeConfiguration, TransitionConfiguration } from "../../steps/types"
 
 // TODO: When updating to v13 types, extend foundry.applications.api.ApplicationV2.RenderContext
 export interface StepConfigContext<t extends TransitionConfiguration = TransitionConfiguration> extends Record<string, unknown> {
@@ -9,6 +9,8 @@ export interface StepConfigContext<t extends TransitionConfiguration = Transitio
 
 export interface StepConfigConfiguration<t extends TransitionConfiguration = TransitionConfiguration> extends foundry.applications.api.ApplicationV2.Configuration {
   config: t;
+  oldScene?: string;
+  newScene?: string;
 }
 
 
@@ -99,4 +101,18 @@ export interface PixelateContext extends StepConfigContext<PixelateConfiguration
   easingSelect: Record<string, string>;
   dualStyleSelect: Record<string, string>;
   dualStyle: string;
+}
+
+export interface RadialWipeContext extends StepConfigContext<RadialWipeConfiguration> {
+  radialSelect: Record<string, string>;
+  bgTypeSelect: Record<string, string>;
+  easingSelect: Record<string, string>;
+  targetTypeSelect: Record<string, string>;
+  targetType: string;
+  pointX: number;
+  pointY: number;
+  selectedToken: string;
+  selectedTile: string;
+  selectedDrawing: string;
+  selectedNote: string;
 }

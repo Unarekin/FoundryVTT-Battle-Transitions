@@ -1,3 +1,4 @@
+import { coerceScene } from "../../coercion";
 import { DeepPartial } from "../../dialogs";
 import { TransitionConfiguration, TransitionStep } from "../../steps";
 import { StepConfigContext, StepConfigConfiguration } from "./types";
@@ -39,6 +40,9 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
     if (this.StepClass) return game.i18n?.localize(`BATTLETRANSITIONS.${this.StepClass.name}.NAME`) ?? "";
     else return "";
   }
+
+  protected newScene: Scene | undefined;
+  protected oldScene: Scene | undefined;
 
   protected config: t | undefined;
   #resolve: ((config: t | undefined) => void) | null = null;
@@ -168,7 +172,7 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
     }
   }
 
-  constructor(config?: t, options?: StepConfigConfiguration<t>) {
+  constructor(config?: t, options?: DeepPartial<StepConfigConfiguration<t>>) {
     super({
       ...options,
       ...(config ? config : {})
@@ -176,5 +180,13 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
 
 
     if (config) this.config = foundry.utils.deepClone(config);
+    if (options?.newScene) {
+      const scene = coerceScene(options.newScene);
+      if (scene instanceof Scene) this.newScene = scene;
+    }
+    if (options?.oldScene) {
+      const scene = coerceScene(options.oldScene);
+      if (scene instanceof Scene) this.oldScene = scene;
+    }
   }
 }

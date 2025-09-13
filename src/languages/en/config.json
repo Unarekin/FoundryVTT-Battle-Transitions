@@ -77,22 +77,22 @@
       },
       "BUTTONS": {
         "ADDSTEP": "Add Step",
+        "CLEARSTEPS": "Clear Steps",
         "CONFIGURE": "Configure {name}",
-        "REMOVE": "Remove {name}",
-        "CLEARSTEPS": "Clear Steps"
+        "REMOVE": "Remove {name}"
       },
       "CHROMAKEY": {
         "ENABLE": {
-          "LABEL": "Enable Chroma Key",
-          "HINT": ""
+          "HINT": "",
+          "LABEL": "Enable Chroma Key"
         },
         "KEYCOLOR": {
           "HINT": "Color to be removed",
           "LABEL": "Key Color"
         },
         "RANGE": {
-          "LABEL": "Cut-off Range",
           "HINT": "Cut-off values for background, foreground, or blending colors.",
+          "LABEL": "Cut-off Range",
           "X": "X",
           "Y": "Y"
         }
@@ -104,116 +104,9 @@
         }
       },
       "COMMON": {
-        "DROPSHADOW": {
-          "ENABLE": {
-            "LABEL": "Enable Drop Shadow",
-            "HINT": "Click to enable a drop shadow on the text."
-          },
-          "COLOR": {
-            "LABEL": "Drop Shadow Color",
-            "HINT": "The color of the drop shadow"
-          },
-          "DISTANCE": {
-            "LABEL": "Drop Shadow Distance",
-            "HINT": "Distance from the base text to display the drop shadow"
-          },
-          "BLUR": {
-            "LABEL": "Drop Shadow Blur",
-            "HINT": "Drop shadow blur radius"
-          }
-        },
         "ACTOR": {
           "HINT": "",
           "LABEL": "Actor"
-        },
-        "TARGETOVERLAY": "the overlay",
-        "TARGETSCENE": "the new scene",
-        "TARGETBOTH": "both the overlay and new scene",
-        "FALLOFF": {
-          "LABEL": "Edge Fade",
-          "HINT": "How far from the edge of the transition to start fading out.  0 is no fade, 1 will start fading from the very end of the fade."
-        },
-        "TARGET": {
-          "HINT": "Screen point or scene element on which to center this effect.",
-          "LABEL": "Target"
-        },
-        "TARGETDIALOG": {
-          "TITLE": "Effect Target"
-        },
-        "TARGETTYPE": {
-          "DRAWING": {
-            "CURRENTSCENE": {
-              "LABEL": "Drawing in {scene}",
-              "HINT": "Center this effect on the mid point of a drawing in the current scene."
-            },
-            "NEWSCENE": {
-              "LABEL": "Drawing in {scene}",
-              "HINT": "Center this effect on a mid point of a drawing in the next scene."
-            },
-            "LABEL": "Drawing",
-            "NOTE": "Select Drawing",
-            "SELECT": "Select Drawing",
-            "SELECTHINT": "Please select a drawing to use for the target of this effect.",
-            "SHAPES": {
-              "CIRCLE": "Circle",
-              "ELLIPSE": "Ellipse",
-              "FREEHAND": "Freehand",
-              "POLYGON": "Polygon",
-              "RECTANGLE": "Rectangle",
-              "TEXT": "Text",
-              "UNKNOWN": "Unknown"
-            }
-          },
-          "LABEL": "Target Type",
-          "NOTE": {
-            "CURRENTSCENE": {
-              "LABEL": "Journal Note in {scene}",
-              "HINT": "Center this effect on the location of a journal note in the current scene."
-            },
-            "NEWSCENE": {
-              "LABEL": "Journal Note in {scene}",
-              "HINT": "Center this effect on the location of a journal note in the next scene."
-            },
-            "LABEL": "Note",
-            "SELECT": "Select Journal Note",
-            "SELECTHINT": "Please select a journal note to use for the target of this effect."
-          },
-          "POINT": {
-            "HINT": "A normalized point on the screen.  (0,0) is the top left, (1,1) is the top right.  (0.5,0.5) is the center.",
-            "LABEL": "Screen Point",
-            "X": "X",
-            "Y": "Y"
-          },
-          "PROMPT": {
-            "HINT": "Prompt for the target of this effect at the start of the transition.",
-            "LABEL": "Ask Before Transition"
-          },
-          "TILE": {
-            "CURRENTSCENE": {
-              "LABEL": "Tile in {scene}",
-              "HINT": "Center this effect on the mid point of a tile in the current scene."
-            },
-            "NEWSCENE": {
-              "LABEL": "Tile in {scene}",
-              "HINT": "Center this effect on the mid point of a tile in the next scene."
-            },
-            "LABEL": "Tile",
-            "SELECT": "Select Tile",
-            "SELECTHINT": "Please select a tile to use for the target of this effect."
-          },
-          "TOKEN": {
-            "CURRENTSCENE": {
-              "LABEL": "Token in {scene}",
-              "HINT": "Center this effect on the mid point of a token in the current scene."
-            },
-            "NEWSCENE": {
-              "LABEL": "Token in {scene}",
-              "HINT": "Center this effect on the mid point of a token in the next scene."
-            },
-            "LABEL": "Token",
-            "SELECT": "Select Token",
-            "SELECTHINT": "Please select a token to use for the target of this effect."
-          }
         },
         "BACKGROUND": {
           "COLOR": "Color",
@@ -230,6 +123,24 @@
           "HINT": "Direction from which to start",
           "LABEL": "Direction"
         },
+        "DROPSHADOW": {
+          "BLUR": {
+            "HINT": "Drop shadow blur radius",
+            "LABEL": "Drop Shadow Blur"
+          },
+          "COLOR": {
+            "HINT": "The color of the drop shadow",
+            "LABEL": "Drop Shadow Color"
+          },
+          "DISTANCE": {
+            "HINT": "Distance from the base text to display the drop shadow",
+            "LABEL": "Drop Shadow Distance"
+          },
+          "ENABLE": {
+            "HINT": "Click to enable a drop shadow on the text.",
+            "LABEL": "Enable Drop Shadow"
+          }
+        },
         "DUALSTYLE": {
           "BOTH": "Apply To Both",
           "HINT": "This effect can be applied to the transition overlay, the new scene, or both.",
@@ -240,6 +151,10 @@
         "DURATION": {
           "HINT": "Duration in milliseconds",
           "LABEL": "Duration"
+        },
+        "FALLOFF": {
+          "HINT": "How far from the edge of the transition to start fading out.  0 is no fade, 1 will start fading from the very end of the fade.",
+          "LABEL": "Edge Fade"
         },
         "FONT": {
           "HINT": "Select a font family.",
@@ -257,6 +172,48 @@
         "RADIAL": {
           "HINT": "Start from inside or outside",
           "LABEL": "Radial Direction"
+        },
+        "TARGET": {
+          "HINT": "Screen point or scene element on which to center this effect.",
+          "LABEL": "Target",
+          "TYPE": "Target Type"
+        },
+        "TARGETBOTH": "both the overlay and new scene",
+        "TARGETDIALOG": {
+          "TITLE": "Effect Target"
+        },
+        "TARGETOVERLAY": "the overlay",
+        "TARGETSCENE": "the new scene",
+        "TARGETTYPE": {
+          "DRAWING": {
+            "HINT": "Center this effect on the mid point of a drawing.",
+            "LABEL": "Drawing"
+          },
+          "LABEL": "Target Type",
+          "NOTE": {
+            "HINT": "Center this effect on the location of a journal note",
+            "LABEL": "Note",
+            "SELECT": "Select Journal Note",
+            "SELECTHINT": "Please select a journal note to use for the target of this effect."
+          },
+          "POINT": {
+            "HINT": "A normalized point on the screen.  (0,0) is the top left, (1,1) is the bottom right.  (0.5,0.5) is the center.",
+            "LABEL": "Screen Point",
+            "X": "X",
+            "Y": "Y"
+          },
+          "PROMPT": {
+            "HINT": "Prompt for the target of this effect at the start of the transition.",
+            "LABEL": "Ask Before Transition"
+          },
+          "TILE": {
+            "HINT": "Center this effect on the mid point of a tile",
+            "LABEL": "Tile"
+          },
+          "TOKEN": {
+            "LABEL": "Token",
+            "HINT": "Center this effect on the mid point of a token"
+          }
         },
         "VOLUME": {
           "HINT": "",
@@ -276,10 +233,6 @@
       "EXPORT": {
         "HINT": "Download a copy of this sequence as a .json file.",
         "LABEL": "Export Sequence"
-      },
-      "MACRO": {
-        "HINT": "Save this sequence as a macro.",
-        "LABEL": "Save as Macro"
       },
       "FIREDISSOLVE": {
         "BURNSIZE": {
@@ -338,6 +291,10 @@
           "FONT": "Font Settings"
         }
       },
+      "MACRO": {
+        "HINT": "Save this sequence as a macro.",
+        "LABEL": "Save as Macro"
+      },
       "PARALLEL": {
         "ADDSEQUENCE": "Add Sequence",
         "SEQUENCE": "Sequence {index}",
@@ -394,6 +351,10 @@
         "LABEL": "Transition Steps"
       },
       "VIDEO": {
+        "CLEAR": {
+          "HINT": "Will remove the video after it has finished playing.",
+          "LABEL": "Clear After Playing"
+        },
         "FILE": {
           "HINT": "Video to play",
           "LABEL": "File"
@@ -401,10 +362,6 @@
         "TABS": {
           "BASICS": "Basics",
           "CHROMAKEY": "Chroma Key"
-        },
-        "CLEAR": {
-          "LABEL": "Clear After Playing",
-          "HINT": "Will remove the video after it has finished playing."
         }
       },
       "ZOOM": {

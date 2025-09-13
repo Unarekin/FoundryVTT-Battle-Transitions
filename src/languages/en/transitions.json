@@ -97,7 +97,8 @@
     },
     "RADIALWIPE": {
       "DESCRIPTION": "Circular wipe, starting either from the inside or outside of the screen.",
-      "NAME": "Radial Wipe (Shutter)"
+      "NAME": "Radial Wipe (Shutter)",
+      "LABEL": "Radial wipe from {radial} of the screen over {duration}ms"
     },
     "REPEAT": {
       "DESCRIPTION": "Repeat either the previous step or a specified sequence of steps.",

@@ -1,0 +1,111 @@
+<section data-role="target-selector">
+  <label for="targetType">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGET.LABEL"
+    }}</label>
+  <p class="hint">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGET.HINT"
+    }}</p>
+
+  <div class="form-group">
+    <label for="targetType">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGET.TYPE"
+      }}</label>
+    <select name="targetType" id="targetType">
+      {{selectOptions targetTypeSelect localize=true selected=targetType}}
+    </select>
+    <p class="hint"></p>
+  </div>
+
+  <section data-target-type="token">
+    <div class="form-group">
+      <label>{{localize "DOCUMENT.Token"}}</label>
+      <document-picker
+        type="token"
+        name="selectedToken"
+        id="selectedToken"
+        value="{{selectedToken}}"
+      ></document-picker>
+      <p class="hint">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.HINT"
+        }}</p>
+    </div>
+  </section>
+  <section data-target-type="tile">
+    <div class="form-group">
+      <label>{{localize "DOCUMENT.Tile"}}</label>
+      <document-picker
+        type="tile"
+        id="selectedTile"
+        name="selectedTile"
+        value="{{selectedTile}}"
+      ></document-picker>
+      <p class="hint">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.HINT"
+        }}</p>
+    </div>
+  </section>
+  <section data-target-type="note">
+    <div class="form-group">
+      <label>{{localize "DOCUMENT.Note"}}</label>
+      <select name="selectedNote" id="selectedNote">
+        <option></option>
+        {{selectOptions noteSelect selected=selectedNote}}
+      </select>
+      <p class="hint">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.HINT"
+        }}</p>
+    </div>
+  </section>
+  <section data-target-type="drawing">
+    <div class="form-group">
+      <label>{{localize "DOCUMENT.Drawing"}}</label>
+      <document-picker
+        type="drawing"
+        id="selectedDrawing"
+        name="selectedDrawing"
+        value="{{selectedDrawing}}"
+      ></document-picker>
+      <p class="hint">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.HINT"
+        }}</p>
+    </div>
+  </section>
+  <section data-target-type="point">
+    <div class="form-group slim">
+      <label>{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.LABEL"
+        }}</label>
+      <div class="form-fields">
+        <label for="pointX">{{localize
+            "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.X"
+          }}</label>
+        <input
+          type="number"
+          value="{{pointX}}"
+          min="0"
+          max="1"
+          step="any"
+          name="pointX"
+          id="pointX"
+        />
+
+        <label for="pointY">{{localize
+            "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.Y"
+          }}</label>
+        <input
+          type="number"
+          value="{{pointY}}"
+          min="0"
+          max="1"
+          step="any"
+          name="pointY"
+          id="pointY"
+        />
+      </div>
+      <p class="hint">{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.HINT"
+        }}</p>
+    </div>
+  </section>
+
+</section>

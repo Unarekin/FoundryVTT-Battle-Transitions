@@ -147,7 +147,9 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
         const app = new stepClass.ConfigurationApplication(foundry.utils.deepClone({
           ...stepClass.DefaultSettings,
           ...original
-        }));
+        }), {
+          newScene: this.document.uuid
+        });
         const updated = await app.configure();
         if (updated && this._config?.sequence) {
           const index = this._config.sequence.findIndex(config => config.id === updated.id);
@@ -174,7 +176,10 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
             const app = new step.ConfigurationApplication(foundry.utils.mergeObject(
               foundry.utils.deepClone(step.DefaultSettings),
               { id: foundry.utils.randomID() }
-            ));
+            ),
+              {
+                newScene: this.document.uuid
+              });
             config = await app.configure() ?? null;
           } else {
             throw new LocalizedError("NOCONFIGAPP");

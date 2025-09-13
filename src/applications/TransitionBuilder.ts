@@ -114,7 +114,10 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       if (!stepClass) throw new InvalidTransitionError(config.type);
       if (!stepClass.ConfigurationApplication) throw new LocalizedError("NOCONFIGAPP");
 
-      const app = new stepClass.ConfigurationApplication(foundry.utils.deepClone(config));
+      const app = new stepClass.ConfigurationApplication(foundry.utils.deepClone(config), {
+        oldScene: canvas?.scene?.uuid ?? "",
+        newScene: this.#response.scene ?? ""
+      });
       const newConfig = await app.configure();
       if (!newConfig) return;
       const index = this.#response.sequence.findIndex(item => item.id === id);
@@ -164,10 +167,14 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       let config: TransitionConfiguration | null = null;
       if (!stepClass.skipConfig) {
         if (!stepClass.ConfigurationApplication) throw new LocalizedError("NOCONFIGAPP");
+
         const app = new stepClass.ConfigurationApplication(foundry.utils.mergeObject(
           foundry.utils.deepClone(stepClass.DefaultSettings),
           { id: foundry.utils.randomID() }
-        ));
+        ), {
+          oldScene: canvas?.scene?.uuid ?? "",
+          newScene: this.#response.scene ?? ""
+        });
         config = await app.configure() ?? null;
       } else {
         config = {

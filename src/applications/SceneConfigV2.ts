@@ -57,7 +57,9 @@ export function SceneConfigV2Mixin(Base: BaseType) {
         if (!stepClass) throw new InvalidTransitionError(config.type);
         if (!stepClass.ConfigurationApplication) throw new LocalizedError("NOCONFIGAPP");
 
-        const app = new stepClass.ConfigurationApplication(foundry.utils.deepClone(config));
+        const app = new stepClass.ConfigurationApplication(foundry.utils.deepClone(config), {
+          newScene: this.document.uuid
+        });
         const newConfig = await app.configure();
         if (!newConfig) return;
         const index = this.#sceneConfiguration.sequence.findIndex(item => item.id === id);
@@ -127,7 +129,9 @@ export function SceneConfigV2Mixin(Base: BaseType) {
           const app = new stepClass.ConfigurationApplication(foundry.utils.mergeObject(
             foundry.utils.deepClone(stepClass.DefaultSettings),
             { id: foundry.utils.randomID() }
-          ));
+          ), {
+            newScene: this.document.uuid
+          });
           config = await app.configure() ?? null;
         } else {
           config = {

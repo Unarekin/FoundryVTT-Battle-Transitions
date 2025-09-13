@@ -31,8 +31,6 @@ export class PixelateConfigApplication extends StepConfigApplication<PixelateCon
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     delete (parsed as any).dualStyle;
 
-
-    console.log("Parsed:", parsed);
     return parsed;
   }
 

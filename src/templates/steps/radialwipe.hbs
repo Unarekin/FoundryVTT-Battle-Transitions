@@ -1,0 +1,24 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="radialwipe"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.RADIALWIPE.DESCRIPTION"}}</p>
+
+  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+
+  <div class="form-group">
+    <label for="radial">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.RADIAL.LABEL"}}</label>
+    <select name="radial" id="radial">
+      {{selectOptions radialSelect selected=radial localize=true}}
+    </select>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.RADIAL.HINT"}}</p>
+  </div>
+
+  {{> "modules/battle-transitions/templates/steps/partials/duration-selector.hbs" this}}
+  {{> "modules/battle-transitions/templates/steps/partials/falloff-config.hbs" this}}
+  {{> "modules/battle-transitions/templates/steps/partials/background-selector.hbs" this}}
+  {{> "modules/battle-transitions/templates/steps/partials/target-selector.hbs" this}}
+  {{> "modules/battle-transitions/templates/steps/partials/easing-selector.hbs" this}}
+</section>

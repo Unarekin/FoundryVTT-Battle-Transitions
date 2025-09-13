@@ -103,7 +103,7 @@ export function generateLinearDirectionSelectOptions(): { [x: string]: string } 
 }
 
 export function generateNoteSelectOptions(scene: Scene): { [x: string]: string } {
-  return scene ? Object.fromEntries(scene.notes.contents.map(note => [note.uuid, note.entry?.name ?? ""])) : {};
+  return scene ? Object.fromEntries(scene.notes.contents.map(note => [note.uuid, note.text ?? note.uuid])) : {};
 }
 
 export function generateRadialDirectionSelectOptions(): { [x: string]: string } {
@@ -113,7 +113,17 @@ export function generateRadialDirectionSelectOptions(): { [x: string]: string } 
   }
 }
 
-export function generateTargetTypeSelectOptions(oldScene?: Scene, newScene?: Scene) {
+export function generateTargetTypeSelectOptions() {
+  return {
+    point: "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.LABEL",
+    token: "DOCUMENT.Token",
+    tile: "DOCUMENT.Tile",
+    drawing: "DOCUMENT.Drawing",
+    note: "DOCUMENT.Note"
+  }
+}
+
+export function _oldgenerateTargetTypeSelectOptions(oldScene?: Scene, newScene?: Scene) {
 
   const oldHasTokens = !!oldScene?.tokens.contents.length;
   const oldHasTiles = !!oldScene?.tiles.contents.length;

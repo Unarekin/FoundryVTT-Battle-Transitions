@@ -84,7 +84,7 @@ export class BattleTransition {
   // #region Public Static Methods (7)
 
   public static async BuildTransition(scene?: Scene): Promise<void> {
-    const config = await TransitionBuilder.build(scene);
+    const config = await TransitionBuilder.build(scene?.uuid);
 
     if (config) {
       if (!config.scene || (config.scene && config.scene !== canvas?.scene?.id)) await new BattleTransition(config.scene).executeSequence(config.sequence, config.users);
