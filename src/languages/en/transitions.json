@@ -167,7 +167,8 @@
     },
     "ZOOM": {
       "DESCRIPTION": "Zoom in on some point on the screen.",
-      "NAME": "Zoom"
+      "NAME": "Zoom",
+      "LABEL": "Zoom {target} {amount}% over {duration}ms"
     },
     "ZOOMBLUR": {
       "DESCRIPTION": "Simultaneously zoom in on and blur the screen.",

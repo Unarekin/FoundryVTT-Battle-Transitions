@@ -1,13 +1,12 @@
 import { ZoomFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
-import { createColorTexture, getTargetType, parseConfigurationFormElements, renderTemplateFunc, templateDir } from "../utils";
-import { generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
+import { createColorTexture, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SceneChangeConfiguration, TransitionConfiguration, ZoomConfiguration } from "./types";
 import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTargetSelectEventListeners, validateTarget } from "./targetSelectFunctions";
 import { InvalidSceneError, InvalidTargetError } from "../errors";
-import { reconcileBackground } from "./functions";
+import { ZoomConfigApplication } from "../applications";
 
 // #region Classes (1)
 
@@ -40,36 +39,32 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
   public static key: string = "zoom";
   public static name: string = "ZOOM";
   public static reversible: boolean = true
-  public static template: string = "zoom-config";
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/Zoom.webm`;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = ZoomConfigApplication as any;
+
+  // #endregion Properties (9)
+
+  // #region Public Static Methods (7)
+
+
+  static getListDescription(config?: ZoomConfiguration): string {
+    if (config) {
+      return localize("BATTLETRANSITIONS.ZOOM.LABEL", {
+        duration: config.duration,
+        amount: config.amount * 100,
+        target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
+      })
+    } else {
+      return "";
+    }
+  }
 
   // #endregion Properties (11)
 
   // #region Public Static Methods (10)
 
-  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public static async RenderTemplate(config?: ZoomConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    const targetType = getTargetType({
-      ...ZoomStep.DefaultSettings,
-      ...(config ? config : {})
-    }, oldScene, newScene);
-
-    return (renderTemplateFunc())(templateDir(`config/${ZoomStep.template}.hbs`), {
-      ...ZoomStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      oldScene: oldScene?.id ?? "",
-      newScene: newScene?.id ?? "",
-      easingSelect: generateEasingSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      targetType,
-      ...generateTargetTypeSelectOptions(),
-      pointX: Array.isArray(config?.target) ? config.target[0] : 0.5,
-      pointY: Array.isArray(config?.target) ? config.target[1] : 0.5,
-      dualStyleSelect: generateDualStyleSelectOptions(),
-      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
-    });
-  }
 
   // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
   public static async addEventListeners(html: JQuery<HTMLElement>, config?: ZoomConfiguration) {

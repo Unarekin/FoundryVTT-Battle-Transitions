@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, MacroConfiguration, MeltConfiguration, PixelateConfiguration, RadialWipeConfiguration, ReverseConfiguration, SoundConfiguration, SpiralShutterConfiguration, SpiralWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, ZoomBlurConfiguration } from "../../steps/types"
+import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, MacroConfiguration, MeltConfiguration, PixelateConfiguration, RadialWipeConfiguration, ReverseConfiguration, SoundConfiguration, SpiralShutterConfiguration, SpiralWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, ZoomBlurConfiguration, ZoomConfiguration } from "../../steps/types"
 
 // TODO: When updating to v13 types, extend foundry.applications.api.ApplicationV2.RenderContext
 export interface StepConfigContext<t extends TransitionConfiguration = TransitionConfiguration> extends Record<string, unknown> {
@@ -163,6 +163,21 @@ export interface VideoContext extends StepConfigContext<VideoConfiguration> {
 }
 
 export interface WaitContext extends StepConfigContext<WaitConfiguration> { }
+
+export interface ZoomContext extends StepConfigContext<ZoomConfiguration> {
+  easingSelect: Record<string, string>;
+  bgTypeSelect: Record<string, string>;
+  dualStyleSelect: Record<string, string>;
+  dualStyle: string;
+  targetTypeSelect: Record<string, string>;
+  targetType: string;
+  pointX: number;
+  pointY: number;
+  selectedToken: string;
+  selectedTile: string;
+  selectedDrawing: string;
+  selectedNote: string;
+}
 
 export interface ZoomBlurContext extends StepConfigContext<ZoomBlurConfiguration> {
   easingSelect: Record<string, string>;

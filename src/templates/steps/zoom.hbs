@@ -1,0 +1,27 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="zoom"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.ZOOM.DESCRIPTION"}}</p>
+
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+
+  <div class="form-group">
+    <label for="amount">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.AMOUNT.LABEL"}}</label>
+    <input type="number" name="amount" id="amount" value="{{config.amount}}" min="0" step="any" required>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.AMOUNT.HINT"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="clampBounds">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.CLAMPBOUNDS.LABEL"}}</label>
+    <input type="checkbox" name="clampBounds" id="clampBounds" {{checked config.clampBounds}}>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOM.CLAMPBOUNDS.HINT"}}</p>
+  </div>
+
+  {{> (moduleTemplate "steps/partials/target-selector.hbs") this }}
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this}}
+  {{> (moduleTemplate "steps/partials/dualstyle-selector.hbs") this}}
+  {{> (moduleTemplate "steps/partials/easing-selector.hbs") this}}
+</section>
