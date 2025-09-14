@@ -1,10 +1,9 @@
 import { SpotlightWipeFilter } from "../filters";
 import { TransitionSequence } from '../interfaces';
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { createColorTexture, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SpotlightWipeConfiguration } from "./types";
-import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
-import { reconcileBackground } from "./functions";
+import { SpotlightWipeConfigApplication } from "../applications";
 
 
 export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration> {
@@ -35,26 +34,17 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
   public static icon = "<i class='bt-icon bt-spotlight-wipe fa-fw fas'></i>"
   public static key = "spotlightwipe";
   public static name = "SPOTLIGHTWIPE";
-  public static template = "spotlightwipe-config";
   public static reversible: boolean = true;
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/SpotlightWipe.webm`;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = SpotlightWipeConfigApplication as any;
 
   // #endregion Properties (8)
 
   // #region Public Static Methods (7)
-
-  public static RenderTemplate(config?: SpotlightWipeConfiguration): Promise<string> {
-    const renderConfig = {
-      ...SpotlightWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      easingSelect: generateEasingSelectOptions(),
-      directionSelect: generateLinearDirectionSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      radialSelect: generateRadialDirectionSelectOptions()
-    };
-
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${SpotlightWipeStep.template}.hbs`, renderConfig);
+  public static getListDescription(config?: SpotlightWipeConfiguration): string {
+    if (config) return localize("BATTLETRANSITIONS.SPOTLIGHTWIPE.LABEL", { direction: config.direction, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay", duration: config.duration });
+    else return "";
   }
 
   public static from(config: SpotlightWipeConfiguration): SpotlightWipeStep

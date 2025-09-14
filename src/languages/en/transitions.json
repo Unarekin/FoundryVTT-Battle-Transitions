@@ -134,7 +134,8 @@
     },
     "SPOTLIGHTWIPE": {
       "DESCRIPTION": "Bilinear wipe centered on a point along the edge of, and starting from either the inside or outside of the screen.",
-      "NAME": "Spotlight Wipe"
+      "NAME": "Spotlight Wipe",
+      "LABEL": "Spotlight-shaped wipe from {direction} to {background} over {duration}ms"
     },
     "STARTPLAYLIST": {
       "DESCRIPTION": "Start playing the new scene's configured ambient sound / playlist.",
