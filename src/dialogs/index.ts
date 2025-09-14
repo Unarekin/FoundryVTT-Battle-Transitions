@@ -1,4 +1,3 @@
-export * from './AddStepDialog';
 export * from './EditSequence';
 export * from './SceneConfig';
 export * from './SceneConfigV1';

@@ -1,12 +1,12 @@
 import { BackgroundTransition, TransitionConfiguration, TransitionStep } from '../steps';
 import { getSortedSteps, getStepClassByKey, localize, mimeType, renderTemplateFunc, uploadJSON } from '../utils';
-import { AddStepDialog } from './AddStepDialog';
 import { StepContext } from './types';
 import { InvalidTransitionError } from '../errors';
 import { BackgroundType } from '../types';
 import { editSequence } from './EditSequence';
 import { coerceScene, coerceUser } from '../coercion';
 import { LOG_ICON } from '../constants';
+import { AddStepApplication } from '../applications';
 
 export function getStepsForCategory(category: string, sequence?: TransitionConfiguration[], hidden?: boolean): StepContext[] {
   return getSortedSteps()
@@ -312,7 +312,7 @@ export function setTargetConfig(html: HTMLElement) {
 }
 
 export async function addStep(html: HTMLElement): Promise<TransitionConfiguration | undefined> {
-  const key = await AddStepDialog.prompt();
+  const key = await AddStepApplication.add();
   if (!key) return;
   const step = getStepClassByKey(key);
   if (!step) throw new InvalidTransitionError(key);

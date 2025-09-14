@@ -13,17 +13,6 @@ export interface StepContext {
   tooltip?: string;
 }
 
-export interface AddStepDialogOptions extends DialogOptions {
-
-}
-
-export interface AddStepDialogData extends DialogData<HTMLElement | JQuery<HTMLElement>> {
-  title: string;
-  header?: string;
-  footer?: string;
-  tabs: AddStepTab[];
-  hasIcon?: boolean;
-}
 
 /** Borroed from Foundry types to bypass module type bullshit I don't feel like fixing properly */
 
