@@ -124,7 +124,8 @@
     },
     "SPIRALSHUTTER": {
       "DESCRIPTION": "A shutter-type wipe in a spiral shape.",
-      "NAME": "Spiral Shutter"
+      "NAME": "Spiral Shutter",
+      "LABEL": "Spiral shutter wipe from {radial} to {background} over {duration}ms"
     },
     "SPIRALWIPE": {
       "DESCRIPTION": "A spiral-shaped screen wipe, starting from the outside or inside of the screen.",

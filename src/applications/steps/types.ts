@@ -1,4 +1,4 @@
-import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, MacroConfiguration, MeltConfiguration, PixelateConfiguration, RadialWipeConfiguration, ReverseConfiguration, SoundConfiguration, TransitionConfiguration } from "../../steps/types"
+import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, MacroConfiguration, MeltConfiguration, PixelateConfiguration, RadialWipeConfiguration, ReverseConfiguration, SoundConfiguration, SpiralShutterConfiguration, TransitionConfiguration } from "../../steps/types"
 
 // TODO: When updating to v13 types, extend foundry.applications.api.ApplicationV2.RenderContext
 export interface StepConfigContext<t extends TransitionConfiguration = TransitionConfiguration> extends Record<string, unknown> {
@@ -122,3 +122,10 @@ export interface ReverseContext extends StepConfigContext<ReverseConfiguration> 
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SoundContext extends StepConfigContext<SoundConfiguration> { }
+
+export interface SpiralShutterContext extends StepConfigContext<SpiralShutterConfiguration> {
+  directionSelect: Record<string, string>;
+  radialSelect: Record<string, string>;
+  bgTypeSelect: Record<string, string>;
+  easingSelect: Record<string, string>;
+}
