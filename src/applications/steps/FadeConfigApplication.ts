@@ -9,7 +9,7 @@ export class FadeConfigApplication extends StepConfigApplication<FadeConfigurati
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: templateDir(`steps/angularwipe.hbs`),
+      template: templateDir(`steps/fade.hbs`),
       templates: [
         templateDir(`steps/partials/label.hbs`),
         templateDir(`steps/partials/background-selector.hbs`),
