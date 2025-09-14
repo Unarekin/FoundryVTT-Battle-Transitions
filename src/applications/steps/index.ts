@@ -17,5 +17,6 @@ export * from './RadialWipeConfigApplication';
 export * from './ReverseConfigApplication';
 export * from './SoundConfigApplication';
 export * from './SpiralShutterConfigApplication';
+export * from './SpiralWipeConfigApplication';
 export * from './StepConfigApplication';
 export * from './types';

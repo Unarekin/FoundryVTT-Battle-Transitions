@@ -1,9 +1,8 @@
 import { SpiralWipeFilter } from '../filters';
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from '../utils';
+import { createColorTexture, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { SpiralWipeConfiguration } from './types';
-import { generateBackgroundTypeSelectOptions, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
-import { reconcileBackground } from './functions';
+import { SpiralWipeConfigApplication } from '../applications';
 
 export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
   // #region Properties (7)
@@ -29,30 +28,20 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
   public static icon = `<i class="fas fa-fw fa-arrows-spin"></i>`
   public static key = "spiralwipe";
   public static name = "SPIRALWIPE";
-  public static template = "spiralwipe-config";
   public static reversible: boolean = true;
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/SpiralWipe.webm`;
 
-  // #endregion Properties (7)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = SpiralWipeConfigApplication as any;
+
+  // #endregion Properties (9)
 
   // #region Public Static Methods (7)
 
-  public static async RenderTemplate(config?: SpiralWipeConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${SpiralWipeStep.template}.hbs`, {
-      ...SpiralWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      easingSelect: generateEasingSelectOptions(),
-      radialSelect: generateRadialDirectionSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      directionSelect: {
-        top: "BATTLETRANSITIONS.DIRECTIONS.TOP",
-        left: "BATTLETRANSITIONS.DIRECTIONS.LEFT",
-        right: "BATTLETRANSITIONS.DIRECTIONS.RIGHT",
-        bottom: "BATTLETRANSITIONS.DIRECTIONS.BOTTOM"
-      },
-      clockDirectionSelect: generateClockDirectionSelectOptions(),
-    })
+
+  static getListDescription(config?: SpiralWipeConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.SPIRALWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    else return "";
   }
 
   public static from(config: SpiralWipeConfiguration): SpiralWipeStep

@@ -129,7 +129,8 @@
     },
     "SPIRALWIPE": {
       "DESCRIPTION": "A spiral-shaped screen wipe, starting from the outside or inside of the screen.",
-      "NAME": "Spiral Wipe"
+      "NAME": "Spiral Wipe",
+      "LABEL": "Spiral wipe to {background} over {duration}ms"
     },
     "SPOTLIGHTWIPE": {
       "DESCRIPTION": "Bilinear wipe centered on a point along the edge of, and starting from either the inside or outside of the screen.",
