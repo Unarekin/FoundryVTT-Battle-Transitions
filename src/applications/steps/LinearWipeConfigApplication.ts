@@ -8,13 +8,14 @@ export class LinearWipeConfigApplication extends StepConfigApplication<LinearWip
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/angularwipe.hbs`,
+      template: `modules/${__MODULE_ID__}/templates/steps/linearwipe.hbs`,
       templates: [
         `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
         `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
         `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
         `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/falloff-config.hbs`
+        `modules/${__MODULE_ID__}/templates/steps/partials/falloff-config.hbs`,
+        `modules/${__MODULE_ID__}/templates/steps/partials/simple-select.hbs`
       ]
     },
     footer: {
