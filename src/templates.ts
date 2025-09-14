@@ -71,6 +71,10 @@ export function registerHelpers() {
     const stepClass = getStepClassByKey(config.type);
     if (!stepClass) throw new InvalidTransitionError(config.type);
     return game.i18n?.localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`) ?? "";
+  });
+
+  Handlebars.registerHelper("moduleTemplate", function (path: string) {
+    return `modules/${__MODULE_ID__}/templates/${path}`;
   })
 }
 

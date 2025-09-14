@@ -6,7 +6,7 @@
   <input type="hidden" name="id" id="id" value="{{config.id}}" />
   <p>{{localize "BATTLETRANSITIONS.REVERSE.DESCRIPTION"}}</p>
 
-  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
 
   <div class="form-group">
     <label for="delay">{{localize "BATTLETRANSITIONS.SCENECONFIG.REVERSE.DELAY.LABEL"}}</label>

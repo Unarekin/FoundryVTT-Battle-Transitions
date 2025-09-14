@@ -6,8 +6,8 @@
   <input type="hidden" name="id" id="id" value="{{config.id}}" />
   <p>{{localize "BATTLETRANSITIONS.INVERT.DESCRIPTION"}}</p>
 
-  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
 
   {{! Dual style }}
-  {{> "modules/battle-transitions/templates/steps/partials/dualstyle-selector.hbs" this}}
+  {{> (moduleTemplate "steps/partials/dualstyle-selector.hbs") this }}
 </section>

@@ -6,7 +6,7 @@
   <input type="hidden" name="id" id="id" value="{{config.id}}" />
   <p>{{localize "BATTLETRANSITIONS.PIXELATE.DESCRIPTION"}}</p>
 
-  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
 
   <div class="form-group">
     <label for="maxSize">{{localize "BATTLETRANSITIONS.SCENECONFIG.PIXELATE.MAXSIZE.LABEL"}}</label>
@@ -14,7 +14,7 @@
     <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.PIXELATE.MAXSIZE.HINT"}}</p>
   </div>
 
-  {{> "modules/battle-transitions/templates/steps/partials/duration-selector.hbs" this}}
-  {{> "modules/battle-transitions/templates/steps/partials/dualstyle-selector.hbs" this}}
-  {{> "modules/battle-transitions/templates/steps/partials/easing-selector.hbs" this}}
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this }}
+  {{> (moduleTemplate "steps/partials/dualstyle-selector.hbs") this }}
+  {{> (moduleTemplate "steps/partials/easing-selector.hbs") this }}
 </section>

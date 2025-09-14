@@ -48,7 +48,7 @@
     
     <div data-role="transition-steps" style="position:relative;">
       {{#each transition.sequence as |step|}}
-        {{> "modules/battle-transitions/templates/transition-step.hbs" step}}
+        {{> (moduleTemplate "transition-step.hbs") step }}
       {{/each}}
     </div>
     <p></p>

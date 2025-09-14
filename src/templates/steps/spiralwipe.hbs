@@ -5,23 +5,23 @@
 >
   <input type="hidden" name="id" id="id" value="{{config.id}}" />
   <p>{{localize "BATTLETRANSITIONS.SPIRALWIPE.DESCRIPTION"}}</p>
-  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
 
-  {{> "modules/battle-transitions/templates/steps/partials/simple-select.hbs"
+  {{> (moduleTemplate "steps/partials/simple-select.hbs")
     key="COMMON.DIRECTION"
     id="direction"
     options=directionSelect
     selected=config.direction
   }}
 
-  {{> "modules/battle-transitions/templates/steps/partials/simple-select.hbs"
+  {{> (moduleTemplate "steps/partials/simple-select.hbs")
     key="COMMON.RADIAL"
     id="radial"
     options=radialSelect
     selected=config.radial
   }}
 
-  {{> "modules/battle-transitions/templates/steps/partials/simple-select.hbs"
+  {{> (moduleTemplate "steps/partials/simple-select.hbs")
     key="CLOCKWIPE.DIRECTION"
     id="clockDirection"
     options=clockDirectionSelect
@@ -29,11 +29,11 @@
   }}
 
   {{! Duration }}
-  {{> "modules/battle-transitions/templates/steps/partials/duration-selector.hbs" this}}
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this }}
   {{! Falloff }}
-  {{> "modules/battle-transitions/templates/steps/partials/falloff-config.hbs" this}}
+  {{> (moduleTemplate "steps/partials/falloff-config.hbs") this }}
   {{! Background }}
-  {{> "modules/battle-transitions/templates/steps/partials/background-selector.hbs" this}}
+  {{> (moduleTemplate "steps/partials/background-selector.hbs") this }}
   {{! Eeasing }}
-  {{> "modules/battle-transitions/templates/steps/partials/easing-selector.hbs" this}}
+  {{> (moduleTemplate "steps/partials/easing-selector.hbs") this }}
 </section>

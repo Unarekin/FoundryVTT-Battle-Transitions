@@ -1,5 +1,5 @@
 <div class="tab {{tab.cssClass}}" data-tab="basics" data-group="primary">
-  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
 
   <div class="form-group">
     <label for="source">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.SOURCETYPE.LABEL"}}</label>
@@ -32,6 +32,6 @@
     <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.HINT"}}</p>
   </div>
 
-  {{> "modules/battle-transitions/templates/steps/partials/duration-selector.hbs" this}}
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this }}
 
 </div>

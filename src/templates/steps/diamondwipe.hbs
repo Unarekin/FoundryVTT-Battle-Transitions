@@ -6,10 +6,10 @@
   <input type="hidden" name="id" id="id" value="{{config.id}}" />
   <p>{{localize "BATTLETRANSITIONS.DIAMONDWIPE.DESCRIPTION"}}</p>
 
-  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
 
   {{! Duration }}
-  {{> "modules/battle-transitions/templates/steps/partials/duration-selector.hbs" this}}
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this }}
 
   <div class="form-group">
     <label for="size">{{localize "BATTLETRANSITIONS.SCENECONFIG.DIAMOND.SIZE.LABEL"}}</label>
@@ -18,7 +18,7 @@
   </div>
 
   {{! Background }}
-  {{> "modules/battle-transitions/templates/steps/partials/background-selector.hbs" this}}
+  {{> (moduleTemplate "steps/partials/background-selector.hbs") this }}
   {{! Eeasing }}
-  {{> "modules/battle-transitions/templates/steps/partials/easing-selector.hbs" this}}
+  {{> (moduleTemplate "steps/partials/easing-selector.hbs") this }}
 </section>

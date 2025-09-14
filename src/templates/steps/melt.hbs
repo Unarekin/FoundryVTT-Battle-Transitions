@@ -6,8 +6,8 @@
   <input type="hidden" name="id" id="id" value="{{config.id}}" />
   <p>{{localize "BATTLETRANSITIONS.MELT.DESCRIPTION"}}</p>
 
-  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
-  {{> "modules/battle-transitions/templates/steps/partials/duration-selector.hbs" this}}
-  {{> "modules/battle-transitions/templates/steps/partials/background-selector.hbs" this}}
-  {{> "modules/battle-transitions/templates/steps/partials/easing-selector.hbs" this}}
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this }}
+  {{> (moduleTemplate "steps/partials/background-selector.hbs") this }}
+  {{> (moduleTemplate "steps/partials/easing-selector.hbs") this }}
 </section>
