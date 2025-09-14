@@ -13,10 +13,5 @@
   {{! Background }}
   {{> (moduleTemplate "steps/partials/background-selector.hbs") this }}
   {{! Dual style }}
-  {{> (moduleTemplate "steps/partials/simple-select.hbs")
-    key="COMMON.DUALSTYLE"
-    options=dualStyleSelect
-    selected=config.dualStyle
-    id="dualStyle"
-  }}  
+  {{> (moduleTemplate "steps/partials/dualstyle-selector.hbs") this }}
 </section>
