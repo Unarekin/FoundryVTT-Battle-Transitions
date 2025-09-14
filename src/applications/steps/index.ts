@@ -24,4 +24,5 @@ export * from './TextureSwapConfigApplication';
 export * from './TwistConfigApplication';
 export * from './VideoConfigApplication';
 export * from './WaitConfigApplication';
+export * from './ZoomBlurConfigApplication';
 export * from './types';

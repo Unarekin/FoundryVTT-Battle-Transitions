@@ -171,7 +171,8 @@
     },
     "ZOOMBLUR": {
       "DESCRIPTION": "Simultaneously zoom in on and blur the screen.",
-      "NAME": "Zoom & Blur"
+      "NAME": "Zoom & Blur",
+      "LABEL": "Zoom and blur {target} over {duration}ms"
     }
   }
 }

@@ -1,7 +1,7 @@
+import { ZoomBlurConfigApplication } from '../applications';
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
-import { parseConfigurationFormElements, renderTemplateFunc, templateDir } from '../utils';
-import { generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { localize, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { ZoomBlurConfiguration } from './types';
 
@@ -25,22 +25,25 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
   public static icon = "<i class='bt-icon bt-zoom-blur fa-fw fas'></i>"
   public static key = "zoomblur";
   public static name = "ZOOMBLUR";
-  public static template = "zoomblur-config";
   public static reversible: boolean = true;
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/ZoomBlur.webm`;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = ZoomBlurConfigApplication as any;
 
   // #endregion Properties (7)
 
   // #region Public Static Methods (7)
-
-  public static async RenderTemplate(config?: ZoomBlurConfiguration): Promise<string> {
-    return (renderTemplateFunc())(templateDir(`config/${ZoomBlurStep.template}.hbs`), {
-      ...ZoomBlurStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      easingSelect: generateEasingSelectOptions(),
-      dualStyleSelect: generateDualStyleSelectOptions(),
-      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
-    });
+  static getListDescription(config?: ZoomBlurConfiguration): string {
+    if (config) {
+      return localize("BATTLETRANSITIONS.ZOOMBLUR.LABEL", {
+        duration: config.duration,
+        target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY"),
+        strength: config.maxStrength
+      })
+    } else {
+      return "";
+    }
   }
 
   public static from(config: ZoomBlurConfiguration): ZoomBlurStep
