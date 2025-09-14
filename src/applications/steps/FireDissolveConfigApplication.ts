@@ -1,6 +1,7 @@
 import { StepConfigApplication } from "./StepConfigApplication";
 import { FireDissolveConfiguration, FireDissolveStep, generateEasingSelectOptions } from "../../steps";
 import { FireDissolveContext } from "./types";
+import { templateDir } from "../../utils";
 
 export class FireDissolveConfigApplication extends StepConfigApplication<FireDissolveConfiguration> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -8,11 +9,11 @@ export class FireDissolveConfigApplication extends StepConfigApplication<FireDis
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/firedissolve.hbs`,
+      template: templateDir(`steps/firedissolve.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/duration-selector.hbs`),
+        templateDir(`steps/partials/easing-selector.hbs`)
       ]
     },
     footer: {

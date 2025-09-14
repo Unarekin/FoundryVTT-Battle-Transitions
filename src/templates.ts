@@ -6,7 +6,7 @@
 import { InvalidTransitionError } from "./errors";
 import groupBy from "./lib/groupBy";
 import { TransitionConfiguration } from "./steps";
-import { formatDuration, getStepClassByKey } from "./utils";
+import { formatDuration, getStepClassByKey, templateDir } from "./utils";
 
 
 
@@ -74,15 +74,15 @@ export function registerHelpers() {
   });
 
   Handlebars.registerHelper("moduleTemplate", function (path: string) {
-    return `modules/${__MODULE_ID__}/templates/${path}`;
+    return templateDir(`${path}`);
   })
 }
 
 export async function registerTemplates() {
 
   return (game?.release?.isNewer("13") ? (foundry.applications as any).handlebars.loadTemplates : loadTemplates)([
-    `/modules/${__MODULE_ID__}/templates/scene-config.hbs`,
-    `modules/${__MODULE_ID__}/templates/transition-step.hbs`,
+    templateDir(`scene-config.hbs`),
+    templateDir(`transition-step.hbs`),
     ...["step-item",
       "background-selector",
       "duration-selector",
@@ -91,10 +91,10 @@ export async function registerTemplates() {
       "target-selector",
       "dualtransition-selector",
       "falloff-config"
-    ].map(name => `/modules/${__MODULE_ID__}/templates/config/${name}.hbs`),
-    `/modules/${__MODULE_ID__}/templates/scene-selector.hbs`,
-    `/modules/${__MODULE_ID__}/templates/transition-steps.hbs`,
-    `/modules/${__MODULE_ID__}/templates/font-selector.hbs`,
-    `/modules/${__MODULE_ID__}/templates/actor-selector.hbs`
+    ].map(name => templateDir(`config/${name}.hbs`)),
+    templateDir(`scene-selector.hbs`),
+    templateDir(`transition-steps.hbs`),
+    templateDir(`font-selector.hbs`),
+    templateDir(`actor-selector.hbs`)
   ]) as Promise<Handlebars.TemplateDelegate[]>;
 }

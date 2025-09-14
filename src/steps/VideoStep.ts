@@ -1,7 +1,7 @@
 import { FileNotFoundError } from "../errors";
 import { ChromaKeyFilter, TextureSwapFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, getFormDataExtended, renderTemplateFunc } from "../utils";
+import { createColorTexture, getFormDataExtended, renderTemplateFunc, templateDir } from "../utils";
 import { generateBackgroundTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { VideoConfiguration } from "./types";
@@ -46,7 +46,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
       ...(config ? config : {})
     };
 
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${VideoStep.template}.hbs`, {
+    return (renderTemplateFunc())(templateDir(`config/${VideoStep.template}.hbs`), {
       ...VideoStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

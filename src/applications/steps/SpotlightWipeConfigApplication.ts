@@ -1,6 +1,7 @@
 import { SpotlightWipeContext } from "./types";
 import { SpotlightWipeConfiguration, SpotlightWipeStep, generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions, generateRadialDirectionSelectOptions } from "../../steps";
 import { StepConfigApplication } from "./StepConfigApplication";
+import { templateDir } from "../../utils";
 
 export class SpotlightWipeConfigApplication extends StepConfigApplication<SpotlightWipeConfiguration> {
 
@@ -10,14 +11,14 @@ export class SpotlightWipeConfigApplication extends StepConfigApplication<Spotli
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/spotlightwipe.hbs`,
+      template: templateDir(`steps/spotlightwipe.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/simple-select.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/falloff-config.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/background-selector.hbs`),
+        templateDir(`steps/partials/duration-selector.hbs`),
+        templateDir(`steps/partials/easing-selector.hbs`),
+        templateDir(`steps/partials/simple-select.hbs`),
+        templateDir(`steps/partials/falloff-config.hbs`)
       ]
     },
     footer: {

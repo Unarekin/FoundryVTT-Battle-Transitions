@@ -1,6 +1,7 @@
 import { SpiralWipeContext } from "./types";
 import { generateBackgroundTypeSelectOptions, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, SpiralWipeConfiguration, SpiralWipeStep } from "../../steps";
 import { StepConfigApplication } from "./StepConfigApplication";
+import { templateDir } from "../../utils";
 
 export class SpiralWipeConfigApplication extends StepConfigApplication<SpiralWipeConfiguration> {
 
@@ -10,14 +11,14 @@ export class SpiralWipeConfigApplication extends StepConfigApplication<SpiralWip
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/spiralwipe.hbs`,
+      template: templateDir(`steps/spiralwipe.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/simple-select.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/falloff-config.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/background-selector.hbs`),
+        templateDir(`steps/partials/duration-selector.hbs`),
+        templateDir(`steps/partials/easing-selector.hbs`),
+        templateDir(`steps/partials/simple-select.hbs`),
+        templateDir(`steps/partials/falloff-config.hbs`)
       ]
     },
     footer: {

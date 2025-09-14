@@ -1,6 +1,7 @@
 import { SpiralShutterContext } from "./types";
 import { generateBackgroundTypeSelectOptions, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, SpiralShutterConfiguration, SpiralShutterStep } from "../../steps";
 import { StepConfigApplication } from "./StepConfigApplication";
+import { templateDir } from "../../utils";
 
 export class SpiralShutterConfigApplication extends StepConfigApplication<SpiralShutterConfiguration> {
 
@@ -10,13 +11,13 @@ export class SpiralShutterConfigApplication extends StepConfigApplication<Spiral
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/spiralshutter.hbs`,
+      template: templateDir(`steps/spiralshutter.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/falloff-config.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/background-selector.hbs`),
+        templateDir(`steps/partials/duration-selector.hbs`),
+        templateDir(`steps/partials/easing-selector.hbs`),
+        templateDir(`steps/partials/falloff-config.hbs`)
       ]
     },
     footer: {

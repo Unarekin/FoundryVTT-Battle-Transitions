@@ -1,6 +1,7 @@
 import { StepConfigApplication } from "./StepConfigApplication";
 import { generateDualStyleSelectOptions, InvertConfiguration, InvertStep } from "../../steps";
 import { InvertContext } from "./types";
+import { templateDir } from "../../utils";
 
 export class InvertConfigApplication extends StepConfigApplication<InvertConfiguration> {
 
@@ -9,10 +10,10 @@ export class InvertConfigApplication extends StepConfigApplication<InvertConfigu
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/invert.hbs`,
+      template: templateDir(`steps/invert.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/dualstyle-selector.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/dualstyle-selector.hbs`)
       ]
     },
     footer: {

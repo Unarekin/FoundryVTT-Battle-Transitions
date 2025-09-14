@@ -2,6 +2,7 @@ import { StepConfigApplication } from "./StepConfigApplication";
 import { SoundConfiguration, SoundStep } from "../../steps";
 import { SoundContext } from "./types";
 import { formDataExtendedClass } from "../../utils";
+import { templateDir } from "../../utils";
 
 export class SoundConfigApplication extends StepConfigApplication<SoundConfiguration> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -9,9 +10,9 @@ export class SoundConfigApplication extends StepConfigApplication<SoundConfigura
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/sound.hbs`,
+      template: templateDir(`steps/sound.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`
+        templateDir(`steps/partials/label.hbs`)
       ]
     },
     footer: {

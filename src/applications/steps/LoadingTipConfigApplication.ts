@@ -2,6 +2,7 @@ import { StepConfigApplication } from "./StepConfigApplication";
 import { generateFontSelectOptions, LoadingTipConfiguration, LoadingTipStep } from "../../steps";
 import { LoadingTipContext } from "./types";
 import { DeepPartial } from "../types";
+import { templateDir } from "../../utils";
 
 export class LoadingTipConfigApplication extends StepConfigApplication<LoadingTipConfiguration> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -9,24 +10,24 @@ export class LoadingTipConfigApplication extends StepConfigApplication<LoadingTi
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/loadingtip.hbs`,
+      template: templateDir(`steps/loadingtip.hbs`),
     },
     tabs: {
       template: `templates/generic/tab-navigation.hbs`
     },
     basics: {
-      template: `modules/${__MODULE_ID__}/templates/steps/loadingtip-basics.hbs`,
+      template: templateDir(`steps/loadingtip-basics.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/simple-select.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/duration-selector.hbs`),
+        templateDir(`steps/partials/simple-select.hbs`)
       ]
     },
     font: {
-      template: `modules/${__MODULE_ID__}/templates/steps/loadingtip-font.hbs`,
+      template: templateDir(`steps/loadingtip-font.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/font-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/dropshadow-selector.hbs`
+        templateDir(`steps/partials/font-selector.hbs`),
+        templateDir(`steps/partials/dropshadow-selector.hbs`)
       ]
     },
     footer: {

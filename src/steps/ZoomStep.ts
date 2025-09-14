@@ -1,7 +1,7 @@
 import { ZoomFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
-import { createColorTexture, getTargetType, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { createColorTexture, getTargetType, parseConfigurationFormElements, renderTemplateFunc, templateDir } from "../utils";
 import { generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
 import { TransitionStep } from "./TransitionStep";
 import { SceneChangeConfiguration, TransitionConfiguration, ZoomConfiguration } from "./types";
@@ -53,7 +53,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       ...(config ? config : {})
     }, oldScene, newScene);
 
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${ZoomStep.template}.hbs`, {
+    return (renderTemplateFunc())(templateDir(`config/${ZoomStep.template}.hbs`), {
       ...ZoomStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),
@@ -63,7 +63,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       easingSelect: generateEasingSelectOptions(),
       bgTypeSelect: generateBackgroundTypeSelectOptions(),
       targetType,
-      ...generateTargetTypeSelectOptions(oldScene, newScene),
+      ...generateTargetTypeSelectOptions(),
       pointX: Array.isArray(config?.target) ? config.target[0] : 0.5,
       pointY: Array.isArray(config?.target) ? config.target[1] : 0.5,
       dualStyleSelect: generateDualStyleSelectOptions(),

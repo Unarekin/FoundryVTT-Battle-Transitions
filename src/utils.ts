@@ -659,6 +659,10 @@ export function renderTemplateFunc(): typeof renderTemplate {
   else return renderTemplate;
 }
 
+export function templateDir(path: string): string {
+  return `modules/${__MODULE_ID__}/templates/${path}`;
+}
+
 // Simple wrapper to handle difference in namespace between Foundry v12 and v13
 export function formDataExtendedClass(): typeof FormDataExtended {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access

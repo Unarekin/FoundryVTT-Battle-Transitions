@@ -1,6 +1,6 @@
 import { ModuleNotActiveError } from '../errors';
 import { TransitionSequence } from '../interfaces';
-import { getActors, getCompendiumFromUUID, isValidFontSize, parseConfigurationFormElements, parseFontSize, renderTemplateFunc, wait } from '../utils';
+import { getActors, getCompendiumFromUUID, isValidFontSize, parseConfigurationFormElements, parseFontSize, renderTemplateFunc, templateDir, wait } from '../utils';
 import { generateFontSelectOptions } from './selectOptions';
 import { TransitionStep } from './TransitionStep';
 import { BossSplashConfiguration } from './types';
@@ -59,7 +59,7 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
       ...formatActor(actor),
       selected: config?.actor === actor.uuid
     }));
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${BossSplashStep.template}.hbs`, {
+    return (renderTemplateFunc())(templateDir(`config/${BossSplashStep.template}.hbs`), {
       ...BossSplashStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

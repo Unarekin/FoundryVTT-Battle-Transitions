@@ -1,6 +1,7 @@
 import { AngularWipeContext } from "./types";
 import { AngularWipeConfiguration, AngularWipeStep, generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from "../../steps";
 import { StepConfigApplication } from "./StepConfigApplication";
+import { templateDir } from "../../utils";
 
 export class AngularWipeConfigApplication extends StepConfigApplication<AngularWipeConfiguration> {
 
@@ -10,13 +11,13 @@ export class AngularWipeConfigApplication extends StepConfigApplication<AngularW
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/angularwipe.hbs`,
+      template: templateDir(`steps/angularwipe.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/simple-select.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/background-selector.hbs`),
+        templateDir(`steps/partials/duration-selector.hbs`),
+        templateDir(`steps/partials/easing-selector.hbs`),
+        templateDir(`steps/partials/simple-select.hbs`)
       ]
     },
     footer: {

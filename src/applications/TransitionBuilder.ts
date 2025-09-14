@@ -1,7 +1,7 @@
 import { coerceScene } from "../coercion";
 import { InvalidSceneError, InvalidTransitionError, LocalizedError } from "../errors";
 import { TransitionConfiguration } from "../steps";
-import { downloadJSON, getStepClassByKey, localize, uploadJSON } from "../utils";
+import { downloadJSON, getStepClassByKey, localize, templateDir, uploadJSON } from "../utils";
 import { AddStepApplication } from "./AddStepApplication";
 import { generateMacro, confirm } from "./functions";
 import { DeepPartial } from "./types";
@@ -45,9 +45,9 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/dialogs/TransitionBuilder.hbs`,
+      template: templateDir(`dialogs/TransitionBuilder.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/transition-step.hbs`
+        templateDir(`transition-step.hbs`)
       ]
     },
     footer: {

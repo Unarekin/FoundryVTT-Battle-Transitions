@@ -1,6 +1,6 @@
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
-import { parseConfigurationFormElements, renderTemplateFunc } from '../utils';
+import { parseConfigurationFormElements, renderTemplateFunc, templateDir } from '../utils';
 import { generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
 import { TransitionStep } from './TransitionStep';
 import { ZoomBlurConfiguration } from './types';
@@ -33,7 +33,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
   // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: ZoomBlurConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${ZoomBlurStep.template}.hbs`, {
+    return (renderTemplateFunc())(templateDir(`config/${ZoomBlurStep.template}.hbs`), {
       ...ZoomBlurStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

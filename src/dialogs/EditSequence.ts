@@ -1,5 +1,5 @@
 import { TransitionConfiguration } from "../steps";
-import { formDataExtendedClass, getStepClassByKey, localize, renderTemplateFunc } from "../utils";
+import { formDataExtendedClass, getStepClassByKey, localize, renderTemplateFunc, templateDir } from "../utils";
 import { addStep, deleteSelectedStep, selectItem, setEnabledButtons, setupSequenceList } from "./functions";
 import { InvalidTransitionError } from "../errors";
 import { DeepPartial } from "./types";
@@ -75,7 +75,7 @@ async function sequenceEditDialog(sequence: TransitionConfiguration[], options?:
     }
   })
 
-  const content = await (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/dialogs/EditSequence.hbs`, {
+  const content = await (renderTemplateFunc())(templateDir(`dialogs/EditSequence.hbs`), {
     sequence
   })
 

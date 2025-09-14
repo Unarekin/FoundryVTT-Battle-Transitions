@@ -1,6 +1,7 @@
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions, LinearWipeConfiguration, LinearWipeStep } from "../../steps";
 import { StepConfigApplication } from "./StepConfigApplication";
 import { LinearWipeContext } from "./types";
+import { templateDir } from "../../utils";
 
 export class LinearWipeConfigApplication extends StepConfigApplication<LinearWipeConfiguration> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -8,14 +9,14 @@ export class LinearWipeConfigApplication extends StepConfigApplication<LinearWip
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/linearwipe.hbs`,
+      template: templateDir(`steps/linearwipe.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/falloff-config.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/simple-select.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/background-selector.hbs`),
+        templateDir(`steps/partials/duration-selector.hbs`),
+        templateDir(`steps/partials/easing-selector.hbs`),
+        templateDir(`steps/partials/falloff-config.hbs`),
+        templateDir(`steps/partials/simple-select.hbs`)
       ]
     },
     footer: {
@@ -41,12 +42,12 @@ export class LinearWipeConfigApplication extends StepConfigApplication<LinearWip
 
 //   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
 //     main: {
-//       template: `modules/${__MODULE_ID__}/templates/steps/angularwipe.hbs`,
+//       template: templateDir(`steps/angularwipe.hbs`),
 //       templates: [
-//         `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-//         `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
-//         `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-//         `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`
+//         templateDir(`steps/partials/label.hbs`),
+//         templateDir(`steps/partials/background-selector.hbs`),
+//         templateDir(`steps/partials/duration-selector.hbs`),
+//         templateDir(`steps/partials/easing-selector.hbs`)
 //       ]
 //     },
 //     footer: {

@@ -3,7 +3,7 @@ import { addSequence, deleteSequenceItem, editSequenceItem, renderSequenceItem }
 import { InvalidElementError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { parseConfigurationFormElements, renderTemplateFunc, templateDir } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration, TransitionConfiguration } from './types';
 
@@ -35,7 +35,7 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
   // #region Public Static Methods (6)
 
   public static RenderTemplate(config?: ParallelConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${ParallelStep.template}.hbs`, {
+    return (renderTemplateFunc())(templateDir(`config/${ParallelStep.template}.hbs`), {
       ...ParallelStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

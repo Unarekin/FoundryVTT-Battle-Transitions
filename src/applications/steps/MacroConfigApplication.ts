@@ -1,6 +1,7 @@
 import { MacroContext } from "./types";
 import { StepConfigApplication } from "./StepConfigApplication";
 import { MacroConfiguration, MacroStep } from "../../steps";
+import { templateDir } from "../../utils";
 
 export class MacroConfigApplication extends StepConfigApplication<MacroConfiguration> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -8,8 +9,8 @@ export class MacroConfigApplication extends StepConfigApplication<MacroConfigura
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/macro.hbs`,
-      templates: [`modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`]
+      template: templateDir(`steps/macro.hbs`),
+      templates: [templateDir(`steps/partials/label.hbs`)]
     },
     footer: {
       template: "templates/generic/form-footer.hbs"

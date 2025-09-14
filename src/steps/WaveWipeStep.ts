@@ -1,6 +1,6 @@
 import { WaveWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc, templateDir } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { WaveWipeConfiguration } from "./types";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
@@ -36,7 +36,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
   // #region Public Static Methods (7)
 
   public static async RenderTemplate(config?: WaveWipeConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${WaveWipeStep.template}.hbs`, {
+    return (renderTemplateFunc())(templateDir(`config/${WaveWipeStep.template}.hbs`), {
       ...WaveWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

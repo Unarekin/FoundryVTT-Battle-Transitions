@@ -1,6 +1,7 @@
 import { StepConfigApplication } from "./StepConfigApplication";
 import { generateDualStyleSelectOptions, generateEasingSelectOptions, HueShiftConfiguration, HueShiftStep } from "../../steps";
 import { HueShiftContext } from "./types";
+import { templateDir } from "../../utils";
 
 export class HueShiftConfigApplication extends StepConfigApplication<HueShiftConfiguration> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -8,12 +9,12 @@ export class HueShiftConfigApplication extends StepConfigApplication<HueShiftCon
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/hueshift.hbs`,
+      template: templateDir(`steps/hueshift.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/dualstyle-selector.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/duration-selector.hbs`),
+        templateDir(`steps/partials/easing-selector.hbs`),
+        templateDir(`steps/partials/dualstyle-selector.hbs`)
       ]
     },
     footer: {

@@ -1,6 +1,7 @@
 import { RadialWipeContext } from "./types";
 import { StepConfigApplication } from "./StepConfigApplication";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateNoteSelectOptions, generateRadialDirectionSelectOptions, generateTargetTypeSelectOptions, RadialWipeConfiguration, RadialWipeStep } from "../../steps";
+import { templateDir } from "../../utils";
 
 export class RadialWipeConfigApplication extends StepConfigApplication<RadialWipeConfiguration> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -8,14 +9,14 @@ export class RadialWipeConfigApplication extends StepConfigApplication<RadialWip
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/radialwipe.hbs`,
+      template: templateDir(`steps/radialwipe.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/target-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/falloff-config.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/duration-selector.hbs`),
+        templateDir(`steps/partials/background-selector.hbs`),
+        templateDir(`steps/partials/target-selector.hbs`),
+        templateDir(`steps/partials/falloff-config.hbs`),
+        templateDir(`steps/partials/easing-selector.hbs`)
       ]
     },
     footer: {

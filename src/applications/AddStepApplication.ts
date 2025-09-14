@@ -1,6 +1,7 @@
 import { AddStepContext, AddStepTab, AddStepRenderOptions, DeepPartial, AddStepConfiguration } from "./types";
 import { getStepsForCategory } from "./functions";
 import { TransitionConfiguration } from "../steps";
+import { templateDir } from "../utils";
 
 export class AddStepApplication extends foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.api.ApplicationV2) {
 
@@ -15,7 +16,7 @@ export class AddStepApplication extends foundry.applications.api.HandlebarsAppli
       template: `templates/generic/tab-navigation.hbs`
     },
     main: {
-      template: `modules/${__MODULE_ID__}/templates/dialogs/AddStep.hbs`
+      template: templateDir(`dialogs/AddStep.hbs`)
     },
     footer: {
       template: `templates/generic/form-footer.hbs`

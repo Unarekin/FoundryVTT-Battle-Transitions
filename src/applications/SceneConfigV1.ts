@@ -3,7 +3,7 @@ import { confirm, generateMacro } from "./functions";
 import { InvalidTransitionError, LocalizedError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
-import { formDataExtendedClass, getStepClassByKey, localize } from "../utils";
+import { formDataExtendedClass, getStepClassByKey, localize, templateDir } from "../utils";
 import { AddStepApplication } from "./AddStepApplication";
 
 
@@ -56,7 +56,7 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
             .append(`<i class="fa-solid bt-icon bt-crossed-swords fa-fw v12"></i> ${localize("SCENE.TABS.SHEET.transition")}`)
         );
 
-      const content = await renderTemplate(`modules/${__MODULE_ID__}/templates/scene-config.hbs`, {
+      const content = await renderTemplate(templateDir(`scene-config.hbs`), {
         transition: {
           isV1: true,
           transition: this._config,

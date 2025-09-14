@@ -1,5 +1,5 @@
 import { BackgroundTransition, TransitionConfiguration, TransitionStep } from '../steps';
-import { getSortedSteps, getStepClassByKey, localize, mimeType, renderTemplateFunc, uploadJSON } from '../utils';
+import { getSortedSteps, getStepClassByKey, localize, mimeType, renderTemplateFunc, templateDir, uploadJSON } from '../utils';
 import { StepContext } from './types';
 import { InvalidTransitionError } from '../errors';
 import { BackgroundType } from '../types';
@@ -382,7 +382,7 @@ export function generateMacro(sequence: TransitionConfiguration[], users: string
 }
 
 export async function renderSequenceItem(sequence: TransitionConfiguration[], index: number): Promise<HTMLElement> {
-  const content = await (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/sequence-item.hbs`, {
+  const content = await (renderTemplateFunc())(templateDir(`config/sequence-item.hbs`), {
     index,
     name: localize("BATTLETRANSITIONS.DIALOGS.SEQUENCE.NAME", { index: index + 1 }),
     serialized: JSON.stringify(sequence)

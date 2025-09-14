@@ -3,7 +3,7 @@ import { addSequence, hideElements, iterateElements, renderSequenceItem, showEle
 import { InvalidTransitionError, NoPreviousStepError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { getStepClassByKey, log, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { getStepClassByKey, log, parseConfigurationFormElements, renderTemplateFunc, templateDir } from "../utils";
 import { getPreviousStep } from "./functions";
 import { TransitionStep } from "./TransitionStep";
 import { RepeatConfiguration, TransitionConfiguration, WaitConfiguration } from './types';
@@ -46,7 +46,7 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
   // #region Public Static Methods (7)
 
   public static RenderTemplate(config?: RepeatConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${RepeatStep.template}.hbs`, {
+    return (renderTemplateFunc())(templateDir(`config/${RepeatStep.template}.hbs`), {
       ...RepeatStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {}),

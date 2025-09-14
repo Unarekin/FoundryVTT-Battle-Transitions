@@ -4,7 +4,7 @@ import { confirm, generateMacro } from "./functions";
 import { InvalidTransitionError, LocalizedError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
-import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize, uploadJSON } from "../utils";
+import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize, templateDir, uploadJSON } from "../utils";
 import { AddStepApplication } from "./AddStepApplication";
 
 type BaseType = typeof foundry.applications.api.DocumentSheetV2<Scene>;
@@ -241,7 +241,7 @@ export function SceneConfigV2Mixin(Base: BaseType) {
 
   foundry.utils.mergeObject(parts, {
     transition: {
-      template: `modules/${__MODULE_ID__}/templates/scene-config.hbs`
+      template: templateDir(`scene-config.hbs`)
     },
     footer
   })

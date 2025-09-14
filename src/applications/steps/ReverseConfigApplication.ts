@@ -1,6 +1,7 @@
 import { ReverseConfiguration, ReverseStep } from "../../steps";
 import { StepConfigApplication } from "./StepConfigApplication";
 import { ReverseContext } from "./types";
+import { templateDir } from "../../utils";
 
 export class ReverseConfigApplication extends StepConfigApplication<ReverseConfiguration> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -8,9 +9,9 @@ export class ReverseConfigApplication extends StepConfigApplication<ReverseConfi
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/reverse.hbs`,
+      template: templateDir(`steps/reverse.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`
+        templateDir(`steps/partials/label.hbs`)
       ]
     },
     footer: {

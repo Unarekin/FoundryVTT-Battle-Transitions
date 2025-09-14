@@ -1,6 +1,7 @@
 import { BilinearWipeContext } from "./types";
 import { StepConfigApplication } from "./StepConfigApplication";
 import { BilinearWipeConfiguration, BilinearWipeStep, generateBackgroundTypeSelectOptions, generateBilinearDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from "../../steps";
+import { templateDir } from "../../utils";
 
 export class BilinearWipeConfigApplication extends StepConfigApplication<BilinearWipeConfiguration> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -8,14 +9,14 @@ export class BilinearWipeConfigApplication extends StepConfigApplication<Bilinea
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/bilinearwipe.hbs`,
+      template: templateDir(`steps/bilinearwipe.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/falloff-config.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/simple-select.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/background-selector.hbs`),
+        templateDir(`steps/partials/duration-selector.hbs`),
+        templateDir(`steps/partials/easing-selector.hbs`),
+        templateDir(`steps/partials/falloff-config.hbs`),
+        templateDir(`steps/partials/simple-select.hbs`)
       ]
     },
     footer: {

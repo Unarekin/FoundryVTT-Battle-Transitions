@@ -1,6 +1,7 @@
 import { StepConfigApplication } from "./StepConfigApplication";
 import { FlashConfiguration, FlashStep, generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions } from "../../steps";
 import { FlashContext } from "./types";
+import { templateDir } from "../../utils";
 
 export class FlashConfigApplication extends StepConfigApplication<FlashConfiguration> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -8,12 +9,12 @@ export class FlashConfigApplication extends StepConfigApplication<FlashConfigura
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/flash.hbs`,
+      template: templateDir(`steps/flash.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/dualstyle-selector.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/duration-selector.hbs`),
+        templateDir(`steps/partials/background-selector.hbs`),
+        templateDir(`steps/partials/dualstyle-selector.hbs`)
       ]
     },
     footer: {

@@ -1,6 +1,7 @@
 import { StepConfigApplication } from "./StepConfigApplication";
 import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, MeltConfiguration, MeltStep } from "../../steps";
 import { MeltContext } from "./types";
+import { templateDir } from "../../utils";
 
 export class MeltConfigApplication extends StepConfigApplication<MeltConfiguration> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -8,12 +9,12 @@ export class MeltConfigApplication extends StepConfigApplication<MeltConfigurati
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/melt.hbs`,
+      template: templateDir(`steps/melt.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/duration-selector.hbs`),
+        templateDir(`steps/partials/background-selector.hbs`),
+        templateDir(`steps/partials/easing-selector.hbs`)
       ]
     },
     footer: {

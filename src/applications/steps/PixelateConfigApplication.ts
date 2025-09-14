@@ -1,6 +1,7 @@
 import { PixelateContext } from "./types";
 import { StepConfigApplication } from "./StepConfigApplication";
 import { generateDualStyleSelectOptions, generateEasingSelectOptions, PixelateConfiguration, PixelateStep } from "../../steps";
+import { templateDir } from "../../utils";
 
 export class PixelateConfigApplication extends StepConfigApplication<PixelateConfiguration> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -8,12 +9,12 @@ export class PixelateConfigApplication extends StepConfigApplication<PixelateCon
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/pixelate.hbs`,
+      template: templateDir(`steps/pixelate.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/duration-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/dualstyle-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/easing-selector.hbs`
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/duration-selector.hbs`),
+        templateDir(`steps/partials/dualstyle-selector.hbs`),
+        templateDir(`steps/partials/easing-selector.hbs`)
       ]
     },
     footer: {

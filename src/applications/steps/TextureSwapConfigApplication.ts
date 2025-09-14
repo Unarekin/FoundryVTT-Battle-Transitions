@@ -1,6 +1,7 @@
 import { TextureSwapContext } from "./types";
 import { TextureSwapConfiguration, TextureSwapStep, generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions } from "../../steps";
 import { StepConfigApplication } from "./StepConfigApplication";
+import { templateDir } from "../../utils";
 
 export class TextureSwapConfigApplication extends StepConfigApplication<TextureSwapConfiguration> {
 
@@ -10,11 +11,11 @@ export class TextureSwapConfigApplication extends StepConfigApplication<TextureS
 
   public static PARTS: Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart> = {
     main: {
-      template: `modules/${__MODULE_ID__}/templates/steps/textureswap.hbs`,
+      template: templateDir(`steps/textureswap.hbs`),
       templates: [
-        `modules/${__MODULE_ID__}/templates/steps/partials/label.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/background-selector.hbs`,
-        `modules/${__MODULE_ID__}/templates/steps/partials/dualstyle-selector.hbs`,
+        templateDir(`steps/partials/label.hbs`),
+        templateDir(`steps/partials/background-selector.hbs`),
+        templateDir(`steps/partials/dualstyle-selector.hbs`),
       ]
     },
     footer: {

@@ -1,6 +1,6 @@
 import { ViewSceneConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
-import { parseConfigurationFormElements, renderTemplateFunc } from '../utils';
+import { parseConfigurationFormElements, renderTemplateFunc, templateDir } from '../utils';
 import { InvalidSceneError } from '../errors';
 import { TransitionSequence } from '../interfaces';
 import { hideTransitionCover } from '../transitionUtils';
@@ -22,7 +22,7 @@ export class ViewSceneStep extends TransitionStep<ViewSceneConfiguration> {
   public static category = "technical";
 
   public static RenderTemplate(config?: ViewSceneConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${ViewSceneStep.template}.hbs`, {
+    return (renderTemplateFunc())(templateDir(`config/${ViewSceneStep.template}.hbs`), {
       ...ViewSceneStep.DefaultSettings,
       id: foundry.utils.randomID(),
       ...(config ? config : {})
