@@ -157,7 +157,8 @@
     },
     "WAIT": {
       "DESCRIPTION": "Wait some specified amount of time.",
-      "NAME": "Wait"
+      "NAME": "Wait",
+      "LABEL": "Wait {duration}ms"
     },
     "WAVEWIPE": {
       "DESCRIPTION": "A wavy bilinear wipe.",

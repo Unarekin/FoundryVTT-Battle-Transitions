@@ -1,4 +1,5 @@
-import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, MacroConfiguration, MeltConfiguration, PixelateConfiguration, RadialWipeConfiguration, ReverseConfiguration, SoundConfiguration, SpiralShutterConfiguration, SpiralWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration } from "../../steps/types"
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, MacroConfiguration, MeltConfiguration, PixelateConfiguration, RadialWipeConfiguration, ReverseConfiguration, SoundConfiguration, SpiralShutterConfiguration, SpiralWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, WaitConfiguration } from "../../steps/types"
 
 // TODO: When updating to v13 types, extend foundry.applications.api.ApplicationV2.RenderContext
 export interface StepConfigContext<t extends TransitionConfiguration = TransitionConfiguration> extends Record<string, unknown> {
@@ -87,7 +88,6 @@ export interface LoadingTipContext extends StepConfigContext<LoadingTipConfigura
   dropShadowColor: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface MacroContext extends StepConfigContext<MacroConfiguration> {
 
 }
@@ -117,10 +117,8 @@ export interface RadialWipeContext extends StepConfigContext<RadialWipeConfigura
   selectedNote: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ReverseContext extends StepConfigContext<ReverseConfiguration> { }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SoundContext extends StepConfigContext<SoundConfiguration> { }
 
 export interface SpiralShutterContext extends StepConfigContext<SpiralShutterConfiguration> {
@@ -157,3 +155,5 @@ export interface TwistContext extends StepConfigContext<TwistConfiguration> {
   dualStyleSelect: Record<string, string>;
   dualStyle: string;
 }
+
+export interface WaitContext extends StepConfigContext<WaitConfiguration> { }
