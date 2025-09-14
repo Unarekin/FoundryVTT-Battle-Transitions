@@ -1,10 +1,11 @@
 import { ConfigurationHandler } from "../ConfigurationHandler";
-import { AddStepDialog, DeepPartial } from "../dialogs";
+import { DeepPartial } from "../dialogs";
 import { confirm, generateMacro } from "./functions";
 import { InvalidTransitionError, LocalizedError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
 import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize, uploadJSON } from "../utils";
+import { AddStepApplication } from "./AddStepApplication";
 
 type BaseType = typeof foundry.applications.api.DocumentSheetV2<Scene>;
 
@@ -119,7 +120,7 @@ export function SceneConfigV2Mixin(Base: BaseType) {
 
     static async AddStep(this: Mixed) {
       try {
-        const key = await AddStepDialog.prompt(this.#sceneConfiguration?.sequence ?? []);
+        const key = await AddStepApplication.add({ sequence: this.#sceneConfiguration?.sequence ?? [] });
         if (!key) return;
         const stepClass = getStepClassByKey(key);
         if (!stepClass) throw new InvalidTransitionError(key);

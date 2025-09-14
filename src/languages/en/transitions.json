@@ -106,7 +106,8 @@
     },
     "REVERSE": {
       "DESCRIPTION": "Play the previous step in reverse, if available.",
-      "NAME": "Reverse"
+      "NAME": "Reverse",
+      "LABEL": "Reverse the previous step after {delay}ms"
     },
     "SCENECHANGE": {
       "DESCRIPTION": "Change the active scene.",

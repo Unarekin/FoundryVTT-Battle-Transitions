@@ -133,8 +133,8 @@ export class AddStepApplication extends foundry.applications.api.HandlebarsAppli
     return newContext;
   }
 
-  public static async add(): Promise<string | undefined> {
-    const app = new AddStepApplication({});
+  public static async add(options: DeepPartial<AddStepConfiguration> = {}): Promise<string | undefined> {
+    const app = new AddStepApplication(options);
     return app.add();
   }
 

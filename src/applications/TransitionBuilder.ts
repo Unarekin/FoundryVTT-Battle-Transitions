@@ -160,7 +160,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
   static async AddStep(this: TransitionBuilder) {
     try {
-      const key = await AddStepApplication.add();
+      const key = await AddStepApplication.add({ sequence: this.#response.sequence });
       if (!key) return;
       const stepClass = getStepClassByKey(key);
       if (!stepClass) throw new InvalidTransitionError(key);

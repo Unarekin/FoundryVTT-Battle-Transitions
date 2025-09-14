@@ -4,7 +4,7 @@ import { InvalidTransitionError, LocalizedError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
 import { formDataExtendedClass, getStepClassByKey, localize } from "../utils";
-import { AddStepDialog } from "../dialogs";
+import { AddStepApplication } from "./AddStepApplication";
 
 
 
@@ -164,7 +164,7 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
 
     async addStep(): Promise<void> {
       try {
-        const key = await AddStepDialog.prompt(this._config?.sequence ?? []);
+        const key = await AddStepApplication.add({ sequence: this._config?.sequence ?? [] });
         if (!key) return;
 
         const step = getStepClassByKey(key);

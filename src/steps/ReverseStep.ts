@@ -1,6 +1,7 @@
+import { ReverseConfigApplication } from "../applications";
 import { InvalidTransitionError, StepNotReversibleError } from "../errors";
 import { TransitionSequence, PreparedTransitionHash } from "../interfaces";
-import { getStepClassByKey, parseConfigurationFormElements, renderTemplateFunc, wait } from "../utils";
+import { getStepClassByKey, parseConfigurationFormElements, wait } from "../utils";
 import { getPreviousStep } from "./functions";
 import { TransitionStep } from "./TransitionStep";
 import { ReverseConfiguration, TransitionConfiguration } from "./types";
@@ -18,8 +19,17 @@ export class ReverseStep extends TransitionStep<ReverseConfiguration> {
   public static icon: string = `<i class="fas fa-fw fa-backward"></i>`;
   public static key: string = "reverse";
   public static name: string = "REVERSE";
-  public static template: string = "reverse-config";
   public static skipConfig = false;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = ReverseConfigApplication as any;
+
+
+
+  static getListDescription(config?: ReverseConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.REVERSE.LABEL", { delay: config.delay }) ?? "";
+    else return "";
+  }
 
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -47,13 +57,6 @@ export class ReverseStep extends TransitionStep<ReverseConfiguration> {
     return new ReverseStep({
       ...ReverseStep.DefaultSettings,
       ...parseConfigurationFormElements($(form) as JQuery<HTMLFormElement>, "id", "delay")
-    });
-  }
-
-  public static RenderTemplate(config?: ReverseConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${ReverseStep.template}.hbs`, {
-      ...ReverseStep.DefaultSettings,
-      ...(config ? config : {})
     });
   }
 
