@@ -1,9 +1,9 @@
 import { TransitionSequence, PreparedTransitionHash } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
-import { parseConfigurationFormElements, renderTemplateFunc } from '../utils';
+import { localize, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { TwistConfiguration } from './types';
-import { generateClockDirectionSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { TwistConfigApplication } from '../applications';
 
 export class TwistStep extends TransitionStep<TwistConfiguration> {
   // #region Properties (7)
@@ -26,24 +26,25 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
   public static icon = "<i class='bt-icon bt-twist fa-fw fas'></i>"
   public static key = "twist";
   public static name = "TWIST";
-  public static template = "twist-config";
   public static reversible: boolean = true;
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/Twist.webm`;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = TwistConfigApplication as any;
 
   // #endregion Properties (7)
 
   // #region Public Static Methods (7)
 
-  public static async RenderTemplate(config?: TwistConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${TwistStep.template}.hbs`, {
-      ...TwistStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-
-      directionSelect: generateClockDirectionSelectOptions(),
-      easingSelect: generateEasingSelectOptions(),
-      dualStyleSelect: generateDualStyleSelectOptions(),
-      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
-    });
+  static getListDescription(config?: TwistConfiguration): string {
+    if (config) {
+      return localize("BATTLETRANSITIONS.TWIST.LABEL", {
+        duration: config.duration,
+        target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY"),
+        angle: config.maxAngle
+      })
+    } else {
+      return "";
+    }
   }
 
   public static from(config: TwistConfiguration): TwistStep

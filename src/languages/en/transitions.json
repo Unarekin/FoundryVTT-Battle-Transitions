@@ -148,7 +148,8 @@
     },
     "TWIST": {
       "DESCRIPTION": "Twist the screen image.",
-      "NAME": "Twist"
+      "NAME": "Twist",
+      "LABEL": "Twist the screen {angle}° over {duration}ms"
     },
     "VIDEO": {
       "DESCRIPTION": "Play a video.",

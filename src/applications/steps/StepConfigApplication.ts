@@ -106,6 +106,13 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
     super._onClose(options);
   }
 
+  protected parseDualStyleForm(data: Record<string, unknown>): Record<string, unknown> {
+    data.applyToOverlay = data.dualStyle === "both" || data.dualStyle === "overlay";
+    data.applyToScene = data.dualStyle === "both" || data.dualStyle === "scene";
+    delete data.dualStyle;
+    return data;
+  }
+
   _onRender(context: StepConfigContext, options: foundry.applications.api.ApplicationV2.RenderOptions) {
     super._onRender(context, options);
 
