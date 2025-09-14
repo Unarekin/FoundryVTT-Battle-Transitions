@@ -143,7 +143,8 @@
     },
     "TEXTURESWAP": {
       "DESCRIPTION": "Set the current transition background to a given image.",
-      "NAME": "Texture Swap"
+      "NAME": "Texture Swap",
+      "LABEL": "Change the texture of {target} to {background}"
     },
     "TWIST": {
       "DESCRIPTION": "Twist the screen image.",

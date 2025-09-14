@@ -20,4 +20,5 @@ export * from './SpiralShutterConfigApplication';
 export * from './SpiralWipeConfigApplication';
 export * from './SpotlightWipeConfigApplication';
 export * from './StepConfigApplication';
+export * from './TextureSwapConfigApplication';
 export * from './types';
