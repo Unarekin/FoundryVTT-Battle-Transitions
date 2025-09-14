@@ -1,0 +1,36 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="sound"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.SOUND.DESCRIPTION"}}</p>
+
+  {{> "modules/battle-transitions/templates/steps/partials/label.hbs" this}}
+
+  <div class="form-group">
+    <label for="file">{{localize "BATTLETRANSITIONS.SCENECONFIG.SOUND.FILE.LABEL"}}</label>
+    <file-picker
+      name="file"
+      id="file"
+      type="audio"
+      value="{{config.file}}"
+      required
+    ></file-picker>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.SOUND.FILE.HINT"}}</p>
+  </div>
+  <div class="form-group">
+    <label for="volume">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.LABEL"}}</label>
+    <range-picker
+      value="{{config.volume}}"
+      min="0"
+      max="100"
+      step="1"
+      id="volume"
+      name="volume"
+    ></range-picker>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.HINT"}}</p>
+  </div>
+
+  <audio controls src="{{config.file}}" data-role="audio-preview" style="width:100%"></audio>
+</section>

@@ -119,7 +119,8 @@
     },
     "SOUND": {
       "DESCRIPTION": "Play a sound during the transition.  Unlike most transition steps, this one will NOT wait until the sound is finished to continue to the next.",
-      "NAME": "Play Sound"
+      "NAME": "Play Sound",
+      "LABEL": "Play sound: {file}"
     },
     "SPIRALSHUTTER": {
       "DESCRIPTION": "A shutter-type wipe in a spiral shape.",

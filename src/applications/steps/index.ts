@@ -15,5 +15,6 @@ export * from './MeltConfigApplication';
 export * from './PixelateConfigApplication';
 export * from './RadialWipeConfigApplication';
 export * from './ReverseConfigApplication';
+export * from './SoundConfigApplication';
 export * from './StepConfigApplication';
 export * from './types';
