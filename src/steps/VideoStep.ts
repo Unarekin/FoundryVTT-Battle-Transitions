@@ -1,8 +1,8 @@
+import { VideoConfigApplication } from "../applications";
 import { FileNotFoundError } from "../errors";
 import { ChromaKeyFilter, TextureSwapFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, getFormDataExtended, renderTemplateFunc, templateDir } from "../utils";
-import { generateBackgroundTypeSelectOptions } from "./selectOptions";
+import { createColorTexture, getFormDataExtended } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { VideoConfiguration } from "./types";
 
@@ -25,36 +25,28 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
     videoSizingMode: "stretch",
     version: "1.1.9",
     chromaKey: "#0CA023",
-    chromaRange: [0.11, 0.22],
+    chromaRange: [0.11, 0.22] as [number, number],
     enableChromaKey: false
   });
 
   public static hidden: boolean = false;
   public static key = "video";
   public static name = "VIDEO";
-  public static template = "video-config";
   public static icon = "<i class='bt-icon bt-video fa-fw fas'></i>"
   public static category = "effect";
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = VideoConfigApplication as any;
 
   // #endregion Properties (7)
 
   // #region Public Static Methods (6)
-
-  public static async RenderTemplate(config?: VideoConfiguration): Promise<string> {
-    const actualConfig = {
-      ...VideoStep.DefaultSettings,
-      ...(config ? config : {})
-    };
-
-    return (renderTemplateFunc())(templateDir(`config/${VideoStep.template}.hbs`), {
-      ...VideoStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      keyRangeX: actualConfig.chromaRange[0],
-      keyRangeY: actualConfig.chromaRange[1]
-    });
+  // #region Public Static Methods (8)
+  static getListDescription(config?: VideoConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.VIDEO.LABEL", { file: config.file }) ?? "";
+    else return "";
   }
+
 
   public static from(config: VideoConfiguration): VideoStep
   public static from(form: JQuery<HTMLFormElement>): VideoStep

@@ -153,7 +153,8 @@
     },
     "VIDEO": {
       "DESCRIPTION": "Play a video.",
-      "NAME": "Video"
+      "NAME": "Video",
+      "LABEL": "Play video: {file}"
     },
     "WAIT": {
       "DESCRIPTION": "Wait some specified amount of time.",

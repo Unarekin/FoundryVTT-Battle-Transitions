@@ -22,5 +22,6 @@ export * from './SpotlightWipeConfigApplication';
 export * from './StepConfigApplication';
 export * from './TextureSwapConfigApplication';
 export * from './TwistConfigApplication';
+export * from './VideoConfigApplication';
 export * from './WaitConfigApplication';
 export * from './types';
