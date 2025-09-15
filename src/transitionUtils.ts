@@ -34,15 +34,15 @@ export function createSnapshot() {
 
   // Render to RenderTexture for later
   const rt = PIXI.RenderTexture.create({ width: window.innerWidth, height: window.innerHeight });
-  if (canvas.scene) {
-    renderer.render(canvas.stage, { renderTexture: rt, skipUpdateTransform: true, clear: false });
-  } else {
-    const graphics = new PIXI.Graphics();
-    graphics.beginFill(0x000000);
-    graphics.drawRect(0, 0, rt.width, rt.height);
-    graphics.endFill();
-    renderer.render(graphics, { renderTexture: rt, skipUpdateTransform: true, clear: false });
-  }
+  const fillColor = canvas.scene ? canvas.scene.backgroundColor as unknown as number : 0x000000;
+  const graphics = new PIXI.Graphics();
+  graphics.beginFill(fillColor);
+  graphics.drawRect(0, 0, rt.width, rt.height);
+  graphics.endFill();
+  renderer.render(graphics, { renderTexture: rt, skipUpdateTransform: true, clear: false });
+
+  if (canvas.scene) renderer.render(canvas.stage, { renderTexture: rt, skipUpdateTransform: true, clear: false });
+
 
   const pixels = Uint8ClampedArray.from(renderer.extract.pixels(rt));
   const imageData = new ImageData(pixels, rt.width, rt.height);
