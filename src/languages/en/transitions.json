@@ -89,7 +89,8 @@
     },
     "PARALLEL": {
       "DESCRIPTION": "Run multiple sequences of transition effects simultaneously.",
-      "NAME": "Parallel"
+      "NAME": "Parallel",
+      "LABEL": "Execute {count} sequences in parallel."
     },
     "PIXELATE": {
       "DESCRIPTION": "Increase the displayed size of pixels in the overlay texture.",

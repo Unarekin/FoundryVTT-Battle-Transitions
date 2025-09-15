@@ -39,7 +39,6 @@ export class RepeatConfigApplication extends StepConfigApplication<RepeatConfigu
       });
       if (sequence && this.config.sequence)
         this.config.sequence.splice(0, this.config.sequence.length, ...foundry.utils.deepClone(sequence));
-      log("Sequence:", this.config.sequence);
     } catch (err) {
       console.error(err);
       if (err instanceof Error) ui.notifications?.error(err.message, { console: false });

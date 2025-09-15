@@ -130,6 +130,21 @@ export class SequenceEditorApplication extends foundry.applications.api.Handleba
       if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
     }
   }
+  _onRender(context: any, options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    super._onRender(context, options);
+
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    ($(this.element).find(`[data-role="transition-steps"]`) as any).sortable({
+      handle: ".drag-handle",
+      containment: "parent",
+      axis: "y",
+      classes: {
+        "ui-sortable-helper": "application ui-sortable-helper"
+      }
+    });
+  }
 
   public static async RemoveStep(this: SequenceEditorApplication, event: PointerEvent, element: HTMLElement) {
     try {

@@ -13,6 +13,7 @@ export * from './LinearWipeConfigApplication';
 export * from './LoadingTipConfigApplication';
 export * from './MacroConfigApplication';
 export * from './MeltConfigApplication';
+export * from './ParallelConfigApplication';
 export * from './PixelateConfigApplication';
 export * from './RadialWipeConfigApplication';
 export * from './RepeatConfigApplication';

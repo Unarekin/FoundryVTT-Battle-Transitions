@@ -298,6 +298,8 @@
       },
       "PARALLEL": {
         "ADDSEQUENCE": "Add Sequence",
+        "EDITSEQUENCE": "Edit Sequence",
+        "REMOVESEQUENCE": "Remove Sequence",
         "SEQUENCE": "Sequence {index}",
         "SEQUENCES": "Sequences"
       },

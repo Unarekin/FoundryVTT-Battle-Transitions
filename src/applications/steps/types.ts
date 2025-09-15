@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, BossSplashConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, MacroConfiguration, MeltConfiguration, PixelateConfiguration, RadialWipeConfiguration, RepeatConfiguration, ReverseConfiguration, SoundConfiguration, SpiralShutterConfiguration, SpiralWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, ZoomConfiguration } from "../../steps/types";
+import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, BossSplashConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, MacroConfiguration, MeltConfiguration, ParallelConfiguration, PixelateConfiguration, RadialWipeConfiguration, RepeatConfiguration, ReverseConfiguration, SoundConfiguration, SpiralShutterConfiguration, SpiralWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, ZoomConfiguration } from "../../steps/types";
 
 // TODO: When updating to v13 types, extend foundry.applications.api.ApplicationV2.RenderContext
 export interface StepConfigContext<t extends TransitionConfiguration = TransitionConfiguration> extends Record<string, unknown> {
@@ -99,6 +99,10 @@ export interface MacroContext extends StepConfigContext<MacroConfiguration> {
 export interface MeltContext extends StepConfigContext<MeltConfiguration> {
   easingSelect: Record<string, string>;
   bgTypeSelect: Record<string, string>;
+}
+
+export interface ParallelContext extends StepConfigContext<ParallelConfiguration> {
+
 }
 
 export interface PixelateContext extends StepConfigContext<PixelateConfiguration> {

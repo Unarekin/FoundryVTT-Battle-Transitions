@@ -221,6 +221,22 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     }
   }
 
+  _onRender(context: any, options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    super._onRender(context, options);
+
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    ($(this.element).find(`[data-role="transition-steps"]`) as any).sortable({
+      handle: ".drag-handle",
+      containment: "parent",
+      axis: "y",
+      classes: {
+        "ui-sortable-helper": "application ui-sortable-helper"
+      }
+    });
+  }
+
   static ExportJSON(this: TransitionBuilder) {
     try {
       if (!this.#response.sequence.length) return;

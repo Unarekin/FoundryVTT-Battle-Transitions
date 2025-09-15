@@ -1,0 +1,33 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="parallel"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.PARALLEL.DESCRIPTION"}}</p>
+
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+
+  <div class="flexrow">
+    <div class="flex1">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.PARALLEL.SEQUENCES"
+      }}</div>
+    <div class="flex0">
+      <i
+        class="fas fa-fw fa-plus link"
+        data-action="addSequence"
+        title="{{localize
+          'BATTLETRANSITIONS.SCENECONFIG.PARALLEL.ADDSEQUENCE'
+        }}"
+      ></i>
+    </div>
+  </div>
+  <hr />
+  {{#each config.sequences as |sequence|}}
+    <div class="flexrow">
+      <div class="flex1">{{localize "BATTLETRANSITIONS.SCENECONFIG.PARALLEL.SEQUENCE" index=@index}}</div>
+      <div class="flex0"><i class="fa-solid fa-cogs fa-fw link" data-action="editSequence" data-seq="{{@index}}" data-tooltip="{{localize "BATTLETRANSITIONS.SCENECONFIG.PARALLEL.EDITSEQUENCE"}}"></i></div>
+      <div class="flex0"><i class="fa-solid fa-trash fa-fw" data-action="removeSequence" data-seq="{{@index}}" data-tooltip="{{localize "BATTLETRANSITIONS.SCENECONFIG.PARALLEL.REMOVESEQUENCE"}}"></i></div>
+    </div>
+  {{/each}}
+</section>
