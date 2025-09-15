@@ -1,10 +1,9 @@
 import { RepeatConfigApplication } from "../applications";
 import { BattleTransition } from "../BattleTransition";
-import { addSequence, hideElements, iterateElements, renderSequenceItem, showElements } from "../dialogs";
 import { InvalidTransitionError, NoPreviousStepError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { getStepClassByKey, localize, log, parseConfigurationFormElements } from "../utils";
+import { getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
 import { getPreviousStep } from "./functions";
 import { TransitionStep } from "./TransitionStep";
 import { RepeatConfiguration, TransitionConfiguration, WaitConfiguration } from './types';
@@ -54,51 +53,6 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
     } else {
       return "";
     }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public static addEventListeners(parent: HTMLElement, config?: RepeatConfiguration): void {
-    setStyle(parent);
-
-    const styleSelect = parent.querySelector(`select[name="step.style"]`);
-    if (styleSelect instanceof HTMLSelectElement) {
-      styleSelect.addEventListener("change", () => { setStyle(parent); });
-    }
-
-    iterateElements(parent, `[data-action="addSequence"]`, elem => {
-      elem.addEventListener("click", () => { void addSequenceItem(parent); });
-    });
-
-    // const html = $(elem);
-    // setStyle(html);
-
-    // html.find("#style").on("input", () => {
-    //   setStyle(html);
-    // });
-
-    // html.find("[data-action='add-step']").on("click", e => {
-    //   e.preventDefault();
-    //   void addStep(html);
-    // });
-
-
-    // html.find("[data-action='clear-steps']").on("click", e => {
-    //   if ($(e.currentTarget).is(":visible")) {
-    //     e.preventDefault();
-    //     void clearButtonhandler(html);
-    //   }
-    // })
-    // setClearDisabled(html);
-
-    // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    // (html.find("#transition-step-list") as any).sortable({
-    //   handle: ".drag-handle",
-    //   containment: "parent",
-    //   axis: "y"
-    // });
-
-    // // upsert sequence
-    // void addSequence(html, config?.sequence ?? []);
   }
 
 
@@ -207,53 +161,4 @@ function buildTransition(html: HTMLElement): TransitionConfiguration[] {
   const sequenceItem = html.querySelector(`[data-role="sequence-item"]`);
   if (sequenceItem instanceof HTMLElement) return JSON.parse(sequenceItem.dataset.sequence ?? "[]") as TransitionConfiguration[];
   else return [];
-}
-
-
-function setStyle(parent: HTMLElement) {
-  const select = parent.querySelector(`select[name="step.style"]`);
-  if (select instanceof HTMLSelectElement) {
-    if (select.value === "sequence") showElements(parent, `[data-role="sequence-container"]`);
-    else hideElements(parent, `[data-role="sequence-container"]`);
-  }
-}
-
-function addSequenceItemEventListeners(parent: HTMLElement, index: number) {
-  try {
-    log("Adding sequence item event listeners:", index);
-    // const element = parent.querySelector(`[data-role="sequence-item"][data-index="${index}"]`);
-    // if (!(element instanceof HTMLElement)) throw new InvalidElementError();
-    // const deleteButton = element.querySelectorAll(`[data-action="deleteSequence"]`);
-
-    // for (const button of deleteButton)
-    //   button.addEventListener("click", () => { void deleteSequenceItem(parent, index); });
-
-    // const editButton = element.querySelectorAll(`[data-action="editSequence"]`);
-    // for (const button of editButton)
-    //   button.addEventListener("click", () => { void editSequenceItem(parent, index); });
-  } catch (err) {
-    console.error(err);
-    if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
-  }
-}
-
-
-async function addSequenceItem(parent: HTMLElement) {
-  try {
-    const sequence = await addSequence();
-    // If it is canceled, or an empty sequence is submitted, bail.
-    if (!sequence || !sequence.length) return;
-
-
-    const container = parent.querySelector(`[data-role="sequence-list"]`);
-    if (container instanceof HTMLElement) {
-      const count = parent.querySelectorAll(`[data-role="sequence-item"]`).length;
-      const elem = await renderSequenceItem(sequence, count);
-      container.appendChild(elem);
-      addSequenceItemEventListeners(parent, count);
-    }
-  } catch (err) {
-    console.error(err);
-    if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
-  }
 }

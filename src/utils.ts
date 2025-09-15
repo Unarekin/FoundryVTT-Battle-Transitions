@@ -201,7 +201,8 @@ export function getCurrentOverlayObject(): PIXI.DisplayObject | undefined {
 }
 
 export function getSortedSteps(): (typeof TransitionStep)[] {
-  return Object.values(steps).sort((a, b) => localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${a.name}`).localeCompare(localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${b.name}`))) as (typeof TransitionStep)[];
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return Object.values(steps).sort((a, b) => localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${(a as any).name}`).localeCompare(localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${(b as any).name}`))) as (typeof TransitionStep)[];
 }
 
 export function getStepClassByKey(key: string): (typeof TransitionStep) | undefined {

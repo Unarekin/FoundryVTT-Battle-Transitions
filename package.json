@@ -1,6 +1,6 @@
 {
   "name": "foundryvtt-battle-transitions",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "A module for Foundry-VTT to provide for JRPG-like scene transitions.",
   "main": "dist/module.js",
   "scripts": {
