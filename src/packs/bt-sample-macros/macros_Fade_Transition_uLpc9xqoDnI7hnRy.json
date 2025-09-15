@@ -1,0 +1,27 @@
+{
+  "name": "Fade Transition",
+  "type": "script",
+  "_id": "uLpc9xqoDnI7hnRy",
+  "author": "EWXMWWsbLjRVVnzu",
+  "img": "modules/battle-transitions/assets/icons/fade.svg",
+  "scope": "global",
+  "command": "try {\n  const scene = await BattleTransition.SelectScene(true);\n  if (!(scene instanceof Scene)) return;\n\n  const { fadeIn = 1000, duration = 2000, fadeOut = 1000 } = scope;\n\n  const macro = await fromUuid(\"Macro.sEHGeD83Dv5POL4P\");\n  if (macro instanceof Macro) await macro.execute({ duration: 500 });\n\n  await new BattleTransition(scene)\n    .fade(fadeIn, \"black\")\n    .wait(duration)\n    .startPlaylist()\n    .fade(fadeOut)\n    .execute();\n} catch (err) {\n  ui.notifications.error(err.message);\n}\n",
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0,
+    "EWXMWWsbLjRVVnzu": 3
+  },
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.331",
+    "systemId": "worldbuilding",
+    "systemVersion": "0.8.2",
+    "createdTime": 1729782293476,
+    "modifiedTime": 1729782352316,
+    "lastModifiedBy": "EWXMWWsbLjRVVnzu"
+  },
+  "_key": "!macros!uLpc9xqoDnI7hnRy"
+}
