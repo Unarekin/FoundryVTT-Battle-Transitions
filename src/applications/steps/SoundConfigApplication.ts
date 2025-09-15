@@ -26,7 +26,8 @@ export class SoundConfigApplication extends StepConfigApplication<SoundConfigura
     return context;
   }
 
-  _onChangeForm(): void {
+  _onChangeForm(formConfig: foundry.applications.api.ApplicationV2.FormConfiguration, e: Event): void {
+    super._onChangeForm(formConfig, e);
     const data = foundry.utils.expandObject((new (formDataExtendedClass())(this.element as HTMLFormElement)).object) as Record<string, unknown>;
     const preview = this.element.querySelector(`[data-role="audio-preview"]`);
     if (preview instanceof HTMLAudioElement) {

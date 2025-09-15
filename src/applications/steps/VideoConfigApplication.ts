@@ -1,6 +1,6 @@
 import { StepConfigApplication } from "./StepConfigApplication";
 import { generateBackgroundTypeSelectOptions, VideoConfiguration, VideoStep } from "../../steps";
-import { templateDir } from "../../utils";
+import { formDataExtendedClass, templateDir } from "../../utils";
 import { VideoContext } from "./types";
 import { DeepPartial } from "../types";
 
@@ -27,6 +27,34 @@ export class VideoConfigApplication extends StepConfigApplication<VideoConfigura
     },
     footer: {
       template: "templates/generic/form-footer.hbs"
+    }
+  }
+
+  _onChangeForm(formConfig: foundry.applications.api.ApplicationV2.FormConfiguration, e: Event): void {
+    super._onChangeForm(formConfig, e);
+
+    const data = foundry.utils.expandObject((new (formDataExtendedClass())(this.element as HTMLFormElement)).object) as Record<string, unknown>;
+    const preview = this.element.querySelector(`[data-role="video-preview"]`);
+    if (preview instanceof HTMLVideoElement) {
+      const url = new URL(data.file as string ?? "", window.location.href);
+      if (preview.src !== url.href) preview.src = url.href;
+
+      const volume = typeof data.volume === "number" ? data.volume / 100 : 1;
+      if (preview.volume !== volume) preview.volume = volume;
+    }
+  }
+
+  _onRender(context: VideoContext, options: foundry.applications.api.ApplicationV2.RenderOptions) {
+    super._onRender(context, options);
+
+    const preview = this.element.querySelector(`[data-role="video-preview"]`);
+    if (preview instanceof HTMLVideoElement) {
+      preview.volume = typeof this.config?.volume === "number" ? this.config.volume / 100 : 1;
+      preview.addEventListener("volumechange", () => {
+        const volumeElem = this.element.querySelector(`[name="volume"]`);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (volumeElem instanceof HTMLElement && (volumeElem as any).value !== preview.volume * 100) (volumeElem as any).value = preview.volume * 100;
+      })
     }
   }
 
