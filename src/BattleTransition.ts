@@ -11,6 +11,7 @@ import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./applications";
 import { filters } from "./filters";
 import { isValidBilinearDirection, isValidClockDirection, isValidEasing, isValidRadialDirection, isValidWipeDirection } from "./validation";
+import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 
 // #region Type aliases (1)
 
@@ -149,7 +150,14 @@ export class BattleTransition {
 
       BattleTransition.SuppressSoundUpdates = true;
 
-      // if (sceneChange) Hooks.once(CUSTOM_HOOKS.SCENE_ACTIVATED, () => { hideTransitionCover(); });
+      if (!canvasGroup) {
+        Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
+          if (container) canvasGroup?.addChild(container);
+        });
+      } else {
+        canvasGroup.addChild(container);
+      }
+
       if (!sceneChange) hideTransitionCover();
 
 
@@ -773,7 +781,7 @@ export class BattleTransition {
       config.source = "string";
       config.message = source;
     }
-    config.style = JSON.parse(JSON.stringify(style)) as object;
+    config.style = JSON.parse(JSON.stringify(style)) as Record<string, unknown>;
 
     this.#sequence.push(config);
 
@@ -1350,7 +1358,16 @@ export class BattleTransition {
   }
 
   // #endregion Public Methods (52)
+
+  public static get overlayGroup() { return canvasGroup; }
+
+  static initialize() {
+    canvasGroup = new ScreenSpaceCanvasGroup();
+    canvas?.stage?.addChild(canvasGroup);
+  }
 }
+
+let canvasGroup: ScreenSpaceCanvasGroup | undefined = undefined;
 
 // #endregion Classes (1)
 

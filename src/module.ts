@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { initializeCanvas } from './transitionUtils';
 import { CUSTOM_HOOKS } from "./constants";
 import { registerHelpers, registerTemplates } from "./templates";
 import { ConfigurationHandler } from './ConfigurationHandler';
@@ -17,7 +16,7 @@ import "./HTMLDocumentPickerElement";
 
 
 Hooks.once("canvasReady", () => {
-  initializeCanvas();
+  BattleTransition.initialize();
   Hooks.callAll(CUSTOM_HOOKS.INITIALIZE)
 })
 
