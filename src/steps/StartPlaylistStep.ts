@@ -12,16 +12,16 @@ export class StartPlaylistStep extends TransitionStep<StartPlaylistConfiguration
 
   public static key = "startplaylist";
   public static name = "STARTPLAYLIST";
-  public static icon = "<i class='bt-icon start-ambient-playlist fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-start-ambient-playlist fa-fw fas'></i>"
   public static category = "technical";
 
   public static skipWhenSceneViewed = false;
 
-  public static DefaultSettings: StartPlaylistConfiguration = {
+  public static DefaultSettings: StartPlaylistConfiguration = Object.freeze({
     id: "",
     type: "startplaylist",
     version: "1.1.0"
-  };
+  });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static RenderTemplate(config?: StartPlaylistConfiguration): Promise<string> {

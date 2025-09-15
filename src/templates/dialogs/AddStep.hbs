@@ -1,0 +1,11 @@
+<section data-role="add-step">
+  {{#each tabs as |tab|}}
+    <div class="tab {{tab.cssClass}}" data-tab="{{tab.id}}" data-group="main">
+      <section class="two-columns">
+        {{#each data as |item|}}
+          <button type="button" data-action="selectStep" data-key="{{item.key}}" {{#unless item.enabled}}disabled{{/unless}} data-transition="{{item.key}}" {{#if item.tooltip}} data-tooltip="{{item.tooltip}}"{{/if}}>{{#if item.hasIcon}}{{{item.icon}}} {{/if}}{{localize item.name}}</button>
+        {{/each}}
+      </section>
+    </div>
+  {{/each}}
+</section>

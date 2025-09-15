@@ -1,0 +1,15 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="textureswap"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.TEXTURESWAP.DESCRIPTION"}}</p>
+
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+
+  {{! Background }}
+  {{> (moduleTemplate "steps/partials/background-selector.hbs") this }}
+  {{! Dual style }}
+  {{> (moduleTemplate "steps/partials/dualstyle-selector.hbs") this }}
+</section>

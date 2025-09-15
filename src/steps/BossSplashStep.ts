@@ -1,7 +1,7 @@
+import { BossSplashConfigApplication } from '../applications';
 import { ModuleNotActiveError } from '../errors';
 import { TransitionSequence } from '../interfaces';
-import { getActors, getCompendiumFromUUID, isValidFontSize, parseConfigurationFormElements, parseFontSize, renderTemplateFunc, wait } from '../utils';
-import { generateFontSelectOptions } from './selectOptions';
+import { isValidFontSize, localize, parseConfigurationFormElements, parseFontSize, wait } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { BossSplashConfiguration } from './types';
 
@@ -17,7 +17,7 @@ function getSplashSetting<t>(key: string, defaultSetting: t): t {
 export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
 
   public static get DefaultSettings(): BossSplashConfiguration {
-    return {
+    return Object.freeze({
       id: "",
       type: "bosssplash",
       version: "1.1.0",
@@ -42,32 +42,36 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
       subText: getSplashSetting<string>("subText", ""),
       animationDelay: getSplashSetting<number>("animationDelay", 0) * 1000,
       animationDuration: getSplashSetting<number>("animationDuration", 3) * 1000,
-    };
+    });
   }
 
 
   public static get hidden(): boolean { return !(game.modules?.get("boss-splash")?.active); }
   public static key = "bosssplash";
   public static name = "BOSSSPLASH";
-  public static template = "bosssplash-config";
   public static category = "effect";
-  public static icon = "<i class='bt-icon boss-splash fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-boss-splash fa-fw fas'></i>"
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = BossSplashConfigApplication as any;
+
+  // #endregion Properties (9)
+
+  // #region Public Static Methods (7)
 
 
-  public static RenderTemplate(config?: BossSplashConfiguration): Promise<string> {
-    const actors = getActors().sort(sortActors).map(actor => ({
-      ...formatActor(actor),
-      selected: config?.actor === actor.uuid
-    }));
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${BossSplashStep.template}.hbs`, {
-      ...BossSplashStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-
-      fontSelect: generateFontSelectOptions(),
-      actors
-    });
+  static getListDescription(config?: BossSplashConfiguration): string {
+    if (config) {
+      const actual = coerceConfig(config);
+      return localize("BATTLETRANSITIONS.BOSSSPLASH.LABEL", {
+        message: actual.message,
+        duration: config.duration
+      })
+    } else {
+      return ""
+    }
   }
+
 
   public static from(config: BossSplashConfiguration): BossSplashStep
   public static from(form: HTMLFormElement): BossSplashStep
@@ -152,7 +156,7 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
 }
 
 
-function coerceConfig(config: BossSplashConfiguration): { [x: string]: unknown } {
+function coerceConfig(config: BossSplashConfiguration): Record<string, unknown> {
 
   const actor = fromUuidSync(config.actor) as Actor | null;
 
@@ -175,34 +179,4 @@ function coerceConfig(config: BossSplashConfiguration): { [x: string]: unknown }
     animationDelay: config.animationDelay,
     actorImg: actor?.img ?? ""
   }
-}
-
-
-function formatActor(actor: Actor): { name: string, uuid: string, pack: string, type: string, selected: boolean } {
-  const retVal = {
-    name: actor.name,
-    uuid: actor.uuid,
-    pack: "",
-    type: actor.type,
-    selected: false
-  };
-
-  if (game.packs) {
-    const parsed = actor.uuid.split(".");
-    if (parsed[0] === "Compendium") {
-      const packId = parsed.slice(1, 3).join(".");
-      const pack = game.packs.get(packId);
-      if (pack?.documentName === "Actor")
-        retVal.pack = pack.title
-    }
-  }
-  return retVal;
-}
-
-function sortActors(first: Actor, second: Actor): number {
-  const firstPack = getCompendiumFromUUID(first.uuid);
-  const secondPack = getCompendiumFromUUID(second.uuid);
-
-  if (firstPack !== secondPack) return firstPack.localeCompare(secondPack);
-  return first.name.localeCompare(second.name);
 }

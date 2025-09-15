@@ -1,6 +1,6 @@
 {
   "name": "foundryvtt-battle-transitions",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "A module for Foundry-VTT to provide for JRPG-like scene transitions.",
   "main": "dist/module.js",
   "scripts": {
@@ -31,7 +31,9 @@
     "esbuild-sass-plugin": "^3.3.1",
     "eslint": "^9.11.0",
     "glob": "^11.0.0",
+    "gsap": "^3.13.0",
     "handlebars": "^4.7.8",
+    "handlebars-async-helpers-ts": "^2.0.2",
     "lunr": "^2.3.9",
     "ts-loader": "^9.5.1",
     "typedoc": "^0.26.10",

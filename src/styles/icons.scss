@@ -1,146 +1,185 @@
-@mixin mask-icon($url) {
-  $mask: url($url);
+@import "variables";
 
-  mask-image: $mask;
-  -webkit-mask-image: $mask;
-  mask-repeat: no-repeat;
-  mask-position: center;
-}
-
-// Context menu
-#context-menu {
-  // v12
-  .v12.bt-icon {
-    background-color: var(--color-text-light-1);
-  }
-  // v13
-  .v13.bt-icon {
-    background-color: var(--text-color);
-  }
-}
-
-// Tab bar
-nav.tabs {
-  // v12
-  .v12.bt-icon {
-    background-color: var(--color-text-dark-primary);
-  }
-  // v13
-  .v13.bt-icon {
-    background-color: var(--color-text-secondary);
-  }
+@font-face {
+  font-family: "#{$icomoon-font-family}";
+  src: url("#{$icomoon-font-path}/#{$icomoon-font-family}.ttf?7uppfz")
+      format("truetype"),
+    url("#{$icomoon-font-path}/#{$icomoon-font-family}.woff?7uppfz")
+      format("woff"),
+    url("#{$icomoon-font-path}/#{$icomoon-font-family}.svg?7uppfz##{$icomoon-font-family}")
+      format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
 }
 
 .bt-icon {
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center;
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "#{$icomoon-font-family}" !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
 
-  &::before {
-    content: " ";
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.bt-angular-wipe {
+  &:before {
+    content: $bt-angular-wipe;
   }
-
-  &.angular-wipe {
-    @include mask-icon("../assets/icons/angular-wipe.svg");
+}
+.bt-bilinear-wipe {
+  &:before {
+    content: $bt-bilinear-wipe;
   }
-
-  &.boss-splash {
-    @include mask-icon("../assets/icons/boss-splash.svg");
+}
+.bt-boss-splash {
+  &:before {
+    content: $bt-boss-splash;
   }
-
-  &.crossed-swords {
-    @include mask-icon("../assets/icons/crossed-swords.svg");
+}
+.bt-clock-wipe {
+  &:before {
+    content: $bt-clock-wipe;
   }
-
-  &.clock-wipe {
-    @include mask-icon("../assets/icons/clock-wipe.svg");
+}
+.bt-crossed-swords {
+  &:before {
+    content: $bt-crossed-swords;
   }
-
-  &.diamond-wipe {
-    @include mask-icon("../assets/icons/diamond-wipe.svg");
+}
+.bt-diamond-wipe {
+  &:before {
+    content: $bt-diamond-wipe;
   }
-
-  &.fade {
-    @include mask-icon("../assets/icons/fade.svg");
+}
+.bt-fade {
+  &:before {
+    content: $bt-fade;
   }
-
-  &.fire-dissolve {
-    @include mask-icon("../assets/icons/fire-dissolve.svg");
+}
+.bt-fire-dissolve {
+  &:before {
+    content: $bt-fire-dissolve;
   }
-
-  &.flash {
-    @include mask-icon("../assets/icons/flash.svg");
+}
+.bt-flash {
+  &:before {
+    content: $bt-flash;
   }
-
-  &.hue-shift {
-    @include mask-icon("../assets/icons/hue-shift.svg");
+}
+.bt-hammer {
+  &:before {
+    content: $bt-hammer;
   }
-
-  &.invert {
-    @include mask-icon("../assets/icons/invert.svg");
+}
+.bt-hide-overlay {
+  &:before {
+    content: $bt-hide-overlay;
   }
-
-  &.macro {
-    @include mask-icon("../assets/icons/macro.svg");
+}
+.bt-hue-shift {
+  &:before {
+    content: $bt-hue-shift;
   }
-
-  &.melt {
-    @include mask-icon("../assets/icons/melt.svg");
+}
+.bt-invert {
+  &:before {
+    content: $bt-invert;
   }
-
-  &.radial-wipe {
-    @include mask-icon("../assets/icons/radial-wipe.svg");
+}
+.bt-linear-wipe {
+  &:before {
+    content: $bt-linear-wipe;
   }
-
-  &.hide-overlay {
-    @include mask-icon("../assets/icons/hide-overlay.svg");
+}
+.bt-macro {
+  &:before {
+    content: $bt-macro;
   }
-
-  &.show-overlay {
-    @include mask-icon("../assets/icons/show-overlay.svg");
+}
+.bt-melt {
+  &:before {
+    content: $bt-melt;
   }
-
-  &.scene-change {
-    @include mask-icon("../assets/icons/scene-change.svg");
+}
+.bt-parallel {
+  &:before {
+    content: $bt-parallel;
   }
-
-  &.sound {
-    @include mask-icon("../assets/icons/sound.svg");
+}
+.bt-radial-wipe {
+  &:before {
+    content: $bt-radial-wipe;
   }
-
-  &.spiral-shutter {
-    @include mask-icon("../assets/icons/spiral-shutter.svg");
+}
+.bt-scene-change {
+  &:before {
+    content: $bt-scene-change;
   }
-
-  &.spotlight-wipe {
-    @include mask-icon("../assets/icons/spotlight-wipe.svg");
+}
+.bt-show-overlay {
+  &:before {
+    content: $bt-show-overlay;
   }
-
-  &.start-ambient-playlist {
-    @include mask-icon("../assets/icons/start-ambient-playlist.svg");
+}
+.bt-sound {
+  &:before {
+    content: $bt-sound;
   }
-
-  &.texture-swap {
-    @include mask-icon("../assets/icons/texture-swap.svg");
+}
+.bt-spiral-shutter {
+  &:before {
+    content: $bt-spiral-shutter;
   }
-
-  &.twist {
-    @include mask-icon("../assets/icons/twist.svg");
+}
+.bt-spotlight-wipe {
+  &:before {
+    content: $bt-spotlight-wipe;
   }
-
-  &.video {
-    @include mask-icon("../assets/icons/video.svg");
+}
+.bt-start-ambient-playlist {
+  &:before {
+    content: $bt-start-ambient-playlist;
   }
-
-  &.wait {
-    @include mask-icon("../assets/icons/wait.svg");
+}
+.bt-step-over {
+  &:before {
+    content: $bt-step-over;
   }
-
-  &.wave-wipe {
-    @include mask-icon("../assets/icons/wave-wipe.svg");
+}
+.bt-texture-swap {
+  &:before {
+    content: $bt-texture-swap;
   }
-
-  &.zoomblur {
-    @include mask-icon("../assets/icons/zoom-blur.svg");
+}
+.bt-twist {
+  &:before {
+    content: $bt-twist;
+  }
+}
+.bt-video {
+  &:before {
+    content: $bt-video;
+  }
+}
+.bt-wait {
+  &:before {
+    content: $bt-wait;
+  }
+}
+.bt-wave-wipe {
+  &:before {
+    content: $bt-wave-wipe;
+  }
+}
+.bt-zoom-blur {
+  &:before {
+    content: $bt-zoom-blur;
   }
 }

@@ -1,16 +1,15 @@
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SpiralShutterConfiguration } from "./types";
 import { SpiralShutterFilter } from "../filters";
-import { generateBackgroundTypeSelectOptions, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
-import { reconcileBackground } from "./functions";
+import { SpiralShutterConfigApplication } from "../applications";
 
 
 export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: SpiralShutterConfiguration = {
+  public static DefaultSettings: SpiralShutterConfiguration = Object.freeze({
     id: "",
     type: "spiralshutter",
     duration: 1000,
@@ -23,32 +22,29 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
     backgroundImage: "",
     falloff: 0,
     backgroundColor: "#00000000"
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon spiral-shutter fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-spiral-shutter fa-fw fas'></i>"
   public static key = "spiralshutter";
   public static name = "SPIRALSHUTTER";
-  public static template = "spiralshutter-config";
   public static reversible: boolean = true;
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/SpiralShutterWipe.webm`;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = SpiralShutterConfigApplication as any;
+
+  static getListDescription(config?: SpiralShutterConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.SPIRALSHUTTER.LABEL", { duration: config.duration, direction: config.direction, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay", radial: config.radial }) ?? "";
+    else return "";
+  }
+
 
   // #endregion Properties (7)
 
   // #region Public Static Methods (7)
 
-  public static async RenderTemplate(config?: SpiralShutterConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${SpiralShutterStep.template}.hbs`, {
-      ...SpiralShutterStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      easingSelect: generateEasingSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      radialSelect: generateRadialDirectionSelectOptions(),
-      directionSelect: generateClockDirectionSelectOptions()
-    });
-  }
+
 
   public static from(config: SpiralShutterConfiguration): SpiralShutterStep
   public static from(form: HTMLFormElement): SpiralShutterStep

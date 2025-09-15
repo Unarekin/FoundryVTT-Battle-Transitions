@@ -1,17 +1,16 @@
 import { MeltFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { MeltConfiguration } from "./types";
-import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
-import { reconcileBackground } from "./functions";
+import { MeltConfigApplication } from "../applications";
 
 export class MeltStep extends TransitionStep<MeltConfiguration> {
   // #region Properties (9)
 
   #filter: MeltFilter | null = null;
 
-  public static DefaultSettings: MeltConfiguration = {
+  public static DefaultSettings: MeltConfiguration = Object.freeze({
     id: "",
     type: "melt",
     duration: 1000,
@@ -21,11 +20,11 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000"
-  }
+  });
 
   public static category = "warp";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon melt fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-melt fa-fw fas'></i>"
   public static key = "melt";
   public static name = "MELT";
   public static reversible: boolean = true;
@@ -34,16 +33,16 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
   // #endregion Properties (9)
 
   // #region Public Static Methods (7)
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/Melt.webm`;
 
-  public static RenderTemplate(config?: MeltConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${MeltStep.template}.hbs`, {
-      ...MeltStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      easingSelect: generateEasingSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions()
-    });
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = MeltConfigApplication as any;
+
+
+
+  static getListDescription(config?: MeltConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.MELT.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    else return "";
   }
 
   public static from(config: MeltConfiguration): MeltStep

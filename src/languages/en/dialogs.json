@@ -1,6 +1,7 @@
 {
   "BATTLETRANSITIONS": {
     "DIALOGS": {
+      "REVERSIBLE": "This step is reversible",
       "IMPORTCONFIRM": {
         "TITLE": "Import Sequence",
         "MESSAGE": "Importing a sequence will overwrite the existing one, are you sure you want to do this?"
@@ -38,12 +39,6 @@
       "REMOVECONFIRM": {
         "CONTENT": "Are you sure you wish to remove {name}?",
         "TITLE": "Remove {name}"
-      },
-      "TRANSITIONBUILDER": {
-        "TITLE": "Transition Builder",
-        "USERS": {
-          "HINT": "Only show the transition for select users.  If none are selected, it will be executed for everyone."
-        }
       },
       "SCENESELECTOR": {
         "DESCRIPTION": "Please select a scene below:",

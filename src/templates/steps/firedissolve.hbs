@@ -1,0 +1,22 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="firedissolve"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.FIREDISSOLVE.DESCRIPTION"}}</p>
+
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+
+  {{! Duration }}
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this }}
+
+  <div class="form-group">
+    <label for="burnsize">{{localize "BATTLETRANSITIONS.SCENECONFIG.FIREDISSOLVE.BURNSIZE.LABEL"}}</label>
+    <input type="number" name="burnSize" id="burnSize" min="0" step="any" required value="{{config.burnSize}}">
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.FIREDISSOLVE.BURNSIZE.HINT"}}</p>
+  </div>
+
+  {{! Eeasing }}
+  {{> (moduleTemplate "steps/partials/easing-selector.hbs") this }}
+</section>

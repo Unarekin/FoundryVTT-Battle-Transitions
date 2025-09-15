@@ -1,17 +1,16 @@
 import { FadeTransitionFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, log, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { createColorTexture, log, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { FadeConfiguration } from "./types";
-import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
-import { reconcileBackground } from "./functions";
+import { FadeConfigApplication } from "../applications";
 
 export class FadeStep extends TransitionStep<FadeConfiguration> {
   // #region Properties (9)
 
   #filter: FadeTransitionFilter | null = null;
 
-  public static DefaultSettings: FadeConfiguration = {
+  public static DefaultSettings: FadeConfiguration = Object.freeze({
     id: "",
     type: "fade",
     duration: 1000,
@@ -20,29 +19,26 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
     backgroundType: "color",
     backgroundColor: "#00000000",
     easing: "none"
-  }
+  });
 
   public static category = "effect";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon fade fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-fade fa-fw fas'></i>"
   public static key = "fade";
   public static name = "FADE";
   public static reversible: boolean = true;
-  public static template = "fade-config";
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/Fade.webm`;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = FadeConfigApplication as any;
 
   // #endregion Properties (9)
 
   // #region Public Static Methods (7)
 
-  public static RenderTemplate(config?: FadeConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${FadeStep.template}.hbs`, {
-      ...FadeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      easingSelect: generateEasingSelectOptions()
-    });
+  static getListDescription(config?: FadeConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.FADE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    else return "";
   }
 
   public static from(config: FadeConfiguration): FadeStep

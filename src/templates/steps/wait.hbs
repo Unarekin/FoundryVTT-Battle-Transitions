@@ -1,0 +1,12 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="wait"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.WAIT.DESCRIPTION"}}</p>
+
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this}}
+</section>

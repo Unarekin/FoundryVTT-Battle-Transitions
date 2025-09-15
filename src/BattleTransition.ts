@@ -6,11 +6,12 @@ import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfigurati
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, getStepClassByKey, isColor, localize, log, renderTemplateFunc, serializeTexture } from "./utils";
+import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
-import { TransitionBuilder } from "./dialogs";
+import { TransitionBuilder } from "./applications";
 import { filters } from "./filters";
 import { isValidBilinearDirection, isValidClockDirection, isValidEasing, isValidRadialDirection, isValidWipeDirection } from "./validation";
+import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 
 // #region Type aliases (1)
 
@@ -84,11 +85,8 @@ export class BattleTransition {
   // #region Public Static Methods (7)
 
   public static async BuildTransition(scene?: Scene): Promise<void> {
-    const app = new TransitionBuilder(scene);
-    await app.render(true);
-    const config = await app.closed;
+    const config = await TransitionBuilder.build(scene?.uuid);
 
-    log("Built:", config);
     if (config) {
       if (!config.scene || (config.scene && config.scene !== canvas?.scene?.id)) await new BattleTransition(config.scene).executeSequence(config.sequence, config.users);
       else await new BattleTransition().executeSequence(config.sequence, config.users);
@@ -96,7 +94,7 @@ export class BattleTransition {
   }
 
   public static async SelectScene(omitCurrent: boolean = false): Promise<Scene | undefined> {
-    const content = await (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/scene-selector.hbs`, {
+    const content = await (renderTemplateFunc())(templateDir(`scene-selector.hbs`), {
       scenes: (game.scenes?.contents ?? []).reduce((prev, curr) => {
         if (omitCurrent && curr.id === game.scenes?.current?.id) return prev;
         return [...prev, { id: curr.id, name: curr.name }]
@@ -152,7 +150,14 @@ export class BattleTransition {
 
       BattleTransition.SuppressSoundUpdates = true;
 
-      // if (sceneChange) Hooks.once(CUSTOM_HOOKS.SCENE_ACTIVATED, () => { hideTransitionCover(); });
+      if (!canvasGroup) {
+        Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
+          if (container) canvasGroup?.addChild(container);
+        });
+      } else {
+        canvasGroup.addChild(container);
+      }
+
       if (!sceneChange) hideTransitionCover();
 
 
@@ -776,7 +781,7 @@ export class BattleTransition {
       config.source = "string";
       config.message = source;
     }
-    config.style = JSON.parse(JSON.stringify(style)) as object;
+    config.style = JSON.parse(JSON.stringify(style)) as Record<string, unknown>;
 
     this.#sequence.push(config);
 
@@ -1105,7 +1110,7 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(background);
     this.#sequence.push({
       id: foundry.utils.randomID(),
-      type: "spiralradialwipe",
+      type: "spiralshutter",
       serializedTexture,
       duration,
       easing,
@@ -1353,7 +1358,16 @@ export class BattleTransition {
   }
 
   // #endregion Public Methods (52)
+
+  public static get overlayGroup() { return canvasGroup; }
+
+  static initialize() {
+    canvasGroup = new ScreenSpaceCanvasGroup();
+    canvas?.stage?.addChild(canvasGroup);
+  }
 }
+
+let canvasGroup: ScreenSpaceCanvasGroup | undefined = undefined;
 
 // #endregion Classes (1)
 

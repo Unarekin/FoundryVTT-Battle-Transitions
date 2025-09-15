@@ -1,0 +1,29 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="barwipe"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.BARWIPE.DESCRIPTION"}}</p>
+  {{> (moduleTemplate "steps/partials/label.hbs") this}}
+
+  <div class="form-group">
+    <label for="bars">{{localize "BATTLETRANSITIONS.SCENECONFIG.BARWIPE.BARS.LABEL"}}</label>
+    <input type="number" min="2" step="1" value="{{config.bars}}" name="bars" id="bars" required>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BARWIPE.BARS.HINT"}}</p>
+  </div>
+
+  {{> (moduleTemplate "steps/partials/simple-select.hbs")
+    key="COMMON.DIRECTION"
+    id="direction"
+    options=directionSelect
+    selected=config.direction
+  }}
+
+  {{! Duration }}
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this}}
+  {{! Background }}
+  {{> (moduleTemplate "steps/partials/background-selector.hbs") this}}
+  {{! Eeasing }}
+  {{> (moduleTemplate "steps/partials/easing-selector.hbs") this}}
+</section>

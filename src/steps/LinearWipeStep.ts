@@ -1,10 +1,9 @@
 import { LinearWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { LinearWipeConfiguration } from "./types";
-import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions } from './selectOptions';
-import { reconcileBackground } from "./functions";
+import { LinearWipeConfigApplication } from "../applications";
 
 
 export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
@@ -12,11 +11,11 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
 
   #filter: LinearWipeFilter | null = null;
 
-  public readonly defaultSettings: Partial<LinearWipeConfiguration> = {
+  public readonly defaultSettings: Partial<LinearWipeConfiguration> = Object.freeze({
     duration: 1000
-  }
+  })
 
-  public static DefaultSettings: LinearWipeConfiguration = {
+  public static DefaultSettings: LinearWipeConfiguration = Object.freeze({
     id: "",
     type: "linearwipe",
     duration: 1000,
@@ -28,7 +27,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
     backgroundImage: "",
     backgroundColor: "#00000000",
     falloff: 0
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;
@@ -36,23 +35,20 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   public static key = "linearwipe";
   public static name = "LINEARWIPE";
   public static reversible: boolean = true;
-  public static template = "linearwipe-config";
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/LinearWipe.webm`;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = LinearWipeConfigApplication as any;
 
   // #endregion Properties (10)
 
   // #region Public Static Methods (7)
 
-  public static async RenderTemplate(config?: LinearWipeConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${LinearWipeStep.template}.hbs`, {
-      ...LinearWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      easingSelect: generateEasingSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      directionSelect: generateLinearDirectionSelectOptions()
-    });
+  static getListDescription(config?: LinearWipeConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.LINEARWIPE.LABEL", { duration: config.duration, direction: config.direction, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    else return "";
   }
+
 
   public static from(config: LinearWipeConfiguration): LinearWipeStep
   public static from(form: JQuery<HTMLFormElement>): LinearWipeStep

@@ -1,17 +1,16 @@
+import { BilinearWipeConfigApplication } from "../applications";
 import { BilinearWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { BilinearWipeConfiguration } from "./types";
-import { generateBackgroundTypeSelectOptions, generateBilinearDirectionSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
-import { reconcileBackground } from "./functions";
 
 export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> {
   // #region Properties (9)
 
   #filter: BilinearWipeFilter | null = null;
 
-  public static DefaultSettings: BilinearWipeConfiguration = {
+  public static DefaultSettings: BilinearWipeConfiguration = Object.freeze({
     id: "",
     type: "bilinearwipe",
     duration: 1000,
@@ -24,7 +23,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000"
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;
@@ -32,24 +31,19 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
   public static key = "bilinearwipe";
   public static name = "BILINEARWIPE";
   public static reversible: boolean = true;
-  public static template = "bilinearwipe-config";
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/BilinearWipe.webm`;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = BilinearWipeConfigApplication as any;
 
   // #endregion Properties (9)
 
   // #region Public Static Methods (7)
 
-  public static RenderTemplate(config?: BilinearWipeConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${BilinearWipeStep.template}.hbs`, {
-      ...BilinearWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      easingSelect: generateEasingSelectOptions(),
-      directionSelect: generateBilinearDirectionSelectOptions(),
-      radialSelect: generateRadialDirectionSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions()
-    });
+  static getListDescription(config?: BilinearWipeConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.BILINEARWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay", direction: config.direction, radial: config.radial }) ?? "";
+    else return "";
   }
+
 
   public serialize(): BilinearWipeConfiguration | Promise<BilinearWipeConfiguration> {
     const config = super.serialize();

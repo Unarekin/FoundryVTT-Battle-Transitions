@@ -1,0 +1,13 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="invert"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.INVERT.DESCRIPTION"}}</p>
+
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+
+  {{! Dual style }}
+  {{> (moduleTemplate "steps/partials/dualstyle-selector.hbs") this }}
+</section>

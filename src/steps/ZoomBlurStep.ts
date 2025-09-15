@@ -1,14 +1,14 @@
+import { ZoomBlurConfigApplication } from '../applications';
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
-import { parseConfigurationFormElements, renderTemplateFunc } from '../utils';
-import { generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { localize, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { ZoomBlurConfiguration } from './types';
 
 export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: ZoomBlurConfiguration = {
+  public static DefaultSettings: ZoomBlurConfiguration = Object.freeze({
     id: "",
     type: "zoomblur",
     version: "1.1.6",
@@ -18,29 +18,32 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     innerRadius: 0,
     applyToOverlay: true,
     applyToScene: false
-  }
+  });
 
   public static category = "warp";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon zoomblur fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-zoom-blur fa-fw fas'></i>"
   public static key = "zoomblur";
   public static name = "ZOOMBLUR";
-  public static template = "zoomblur-config";
   public static reversible: boolean = true;
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/ZoomBlur.webm`;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = ZoomBlurConfigApplication as any;
 
   // #endregion Properties (7)
 
   // #region Public Static Methods (7)
-
-  public static async RenderTemplate(config?: ZoomBlurConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${ZoomBlurStep.template}.hbs`, {
-      ...ZoomBlurStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      easingSelect: generateEasingSelectOptions(),
-      dualStyleSelect: generateDualStyleSelectOptions(),
-      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
-    });
+  static getListDescription(config?: ZoomBlurConfiguration): string {
+    if (config) {
+      return localize("BATTLETRANSITIONS.ZOOMBLUR.LABEL", {
+        duration: config.duration,
+        target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY"),
+        strength: config.maxStrength
+      })
+    } else {
+      return "";
+    }
   }
 
   public static from(config: ZoomBlurConfiguration): ZoomBlurStep
@@ -92,8 +95,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     };
 
     await Promise.all(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-      this.#filters.map(filter => TweenMax.to(filter.uniforms, { uStrength: 0, duration: config.duration / 1000, ease: config.easing }))
+      this.#filters.map(filter => gsap.to(filter.uniforms, { uStrength: 0, duration: config.duration / 1000, ease: config.easing }))
     )
   }
 
@@ -134,8 +136,7 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
     }
 
     this.#filters = [...filters];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-    await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms, { uStrength: config.maxStrength, duration: config.duration / 1000, ease: config.easing || "none" })));
+    await Promise.all(filters.map(filter => gsap.to(filter.uniforms, { uStrength: config.maxStrength, duration: config.duration / 1000, ease: config.easing || "none" })));
   }
 
   // #endregion Public Methods (1)

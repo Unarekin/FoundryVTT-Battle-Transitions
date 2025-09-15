@@ -1,18 +1,17 @@
 import { ClockWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
 import { Easing } from "../types";
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ClockWipeConfiguration } from "./types";
-import { generateBackgroundTypeSelectOptions, generateClockDirectionSelectOptions, generateEasingSelectOptions, generateLinearDirectionSelectOptions } from './selectOptions';
-import { reconcileBackground } from "./functions";
+import { ClockWipeConfigApplication } from "../applications";
 
 export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
   // #region Properties (9)
 
   #filter: ClockWipeFilter | null = null;
 
-  public static DefaultSettings: ClockWipeConfiguration = {
+  public static DefaultSettings: ClockWipeConfiguration = Object.freeze({
     id: "",
     type: "clockwipe",
     duration: 1000,
@@ -25,31 +24,28 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
     backgroundImage: "",
     falloff: 0,
     backgroundColor: "#00000000"
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon clock-wipe fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-clock-wipe fa-fw fas'></i>"
   public static key = "clockwipe"
   public static name = "CLOCKWIPE";
   public static reversible: boolean = true;
   public static template = "clockwipe-config";
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/ClockWipe.webm`;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = ClockWipeConfigApplication as any;
 
   // #endregion Properties (9)
 
   // #region Public Static Methods (7)
 
-  public static RenderTemplate(config?: ClockWipeConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${ClockWipeStep.template}.hbs`, {
-      ...ClockWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      easingSelect: generateEasingSelectOptions(),
-      clockDirectionSelect: generateClockDirectionSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      directionSelect: generateLinearDirectionSelectOptions()
-    });
+
+  static getListDescription(config?: ClockWipeConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.CLOCKWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay", direction: config.direction, clockDirection: config.clockDirection }) ?? "";
+    else return "";
   }
 
   public static from(config: ClockWipeConfiguration): ClockWipeStep

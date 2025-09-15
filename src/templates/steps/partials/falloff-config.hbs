@@ -1,0 +1,16 @@
+<div class="form-group">
+  <label for="falloff">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.FALLOFF.LABEL"
+    }}</label>
+  <range-picker
+    value="{{config.falloff}}"
+    min="0"
+    max="1"
+    step=".1"
+    id="falloff"
+    name="falloff"
+  ></range-picker>
+  <p class="hint">{{localize
+      "BATTLETRANSITIONS.SCENECONFIG.COMMON.FALLOFF.HINT"
+    }}</p>
+</div>

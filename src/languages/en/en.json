@@ -10,6 +10,10 @@
     "COMMON": {
       "TRANSITION": "Transition"
     },
+    "DOCUMENTPICKER": {
+      "PLACEHOLDER": "Please select a(n) {type}",
+      "TOOLTIP": "Select a(n) {type}"
+    },
     "WARNINGS": {
       "TRANSITIONCANCELED": "Transition canceled.",
       "PREPARETIMEOUT": "One or more clients timed out waiting for a response.",
@@ -80,7 +84,8 @@
     },
     "NAVIGATION": {
       "CUSTOM": "Transition Builder",
-      "TRIGGER": "Transition"
+      "TRIGGER": "Transition",
+      "BYPASS": "Bypass Transition"
     }
   }
 }

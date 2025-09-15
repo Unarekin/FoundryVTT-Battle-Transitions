@@ -3,12 +3,7 @@
   "include": ["./@types", "./src/module.ts"],
   "exclude": ["./node_modules"],
   "compilerOptions": {
-    "typeRoots": [
-      "./@types",
-      "./node_modules/@types",
-      "./node_modules/gsap/types",
-      "./node_modules/@types/lunr/index.d.ts"
-    ],
+    "types": ["./node_modules/@types/Foundry-VTT", "./@types/global.d.ts", "./node_modules/@types/lunr/index.d.ts"],
     "outDir": "dist",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

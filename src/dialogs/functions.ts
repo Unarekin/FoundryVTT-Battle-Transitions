@@ -1,23 +1,95 @@
-import { BackgroundTransition, TransitionConfiguration } from '../steps';
-import { getSortedSteps, getStepClassByKey, localize, renderTemplateFunc, uploadJSON } from '../utils';
-import { AddStepDialog } from './AddStepDialog';
+import { BackgroundTransition, TransitionConfiguration, TransitionStep } from '../steps';
+import { getSortedSteps, getStepClassByKey, localize, mimeType, renderTemplateFunc, templateDir, uploadJSON } from '../utils';
 import { StepContext } from './types';
 import { InvalidTransitionError } from '../errors';
 import { BackgroundType } from '../types';
 import { editSequence } from './EditSequence';
 import { coerceScene, coerceUser } from '../coercion';
 import { LOG_ICON } from '../constants';
+import { AddStepApplication } from '../applications';
 
-export async function addStepDialog(): Promise<string | null> {
-  return AddStepDialog.prompt();
+export function getStepsForCategory(category: string, sequence?: TransitionConfiguration[], hidden?: boolean): StepContext[] {
+  return getSortedSteps()
+    .reduce((prev, curr) => {
+
+      if (curr.category !== category) return prev;
+      // If hidden is false, then do not return hidden steps (like SceneChangeStep)
+      if (!hidden && curr.hidden) return prev;
+
+      let enabled = true;
+
+      if (Array.isArray(sequence)) {
+        const stepClass = getStepClassByKey(curr.key)
+        if (stepClass && !stepClass.canBeAddedToSequence(sequence)) enabled = false;
+      }
+
+      return [
+        ...prev,
+        {
+          key: curr.key,
+          name: `BATTLETRANSITIONS.${curr.name}.NAME`,
+          icon: curr.icon,
+          hasIcon: !!curr.icon,
+          preview: curr.preview,
+          tooltip: generatePreviewTooltip(curr),
+          enabled
+        }
+      ]
+    }, [] as StepContext[]);
 }
 
+function generatePreviewTooltip(step: typeof TransitionStep): string {
+  const tooltip = document.createElement("div");
+  tooltip.classList.add("toolclip", "themed", "theme-dark");
 
+  if (step.preview) {
+    const mime = mimeType(step.preview).split("/");
+    if (mime[0] === "video") {
+      const vid = document.createElement("video");
+      vid.style.height = "auto";
+      vid.autoplay = true;
+      vid.loop = true;
+      vid.muted = true;
+      const src = document.createElement("source");
+      src.src = step.preview;
+      vid.appendChild(src);
 
-export function getStepsForCategory(category: string, hidden: boolean = false): StepContext[] {
-  return getSortedSteps().reduce((prev, curr) => curr.category === category && (hidden ? true : curr.hidden === false) ? [...prev, { key: curr.key, name: `BATTLETRANSITIONS.${curr.name}.NAME`, description: `BATTLETRANSITIONS.${curr.name}.DESCRIPTION`, icon: curr.icon, tooltip: "", hasIcon: !!curr.icon }] : prev, [] as StepContext[]);
+      tooltip.appendChild(vid);
+    } else if (mime[0] === "image") {
+      const img = document.createElement("img");
+      img.src = step.preview;
+
+      tooltip.appendChild(img);
+    }
+
+  }
+
+  const title = document.createElement("h4");
+  title.innerText = game.i18n?.localize(`BATTLETRANSITIONS.${step.name}.NAME`) ?? "";
+  tooltip.appendChild(title);
+
+  const desc = document.createElement("p");
+  desc.innerText = game.i18n?.localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`) ?? "";
+  tooltip.appendChild(desc);
+
+  if (step.reversible) {
+    const reversible = document.createElement("p");
+
+    const icon = document.createElement("i");
+    icon.classList.add("fa-solid", "fa-rotate-left", "fa-fw");
+    reversible.appendChild(icon);
+
+    const strong = document.createElement("strong");
+    reversible.appendChild(strong);
+
+    strong.innerHTML = game.i18n?.localize(`BATTLETRANSITIONS.DIALOGS.REVERSIBLE`) ?? "";
+    desc.appendChild(reversible);
+  }
+
+  return tooltip.outerHTML;
 }
 
+/** @deprecated use function from applications instead */
 export async function confirm(title: string, content: string): Promise<boolean> {
   return foundry.applications.api.DialogV2.confirm({
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -116,6 +188,7 @@ export async function customDialog(title: string, content: string, buttons: Reco
 }
 
 
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function selectItem(parent: HTMLElement, id: string) {
 
   const configArea = parent.querySelector(`[data-role="transition-config"]`);
@@ -136,12 +209,12 @@ export async function selectItem(parent: HTMLElement, id: string) {
   if (!step) throw new InvalidTransitionError(deserialized.type);
 
   if (!step.skipConfig) {
-    const content = await step.RenderTemplate({
-      ...deserialized,
-      isV1: false
-    } as TransitionConfiguration);
+    // const content = await step.RenderTemplate({
+    //   ...deserialized,
+    //   isV1: false
+    // } as TransitionConfiguration);
 
-    configArea.innerHTML = content;
+    // configArea.innerHTML = content;
 
     step.addEventListeners(configArea, deserialized);
   } else {
@@ -239,7 +312,7 @@ export function setTargetConfig(html: HTMLElement) {
 }
 
 export async function addStep(html: HTMLElement): Promise<TransitionConfiguration | undefined> {
-  const key = await addStepDialog();
+  const key = await AddStepApplication.add();
   if (!key) return;
   const step = getStepClassByKey(key);
   if (!step) throw new InvalidTransitionError(key);
@@ -258,6 +331,7 @@ export async function addStep(html: HTMLElement): Promise<TransitionConfiguratio
   return config;
 }
 
+/** @deprecated Use generatedMacro from applications folder instead */
 export function generateMacro(sequence: TransitionConfiguration[], users: string[] = [], scene: unknown = undefined): string {
   const generated = new Intl.DateTimeFormat("default", Object.fromEntries(["year", "month", "day", "hour", "minute", "second"].map(elem => [elem, "numeric"]))).format(new Date());
 
@@ -308,7 +382,7 @@ export function generateMacro(sequence: TransitionConfiguration[], users: string
 }
 
 export async function renderSequenceItem(sequence: TransitionConfiguration[], index: number): Promise<HTMLElement> {
-  const content = await (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/sequence-item.hbs`, {
+  const content = await (renderTemplateFunc())(templateDir(`config/sequence-item.hbs`), {
     index,
     name: localize("BATTLETRANSITIONS.DIALOGS.SEQUENCE.NAME", { index: index + 1 }),
     serialized: JSON.stringify(sequence)

@@ -1,0 +1,32 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="clockwipe"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.CLOCKWIPE.DESCRIPTION"}}</p>
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+
+  {{> (moduleTemplate "steps/partials/simple-select.hbs")
+    key="CLOCKWIPE.DIRECTION"
+    options=clockDirectionSelect
+    selected=config.clockDirection
+    id="clockDirection"
+  }}
+
+  {{> (moduleTemplate "steps/partials/simple-select.hbs")
+    key="COMMON.DIRECTION"
+    options=directionSelect
+    selected=config.direction
+    id="direction"
+  }}
+
+  {{! Duration }}
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this }}
+  {{! Falloff }}
+  {{> (moduleTemplate "steps/partials/falloff-config.hbs") this }}
+  {{! Background }}
+  {{> (moduleTemplate "steps/partials/background-selector.hbs") this }}
+  {{! Eeasing }}
+  {{> (moduleTemplate "steps/partials/easing-selector.hbs") this }}
+</section>

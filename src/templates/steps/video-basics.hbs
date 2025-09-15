@@ -1,0 +1,26 @@
+<div class="tab {{tab.cssClass}}" data-tab="basics" data-group="primary">
+  {{> (moduleTemplate "steps/partials/label.hbs") this}}
+
+  <div class="form-group">
+    <label for="file">{{localize "BATTLETRANSITIONS.SCENECONFIG.VIDEO.FILE.LABEL"}}</label>
+    <file-picker name="file" id="file" type="video" value="{{config.file}}" required></file-picker>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.VIDEO.FILE.HINT"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="volume">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.LABEL"}}</label>
+    <range-picker value="{{config.volume}}" min="0" max="100" step="1" name="volume" id="volume"></range-picker>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.COMMON.VOLUME.HINT"}}</p>
+  </div>
+
+  <video controls  data-role="video-preview" style="max-height:128px;"></video>
+
+  <div class="form-group">
+    <label for="clear">{{localize "BATTLETRANSITIONS.SCENECONFIG.VIDEO.CLEAR.LABEL"}}</label>
+    <input type="checkbox" name="clear" id="clear" {{checked config.clear}}>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.VIDEO.CLEAR.HINT"}}</p>
+  </div>
+
+  {{! Background }}
+  {{> (moduleTemplate "steps/partials/background-selector.hbs") this}}
+</div>

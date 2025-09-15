@@ -1,0 +1,17 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="flash"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.FLASH.DESCRIPTION"}}</p>
+
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+
+  {{! Duration }}
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this }}
+  {{! Background }}
+  {{> (moduleTemplate "steps/partials/background-selector.hbs") this }}
+  {{! Dual style }}
+  {{> (moduleTemplate "steps/partials/dualstyle-selector.hbs") this }}
+</section>

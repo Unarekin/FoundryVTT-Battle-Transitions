@@ -1,16 +1,15 @@
+import { FlashConfigApplication } from "../applications";
 import { TextureSwapFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc, wait } from '../utils';
-import { reconcileBackground } from "./functions";
-import { generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions } from "./selectOptions";
+import { createColorTexture, parseConfigurationFormElements, wait } from '../utils';
 import { TransitionStep } from "./TransitionStep";
 import { FlashConfiguration } from "./types";
 
 export class FlashStep extends TransitionStep<FlashConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: FlashConfiguration = {
+  public static DefaultSettings: FlashConfiguration = Object.freeze({
     id: "",
     type: "flash",
     duration: 250,
@@ -21,29 +20,25 @@ export class FlashStep extends TransitionStep<FlashConfiguration> {
     backgroundColor: "#00000000",
     applyToOverlay: true,
     applyToScene: false
-  }
+  });
 
   public static category = "effect";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon flash fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-flash fa-fw fas'></i>"
   public static key = "flash";
   public static name = "FLASH";
-  public static template = "flash-config";
+
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/Flash.webm`;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = FlashConfigApplication as any;
 
   // #endregion Properties (7)
 
   // #region Public Static Methods (7)
 
-  public static RenderTemplate(config?: FlashConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${FlashStep.template}.hbs`, {
-      ...FlashStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      dualStyleSelect: generateDualStyleSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
-    })
+  static getListDescription(config?: FlashConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.FLASH.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    else return "";
   }
 
   public static from(config: FlashConfiguration): FlashStep

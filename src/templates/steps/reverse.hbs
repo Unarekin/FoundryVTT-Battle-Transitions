@@ -1,0 +1,16 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="reverse"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.REVERSE.DESCRIPTION"}}</p>
+
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+
+  <div class="form-group">
+    <label for="delay">{{localize "BATTLETRANSITIONS.SCENECONFIG.REVERSE.DELAY.LABEL"}}</label>
+    <input type="number" name="delay" id="delay" value="{{config.delay}}" min="0" step="1">
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.REVERSE.DELAY.HINT"}}</p>
+  </div>
+</section>

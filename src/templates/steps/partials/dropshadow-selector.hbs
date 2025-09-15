@@ -1,0 +1,66 @@
+<section data-role="dropshadow">
+  <div class="form-group">
+    <label for="style.dropShadow">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.DROPSHADOW.ENABLE.LABEL"
+      }}</label>
+    <input
+      type="checkbox"
+      name="style.dropShadow"
+      id="style.dropShadow"
+      {{checked style.dropShadow}}
+    />
+    <p class="hint">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.DROPSHADOW.ENABLE.HINT"
+      }}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="dropShadowColor">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.DROPSHADOW.COLOR.LABEL"
+      }}</label>
+    <input
+      type="text"
+      name="dropShadowColor"
+      id="dropShadowColor"
+      value="{{dropShadowColor}}"
+      data-color-picker="{alphaChannel: true}"
+    />
+    <p class="hint">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.DROPSHADOW.COLOR.HINT"
+      }}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="style.dropShadowDistance">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.DROPSHADOW.DISTANCE.LABEL"
+      }}</label>
+    <input
+      type="number"
+      name="style.dropShadowDistance"
+      id="style.dropShadowDistance"
+      value="{{config.style.dropShadowDistance}}"
+      min="0"
+      step="1"
+    />
+    <p class="hint">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.DROPSHADOW.DISTANCE.HINT"
+      }}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="style.dropShadowBlur">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.DROPSHADOW.BLUR.LABEL"
+      }}</label>
+    <input
+      type="number"
+      name="style.dropShadowBlur"
+      id="style.dropShadowBlur"
+      value="{{config.style.dropShadowBlur}}"
+      min="0"
+      step="1"
+    />
+    <p class="hint">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.COMMON.DROPSHADOW.BLUR.HINT"
+      }}</p>
+  </div>
+</section>

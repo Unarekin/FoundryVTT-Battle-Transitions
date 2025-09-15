@@ -1,36 +1,36 @@
 import { WaitConfiguration } from "./types";
 import { TransitionStep } from "./TransitionStep";
-import { parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { localize, parseConfigurationFormElements } from "../utils";
+import { WaitConfigApplication } from "../applications";
 
 const CURRENT_VERSION = "1.1.0";
 
 export class WaitStep extends TransitionStep<WaitConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: WaitConfiguration = {
+  public static DefaultSettings: WaitConfiguration = Object.freeze({
     id: "",
     type: "wait",
     duration: 0,
     version: CURRENT_VERSION
-  }
+  });
 
   public static category = "technical";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon wait fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-wait fa-fw fas'></i>"
   public static key = "wait";
   public static name = "WAIT";
-  public static template = "wait-config";
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = WaitConfigApplication as any;
 
   // #endregion Properties (7)
 
   // #region Public Static Methods (7)
 
-  public static async RenderTemplate(config?: WaitConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${WaitStep.template}.hbs`, {
-      ...WaitStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {})
-    });
+  public static getListDescription(config?: WaitConfiguration): string {
+    if (config) return localize("BATTLETRANSITIONS.WAIT.LABEL", { duration: config.duration });
+    else return "";
   }
 
   public static from(config: WaitConfiguration): WaitStep

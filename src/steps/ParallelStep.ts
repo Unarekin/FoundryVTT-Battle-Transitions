@@ -1,9 +1,8 @@
+import { ParallelConfigApplication } from "../applications";
 import { BattleTransition } from "../BattleTransition";
-import { addSequence, deleteSequenceItem, editSequenceItem, renderSequenceItem } from "../dialogs";
-import { InvalidElementError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration, TransitionConfiguration } from './types';
 
@@ -14,38 +13,32 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
   #preparedSequences: TransitionStep[][] = [];
 
-  public static DefaultSettings: ParallelConfiguration = {
+  public static DefaultSettings: ParallelConfiguration = Object.freeze({
     id: "",
     type: "parallel",
     version: "1.1.0",
     sequences: []
-  };
+  });
+
   public static category = "technical";
   public static hidden: boolean = false;
   public static icon = `<i class="fas fa-fw fa-arrows-down-to-line"></i>`
   public static key = "parallel";
   public static name = "PARALLEL";
-  public static template = "parallel-config";
-
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = ParallelConfigApplication as any;
   public get preparedSequences() { return this.#preparedSequences; }
 
   // #endregion Properties (8)
 
   // #region Public Static Methods (6)
 
-  public static RenderTemplate(config?: ParallelConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${ParallelStep.template}.hbs`, {
-      ...ParallelStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      oldScene: oldScene?.id ?? "",
-      newScene: newScene?.id ?? ""
-    });
-  }
-
-  public static addEventListeners(html: HTMLElement, config?: ParallelConfiguration) {
-    if (config) void addSequenceItems(html, config.sequences);
-    addEventListeners(html);
+  public static getListDescription(config?: ParallelConfiguration): string {
+    if (config) {
+      return localize("BATTLETRANSITIONS.PARALLEL.LABEL", { count: config.sequences.length })
+    } else {
+      return ""
+    }
   }
 
   public static from(form: HTMLFormElement): ParallelStep
@@ -131,73 +124,4 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
   }
 
   // #endregion Private Methods (1)
-}
-
-// #endregion Classes (1)
-
-// #region Functions (8)
-
-// #endregion Functions (8)
-
-
-async function addSequenceItems(parent: HTMLElement, sequences: TransitionConfiguration[][]) {
-  const container = parent.querySelector(`[data-role="sequence-list"]`);
-  if (!(container instanceof HTMLElement)) return;
-
-  container.innerHTML = "";
-  let index = 0;
-  for (const sequence of sequences) {
-    const element = await renderSequenceItem(sequence, index);
-    container.appendChild(element);
-    addSequenceItemEventListeners(parent, index);
-    index++;
-  }
-
-
-  // addEventListeners(parent);
-}
-
-function addSequenceItemEventListeners(parent: HTMLElement, index: number) {
-  try {
-    const element = parent.querySelector(`[data-role="sequence-item"][data-index="${index}"]`);
-    if (!(element instanceof HTMLElement)) throw new InvalidElementError();
-    const deleteButton = element.querySelectorAll(`[data-action="deleteSequence"]`);
-
-    for (const button of deleteButton)
-      button.addEventListener("click", () => { void deleteSequenceItem(parent, index); });
-
-    const editButton = element.querySelectorAll(`[data-action="editSequence"]`);
-    for (const button of editButton)
-      button.addEventListener("click", () => { void editSequenceItem(parent, index); });
-  } catch (err) {
-    console.error(err);
-    if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
-  }
-}
-
-function addEventListeners(html: HTMLElement) {
-  const addButtons = html.querySelectorAll(`[data-action="addSequence"]`);
-  for (const button of addButtons) {
-    button.addEventListener("click", () => { void addSequenceItem(html); });
-  }
-}
-
-async function addSequenceItem(parent: HTMLElement) {
-  try {
-    const sequence = await addSequence();
-    // If it is canceled, or an empty sequence is submitted, bail.
-    if (!sequence || !sequence.length) return;
-
-
-    const container = parent.querySelector(`[data-role="sequence-list"]`);
-    if (container instanceof HTMLElement) {
-      const count = parent.querySelectorAll(`[data-role="sequence-item"]`).length;
-      const elem = await renderSequenceItem(sequence, count);
-      container.appendChild(elem);
-      addSequenceItemEventListeners(parent, count);
-    }
-  } catch (err) {
-    console.error(err);
-    if (err instanceof Error) ui.notifications?.error(err.message, { console: false, localize: true });
-  }
 }

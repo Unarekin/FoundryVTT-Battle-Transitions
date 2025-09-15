@@ -1,0 +1,31 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="spotlightwipe"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.SPOTLIGHTWIPE.DESCRIPTION"}}</p>
+
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+
+  {{> (moduleTemplate "steps/partials/simple-select.hbs")
+    key="COMMON.DIRECTION"
+    id="direction"
+    options=directionSelect
+    selected=config.direction
+  }}
+
+  {{> (moduleTemplate "steps/partials/simple-select.hbs")
+    key="COMMON.RADIAL"
+    id="radial"
+    options=radialSelect
+    selected=config.radial
+  }}
+
+  {{! Duration }}
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this }}
+  {{! Falloff }}
+  {{> (moduleTemplate "steps/partials/falloff-config.hbs") this }}
+  {{! Background }}
+  {{> (moduleTemplate "steps/partials/background-selector.hbs") this }}
+</section>

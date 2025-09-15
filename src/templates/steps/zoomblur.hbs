@@ -1,0 +1,29 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="zoomblur"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.ZOOMBLUR.DESCRIPTION"}}</p>
+
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+
+  <div class="form-group">
+    <label for="maxStrength">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.MAXSTRENGTH.LABEL"}}</label>
+    <range-picker value="{{config.maxStrength}}" min="0" max="1" id="maxStrength" name="maxStrength"></range-picker>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.MAXSTRENGTH.HINT"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="innerRadius">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.INNERRADIUS.LABEL"}}</label>
+    <range-picker value="{{config.innerRadius}}" min="0" max="1" id="innerRadius" name="innerRadius"></range-picker>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.ZOOMBLUR.INNERRADIUS.HINT"}}
+  </div>
+
+  {{! Duration }}
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this }}
+  {{! Dual style }}
+  {{> (moduleTemplate "steps/partials/dualstyle-selector.hbs") this }}
+  {{! Eeasing }}
+  {{> (moduleTemplate "steps/partials/easing-selector.hbs") this }}
+</section>

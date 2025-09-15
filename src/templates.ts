@@ -3,8 +3,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
+import { InvalidTransitionError } from "./errors";
 import groupBy from "./lib/groupBy";
-import { formatDuration } from "./utils";
+import { TransitionConfiguration } from "./steps";
+import { formatDuration, getStepClassByKey, templateDir } from "./utils";
+
+
 
 export function registerHelpers() {
   Handlebars.registerHelper("switch", function (this: any, value, options) {
@@ -49,26 +53,39 @@ export function registerHelpers() {
       console.error(err);
       ui.notifications?.error(err instanceof Error ? err.message : typeof err === "string" ? err : typeof err, { console: false, localize: true });
     }
+  });
+
+  Handlebars.registerHelper("stepDescription", function (config: TransitionConfiguration) {
+    const stepClass = getStepClassByKey(config.type);
+    if (!stepClass) return "";
+    return new Handlebars.SafeString(stepClass.getListDescription(config));
+  });
+
+  Handlebars.registerHelper("shouldConfigureStep", function (config: TransitionConfiguration) {
+    const stepClass = getStepClassByKey(config.type);
+    if (!stepClass) throw new InvalidTransitionError(config.type);
+    return !stepClass.skipConfig
   })
 
+  Handlebars.registerHelper("stepName", function (config: TransitionConfiguration) {
+    const stepClass = getStepClassByKey(config.type);
+    if (!stepClass) throw new InvalidTransitionError(config.type);
+    return game.i18n?.localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`) ?? "";
+  });
+
+  Handlebars.registerHelper("moduleTemplate", function (path: string) {
+    return templateDir(`${path}`);
+  })
 }
 
 export async function registerTemplates() {
 
   return (game?.release?.isNewer("13") ? (foundry.applications as any).handlebars.loadTemplates : loadTemplates)([
-    `/modules/${__MODULE_ID__}/templates/scene-config.hbs`,
-    ...["step-item",
-      "background-selector",
-      "duration-selector",
-      "add-step-button",
-      "sequence-item",
-      "target-selector",
-      "dualtransition-selector",
-      "falloff-config"
-    ].map(name => `/modules/${__MODULE_ID__}/templates/config/${name}.hbs`),
-    `/modules/${__MODULE_ID__}/templates/scene-selector.hbs`,
-    `/modules/${__MODULE_ID__}/templates/transition-steps.hbs`,
-    `/modules/${__MODULE_ID__}/templates/font-selector.hbs`,
-    `/modules/${__MODULE_ID__}/templates/actor-selector.hbs`
+    templateDir(`scene-config.hbs`),
+    templateDir(`transition-step.hbs`),
+    templateDir(`scene-selector.hbs`),
+    templateDir(`transition-steps.hbs`),
+    templateDir(`font-selector.hbs`),
+    templateDir(`actor-selector.hbs`)
   ]) as Promise<Handlebars.TemplateDelegate[]>;
 }

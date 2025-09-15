@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { initializeCanvas } from './transitionUtils';
 import { CUSTOM_HOOKS } from "./constants";
 import { registerHelpers, registerTemplates } from "./templates";
 import { ConfigurationHandler } from './ConfigurationHandler';
@@ -7,19 +6,29 @@ import { ConfigurationHandler } from './ConfigurationHandler';
 import SocketHandler from "./SocketHandler";
 import { BattleTransition } from "./BattleTransition";
 import semver from "semver";
-import { awaitHook, log } from './utils';
-import { injectSceneConfigV1, injectSceneConfigV2 } from "./dialogs";
+import { awaitHook, getGame, log } from './utils';
 import { SceneChangeStep } from './steps';
+import { SceneConfigV2Mixin, SceneConfigV1Mixin } from "./applications";
+import "./HTMLDocumentPickerElement";
 
 (window as any).semver = semver;
 (window as any).BattleTransition = BattleTransition;
 
 
 Hooks.once("canvasReady", () => {
-  initializeCanvas();
+  BattleTransition.initialize();
   Hooks.callAll(CUSTOM_HOOKS.INITIALIZE)
 })
 
+Hooks.once("ready", async () => {
+  const game = await getGame();
+
+  const oldClass = CONFIG.Scene.sheetClasses.base["core.SceneConfig"].cls;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const mixed = game.release.isNewer("13") ? SceneConfigV2Mixin(oldClass as any) : SceneConfigV1Mixin(oldClass as any);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  CONFIG.Scene.sheetClasses.base["core.SceneConfig"].cls = mixed as any;
+});
 
 Hooks.once("init", async () => {
   registerHelpers();
@@ -64,25 +73,25 @@ Hooks.once("init", async () => {
   }
 });
 
-Hooks.once("ready", () => {
-  // void ConfigurationHandler.MigrateAllScenes();
+// Hooks.once("ready", () => {
+//   // void ConfigurationHandler.MigrateAllScenes();
 
-  if (game?.release?.isNewer("13")) {
-    injectSceneConfigV2();
-  } else {
-    // Set up renderSceneConfig hook to inject configuration for v12
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    Hooks.on("renderSceneConfig", (app: SceneConfig, html: JQuery<HTMLElement>, options: any) => {
-      // void ConfigurationHandler.InjectSceneConfig(app, html, options);
-      injectSceneConfigV1(app)
-        .catch((err: Error) => {
-          console.error(err);
-          ui.notifications?.error(err.message, { console: false, localize: true });
-        });
-    });
-  }
+//   if (game?.release?.isNewer("13")) {
+//     injectSceneConfigV2();
+//   } else {
+//     // Set up renderSceneConfig hook to inject configuration for v12
+//     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//     // Hooks.on("renderSceneConfig", (app: SceneConfig, html: JQuery<HTMLElement>, options: any) => {
+//     //   // void ConfigurationHandler.InjectSceneConfig(app, html, options);
+//     //   injectSceneConfigV1(app)
+//     //     .catch((err: Error) => {
+//     //       console.error(err);
+//     //       ui.notifications?.error(err.message, { console: false, localize: true });
+//     //     });
+//     // });
+//   }
 
-})
+// })
 
 
 Hooks.once("socketlib.ready", () => {
@@ -92,7 +101,6 @@ Hooks.once("socketlib.ready", () => {
 
 
 Hooks.on("getSceneNavigationContext", (html: JQuery<HTMLElement>, buttons: any[]) => {
-  console.log("getSceneNavigationContext");
   ConfigurationHandler.AddToNavigationBar(buttons);
 });
 
@@ -100,6 +108,11 @@ Hooks.on("getSceneContextOptions", (directory: SceneDirectory, options: ContextM
   ConfigurationHandler.AddToNavigationBar(options);
   return options;
 });
+
+Hooks.on("getSceneDirectoryEntryContext", (directory: SceneDirectory, options: ContextMenuEntry[]) => {
+  ConfigurationHandler.AddToNavigationBar(options);
+  return options;
+})
 
 Hooks.on("preUpdatePlaylist", (playlist: Playlist, delta: Partial<Playlist>) => {
   if (delta.playing) {
@@ -131,7 +144,10 @@ Hooks.on(CUSTOM_HOOKS.TRANSITION_END, (...args: unknown[]) => {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 Hooks.on("updateScene", (scene: Scene, delta: Partial<Scene>, mod: unknown, userId: string) => {
   if (delta.active) {
-    if (scene.canUserModify(game.user as User, "update")) void scene.unsetFlag(__MODULE_ID__, "isTriggered");
+    if (scene.canUserModify(game.user as User, "update")) {
+      void scene.unsetFlag(__MODULE_ID__, "isTriggered");
+      void scene.unsetFlag(__MODULE_ID__, "bypassTransition");
+    }
 
     awaitHook("canvasReady").then(() => { Hooks.callAll(CUSTOM_HOOKS.SCENE_ACTIVATED, scene); }).catch(console.error);
   }

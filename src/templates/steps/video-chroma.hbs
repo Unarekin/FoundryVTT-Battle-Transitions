@@ -1,0 +1,66 @@
+<div class="tab {{tab.cssClass}}" data-tab="chromaKey" data-group="primary">
+  <p class="hint">{{localize "BATTLETRANSITIONS.CHROMAKEY.DESCRIPTION"}}</p>
+
+  <div class="form-group">
+    <label for="enableChromaKey">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.ENABLE.LABEL"
+      }}</label>
+    <input
+      type="checkbox"
+      {{checked config.enableChromaKey}}
+      name="enableChromaKey"
+      id="enableChromaKey"
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="chromaKey">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.KEYCOLOR.LABEL"
+      }}</label>
+    <input
+      type="text"
+      data-color-picker="{}"
+      name="chromaKey"
+      id="chromaKey"
+      value="{{config.chromaKey}}"
+    />
+    <p class="hint">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.KEYCOLOR.HINT"
+      }}</p>
+  </div>
+
+  <div class="form-group slim">
+    <label>{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.RANGE.LABEL"
+      }}</label>
+    <div class="form-fields">
+      <label>{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.RANGE.X"
+        }}</label>
+      <input
+        type="number"
+        value="{{keyRangeX}}"
+        min="0"
+        max="1"
+        step="any"
+        name="keyRange"
+        id="keyRangeX"
+      />
+      <label>{{localize
+          "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.RANGE.Y"
+        }}</label>
+      <input
+        type="number"
+        value="{{keyRangeY}}"
+        min="0"
+        max="1"
+        step="any"
+        name="keyRange"
+        id="keyRangeY"
+      />
+    </div>
+    <p class="hint">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.CHROMAKEY.RANGE.HINT"
+      }}</p>
+  </div>
+</div>

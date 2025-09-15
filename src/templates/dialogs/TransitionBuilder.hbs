@@ -1,51 +1,63 @@
-<div data-role="transition-builder">
-  {{#if newScene}}
-    <input type="hidden" name="scene" id="scene" value="{{newScene}}">
-  {{else}}
-    <div class="form-group">
-      <label for="scene">{{localize "DOCUMENT.Scene"}}</label>
-      <select name="scene" id="scene">
-        <option></option>
-        {{selectOptions scenes selected=newScene}}
-      </select>
-    </div>
-  {{/if}}
-  {{#if oldScene}}<input type="hidden" name="oldScene" id="oldScene" value="{{oldScene}}">{{/if}}
+<section data-role="transition-builder">
+  {{#unless scene}}
+    <label for="scene">{{localize "DOCUMENT.Scene"}}</label>
+    <select name="scene" id="scene">
+      <option></option>
+      {{selectOptions scenesSelect}}
+    </select>
+  {{/unless}}
+
   <div class="form-group">
     <label for="users">{{localize "DOCUMENT.Users"}}</label>
     <multi-select name="users" id="users">
-      {{selectOptions usersSelect }}
+      {{selectOptions usersSelect}}
     </multi-select>
+    <p class="hint">{{localize "BATTLETRANSITIONS.TRANSITIONBUILDER.USERS.HINT"}}</p>
   </div>
-  <p class="hint">{{localize "BATTLETRANSITIONS.DIALOGS.TRANSITIONBUILDER.USERS.HINT"}}</p>
-  
+
   <div class="form-group">
     <label for="import">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.LABEL"}}</label>
     <div class="right-align">
-      <i class="fas fa-fw fa-upload link" data-action="importJson" style="position:relative"></i>
+      <i class="fa-solid fa-fw fa-upload link" data-action="importJson"></i>
     </div>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.HINT"}}</p>
   </div>
-  <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.HINT"}}</p>
-  
+
   <div class="form-group">
     <label for="export">{{localize "BATTLETRANSITIONS.SCENECONFIG.EXPORT.LABEL"}}</label>
     <div class="right-align">
-      <i class="fas fa-fw fa-download link" data-action="exportJson" style="position:relative"></i>
+      <i class="fa-solid fa-fw fa-download link" data-action="exportJson"></i>
     </div>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.EXPORT.HINT"}}</p>
   </div>
-  <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.EXPORT.HINT"}}</p>
 
   {{#if canCreateMacro}}
     <div class="form-group">
       <label for="macro">{{localize "BATTLETRANSITIONS.SCENECONFIG.MACRO.LABEL"}}</label>
       <div class="right-align">
-        <i class="fas fa-fw fa-code link" data-action="saveMacro" style="position:relative"></i>
+        <i class="fa-solid fa-fw fa-code link" data-action="saveMacro"></i>
       </div>
+      <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.MACRO.HINT"}}</p>
     </div>
-    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.MACRO.HINT"}}</p>
   {{/if}}
 
-  <hr />
-  {{> "/modules/battle-transitions/templates/transition-steps.hbs" this}}
-  <hr />
-</div>
+  <hr>
+  <div class="flexrow">
+    <label class="flex1">
+      <h3>{{localize "BATTLETRANSITIONS.SCENECONFIG.TRANSITIONCONFIG.LABEL"}}</h3>
+    </label>
+    <div class="flex0">
+      <i class="fa-solid fa-fw fa-plus link" data-action="addStep" data-tooltip="{{localize "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.ADDSTEP"}}"></i>
+    </div>
+    <div class="flex0">
+      <i class="fa-solid fa-fw fa-trash link" data-action="clearSteps" data-tooltip="{{localize "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.CLEARSTEPS"}}"></i>
+    </div>
+  </div>
+  
+  <div data-role="transition-steps" style="position:relative;">
+    {{#each sequence as |step|}}
+      {{> (moduleTemplate "transition-step.hbs") this }}
+    {{/each}}
+  </div>
+  <p></p>
+</section>

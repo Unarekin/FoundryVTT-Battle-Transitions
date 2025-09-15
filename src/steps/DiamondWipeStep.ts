@@ -1,9 +1,8 @@
 import { DiamondTransitionFilter } from "../filters";
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { DiamondWipeConfiguration } from "./types";
-import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions } from './selectOptions';
-import { reconcileBackground } from "./functions";
+import { DiamondWipeConfigApplication } from "../applications";
 
 export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
   // #region Properties (7)
@@ -24,26 +23,25 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
 
   public static category = "wipe";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon diamond-wipe fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-diamond-wipe fa-fw fas'></i>"
   public static key = "diamondwipe";
   public static name = "DIAMONDWIPE";
   public static template = "diamondwipe-config";
   public static reversible: boolean = true;
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/DiamondWipe.webm`;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = DiamondWipeConfigApplication as any;
 
   // #endregion Properties (7)
 
   // #region Public Static Methods (7)
 
-  public static RenderTemplate(config?: DiamondWipeConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${DiamondWipeStep.template}.hbs`, {
-      ...DiamondWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      easingSelect: generateEasingSelectOptions()
-    });
+
+  static getListDescription(config?: DiamondWipeConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.DIAMONDWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    else return "";
   }
+
 
   public static from(config: DiamondWipeConfiguration): DiamondWipeStep
   public static from(form: JQuery<HTMLFormElement>): DiamondWipeStep

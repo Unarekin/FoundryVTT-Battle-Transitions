@@ -32,6 +32,7 @@ export interface SceneConfiguration {
   sequence: TransitionConfiguration[];
   version: string;
   isTriggered?: boolean;
+  bypassTransition?: boolean;
 }
 
 

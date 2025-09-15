@@ -9,16 +9,17 @@ export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfigurati
 
   public static readonly template = "";
 
-  public static DefaultSettings: RestoreOverlayConfiguration = {
+  public static DefaultSettings: RestoreOverlayConfiguration = Object.freeze({
     id: "",
     type: "restoreoverlay",
     version: "1.1.0"
-  };
+  });
+
   public static hidden: boolean = false;
   public static key = "restoreoverlay";
   public static name = "SHOWOVERLAY";
   public static skipConfig = true;
-  public static icon = "<i class='bt-icon show-overlay fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-show-overlay fa-fw fas'></i>"
   public static category = "technical";
 
   // #endregion Properties (6)

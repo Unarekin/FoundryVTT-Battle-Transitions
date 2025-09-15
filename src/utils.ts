@@ -29,6 +29,20 @@ export async function awaitHook(hook: string): Promise<unknown[]> {
 }
 
 /**
+ * Retrieves the game, ensuring it is ready.
+ * @returns 
+ */
+export async function getGame(): Promise<ReadyGame> {
+  if (game?.ready) return game;
+  gameReadyPromise ??= new Promise(resolve => {
+    Hooks.once("ready", () => { resolve(); });
+  });
+
+  await gameReadyPromise;
+  return game as unknown as ReadyGame;
+}
+
+/**
  * Generates a 1x1 {@link PIXI.Texture} with a given color
  * @param {PIXI.Color} color {@link PIXI.Color}
  * @returns 
@@ -172,7 +186,7 @@ export function formatBackgroundSummary(flag: any): string {
   return "";
   // return (flag.backgroundType === "image" ? flag.backgroundImage?.split("/").splice(-1)[0] : flag.backgroundColor) ?? "";
 }
-
+let gameReadyPromise: Promise<void> | undefined = undefined;
 
 
 export function getCanvasGroup(): ScreenSpaceCanvasGroup | undefined {
@@ -187,7 +201,8 @@ export function getCurrentOverlayObject(): PIXI.DisplayObject | undefined {
 }
 
 export function getSortedSteps(): (typeof TransitionStep)[] {
-  return Object.values(steps).sort((a, b) => localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${a.name}`).localeCompare(localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${b.name}`))) as (typeof TransitionStep)[];
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return Object.values(steps).sort((a, b) => localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${(a as any).name}`).localeCompare(localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${(b as any).name}`))) as (typeof TransitionStep)[];
 }
 
 export function getStepClassByKey(key: string): (typeof TransitionStep) | undefined {
@@ -643,6 +658,10 @@ export function renderTemplateFunc(): typeof renderTemplate {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
   if (game?.release?.isNewer("13")) return (foundry.applications as any).handlebars.renderTemplate;
   else return renderTemplate;
+}
+
+export function templateDir(path: string): string {
+  return `modules/${__MODULE_ID__}/templates/${path}`;
 }
 
 // Simple wrapper to handle difference in namespace between Foundry v12 and v13

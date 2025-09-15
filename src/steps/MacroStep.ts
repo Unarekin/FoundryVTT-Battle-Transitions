@@ -1,37 +1,41 @@
+import { MacroConfigApplication } from "../applications";
 import { InvalidMacroError } from "../errors";
 import { TransitionSequence } from "../interfaces";
-import { getCompendiumFromUUID, getMacros, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { MacroConfiguration } from "./types";
 
 export class MacroStep extends TransitionStep<MacroConfiguration> {
   // #region Properties (5)
 
-  public static DefaultSettings: MacroConfiguration = {
+  public static DefaultSettings: MacroConfiguration = Object.freeze({
     id: "",
     type: "macro",
     macro: "",
     version: "1.1.0"
-  }
+  });
 
   public static hidden: boolean = false;
   public static key = "macro";
   public static name = "MACRO";
-  public static template = "macro-config";
-  public static icon = "<i class='bt-icon macro fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-macro fa-fw fas'></i>"
   public static category = "technical";
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = MacroConfigApplication as any;
 
   // #endregion Properties (5)
 
   // #region Public Static Methods (6)
 
-  public static RenderTemplate(config?: MacroConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${MacroStep.template}.hbs`, {
-      ...MacroStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      macros: getMacros().sort(sortMacro).map(formatMacro)
-    });
+  static getListDescription(config?: MacroConfiguration): string {
+    if (config) {
+      const macro = fromUuidSync(config.macro) as Macro;
+      return localize("BATTLETRANSITIONS.MACRO.LABEL", { macro: macro?.name ?? typeof undefined });
+    } else {
+      return "";
+    }
+
   }
 
   public static from(config: MacroConfiguration): MacroStep
@@ -71,32 +75,4 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
   }
 
   // #endregion Public Methods (1)
-}
-
-type MacroLike = { name: string, uuid: string };
-
-function sortMacro(first: MacroLike, second: MacroLike): number {
-  const firstPack = getCompendiumFromUUID(first.uuid);
-  const secondPack = getCompendiumFromUUID(second.uuid);
-
-  if (firstPack !== secondPack) return firstPack.localeCompare(secondPack);
-  return first.name.localeCompare(second.name);
-}
-
-function formatMacro(macro: MacroLike): { name: string, uuid: string, pack: string } {
-  const retVal = {
-    name: macro.name,
-    uuid: macro.uuid,
-    pack: ""
-  }
-  if (game.packs) {
-    const parsed = macro.uuid.split(".");
-    if (parsed[0] === "Compendium") {
-      const packId = parsed.slice(1, 3).join(".");
-      const pack = game.packs.get(packId);
-      if (pack?.documentName === "Macro")
-        retVal.pack = pack.title
-    }
-  }
-  return retVal;
 }

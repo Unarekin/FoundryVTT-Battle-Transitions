@@ -1,0 +1,23 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="twist"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.TWIST.DESCRIPTION"}}</p>
+  {{> (moduleTemplate "steps/partials/label.hbs") this}}
+
+  {{> (moduleTemplate "steps/partials/simple-select.hbs")
+    key="COMMON.CLOCKDIRECTION"
+    options=directionSelect
+    selected=config.direction
+    id="direction"
+  }}
+
+  {{! Duration }}
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this}}
+  {{! Background }}
+  {{> (moduleTemplate "steps/partials/dualstyle-selector.hbs") this}}
+  {{! Eeasing }}
+  {{> (moduleTemplate "steps/partials/easing-selector.hbs") this}}
+</section>

@@ -1,11 +1,10 @@
 import { RadialWipeFilter } from "../filters";
-import { createColorTexture, getTargetType, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
-import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions, generateTargetTypeSelectOptions } from "./selectOptions";
+import { createColorTexture, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { RadialWipeConfiguration, SceneChangeConfiguration, TransitionConfiguration } from "./types";
 import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTargetSelectEventListeners, validateTarget } from "./targetSelectFunctions";
 import { InvalidSceneError, InvalidTargetError } from "../errors";
-import { reconcileBackground } from "./functions";
+import { RadialWipeConfigApplication } from "../applications";
 
 export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   // #region Properties (10)
@@ -13,7 +12,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
   #filter: RadialWipeFilter | null = null;
   #screenLocation: [number, number] = [0.5, 0.5];
 
-  public static DefaultSettings: RadialWipeConfiguration = {
+  public static DefaultSettings: RadialWipeConfiguration = Object.freeze({
     id: "",
     type: "radialwipe",
     easing: "none",
@@ -24,44 +23,31 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000",
-    target: [0.5, 0.5],
+    target: [0.5, 0.5] as [number, number],
     falloff: 0
-  }
+  });
 
   public static category = "wipe";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon radial-wipe fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-radial-wipe fa-fw fas'></i>"
   public static key = "radialwipe";
   public static name = "RADIALWIPE";
   public static reversible: boolean = true;
-  public static template = "radialwipe-config";
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/RadialWipe.webm`;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = RadialWipeConfigApplication as any;
 
-  // #endregion Properties (10)
+  // #endregion Properties (5)
 
-  // #region Public Static Methods (10)
+  // #region Public Static Methods (6)
 
-  public static RenderTemplate(config?: RadialWipeConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    const targetType = getTargetType({
-      ...RadialWipeStep.DefaultSettings,
-      ...(config ? config : {})
-    }, oldScene, newScene);
+  static getListDescription(config?: RadialWipeConfiguration): string {
+    if (config) {
+      return localize("BATTLETRANSITIONS.RADIALWIPE.LABEL", { duration: config.duration, radial: config.radial });
+    } else {
+      return "";
+    }
 
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${RadialWipeStep.template}.hbs`, {
-      ...RadialWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      easingSelect: generateEasingSelectOptions(),
-      radialSelect: generateRadialDirectionSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      targetType,
-      oldScene: oldScene?.id ?? "",
-      newScene: newScene?.id ?? "",
-      selectedTarget: config ? config.target : "",
-      ...generateTargetTypeSelectOptions(oldScene, newScene),
-      pointX: Array.isArray(config?.target) ? config.target[0] : 0.5,
-      pointY: Array.isArray(config?.target) ? config.target[1] : 0.5,
-    });
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars

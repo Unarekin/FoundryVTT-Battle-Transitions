@@ -40,13 +40,6 @@
   .step-config-item {
     margin-bottom: 5px;
   }
-
-  .ui-sortable-helper {
-    background-image: url("/ui/parchment.jpg");
-    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    margin: 2px;
-  }
 }
 
 .transition-config {
@@ -69,9 +62,6 @@
       i {
         position: absolute;
         left: 4px;
-        &.bt-icon {
-          background-color: var(--button-text-color);
-        }
       }
     }
   }
@@ -159,10 +149,20 @@ button[data-transition] {
 .ui-sortable-helper {
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(0, 0, 0, 0.25);
-  margin: 2px;
+  padding: 0 !important;
+  margin: 0 !important;
+  // margin: 2px;
 
   .drag-handle {
     cursor: grabbing;
+  }
+
+  &.v1 {
+    background-color: white;
+  }
+
+  &.v2 {
+    background-color: white;
   }
 }
 
@@ -184,4 +184,11 @@ button[data-transition] {
 
 .link {
   cursor: pointer;
+}
+
+[data-role="transition-steps"] {
+  .step-item {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+  }
 }

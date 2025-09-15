@@ -1,9 +1,8 @@
+import { TextureSwapConfigApplication } from "../applications";
 import { TextureSwapFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc } from "../utils";
-import { reconcileBackground } from "./functions";
-import { generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions } from "./selectOptions";
+import { createColorTexture, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { TextureSwapConfiguration } from "./types";
 
@@ -12,7 +11,7 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
 
   public readonly defaultSettings: Partial<TextureSwapConfiguration> = {};
 
-  public static DefaultSettings: TextureSwapConfiguration = {
+  public static DefaultSettings: TextureSwapConfiguration = Object.freeze({
     id: "",
     type: "textureswap",
     version: "1.1.0",
@@ -22,28 +21,26 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
     backgroundColor: "#00000000",
     applyToScene: false,
     applyToOverlay: true
-  };
+  });
+
   public static hidden: boolean = false;
   public static key: string = "textureswap";
   public static name = "TEXTURESWAP";
-  public static template = "textureswap-config";
-  public static icon = "<i class='bt-icon texture-swap fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-texture-swap fa-fw fas'></i>"
   public static category = "effect";
-
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = TextureSwapConfigApplication as any;
   // #endregion Properties (6)
+
 
   // #region Public Static Methods (6)
 
-  public static async RenderTemplate(config?: TextureSwapConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${TextureSwapStep.template}.hbs`, {
-      ...TextureSwapStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      dualStyleSelect: generateDualStyleSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
-    })
+  static getListDescription(config?: TextureSwapConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.TEXTURESWAP.LABEL", {
+      background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay",
+      target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
+    }) ?? "";
+    else return "";
   }
 
   public static from(config: TextureSwapConfiguration): TextureSwapStep

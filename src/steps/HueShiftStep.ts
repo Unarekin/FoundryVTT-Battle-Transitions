@@ -1,15 +1,15 @@
 import { HueShiftConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
 import { HueShiftFilter } from '../filters';
-import { parseConfigurationFormElements, renderTemplateFunc } from '../utils';
+import { localize, parseConfigurationFormElements } from '../utils';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
-import { generateBackgroundTypeSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { HueShiftConfigApplication } from '../applications';
 
 export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: HueShiftConfiguration = {
+  public static DefaultSettings: HueShiftConfiguration = Object.freeze({
     id: "",
     type: "hueshift",
     duration: 0,
@@ -18,29 +18,29 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
     easing: "none",
     applyToOverlay: true,
     applyToScene: false
-  };
+  });
+
   public static category: string = "effect";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon hue-shift fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-hue-shift fa-fw fas'></i>"
   public static key: string = "hueshift";
   public static name: string = "HUESHIFT";
-  public static template: string = "hueshift-config";
   public static reversible: boolean = true;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = HueShiftConfigApplication as any;
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/HueShift.webm`;
 
   // #endregion Properties (7)
 
   // #region Public Static Methods (7)
 
-  public static RenderTemplate(config?: HueShiftConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${HueShiftStep.template}.hbs`, {
-      ...HueShiftStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      easingSelect: generateEasingSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      dualStyleSelect: generateDualStyleSelectOptions(),
-      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
-    });
+  static getListDescription(config?: HueShiftConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.HUESHIFT.LABEL", {
+      duration: config.duration,
+      maxShift: `${(config?.maxShift * 100)}%`,
+      target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
+    }) ?? "";
+    else return "";
   }
 
   public static from(config: HueShiftConfiguration): HueShiftStep
@@ -88,8 +88,8 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
       ...this.config
     };
     await Promise.all(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      this.#filters.map(filter => TweenMax.to(filter.uniforms, { shift: 0, duration: config.duration / 1000, ease: config.easing }))
+
+      this.#filters.map(filter => gsap.to(filter.uniforms, { shift: 0, duration: config.duration / 1000, ease: config.easing }))
     );
   }
 
@@ -117,8 +117,8 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
 
 
     this.#filters = [...filters];
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-    await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms, { shift: config.maxShift, duration: config.duration / 1000, ease: config.easing ?? "none" })));
+
+    await Promise.all(filters.map(filter => gsap.to(filter.uniforms, { shift: config.maxShift, duration: config.duration / 1000, ease: config.easing ?? "none" })));
   }
 
   // #endregion Public Methods (1)

@@ -1,14 +1,14 @@
 import { TransitionSequence, PreparedTransitionHash } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
-import { parseConfigurationFormElements, renderTemplateFunc } from '../utils';
+import { localize, parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { TwistConfiguration } from './types';
-import { generateClockDirectionSelectOptions, generateDualStyleSelectOptions, generateEasingSelectOptions } from './selectOptions';
+import { TwistConfigApplication } from '../applications';
 
 export class TwistStep extends TransitionStep<TwistConfiguration> {
   // #region Properties (7)
 
-  public static DefaultSettings: TwistConfiguration = {
+  public static DefaultSettings: TwistConfiguration = Object.freeze({
     id: "",
     type: "twist",
     version: "1.1.6",
@@ -18,30 +18,33 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
     direction: "clockwise",
     applyToScene: false,
     applyToOverlay: true
-  };
+  });
+
+
   public static category = "warp";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon twist fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-twist fa-fw fas'></i>"
   public static key = "twist";
   public static name = "TWIST";
-  public static template = "twist-config";
   public static reversible: boolean = true;
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/Twist.webm`;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = TwistConfigApplication as any;
 
   // #endregion Properties (7)
 
   // #region Public Static Methods (7)
 
-  public static async RenderTemplate(config?: TwistConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${TwistStep.template}.hbs`, {
-      ...TwistStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-
-      directionSelect: generateClockDirectionSelectOptions(),
-      easingSelect: generateEasingSelectOptions(),
-      dualStyleSelect: generateDualStyleSelectOptions(),
-      dualStyle: config ? config.applyToOverlay && config.applyToScene ? "both" : config.applyToOverlay ? "overlay" : config.applyToScene ? "scene" : "overlay" : "overlay"
-    });
+  static getListDescription(config?: TwistConfiguration): string {
+    if (config) {
+      return localize("BATTLETRANSITIONS.TWIST.LABEL", {
+        duration: config.duration,
+        target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY"),
+        angle: config.maxAngle
+      })
+    } else {
+      return "";
+    }
   }
 
   public static from(config: TwistConfiguration): TwistStep
@@ -87,8 +90,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
       ...this.config
     }
     await Promise.all(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-      this.#filters.map(filter => TweenMax.to(filter.uniforms, { angle: 0, duration: config.duration / 1000, ease: config.easing }))
+      this.#filters.map(filter => gsap.to(filter.uniforms, { angle: 0, duration: config.duration / 1000, ease: config.easing }))
     )
   }
 
@@ -129,8 +131,7 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
 
     this.#filters = [...filters];
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-    await Promise.all(filters.map(filter => TweenMax.to(filter.uniforms, { angle: this.config.direction === "clockwise" ? config.maxAngle * -1 : this.config.maxAngle, duration: config.duration / 1000, ease: this.config.easing || "none" })));
+    await Promise.all(filters.map(filter => gsap.to(filter.uniforms, { angle: this.config.direction === "clockwise" ? config.maxAngle * -1 : this.config.maxAngle, duration: config.duration / 1000, ease: this.config.easing || "none" })));
   }
 
   // #endregion Public Methods (1)

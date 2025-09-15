@@ -2,26 +2,29 @@ import { NotImplementedError } from "../errors";
 import { CustomFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { AnimatedTransition, TransitionConfiguration } from "./types";
+import { StepConfigApplication } from "../applications/steps";
 
 export abstract class TransitionStep<t extends TransitionConfiguration = TransitionConfiguration> {
   // #region Properties (6)
 
-  public static DefaultSettings: TransitionConfiguration = {
+  public static DefaultSettings: TransitionConfiguration = Object.freeze({
     id: "",
     type: "UNKNOWN",
     version: "1.1.0"
-  };
+  });
   public static hidden: boolean = true;
   public static key: string = "unknown";
   public static name: string = "UNNAMED";
   public static skipConfig: boolean = false;
-  public static template: string = "";
   public static icon: string = "";
   public static category: string = "";
+
+  public static readonly ConfigurationApplication: typeof StepConfigApplication | undefined = undefined;
 
   public static reversible = false;
   public static skipWhenSceneViewed = true;
   public static addDurationToTotal: boolean = true;
+  public static preview: string = "";
 
   public reverse(): Promise<void> | void {
     throw new NotImplementedError();
@@ -39,10 +42,24 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
 
   // #region Public Static Methods (7)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/require-await
-  public static async RenderTemplate(config?: TransitionConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    throw new NotImplementedError();
+  /**
+   * Determines whether or not this particular step can be added to the current sequence.
+   * 
+   * This is mostly for the {@link ReverseStep} transition step.
+   * @param {TransitionConfiguration[]} sequence - The current sequence
+   * @param {TransitionConfiguration} config - {@link TransitionConfiguration} optional configuration for the step attempting to be added.
+   * @returns 
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static canBeAddedToSequence(sequence: TransitionConfiguration[], config?: TransitionConfiguration): boolean {
+    return true;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static getListDescription(config?: TransitionConfiguration): string {
+    return "";
+  }
+
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static Upgrade(config: unknown): TransitionConfiguration { throw new NotImplementedError(); }
@@ -109,13 +126,11 @@ export abstract class TransitionStep<t extends TransitionConfiguration = Transit
   }
 
   protected async simpleReverse(filter: CustomFilter<any>): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { progress: 0, duration: (this.config as unknown as AnimatedTransition).duration / 1000, ease: (this.config as unknown as AnimatedTransition).easing || "none" });
+    await gsap.to(filter.uniforms, { progress: 0, duration: (this.config as unknown as AnimatedTransition).duration / 1000, ease: (this.config as unknown as AnimatedTransition).easing || "none" });
   }
 
   protected async simpleTween(filter: CustomFilter<any>): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    await TweenMax.to(filter.uniforms, { progress: 1, duration: (this.config as unknown as AnimatedTransition).duration / 1000, ease: (this.config as unknown as AnimatedTransition).easing || "none" });
+    await gsap.to(filter.uniforms, { progress: 1, duration: (this.config as unknown as AnimatedTransition).duration / 1000, ease: (this.config as unknown as AnimatedTransition).easing || "none" });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

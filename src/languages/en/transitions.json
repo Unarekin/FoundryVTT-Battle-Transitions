@@ -2,19 +2,23 @@
   "BATTLETRANSITIONS": {
     "ANGULARWIPE": {
       "DESCRIPTION": "A wipe that clears angled sections of the screen progressively closer to the center.",
-      "NAME": "Angular Wipe"
+      "NAME": "Angular Wipe",
+      "LABEL": "Wipe to {background} over {duration}ms"
     },
     "BARWIPE": {
       "DESCRIPTION": "A wipe that consists of a series of bars from alternating sides of the screen.",
-      "NAME": "Bar Wipe"
+      "NAME": "Bar Wipe",
+      "LABEL": "{bars}-bar {direction} wipe to {background} over {duration}ms"
     },
     "BILINEARWIPE": {
       "DESCRIPTION": "Two linear wipes along a horizontal, vertical, or diagonal axis originating from either the center or outer edges of the screen.",
-      "NAME": "Bilinear Wipe"
+      "NAME": "Bilinear Wipe",
+      "LABEL": "Wipe from {radial} / {direction} to {background} over {duration}ms"
     },
     "BOSSSPLASH": {
       "DESCRIPTION": "Trigger an animation from the Boss Splash Screen module.",
-      "NAME": "Boss Splash Screen"
+      "NAME": "Boss Splash Screen",
+      "LABEL": "Splash {message} for {duration}ms"
     },
     "CHROMAKEY": {
       "DESCRIPTION": "Replace one color found in the current transition image with another.  Useful for adding transparency to green screen videos.",
@@ -26,23 +30,28 @@
     },
     "CLOCKWIPE": {
       "DESCRIPTION": "Wipe the screen around the center point in either a clockwise or counterclockwise direction.",
-      "NAME": "Clock Wipe"
+      "NAME": "Clock Wipe",
+      "LABEL": "Wipe {clockDirection} from {direction} to {background} over {duration}ms"
     },
     "DIAMONDWIPE": {
       "DESCRIPTION": "Break the screen into diamond shapes that shrink over time, starting from the left to the right.",
-      "NAME": "Diamond Wipe"
+      "NAME": "Diamond Wipe",
+      "LABEL": "Wipe to {background} over {duration}ms"
     },
     "FADE": {
       "DESCRIPTION": "Fade from the current foreground to a specified background color.",
-      "NAME": "Fade"
+      "NAME": "Fade",
+      "LABEL": "Fade to {background} over {duration}ms"
     },
     "FIREDISSOLVE": {
       "DESCRIPTION": "Apply a burning effect to the screen, exposing the underlying background.",
-      "NAME": "Fire Dissolve (Burn)"
+      "NAME": "Fire Dissolve (Burn)",
+      "LABEL": "Screen burn effect over {duration}ms"
     },
     "FLASH": {
       "DESCRIPTION": "Flashes the screen a given color or texture.",
-      "NAME": "Flash"
+      "NAME": "Flash",
+      "LABEL": "Flash the screen {background} for {duration}ms"
     },
     "HIDEOVERLAY": {
       "DESCRIPTION": "Sets the transition overlay to invisible, exposing the new scene underneath.",
@@ -50,47 +59,59 @@
     },
     "HUESHIFT": {
       "DESCRIPTION": "Shift the screen's hue.",
-      "NAME": "Hue Shift"
+      "NAME": "Hue Shift",
+      "LABEL": "Shift hue of {target} by {maxShift} over {duration}ms"
     },
     "INVERT": {
       "DESCRIPTION": "Invert the current screen texture/color.",
-      "NAME": "Invert"
+      "NAME": "Invert",
+      "LABEL": "Invert colors on {target}"
     },
     "LINEARWIPE": {
       "DESCRIPTION": "A linear wipe from one side of the screen to the other, exposing a given background color along the way.",
-      "NAME": "Linear Wipe"
+      "NAME": "Linear Wipe",
+      "LABEL": "Linear wipe from the {direction} to {background} over {duration}ms"
     },
     "LOADINGTIP": {
       "DESCRIPTION": "Show text-based loading screen tips.",
-      "NAME": "Loading Tip"
+      "NAME": "Loading Tip",
+      "LABEL": "Show loading tip at {location}"
     },
     "MACRO": {
       "DESCRIPTION": "Execute a macro.  This will execute for each user with their own permissions, so please be sure they have permission at all.",
-      "NAME": "Macro"
+      "NAME": "Macro",
+      "LABEL": "Execute macro: {macro}"
     },
     "MELT": {
       "DESCRIPTION": "Melt the screen like you may have seen in a certain demon-killing FPS.",
-      "NAME": "Melt"
+      "NAME": "Melt",
+      "LABEL": "Melt the screen to {background} over {duration}ms"
     },
     "PARALLEL": {
       "DESCRIPTION": "Run multiple sequences of transition effects simultaneously.",
-      "NAME": "Parallel"
+      "NAME": "Parallel",
+      "LABEL": "Execute {count} sequences in parallel."
     },
     "PIXELATE": {
       "DESCRIPTION": "Increase the displayed size of pixels in the overlay texture.",
-      "NAME": "Pixelate"
+      "NAME": "Pixelate",
+      "LABEL": "Pixelate {target} over {duration}ms"
     },
     "RADIALWIPE": {
       "DESCRIPTION": "Circular wipe, starting either from the inside or outside of the screen.",
-      "NAME": "Radial Wipe (Shutter)"
+      "NAME": "Radial Wipe (Shutter)",
+      "LABEL": "Radial wipe from {radial} of the screen over {duration}ms"
     },
     "REPEAT": {
       "DESCRIPTION": "Repeat either the previous step or a specified sequence of steps.",
-      "NAME": "Repeat"
+      "NAME": "Repeat",
+      "LABELPREV": "Repeat previous step {iterations} times.",
+      "LABELSEQUENCE": "Repeat sequence of steps {iterations} times."
     },
     "REVERSE": {
       "DESCRIPTION": "Play the previous step in reverse, if available.",
-      "NAME": "Reverse"
+      "NAME": "Reverse",
+      "LABEL": "Reverse the previous step after {delay}ms"
     },
     "SCENECHANGE": {
       "DESCRIPTION": "Change the active scene.",
@@ -102,19 +123,23 @@
     },
     "SOUND": {
       "DESCRIPTION": "Play a sound during the transition.  Unlike most transition steps, this one will NOT wait until the sound is finished to continue to the next.",
-      "NAME": "Play Sound"
+      "NAME": "Play Sound",
+      "LABEL": "Play sound: {file}"
     },
     "SPIRALSHUTTER": {
       "DESCRIPTION": "A shutter-type wipe in a spiral shape.",
-      "NAME": "Spiral Shutter"
+      "NAME": "Spiral Shutter",
+      "LABEL": "Spiral shutter wipe from {radial} to {background} over {duration}ms"
     },
     "SPIRALWIPE": {
       "DESCRIPTION": "A spiral-shaped screen wipe, starting from the outside or inside of the screen.",
-      "NAME": "Spiral Wipe"
+      "NAME": "Spiral Wipe",
+      "LABEL": "Spiral wipe to {background} over {duration}ms"
     },
     "SPOTLIGHTWIPE": {
       "DESCRIPTION": "Bilinear wipe centered on a point along the edge of, and starting from either the inside or outside of the screen.",
-      "NAME": "Spotlight Wipe"
+      "NAME": "Spotlight Wipe",
+      "LABEL": "Spotlight-shaped wipe from {direction} to {background} over {duration}ms"
     },
     "STARTPLAYLIST": {
       "DESCRIPTION": "Start playing the new scene's configured ambient sound / playlist.",
@@ -122,31 +147,38 @@
     },
     "TEXTURESWAP": {
       "DESCRIPTION": "Set the current transition background to a given image.",
-      "NAME": "Texture Swap"
+      "NAME": "Texture Swap",
+      "LABEL": "Change the texture of {target} to {background}"
     },
     "TWIST": {
       "DESCRIPTION": "Twist the screen image.",
-      "NAME": "Twist"
+      "NAME": "Twist",
+      "LABEL": "Twist the screen {angle}° over {duration}ms"
     },
     "VIDEO": {
       "DESCRIPTION": "Play a video.",
-      "NAME": "Video"
+      "NAME": "Video",
+      "LABEL": "Play video: {file}"
     },
     "WAIT": {
       "DESCRIPTION": "Wait some specified amount of time.",
-      "NAME": "Wait"
+      "NAME": "Wait",
+      "LABEL": "Wait {duration}ms"
     },
     "WAVEWIPE": {
       "DESCRIPTION": "A wavy bilinear wipe.",
-      "NAME": "Wave Wipe"
+      "NAME": "Wave Wipe",
+      "LABEL": "Wave wipe from {direction} to {background} over {duration}ms"
     },
     "ZOOM": {
       "DESCRIPTION": "Zoom in on some point on the screen.",
-      "NAME": "Zoom"
+      "NAME": "Zoom",
+      "LABEL": "Zoom {target} {amount}% over {duration}ms"
     },
     "ZOOMBLUR": {
       "DESCRIPTION": "Simultaneously zoom in on and blur the screen.",
-      "NAME": "Zoom & Blur"
+      "NAME": "Zoom & Blur",
+      "LABEL": "Zoom and blur {target} over {duration}ms"
     }
   }
 }

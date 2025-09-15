@@ -1,47 +1,41 @@
 import { TransitionStep } from "./TransitionStep";
 import { SoundConfiguration, TransitionConfiguration } from "./types";
 import { TransitionSequence } from "../interfaces";
-import { parseConfigurationFormElements, renderTemplateFunc } from "../utils";
+import { parseConfigurationFormElements } from "../utils";
 import { FileNotFoundError } from "../errors";
+import { SoundConfigApplication } from "../applications";
 
 export class SoundStep extends TransitionStep<SoundConfiguration> {
   // #region Properties (8)
 
   // #sound: Sound | null = null;
 
-  public static DefaultSettings: SoundConfiguration = {
+  public static DefaultSettings: SoundConfiguration = Object.freeze({
     id: "",
     type: "sound",
     volume: 100,
     file: "",
     version: "1.1.0"
-  }
+  });
 
   public static category = "technical";
   public static hidden: boolean = false;
-  public static icon = "<i class='bt-icon sound fa-fw fas'></i>"
+  public static icon = "<i class='bt-icon bt-sound fa-fw fas'></i>"
   public static key = "sound";
   public static name = "SOUND";
-  public static template = "sound-config";
   public static addDurationToTotal: boolean = false;
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = SoundConfigApplication as any;
 
   // #endregion Properties (8)
 
   // #region Public Static Methods (8)
-
-  public static async RenderTemplate(config?: SoundConfiguration): Promise<string> {
-    return (renderTemplateFunc())(`modules/${__MODULE_ID__}/templates/config/${SoundStep.template}.hbs`, {
-      ...SoundStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {})
-    });
+  static getListDescription(config?: SoundConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.SOUND.LABEL", { file: config.file }) ?? "";
+    else return "";
   }
 
-  public static addEventListeners(element: HTMLElement | JQuery<HTMLElement>): void {
-    const html = $(element);
-    html.find("#file input").attr("required", "true");
-    html.find("form input").trigger("input");
-  }
 
   public static from(config: SoundConfiguration): SoundStep
   public static from(form: HTMLFormElement): SoundStep
@@ -114,11 +108,11 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
       // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       // const sound = await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true) as Sound;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true);
+      await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, false);
       // this.#sound = sound;
     } else {
       // const sound = await AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true);
-      await AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true);
+      await AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, false);
       // this.#sound = sound;
     }
   }
