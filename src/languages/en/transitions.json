@@ -163,7 +163,8 @@
     },
     "WAVEWIPE": {
       "DESCRIPTION": "A wavy bilinear wipe.",
-      "NAME": "Wave Wipe"
+      "NAME": "Wave Wipe",
+      "LABEL": "Wave wipe from {direction} to {background} over {duration}ms"
     },
     "ZOOM": {
       "DESCRIPTION": "Zoom in on some point on the screen.",

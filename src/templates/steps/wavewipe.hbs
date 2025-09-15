@@ -1,0 +1,23 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="wavewipe"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.WAVEWIPE.DESCRIPTION"}}</p>
+
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+
+  {{> (moduleTemplate "steps/partials/simple-select.hbs")
+    key="COMMON.RADIAL"
+    id="direction"
+    options=radialSelect
+    selected=config.direction
+  }}
+
+  {{> (moduleTemplate "steps/partials/duration-selector.hbs") this}}
+  {{> (moduleTemplate "steps/partials/falloff-config.hbs") this}}
+  {{> (moduleTemplate "steps/partials/background-selector.hbs") this}}
+  {{> (moduleTemplate "steps/partials/easing-selector.hbs") this}}
+
+</section>

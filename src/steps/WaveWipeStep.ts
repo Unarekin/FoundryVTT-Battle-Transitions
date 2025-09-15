@@ -1,10 +1,9 @@
 import { WaveWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, parseConfigurationFormElements, renderTemplateFunc, templateDir } from "../utils";
+import { createColorTexture, localize, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { WaveWipeConfiguration } from "./types";
-import { generateBackgroundTypeSelectOptions, generateEasingSelectOptions, generateRadialDirectionSelectOptions } from './selectOptions';
-import { reconcileBackground } from "./functions";
+import { WaveWipeConfigApplication } from "../applications";
 
 export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
   // #region Properties (7)
@@ -28,23 +27,27 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
   public static icon = "<i class='bt-icon bt-wave-wipe fa-fw fas'></i>"
   public static key = "wavewipe";
   public static name: string = "WAVEWIPE";
-  public static template = "wavewipe-config";
   public static reversible: boolean = true;
+  public static preview = `modules/${__MODULE_ID__}/assets/previews/WaveWipe.webm`;
 
-  // #endregion Properties (7)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = WaveWipeConfigApplication as any;
+
+  // #endregion Properties (9)
 
   // #region Public Static Methods (7)
 
-  public static async RenderTemplate(config?: WaveWipeConfiguration): Promise<string> {
-    return (renderTemplateFunc())(templateDir(`config/${WaveWipeStep.template}.hbs`), {
-      ...WaveWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      ...(config ? reconcileBackground(config) : {}),
-      radialSelect: generateRadialDirectionSelectOptions(),
-      bgTypeSelect: generateBackgroundTypeSelectOptions(),
-      easingSelect: generateEasingSelectOptions()
-    });
+
+  static getListDescription(config?: WaveWipeConfiguration): string {
+    if (config) {
+      return localize("BATTLETRANSITIONS.WAVEWIPE.LABEL", {
+        duration: config.duration,
+        background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay",
+        direction: config.direction
+      })
+    } else {
+      return "";
+    }
   }
 
   public static from(config: WaveWipeConfiguration): WaveWipeStep
