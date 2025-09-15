@@ -1,6 +1,7 @@
 export * from './AngularWipeConfigApplication';
 export * from './BarWipeConfigApplication';
 export * from './BilinearWipeConfigApplication';
+export * from './BossSplashConfigApplication';
 export * from './ClockWipeConfigApplication';
 export * from './DiamondWipeConfigApplication';
 export * from './FadeConfigApplication';

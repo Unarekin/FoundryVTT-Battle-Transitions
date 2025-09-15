@@ -17,7 +17,8 @@
     },
     "BOSSSPLASH": {
       "DESCRIPTION": "Trigger an animation from the Boss Splash Screen module.",
-      "NAME": "Boss Splash Screen"
+      "NAME": "Boss Splash Screen",
+      "LABEL": "Splash {message} for {duration}ms"
     },
     "CHROMAKEY": {
       "DESCRIPTION": "Replace one color found in the current transition image with another.  Useful for adding transparency to green screen videos.",

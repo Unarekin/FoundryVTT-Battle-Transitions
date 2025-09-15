@@ -1,0 +1,22 @@
+<div class="tab {{tab.cssClass}}" data-tab="font" data-group="primary">
+  {{> (moduleTemplate "steps/partials/font-selector.hbs") this}}
+  {{!-- <div class="form-group">
+    <label for="font">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONT.LABEL"}}</label>
+    <select name="font" id="font">
+      {{selectOptions fontSelect selected=font}}
+    </select>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONT.HINT"}}</p>
+  </div> --}}
+
+  <div class="form-group">
+    <label for="fontSize">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONTSIZE.LABEL"}}</label>
+    <input type="text" name="fontSize" id="fontSize" value="{{config.fontSize}}" min="1" step="1" required>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.FONTSIZE.HINT"}}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="subSize">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBSIZE.LABEL"}}</label>
+    <input type="text" name="subSize" id="subSize" min="1" step="1" required value="{{config.subSize}}">
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.BOSSSPLASH.SUBSIZE.HINT"}}</p>
+  </div>
+</div>
