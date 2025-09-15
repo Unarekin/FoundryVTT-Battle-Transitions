@@ -83,15 +83,6 @@ export async function registerTemplates() {
   return (game?.release?.isNewer("13") ? (foundry.applications as any).handlebars.loadTemplates : loadTemplates)([
     templateDir(`scene-config.hbs`),
     templateDir(`transition-step.hbs`),
-    ...["step-item",
-      "background-selector",
-      "duration-selector",
-      "add-step-button",
-      "sequence-item",
-      "target-selector",
-      "dualtransition-selector",
-      "falloff-config"
-    ].map(name => templateDir(`config/${name}.hbs`)),
     templateDir(`scene-selector.hbs`),
     templateDir(`transition-steps.hbs`),
     templateDir(`font-selector.hbs`),
