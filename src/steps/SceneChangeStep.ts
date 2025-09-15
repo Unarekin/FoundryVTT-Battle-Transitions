@@ -1,5 +1,5 @@
 import { CUSTOM_HOOKS } from "../constants";
-import { InvalidSceneError, SequenceTimedOutError } from "../errors";
+import { InvalidSceneError } from "../errors";
 import { TransitionSequence } from "../interfaces";
 import { activateScene, hideTransitionCover } from "../transitionUtils";
 import { awaitHook, parseConfigurationFormElements, renderTemplateFunc, templateDir } from "../utils";
@@ -60,20 +60,11 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
   // #region Public Methods (2)
 
   public async execute(container: PIXI.Container, sequence: TransitionSequence): Promise<void> {
-    // log("Scene change:", this.config.scene, canvas?.scene?.id, canvas?.scene?.active);
-    // If we'rea lready on this scene, then really we've missed the chance to properly execute this transition.
-    // Likely our preparation steps took too long.
-    if (this.config.scene === canvas?.scene?.id && canvas?.scene?.active) {
-      throw new SequenceTimedOutError();
-    }
-
-
-
     if (sequence.caller === (game.user as User).id) await activateScene({
       ...SceneChangeStep.DefaultSettings,
       ...this.config
     }.scene);
-    else await awaitHook(CUSTOM_HOOKS.SCENE_ACTIVATED);
+    else if (this.config.scene !== canvas?.scene?.id && canvas?.scene?.active) await awaitHook(CUSTOM_HOOKS.SCENE_ACTIVATED);
 
     hideTransitionCover();
   }
