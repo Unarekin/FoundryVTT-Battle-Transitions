@@ -124,11 +124,14 @@ export type AngularWipeConfiguration = WipeTransition;
 
 export type FlashConfiguration = TransitionConfiguration & BackgroundTransition & DurationTransition & DualTransition;
 
+export const RepeatStyles = ["sequence", "previous"] as const;
+export type RepeatStyle = typeof RepeatStyles[number];
+
 export type RepeatConfiguration = TransitionConfiguration & ({
   iterations: number;
   sequence?: TransitionConfiguration[];
   delay: number;
-  style: "sequence" | "previous";
+  style: RepeatStyle;
 });
 
 export type SceneChangeConfiguration = TransitionConfiguration & ({

@@ -1,0 +1,59 @@
+<section
+  data-role="step-config"
+  data-id="{{config.id}}"
+  data-transition-type="repeat"
+>
+  <input type="hidden" name="id" id="id" value="{{config.id}}" />
+  <p>{{localize "BATTLETRANSITIONS.REPEAT.DESCRIPTION"}}</p>
+  {{> (moduleTemplate "steps/partials/label.hbs") this }}
+
+  <div class="form-group">
+    <label for="iterations">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.REPEAT.ITERATIONS.LABEL"
+      }}</label>
+    <input
+      type="number"
+      min="2"
+      step="1"
+      value="{{config.iterations}}"
+      name="iterations"
+      id="iterations"
+      required
+    />
+    <p class="hint">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.REPEAT.ITERATIONS.HINT"
+      }}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="delay">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.REPEAT.DELAY.LABEL"
+      }}</label>
+    <input
+      type="number"
+      min="0"
+      step="1"
+      value="{{config.delay}}"
+      name="delay"
+      id="delay"
+      required
+    />
+    <p class="hint">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.REPEAT.DELAY.HINT"
+      }}</p>
+  </div>
+
+  <div class="form-group">
+    <label for="style">{{localize
+        "BATTLETRANSITIONS.SCENECONFIG.REPEAT.STYLE.LABEL"
+      }}</label>
+    <select name="repeatStyle" id="repeatStyle">
+      {{selectOptions styleSelect selected=config.style localize=true }}
+    </select>
+    <p class="hint" style="display:none" data-repeat-style="previous">{{localize "BATTLETRANSITIONS.SCENECONFIG.REPEAT.PREVIOUS.HINT"}}</p>
+    <p class="hint" style="display:none" data-repeat-style="sequence">{{localize "BATTLETRANSITIONS.SCENECONFIG.REPEAT.SEQUENCE.HINT"}}</p>
+  </div>
+  <section data-repeat-style="sequence" style="display:none;">
+    <button type="button" style="width:100%" data-action="editSequence">{{localize "BATTLETRANSITIONS.SCENECONFIG.REPEAT.EDITSEQUENCE"}}</button>
+  </section>
+</section>

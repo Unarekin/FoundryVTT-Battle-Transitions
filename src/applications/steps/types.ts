@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, BossSplashConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, MacroConfiguration, MeltConfiguration, PixelateConfiguration, RadialWipeConfiguration, ReverseConfiguration, SoundConfiguration, SpiralShutterConfiguration, SpiralWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, ZoomConfiguration } from "../../steps/types";
+import { AngularWipeConfiguration, BarWipeConfiguration, BilinearWipeConfiguration, BossSplashConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, HueShiftConfiguration, InvertConfiguration, LinearWipeConfiguration, LoadingTipConfiguration, MacroConfiguration, MeltConfiguration, PixelateConfiguration, RadialWipeConfiguration, RepeatConfiguration, ReverseConfiguration, SoundConfiguration, SpiralShutterConfiguration, SpiralWipeConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, ZoomConfiguration } from "../../steps/types";
 
 // TODO: When updating to v13 types, extend foundry.applications.api.ApplicationV2.RenderContext
 export interface StepConfigContext<t extends TransitionConfiguration = TransitionConfiguration> extends Record<string, unknown> {
@@ -119,6 +119,11 @@ export interface RadialWipeContext extends StepConfigContext<RadialWipeConfigura
   selectedTile: string;
   selectedDrawing: string;
   selectedNote: string;
+}
+
+export interface RepeatContext extends StepConfigContext<RepeatConfiguration> {
+  styleSelect: Record<string, string>;
+
 }
 
 export interface ReverseContext extends StepConfigContext<ReverseConfiguration> { }

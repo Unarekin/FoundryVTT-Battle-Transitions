@@ -308,6 +308,7 @@
         }
       },
       "REPEAT": {
+        "EDITSEQUENCE": "Edit Sequence",
         "DELAY": {
           "HINT": "Time to delay between repetitions",
           "LABEL": "Delay"

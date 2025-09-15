@@ -1,3 +1,19 @@
-<section>
-  {{> "/modules/battle-transitions/templates/transition-steps.hbs"}}
-</section>
+<form data-role="sequence-editor">
+  <div class="flexrow">
+    <label class="flex1">
+      <h3>{{localize "BATTLETRANSITIONS.SCENECONFIG.TRANSITIONCONFIG.LABEL"}}</h3>
+    </label>
+    <div class="flex0">
+      <i class="fa-solid fa-fw fa-plus link" data-action="addStep" data-tooltip="{{localize "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.ADDSTEP"}}"></i>
+    </div>
+    <div class="flex0">
+      <i class="fa-solid fa-fw fa-trash link" data-action="clearSteps" data-tooltip="{{localize "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.CLEARSTEPS"}}"></i>
+    </div>
+  </div>
+  
+  <div data-role="transition-steps" style="position:relative;">
+    {{#each sequence as |step|}}
+      {{> (moduleTemplate "transition-step.hbs") this }}
+    {{/each}}
+  </div>
+</form>

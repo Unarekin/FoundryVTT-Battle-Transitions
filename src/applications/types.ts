@@ -46,3 +46,14 @@ export interface AddStepTab extends foundry.applications.api.ApplicationV2.Tab {
 export interface AddStepConfiguration extends foundry.applications.api.ApplicationV2.Configuration {
   sequence?: TransitionConfiguration[];
 }
+
+export interface SequenceEditorConfiguration extends foundry.applications.api.ApplicationV2.Configuration {
+  sequence?: TransitionConfiguration[];
+  oldScene?: string;
+  newScene?: string;
+}
+export interface SequenceEditorContext {
+  sequence: TransitionConfiguration[];
+  tabs?: Record<string, foundry.applications.api.ApplicationV2.Tab>;
+  buttons: foundry.applications.api.ApplicationV2.FormFooterButton[];
+}

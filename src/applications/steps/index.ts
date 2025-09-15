@@ -15,6 +15,7 @@ export * from './MacroConfigApplication';
 export * from './MeltConfigApplication';
 export * from './PixelateConfigApplication';
 export * from './RadialWipeConfigApplication';
+export * from './RepeatConfigApplication';
 export * from './ReverseConfigApplication';
 export * from './SoundConfigApplication';
 export * from './SpiralShutterConfigApplication';

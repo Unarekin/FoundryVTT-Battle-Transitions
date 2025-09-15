@@ -1,6 +1,9 @@
 import { coerceScene } from "../../coercion";
 import { DeepPartial } from "../../dialogs";
+import { InvalidTransitionError, LocalizedError } from "../../errors";
 import { TransitionConfiguration, TransitionStep } from "../../steps";
+import { getStepClassByKey } from "../../utils";
+import { AddStepApplication } from "../AddStepApplication";
 import { StepConfigContext, StepConfigConfiguration } from "./types";
 
 export class StepConfigApplication<t extends TransitionConfiguration> extends foundry.applications.api.HandlebarsApplicationMixin(foundry.applications.api.ApplicationV2)<StepConfigContext, StepConfigConfiguration> {
@@ -177,6 +180,32 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
         this.showElementsBySelector(`[data-background-type="overlay"]`, bgSection);
         break;
     }
+  }
+
+  protected async addSubStep(sequence: TransitionConfiguration[] = []): Promise<TransitionConfiguration | undefined> {
+    const key = await AddStepApplication.add({ sequence });
+    if (!key) return;
+    const stepClass = getStepClassByKey(key);
+    if (!stepClass) throw new InvalidTransitionError(key);
+    let config: TransitionConfiguration | null = null;
+    if (!stepClass.skipConfig) {
+      if (!stepClass.ConfigurationApplication) throw new LocalizedError("NOCONFIGAPP");
+
+      const app = new stepClass.ConfigurationApplication(foundry.utils.mergeObject(
+        foundry.utils.deepClone(stepClass.DefaultSettings),
+        { id: foundry.utils.randomID() }
+      ), {
+        oldScene: canvas?.scene?.uuid ?? ""
+      });
+      config = await app.configure() ?? null;
+    } else {
+      config = {
+        ...foundry.utils.deepClone(stepClass.DefaultSettings),
+        id: foundry.utils.randomID()
+      }
+    }
+    if (!config) return;
+    return config;
   }
 
   constructor(config?: t, options?: DeepPartial<StepConfigConfiguration<t>>) {

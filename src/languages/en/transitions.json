@@ -103,7 +103,9 @@
     },
     "REPEAT": {
       "DESCRIPTION": "Repeat either the previous step or a specified sequence of steps.",
-      "NAME": "Repeat"
+      "NAME": "Repeat",
+      "LABELPREV": "Repeat previous step {iterations} times.",
+      "LABELSEQUENCE": "Repeat sequence of steps {iterations} times."
     },
     "REVERSE": {
       "DESCRIPTION": "Play the previous step in reverse, if available.",

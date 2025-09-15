@@ -1,7 +1,7 @@
 import { BossSplashContext } from "./types";
 import { BossSplashConfiguration, BossSplashStep, generateFontSelectOptions } from "../../steps";
 import { StepConfigApplication } from "./StepConfigApplication";
-import { log, templateDir } from "../../utils";
+import { templateDir } from "../../utils";
 import { DeepPartial } from "../types";
 
 export class BossSplashConfigApplication extends StepConfigApplication<BossSplashConfiguration> {
@@ -86,8 +86,6 @@ export class BossSplashConfigApplication extends StepConfigApplication<BossSplas
         icon: "fa-solid fa-paragraph"
       }
     }
-
-    log("Context:", context);
     return context;
   }
 

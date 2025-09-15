@@ -1,9 +1,10 @@
+import { RepeatConfigApplication } from "../applications";
 import { BattleTransition } from "../BattleTransition";
 import { addSequence, hideElements, iterateElements, renderSequenceItem, showElements } from "../dialogs";
 import { InvalidTransitionError, NoPreviousStepError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { getStepClassByKey, log, parseConfigurationFormElements, renderTemplateFunc, templateDir } from "../utils";
+import { getStepClassByKey, localize, log, parseConfigurationFormElements } from "../utils";
 import { getPreviousStep } from "./functions";
 import { TransitionStep } from "./TransitionStep";
 import { RepeatConfiguration, TransitionConfiguration, WaitConfiguration } from './types';
@@ -31,7 +32,8 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
   public static icon = `<i class="fas fa-fw fa-repeat"></i>`
   public static key = "repeat";
   public static name = "REPEAT";
-  public static template = "repeat-config";
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  public static ConfigurationApplication = RepeatConfigApplication as any;
 
   public get preparedSequence() { return this.#preparedSequence; }
 
@@ -45,18 +47,13 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
 
   // #region Public Static Methods (7)
 
-  public static RenderTemplate(config?: RepeatConfiguration, oldScene?: Scene, newScene?: Scene): Promise<string> {
-    return (renderTemplateFunc())(templateDir(`config/${RepeatStep.template}.hbs`), {
-      ...RepeatStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      ...(config ? config : {}),
-      oldScene: oldScene?.id ?? "",
-      newScene: newScene?.id ?? "",
-      styleSelect: {
-        sequence: "BATTLETRANSITIONS.SCENECONFIG.REPEAT.SEQUENCE.LABEL",
-        previous: "BATTLETRANSITIONS.SCENECONFIG.REPEAT.PREVIOUS.LABEL"
-      }
-    })
+  public static getListDescription(config?: RepeatConfiguration): string {
+    if (config) {
+      if (config.style === "previous") return localize("BATTLETRANSITIONS.REPEAT.LABELPREV", { iterations: config.iterations });
+      else return localize("BATTLETRANSITIONS.REPEAT.LABELSEQUENCE", { iterations: config.iterations })
+    } else {
+      return "";
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
