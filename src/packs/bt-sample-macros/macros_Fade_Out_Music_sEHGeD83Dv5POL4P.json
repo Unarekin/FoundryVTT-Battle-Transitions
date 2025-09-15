@@ -1,0 +1,27 @@
+{
+  "name": "Fade Out Music",
+  "type": "script",
+  "_id": "sEHGeD83Dv5POL4P",
+  "author": "EWXMWWsbLjRVVnzu",
+  "img": "icons/svg/sound-off.svg",
+  "scope": "global",
+  "command": "try {\n  if (!game.user.isGM) return;\n  const sounds = game.playlists\n    .reduce((prev, curr) => {\n      // Limit to only playlists playing on the music channel\n      if (!curr.playing || curr.channel !== \"music\") return prev;\n\n      return [...prev, curr.sounds.contents.filter((sound) => sound.playing)];\n    }, [])\n    .flat();\n\n  await Promise.all(\n    sounds.map((sound) => fadeSound(sound, scope.duration ?? 1000))\n  );\n\n  async function wait(ms) {\n    return new Promise((resolve) => {\n      setTimeout(resolve, ms);\n    });\n  }\n\n  async function fadeSound(sound, duration) {\n    const currVol = sound.volume;\n    if (currVol === 0) return;\n    await Promise.all([\n      sound.sound.fade(0, { duration, from: currVol }),\n      wait(duration + 500).then(() => {\n        sound.parent.stopAll();\n      }),\n    ]);\n  }\n} catch (err) {\n  ui.notifications.error(err.message, { localize: true });\n}\n",
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0,
+    "EWXMWWsbLjRVVnzu": 3
+  },
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.331",
+    "systemId": "worldbuilding",
+    "systemVersion": "0.8.2",
+    "createdTime": 1729782293476,
+    "modifiedTime": 1729782352316,
+    "lastModifiedBy": "EWXMWWsbLjRVVnzu"
+  },
+  "_key": "!macros!sEHGeD83Dv5POL4P"
+}
