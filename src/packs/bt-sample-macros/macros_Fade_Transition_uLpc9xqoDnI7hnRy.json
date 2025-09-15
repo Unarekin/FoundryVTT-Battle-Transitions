@@ -5,7 +5,7 @@
   "author": "EWXMWWsbLjRVVnzu",
   "img": "modules/battle-transitions/assets/icons/fade.svg",
   "scope": "global",
-  "command": "try {\n  const scene = await BattleTransition.SelectScene(true);\n  if (!(scene instanceof Scene)) return;\n\n  const { fadeIn = 1000, duration = 2000, fadeOut = 1000 } = scope;\n\n  const macro = await fromUuid(\"Macro.sEHGeD83Dv5POL4P\");\n  if (macro instanceof Macro) await macro.execute({ duration: 500 });\n\n  const screenWidth =\n    window.innerWidth - $(\"#ui-left\").width() - $(\"#ui-right\").width() - 100;\n\n  await new BattleTransition(scene)\n    .fade(fadeIn, \"black\")\n    .wait(duration)\n    .startPlaylist()\n    .fade(fadeOut)\n    .execute();\n} catch (err) {\n  ui.notifications.error(err.message);\n}\n",
+  "command": "try {\n  const scene = await BattleTransition.SelectScene(true);\n  if (!(scene instanceof Scene)) return;\n\n  const { fadeIn = 1000, duration = 2000, fadeOut = 1000 } = scope;\n\n  const macro = await fromUuid(\"Macro.sEHGeD83Dv5POL4P\");\n  if (macro instanceof Macro) await macro.execute({ duration: 500 });\n\n  await new BattleTransition(scene)\n    .fade(fadeIn, \"black\")\n    .wait(duration)\n    .startPlaylist()\n    .fade(fadeOut)\n    .execute();\n} catch (err) {\n  ui.notifications.error(err.message);\n}\n",
   "folder": null,
   "sort": 0,
   "ownership": {

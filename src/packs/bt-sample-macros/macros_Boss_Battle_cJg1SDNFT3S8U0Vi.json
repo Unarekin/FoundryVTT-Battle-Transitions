@@ -1,0 +1,27 @@
+{
+  "name": "Boss Battle (Hue Shift)",
+  "type": "script",
+  "_id": "cJg1SDNFT3S8U0Vi",
+  "author": "EWXMWWsbLjRVVnzu",
+  "img": "modules/battle-transitions/assets/icons/hue-shift.svg",
+  "scope": "global",
+  "command": "try {\n  const scene = await BattleTransition.SelectScene(true);\n\n  if (!(scene instanceof Scene)) return;\n\n  await new BattleTransition(scene).executeSequence([\n    {\n      id: \"CXflZsftpbjYkm4J\",\n      type: \"sound\",\n      volume: 44,\n      file: \"modules/battle-transitions/assets/sfx/boss%20battle%20start.mp3\",\n      version: \"1.1.0\",\n      label: \"\",\n    },\n    {\n      id: \"Kjzde13zMhk6hUdg\",\n      type: \"wait\",\n      duration: 500,\n      version: \"1.1.0\",\n      label: \"\",\n    },\n    {\n      id: \"tAL81AenmI9Z7S3x\",\n      type: \"hueshift\",\n      duration: 1000,\n      version: \"1.1.6\",\n      maxShift: 0.5,\n      easing: \"none\",\n      applyToOverlay: true,\n      applyToScene: false,\n      label: \"\",\n      dualStyle: \"overlay\",\n    },\n    {\n      id: \"ep0Ss8jWPgmKzvjl\",\n      type: \"wait\",\n      duration: 500,\n      version: \"1.1.0\",\n      label: \"\",\n    },\n    {\n      id: \"FoU1NRWcReTsKCUE\",\n      type: \"startplaylist\",\n      version: \"1.1.0\",\n    },\n    {\n      id: \"5jzvFDI3pkAzodST\",\n      type: \"wait\",\n      duration: 500,\n      version: \"1.1.0\",\n      label: \"\",\n    },\n    {\n      id: \"Ew85Io2tqQuwZj5c\",\n      type: \"melt\",\n      duration: 1000,\n      version: \"1.1.6\",\n      easing: \"none\",\n      bgSizingMode: \"stretch\",\n      backgroundType: \"color\",\n      backgroundImage: \"\",\n      backgroundColor: \"#00000000\",\n      label: \"\",\n    },\n  ]);\n} catch (err) {\n  console.error(err);\n  ui.notifications.error(err.message, { console: false });\n}\n",
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0,
+    "EWXMWWsbLjRVVnzu": 3
+  },
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.331",
+    "systemId": "worldbuilding",
+    "systemVersion": "0.8.2",
+    "createdTime": 1729782293476,
+    "modifiedTime": 1729782352316,
+    "lastModifiedBy": "EWXMWWsbLjRVVnzu"
+  },
+  "_key": "!macros!cJg1SDNFT3S8U0Vi"
+}
