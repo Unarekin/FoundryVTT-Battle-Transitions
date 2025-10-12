@@ -101,6 +101,7 @@ const STATIC_FILES = [
   { src: TEMPLATE_PATH, dest: "templates" },
   { src: path.join(SRC_PATH, "assets"), dest: "assets" },
   { src: path.join(SRC_PATH, "vendor"), dest: "vendor" },
+  { src: "./examples", dest: "examples" },
 ];
 
 const copyPlugins = [];
