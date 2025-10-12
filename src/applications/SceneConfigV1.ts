@@ -3,7 +3,7 @@ import { confirm, generateMacro } from "./functions";
 import { InvalidTransitionError, LocalizedError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
-import { formDataExtendedClass, getStepClassByKey, localize, templateDir } from "../utils";
+import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize, templateDir, uploadJSON } from "../utils";
 import { AddStepApplication } from "./AddStepApplication";
 
 
@@ -199,6 +199,35 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
       }
     }
 
+    exportJson() {
+      try {
+        if (!this._config?.sequence.length) return;
+        downloadJSON(this._config.sequence, `${this.document.name}.json`);
+      } catch (err) {
+        console.error(err);
+        if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
+      }
+    }
+
+    async importJson() {
+      try {
+        if (!this._config?.sequence.length) return;
+
+        if (this._config?.sequence.length) {
+          const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
+          if (!confirmation) return;
+        }
+
+        const sequence = await uploadJSON<TransitionConfiguration[]>();
+        if (!sequence) return;
+        this._config.sequence = foundry.utils.deepClone(sequence);
+        this.render();
+      } catch (err) {
+        console.error(err);
+        if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
+      }
+    }
+
     async saveMacro() {
       try {
         if (!this._config?.sequence.length) return;
@@ -223,6 +252,8 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
       html.find(`[data-action="addStep"]`).on("click", () => { void this.addStep(); });
       html.find(`[data-action="editStep"]`).on("click", e => { void this.editStep(e); });
       html.find(`[data-action="saveMacro"]`).on("click", () => { void this.saveMacro(); });
+      html.find(`[data-action="exportJson"]`).on("click", () => { void this.exportJson(); });
+      html.find(`[data-action="importJson"]`).on("click", () => { void this.importJson(); });
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       (html.find(`[data-role="transition-steps"]`) as any).sortable({
