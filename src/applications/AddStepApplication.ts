@@ -119,7 +119,6 @@ export class AddStepApplication extends foundry.applications.api.HandlebarsAppli
 
 
     context.buttons = [
-      { type: "button", icon: "fas fa-times", label: "Cancel", action: "cancel" },
       { type: "submit", icon: "fas fa-check", label: "BATTLETRANSITIONS.DIALOGS.BUTTONS.OK", action: "ok" }
     ]
     return context;
