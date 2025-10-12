@@ -1,0 +1,36 @@
+[
+  {
+    "id": "ElnmJNurFClBq1rv",
+    "type": "fade",
+    "duration": 1000,
+    "version": "1.1.6",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundColor": "#000000ff",
+    "easing": "none",
+    "serializedTexture": "#000000ff",
+    "backgroundImage": ""
+  },
+  {
+    "type": "wait",
+    "duration": 2000,
+    "id": "ztYu00bh3wCGxLIs"
+  },
+  {
+    "id": "3kdcUoOGFCB5c3RQ",
+    "type": "startplaylist",
+    "version": "1.1.0"
+  },
+  {
+    "id": "3uxNA8oprcMA4FaJ",
+    "type": "fade",
+    "duration": 1000,
+    "version": "1.1.6",
+    "bgSizingMode": "stretch",
+    "backgroundType": "color",
+    "backgroundColor": "#00000000",
+    "easing": "none",
+    "serializedTexture": "#00000000",
+    "backgroundImage": ""
+  }
+]
