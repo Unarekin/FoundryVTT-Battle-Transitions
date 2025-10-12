@@ -429,8 +429,9 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
 
 customElements.define(HTMLDocumentPickerElement.tagName, HTMLDocumentPickerElement);
 
-Hooks.on("renderCompendium", (app: foundry.applications.api.ApplicationV2, html: HTMLElement) => {
-  const entries = Array.from(html.querySelectorAll(`[data-action="activateEntry"]`));
+Hooks.on("renderCompendium", (app: foundry.applications.api.ApplicationV2, html: HTMLElement | JQuery<HTMLElement>) => {
+
+  const entries = Array.from((html instanceof HTMLElement ? html : html[0]).querySelectorAll(`[data-action="activateEntry"]`));
   for (const entry of entries) {
     if (entry instanceof HTMLElement) {
 

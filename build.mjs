@@ -21,6 +21,8 @@ const OUT_PATH = "./dist";
 const STYLE_PATH = path.join(SRC_PATH, "styles");
 const TEMPLATE_PATH = path.join(SRC_PATH, "templates");
 
+const MACRO_PACK_PATH = path.join(SRC_PATH, "packs/bt-sample-macros");
+
 // Import module.json for some config options
 // import moduleConfig from "./module.json" with { type: "json" };
 const moduleConfig = JSON.parse(
@@ -99,6 +101,7 @@ const STATIC_FILES = [
   { src: TEMPLATE_PATH, dest: "templates" },
   { src: path.join(SRC_PATH, "assets"), dest: "assets" },
   { src: path.join(SRC_PATH, "vendor"), dest: "vendor" },
+  { src: "./examples", dest: "examples" },
 ];
 
 const copyPlugins = [];
@@ -196,6 +199,58 @@ if (buildResults.errors.length) {
       `Build completed in ${((Date.now() - buildStart) / 1000).toFixed(2)}s`
     );
   // if (buildResults.warnings.length) console.warn(buildResults.warnings);
+
+  // Macros
+  const macroStart = Date.now();
+  if (!process.env.GITHUB_ACTIONS)
+    spinner = yoctoSpinner({ text: "Building macros..." }).start();
+  else console.log("Building macros...");
+
+  try {
+    const files = await fs.readdir(path.join(SRC_PATH, "macros"));
+    const macroFiles = await fs.readdir(MACRO_PACK_PATH);
+
+    for (const file of files) {
+      const content = (
+        await fs.readFile(path.join(SRC_PATH, "macros", file))
+      ).toString();
+
+      const macroFilePattern = `macros_${path
+        .basename(file, path.extname(file))
+        .replaceAll(" ", "_")}`;
+
+      const macroFile = macroFiles.find((macro) =>
+        macro.startsWith(macroFilePattern)
+      );
+      if (!macroFile)
+        throw new Error(`Unable to locate macro file for ${file}`);
+
+      const macroFileContent = (
+        await fs.readFile(path.join(MACRO_PACK_PATH, macroFile))
+      ).toString();
+
+      const macroFileJSON = JSON.parse(macroFileContent);
+      macroFileJSON.command = `${content}`;
+      await fs.writeFile(
+        path.join(MACRO_PACK_PATH, macroFile),
+        JSON.stringify(macroFileJSON, null, 2)
+      );
+    }
+
+    if (spinner)
+      spinner.success(
+        `Macros built in ${((Date.now() - macroStart) / 1000).toFixed(2)}s`
+      );
+    else
+      console.log(
+        `Macros built in ${((Date.now() - macroStart) / 1000).toFixed(2)}s`
+      );
+  } catch (err) {
+    if (spinner) spinner.error("Building macros failed!");
+    else console.error("Building macros failed!");
+    console.error(err);
+    process.exit(1);
+  }
 
   const packStart = Date.now();
   if (!process.env.GITHUB_ACTIONS)

@@ -23,7 +23,7 @@ export class ConfigurationHandler {
         condition: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
           try {
             const scene = getScene(li);
-            if (!scene) return false;
+            if (!scene || scene.pack) return false;
             return ConfigurationHandler.HasTransition(scene, true);
           } catch (err) {
             ui.notifications?.error((err as Error).message, { console: false });
@@ -59,7 +59,7 @@ export class ConfigurationHandler {
         condition: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
           try {
             const scene = getScene(li);
-            if (!scene) return false;
+            if (!scene || scene.pack) return false;
             return !scene.active && ConfigurationHandler.HasTransition(scene, true);
           } catch (err) {
             ui.notifications?.error((err as Error).message, { console: false });
@@ -93,7 +93,7 @@ export class ConfigurationHandler {
         icon: "<i class='fas fa-fw fa-hammer'></i>",
         condition: (li: JQuery<HTMLLIElement> | HTMLLIElement) => {
           const scene = getScene(li);
-          if (!scene) return false;
+          if (!scene || scene.pack) return false;
           // return scene.id !== game?.scenes?.active?.id
           return scene.canUserModify(game.user as User, "update");
         },
@@ -220,8 +220,24 @@ function getScene(li: JQuery<HTMLLIElement> | HTMLLIElement): Scene | undefined 
   // const sceneId = (li instanceof HTMLLIElement ? li.dataset.sceneId : li.data("sceneId")) as string | undefined;
   const sceneId = getSceneId(li);
   if (!sceneId) return undefined;
-  if (!sceneId) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
-  const scene = game.scenes?.get(sceneId);
-  if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
-  return scene;
+
+  const link = (li instanceof HTMLElement ? li : li[0]).querySelector(`[data-compendium-id]`);
+  if (link instanceof HTMLElement) {
+    const compendiumId = link.dataset.compendiumId;
+    // At least for now, do not support scenes from a compendium pack
+    if (compendiumId) return;
+    // if (!compendiumId) return;
+    // const pack = game!.packs!.get(compendiumId);
+    // if (!pack) return;
+    // const scene = await pack.getDocument(sceneId);
+    // if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+    // return scene;
+  } else {
+    const scene = game.scenes?.get(sceneId);
+    if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof sceneId === "string" ? sceneId : typeof sceneId);
+    return scene;
+  }
+
+
+
 }

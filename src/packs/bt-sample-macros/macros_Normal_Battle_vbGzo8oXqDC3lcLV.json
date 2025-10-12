@@ -1,0 +1,27 @@
+{
+  "name": "Normal Battle (ZoomBlur)",
+  "type": "script",
+  "_id": "vbGzo8oXqDC3lcLV",
+  "author": "EWXMWWsbLjRVVnzu",
+  "img": "modules/battle-transitions/assets/icons/zoom-blur.svg",
+  "scope": "global",
+  "command": "try {\n  const scene = await BattleTransition.SelectScene(true);\n  if (!(scene instanceof Scene)) return;\n\n  await new BattleTransition(scene).executeSequence([\n    {\n      id: \"ZSa4VLg7u2YdjWKH\",\n      type: \"sound\",\n      volume: 100,\n      file: \"modules/battle-transitions/assets/sfx/normal battle start.mp3\",\n    },\n    {\n      id: \"CN8bTlarKfO2WAjV\",\n      type: \"wait\",\n      duration: 1500,\n      version: \"1.1.0\",\n    },\n    {\n      id: \"G5PtzM9F5kOYd5it\",\n      type: \"zoomblur\",\n      version: \"1.1.6\",\n      duration: 1000,\n      maxStrength: 0.5,\n      easing: \"none\",\n      innerRadius: 0,\n      applyToOverlay: true,\n      applyToScene: false,\n    },\n    {\n      id: \"qVueES60KdfcVCL8\",\n      type: \"fade\",\n      duration: 1000,\n      version: \"1.1.6\",\n      bgSizingMode: \"stretch\",\n      backgroundType: \"color\",\n      backgroundColor: \"#000000FF\",\n      easing: \"none\",\n      label: \"\",\n      backgroundImage: \"\",\n    },\n    {\n      id: \"ML9eNfkhotGltFJZ\",\n      type: \"startplaylist\",\n      version: \"1.1.0\",\n    },\n    {\n      id: \"s4amvUsbUHaoxff5\",\n      type: \"wait\",\n      duration: 1000,\n      version: \"1.1.0\",\n    },\n    {\n      id: \"YJxhEYnTj1d59Efb\",\n      type: \"fade\",\n      duration: 1000,\n      version: \"1.1.6\",\n      bgSizingMode: \"stretch\",\n      backgroundType: \"color\",\n      backgroundColor: \"#00000000\",\n      easing: \"none\",\n      label: \"\",\n      backgroundImage: \"\",\n    },\n  ]);\n} catch (err) {\n  console.error(err);\n  ui.notifications.error(err.message, { console: false });\n}\n",
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0,
+    "EWXMWWsbLjRVVnzu": 3
+  },
+  "flags": {},
+  "_stats": {
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "coreVersion": "12.331",
+    "systemId": "worldbuilding",
+    "systemVersion": "0.8.2",
+    "createdTime": 1729782293476,
+    "modifiedTime": 1729782352316,
+    "lastModifiedBy": "EWXMWWsbLjRVVnzu"
+  },
+  "_key": "!macros!vbGzo8oXqDC3lcLV"
+}
