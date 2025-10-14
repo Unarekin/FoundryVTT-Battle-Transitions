@@ -6,6 +6,7 @@ import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
 import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize, templateDir, uploadJSON } from "../utils";
 import { AddStepApplication } from "./AddStepApplication";
+import { BattleTransition } from "../BattleTransition";
 
 type BaseType = typeof foundry.applications.api.DocumentSheetV2<Scene>;
 
@@ -171,6 +172,9 @@ export function SceneConfigV2Mixin(Base: BaseType) {
         //  const sequence = await uploadJSON<TransitionConfiguration[]>();
         const sequence = await uploadJSON<TransitionConfiguration[]>();
         if (!sequence) return;
+        const valid = await BattleTransition.validateSequence(sequence);
+        if (valid instanceof Error) throw valid;
+
         this.#sceneConfiguration.sequence = sequence;
 
         await this.render();
