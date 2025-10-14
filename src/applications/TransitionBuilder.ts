@@ -1,3 +1,4 @@
+import { BattleTransition } from "../BattleTransition";
 import { coerceScene } from "../coercion";
 import { InvalidSceneError, InvalidTransitionError, LocalizedError } from "../errors";
 import { TransitionConfiguration } from "../steps";
@@ -213,6 +214,9 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
       const sequence = await uploadJSON<TransitionConfiguration[]>();
       if (!sequence) return;
+      const valid = await BattleTransition.validateSequence(sequence);
+      if (valid instanceof Error) throw valid;
+
       this.#response.sequence = foundry.utils.deepClone(sequence);
       await this.render();
     } catch (err) {

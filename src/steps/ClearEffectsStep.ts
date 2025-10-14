@@ -19,6 +19,11 @@ export class ClearEffectsStep extends TransitionStep<ClearEffectsConfiguration> 
   public static icon = `<i class="fas fa-fw fa-eraser"></i>`;
   public static category = "technical";
 
+  static getListDescription(config?: ClearEffectsConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.CLEAREFFECTS.LABEL") ?? "";
+    else return "";
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static from(arg: unknown) {
     return new ClearEffectsStep({
