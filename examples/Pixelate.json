@@ -1,0 +1,39 @@
+[
+  {
+    "id": "35pWmpcJJTa1iIS2",
+    "type": "parallel",
+    "version": "1.1.0",
+    "sequences": [
+      [
+        {
+          "id": "306K1nzclQ6eAP3C",
+          "type": "pixelate",
+          "version": "1.1.0",
+          "maxSize": 100,
+          "duration": 1000,
+          "easing": "none",
+          "applyToScene": true,
+          "applyToOverlay": true
+        },
+        {
+          "id": "VlFQfMBt33WgdlA1",
+          "type": "reverse",
+          "version": "1.1.0",
+          "delay": 0
+        }
+      ],
+      [
+        {
+          "type": "wait",
+          "duration": 1000,
+          "id": "MENgZyTUOH11RNCI"
+        },
+        {
+          "id": "tFEQncS5Wso7o5L9",
+          "type": "removeoverlay",
+          "version": "1.1.0"
+        }
+      ]
+    ]
+  }
+]
