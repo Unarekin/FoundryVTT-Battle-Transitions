@@ -5,6 +5,7 @@ import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
 import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize, templateDir, uploadJSON } from "../utils";
 import { AddStepApplication } from "./AddStepApplication";
+import { BattleTransition } from "../BattleTransition";
 
 
 
@@ -220,6 +221,9 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
 
         const sequence = await uploadJSON<TransitionConfiguration[]>();
         if (!sequence) return;
+
+        const valid = await BattleTransition.validateSequence(sequence);
+        if (valid instanceof Error) throw valid;
         this._config.sequence = foundry.utils.deepClone(sequence);
         this.render();
       } catch (err) {
