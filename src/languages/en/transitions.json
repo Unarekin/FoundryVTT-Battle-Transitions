@@ -26,7 +26,8 @@
     },
     "CLEAREFFECTS": {
       "DESCRIPTION": "Remove any transition effects that have been applied to the overlay.",
-      "NAME": "Clear Effects"
+      "NAME": "Clear Effects",
+      "LABEL": "Clear all transition effects"
     },
     "CLOCKWIPE": {
       "DESCRIPTION": "Wipe the screen around the center point in either a clockwise or counterclockwise direction.",
@@ -55,7 +56,8 @@
     },
     "HIDEOVERLAY": {
       "DESCRIPTION": "Sets the transition overlay to invisible, exposing the new scene underneath.",
-      "NAME": "Hide Overlay"
+      "NAME": "Hide Overlay",
+      "LABEL": "Hide the transition overlay"
     },
     "HUESHIFT": {
       "DESCRIPTION": "Shift the screen's hue.",
@@ -119,7 +121,8 @@
     },
     "SHOWOVERLAY": {
       "DESCRIPTION": "Set the transition overlay to visible again.",
-      "NAME": "Show Overlay"
+      "NAME": "Show Overlay",
+      "LABEL": "Show the transition overlay"
     },
     "SOUND": {
       "DESCRIPTION": "Play a sound during the transition.  Unlike most transition steps, this one will NOT wait until the sound is finished to continue to the next.",

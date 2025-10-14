@@ -1,4 +1,3 @@
-import { NotImplementedError } from '../errors';
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
@@ -26,9 +25,9 @@ export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfigurati
 
   // #region Public Static Methods (6)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public static RenderTemplate(config?: RestoreOverlayConfiguration): Promise<string> {
-    throw new NotImplementedError();
+  static getListDescription(config?: RestoreOverlayConfiguration): string {
+    if (config) return game.i18n?.format("BATTLETRANSITIONS.SHOWOVERLAY.LABEL") ?? "";
+    else return "";
   }
 
   public static from(config: RestoreOverlayConfiguration): RestoreOverlayStep
