@@ -206,6 +206,19 @@ export function SceneConfigV2Mixin(Base: BaseType) {
       await super._onSubmitForm(formConfig, event);
     }
 
+    protected reorderSteps() {
+      if (!this.#sceneConfiguration?.sequence.length) return;
+
+      // Sort data
+      const items = Array.from(this.element.querySelectorAll(`.step-item[data-step]`));
+      const ids = items.map(item => (item as HTMLElement).dataset?.step).filter(id => !!id);
+      const originalList = [
+        ...this.#sceneConfiguration.sequence
+      ];
+
+      const sorted = ids.map(id => originalList.find(item => item.id === id)).filter(item => !!item);
+      this.#sceneConfiguration.sequence.splice(0, this.#sceneConfiguration.sequence.length, ...sorted);
+    }
 
     _onRender(context: any, options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -219,7 +232,8 @@ export function SceneConfigV2Mixin(Base: BaseType) {
         axis: "y",
         classes: {
           "ui-sortable-helper": "application ui-sortable-helper"
-        }
+        },
+        update: this.reorderSteps.bind(this)
       });
     }
 

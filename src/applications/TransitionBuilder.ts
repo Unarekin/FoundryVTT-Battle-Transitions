@@ -225,6 +225,21 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     }
   }
 
+  protected reorderSteps() {
+    if (!this.#response?.sequence.length) return;
+
+    // Sort data
+    const items = Array.from(this.element.querySelectorAll(`.step-item[data-step]`));
+    const ids = items.map(item => (item as HTMLElement).dataset?.step).filter(id => !!id);
+    const originalList = [
+      ...this.#response.sequence
+    ];
+
+    const sorted = ids.map(id => originalList.find(item => item.id === id)).filter(item => !!item);
+    this.#response.sequence.splice(0, this.#response.sequence.length, ...sorted);
+  }
+
+
   _onRender(context: any, options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     super._onRender(context, options);
@@ -237,7 +252,8 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       axis: "y",
       classes: {
         "ui-sortable-helper": "application ui-sortable-helper"
-      }
+      },
+      update: this.reorderSteps.bind(this)
     });
   }
 
