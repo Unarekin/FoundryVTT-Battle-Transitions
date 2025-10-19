@@ -248,6 +248,22 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
       return super.render(force, options);
     }
 
+    protected reorderSteps() {
+      if (!this._config?.sequence.length) return;
+
+
+      // Sort data
+      const items = Array.from(this.element[0].querySelectorAll(`.step-item[data-step]`));
+      const ids = items.map(item => (item as HTMLElement).dataset?.step).filter(id => !!id);
+      const originalList = [
+        ...this._config.sequence
+      ];
+
+      const sorted = ids.map(id => originalList.find(item => item.id === id)).filter(item => !!item);
+      this._config.sequence.splice(0, this._config.sequence.length, ...sorted);
+    }
+
+
     activateListeners(html: JQuery<HTMLElement>): void {
       super.activateListeners(html);
 
@@ -266,7 +282,8 @@ export function SceneConfigV1Mixin(Base: typeof SceneConfig) {
         axis: "y",
         classes: {
           "ui-sortable-helper": "window-app ui-sortable-helper window-content"
-        }
+        },
+        update: this.reorderSteps.bind(this)
       });
     }
 
