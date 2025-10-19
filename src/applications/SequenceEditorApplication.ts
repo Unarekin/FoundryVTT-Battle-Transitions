@@ -130,6 +130,22 @@ export class SequenceEditorApplication extends foundry.applications.api.Handleba
       if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
     }
   }
+
+  protected reorderSteps() {
+    if (!this.sequence.length) return;
+
+    // Sort data
+    const items = Array.from(this.element.querySelectorAll(`.step-item[data-step]`));
+    const ids = items.map(item => (item as HTMLElement).dataset?.step).filter(id => !!id);
+    const originalList = [
+      ...this.sequence
+    ];
+
+    const sorted = ids.map(id => originalList.find(item => item.id === id)).filter(item => !!item);
+    this.sequence.splice(0, this.sequence.length, ...sorted);
+  }
+
+
   _onRender(context: any, options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     super._onRender(context, options);
@@ -142,7 +158,8 @@ export class SequenceEditorApplication extends foundry.applications.api.Handleba
       axis: "y",
       classes: {
         "ui-sortable-helper": "application ui-sortable-helper"
-      }
+      },
+      update: this.reorderSteps.bind(this)
     });
   }
 
