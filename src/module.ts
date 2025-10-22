@@ -30,12 +30,6 @@ Hooks.once("ready", async () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     CONFIG.Scene.sheetClasses.base[key].cls = mixed as any;
   }
-
-  // const oldClass = CONFIG.Scene.sheetClasses.base["core.SceneConfig"].cls;
-  // // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  // const mixed = game.release.isNewer("13") ? SceneConfigV2Mixin(oldClass as any) : SceneConfigV1Mixin(oldClass as any);
-  // // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  // CONFIG.Scene.sheetClasses.base["core.SceneConfig"].cls = mixed as any;
 });
 
 Hooks.once("init", async () => {
