@@ -103,7 +103,7 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
       // Stop propagation so that the global Keyboard manager doesn't grab it
       this.#input.addEventListener("keydown", e => { e.stopPropagation(); })
       this.#input.addEventListener("input", () => { this.value = this.#input?.value ?? ""; });
-      this.#input.addEventListener("change", () => { console.log("Changed:", this.#input?.value); });
+      // this.#input.addEventListener("change", () => { console.log("Changed:", this.#input?.value); });
     }
     if (this.#selectButton) this.#selectButton.addEventListener("click", this.selectButtonClicked.bind(this));
     if (this.#clearButton) this.#clearButton.addEventListener("click", this.clearButtonClicked.bind(this));
@@ -201,7 +201,7 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
   protected objectControlled(obj: PlaceableObject, controlled: boolean) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     if (controlled && obj.document.documentName.toLowerCase() === this.type?.toLowerCase()) {
-      console.log("Selected:", obj);
+      // console.log("Selected:", obj);
       if (this.#input) this.#input.value = obj.document.uuid;
       this.cancelSelection();
       this.setEnabledButtons();
