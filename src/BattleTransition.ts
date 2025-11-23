@@ -117,8 +117,8 @@ export class BattleTransition {
           icon: "fas fa-check",
           label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
           action: "ok",
-          callback: (event: Event, button: HTMLButtonElement, dialog: HTMLDialogElement | foundry.applications.api.DialogV2) => {
-            const form = dialog instanceof foundry.applications.api.DialogV2 ? dialog.element.querySelector("form") : dialog.querySelector("form");
+          callback: (event: Event, button: HTMLButtonElement, dialog: foundry.applications.api.DialogV2.Any) => {
+            const form = dialog.form;
             if (!(form instanceof HTMLFormElement)) throw new InvalidElementError();
             const formData = foundry.utils.expandObject((new (formDataExtendedClass())(form)).object) as Record<string, unknown>
             return Promise.resolve(coerceScene(formData.scene));
@@ -1081,12 +1081,12 @@ export class BattleTransition {
   public sound(sound: string, volume?: number): this
   /**
    * Plays a sound.  Will NOT wait for the sound to complete before continuing.
-   * @param {Sound} sound - {@link Sound} to be played
+   * @param {foundry.audio.Sound} sound - {@link Sound} to be played
    * @param {number} [volume=100] - Volume at which to play the sound
    */
-  public sound(sound: Sound, volume?: number): this
+  public sound(sound: foundry.audio.Sound, volume?: number): this
   public sound(arg: unknown, volume: number = 100): this {
-    const sound = typeof arg === "string" ? arg : (arg instanceof Sound) ? arg.id : null;
+    const sound = typeof arg === "string" ? arg : (arg instanceof foundry.audio.Sound) ? arg.id : null;
     if (!sound) throw new InvalidSoundError(typeof arg === "string" ? arg : typeof arg);
     this.#sequence.push({
       id: foundry.utils.randomID(),
