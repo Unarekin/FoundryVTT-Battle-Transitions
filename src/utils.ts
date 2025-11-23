@@ -1,5 +1,5 @@
 import { coerceColorHex, coerceTexture } from "./coercion";
-import { LOG_ICON } from "./constants";
+import { LOG_ICON } from "./constants.js";
 import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidImportError, InvalidObjectError, InvalidTargetError, InvalidTextureError, MigratorNotFoundError, NoFileError } from "./errors";
 import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";

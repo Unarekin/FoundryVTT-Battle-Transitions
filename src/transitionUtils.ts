@@ -1,4 +1,4 @@
-import { COVER_ID } from "./constants";
+import { COVER_ID } from "./constants.js";
 import { CanvasNotFoundError, NotInitializedError, InvalidSceneError, InvalidTransitionError } from './errors';
 import { awaitHook, getStepClassByKey, log } from "./utils";
 import { coerceScene } from "./coercion";

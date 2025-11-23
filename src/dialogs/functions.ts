@@ -5,7 +5,7 @@ import { InvalidTransitionError } from '../errors';
 import { BackgroundType } from '../types';
 import { editSequence } from './EditSequence';
 import { coerceScene, coerceUser } from '../coercion';
-import { LOG_ICON } from '../constants';
+import { LOG_ICON } from '../constants.js';
 import { AddStepApplication } from '../applications';
 
 export function getStepsForCategory(category: string, sequence?: TransitionConfiguration[], hidden?: boolean): StepContext[] {

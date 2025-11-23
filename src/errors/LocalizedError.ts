@@ -1,4 +1,4 @@
-import { TRANSLATION_KEY } from "../constants";
+import { TRANSLATION_KEY } from "../constants.js";
 
 export class LocalizedError extends Error {
   constructor(message?: string, subs?: { [x: string]: unknown }) {
