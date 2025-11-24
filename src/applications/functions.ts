@@ -1,5 +1,5 @@
 import { coerceScene, coerceUser } from '../coercion';
-import { LOG_ICON } from '../constants';
+import { LOG_ICON } from '../constants.js';
 import { TransitionConfiguration, TransitionStep } from '../steps';
 import { getSortedSteps, getStepClassByKey, mimeType } from '../utils';
 import { StepContext } from './types';

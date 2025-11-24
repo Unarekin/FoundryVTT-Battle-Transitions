@@ -1,5 +1,12 @@
 import { TransitionConfiguration, TransitionStep } from './steps';
 
+export interface Rectangle {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface TextureBuffer {
   width: number;
   height: number;
@@ -33,11 +40,6 @@ export interface SceneConfiguration {
   version: string;
   isTriggered?: boolean;
   bypassTransition?: boolean;
-}
-
-
-export interface TransitionBuilderOptions extends ApplicationOptions {
-  scene?: string;
 }
 
 export interface PreparedTransitionHash {

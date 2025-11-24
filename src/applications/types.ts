@@ -1,3 +1,4 @@
+import { SceneConfiguration } from "interfaces";
 import { TransitionConfiguration } from "../steps";
 
 export interface StepContext {
@@ -56,4 +57,12 @@ export interface SequenceEditorContext {
   sequence: TransitionConfiguration[];
   tabs?: Record<string, foundry.applications.api.ApplicationV2.Tab>;
   buttons: foundry.applications.api.ApplicationV2.FormFooterButton[];
+}
+
+export interface SceneConfigContext extends foundry.applications.api.DocumentSheetV2.RenderContext<Scene> {
+  transition: {
+    isV1: boolean;
+    canCreateMacro: boolean;
+    transition?: SceneConfiguration;
+  }
 }

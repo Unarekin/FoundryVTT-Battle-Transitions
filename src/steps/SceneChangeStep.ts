@@ -1,4 +1,4 @@
-import { CUSTOM_HOOKS } from "../constants";
+import { CUSTOM_HOOKS } from "../constants.js";
 import { InvalidSceneError } from "../errors";
 import { TransitionSequence } from "../interfaces";
 import { activateScene, hideTransitionCover } from "../transitionUtils";

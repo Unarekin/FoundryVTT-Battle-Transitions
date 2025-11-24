@@ -7,17 +7,18 @@ import { TransitionConfiguration } from "../steps";
 import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize, templateDir, uploadJSON } from "../utils";
 import { AddStepApplication } from "./AddStepApplication";
 import { BattleTransition } from "../BattleTransition";
+import { SceneConfigContext } from "./types";
 
 type BaseType = typeof foundry.applications.api.DocumentSheetV2<Scene>;
 
-export function SceneConfigV2Mixin(Base: BaseType) {
+export function SceneConfigMixin(Base: BaseType) {
 
 
   class Mixed extends Base {
     #sceneConfiguration: SceneConfiguration | undefined = undefined;
 
     // Default options here
-    public static DEFAULT_OPTIONS: DeepPartial<foundry.applications.api.DocumentSheetV2.Configuration> = {
+    public static DEFAULT_OPTIONS: DeepPartial<foundry.applications.api.Application.Configuration> = {
       actions: {
         // eslint-disable-next-line @typescript-eslint/unbound-method
         importJson: Mixed.ImportJson,
@@ -40,7 +41,7 @@ export function SceneConfigV2Mixin(Base: BaseType) {
       try {
         if (!this.#sceneConfiguration?.sequence.length) return;
         const macro = generateMacro(this.#sceneConfiguration.sequence, [], this.document);
-        await Macro.createDialog({ type: "script", command: macro, img: `modules/${__MODULE_ID__}/assets/icons/crossed-swords.svg` });
+        await Macro.createDialog({ type: "script", command: macro, img: `modules/${__MODULE_ID__}/assets/icons/crossed-swords.svg`, name: "" });
       } catch (err) {
         console.error(err);
         if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
@@ -102,7 +103,7 @@ export function SceneConfigV2Mixin(Base: BaseType) {
         const stepClass = getStepClassByKey(step.type);
         if (!stepClass) throw new InvalidTransitionError(step.type);
 
-        const name = game.i18n?.localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`)
+        const name = game.i18n?.localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`) ?? "";
 
         const confirmed = await confirm(
           game.i18n?.format("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name }) ?? "",
@@ -185,8 +186,7 @@ export function SceneConfigV2Mixin(Base: BaseType) {
     }
 
     async _onSubmitForm(formConfig: foundry.applications.api.ApplicationV2.FormConfiguration, event: Event | SubmitEvent): Promise<void> {
-
-      const form = (this as unknown as SceneConfig).form as HTMLFormElement | null;
+      const form = this.form;
       if (!form) return;
       const data = foundry.utils.mergeObject(
         { transition: this.#sceneConfiguration },
@@ -220,11 +220,7 @@ export function SceneConfigV2Mixin(Base: BaseType) {
       this.#sceneConfiguration.sequence.splice(0, this.#sceneConfiguration.sequence.length, ...sorted);
     }
 
-    _onRender(context: any, options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      super._onRender(context, options);
-
-
+    async _onRender(context: foundry.applications.api.DocumentSheetV2.RenderContext<Scene>, options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       ($(this.element).find(`[data-role="transition-steps"]`) as any).sortable({
         handle: ".drag-handle",
@@ -235,11 +231,12 @@ export function SceneConfigV2Mixin(Base: BaseType) {
         },
         update: this.reorderSteps.bind(this)
       });
+      return super._onRender(context, options);
     }
 
     async _prepareContext(options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
       if (options.isFirstRender) this.#sceneConfiguration = foundry.utils.deepClone(ConfigurationHandler.GetSceneConfiguration(this.document));
-      const context = await super._prepareContext(options) as Record<string, unknown>;
+      const context = await super._prepareContext(options) as SceneConfigContext;
 
       context.transition = {
         isV1: false,

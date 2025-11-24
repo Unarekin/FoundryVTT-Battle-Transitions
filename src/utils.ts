@@ -1,5 +1,5 @@
 import { coerceColorHex, coerceTexture } from "./coercion";
-import { LOG_ICON } from "./constants";
+import { LOG_ICON } from "./constants.js";
 import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidImportError, InvalidObjectError, InvalidTargetError, InvalidTextureError, MigratorNotFoundError, NoFileError } from "./errors";
 import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
@@ -20,7 +20,7 @@ import { isValidColor } from "./validation";
  * @param {string} hook The hook to await
  * @returns 
  */
-export async function awaitHook(hook: string): Promise<unknown[]> {
+export async function awaitHook(hook: Hooks.HookName): Promise<unknown[]> {
   return new Promise<unknown[]>(resolve => {
     Hooks.once(hook, (...args: unknown[]) => {
       resolve(args);
@@ -242,7 +242,7 @@ export function lerp(a: number, b: number, progress: number) {
   return a + progress * (b - progress);
 }
 
-export function localize(key: string, data: Record<string, unknown> = {}): string {
+export function localize(key: string, data: Record<string, string> = {}): string {
   return game.i18n?.format(key, data) ?? key;
 }
 

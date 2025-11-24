@@ -62,12 +62,13 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
   #compendiumOpenHook: number | undefined = undefined;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   #clickEventListeners: { elem: HTMLElement, listener: Function }[] = [];
-  #controlHooks: { event: string, hook: number }[] = [];
+  #controlHooks: { event: Hooks.HookName, hook: number }[] = [];
 
   public get type() { return this.getAttribute("type"); }
   public set type(val) {
     if (val) {
-      const isValid = Object.values(foundry.documents).some(docType => docType.documentName.toLowerCase() === val?.toLowerCase());
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      const isValid = Object.values(foundry.documents).some((docType: any) => (docType.documentName?.toLowerCase() ?? "") === val?.toLowerCase());
       if (!isValid) throw new LocalizedError("BATTLETRANSITIONS.ERRORS.INVALIDDOCUMENTTYPE", { type: val });
     }
     this.setAttribute("type", val ?? "");
@@ -147,7 +148,7 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
 
       if (this.type) {
         // Handle placeable clicking
-        let hookName = "";
+        let hookName: Hooks.HookName | "" = "";
         switch (this.type.toLowerCase()) {
           case "token":
             hookName = "controlToken";
@@ -199,7 +200,6 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
   }
 
   protected objectControlled(obj: PlaceableObject, controlled: boolean) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     if (controlled && obj.document.documentName.toLowerCase() === this.type?.toLowerCase()) {
       // console.log("Selected:", obj);
       if (this.#input) this.#input.value = obj.document.uuid;
@@ -371,8 +371,8 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
         return (foundry.canvas as any).placeables.Wall;
       default:
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        return this.type ? Object.values(foundry.documents).find(doc => (doc.name ?? "").toLowerCase() === (this.type ?? "").toLowerCase()) as any : undefined;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        return this.type ? Object.values(foundry.documents).find(doc => ((doc as any).name ?? "").toLowerCase() === (this.type ?? "").toLowerCase()) as any : undefined;
     }
 
   }
@@ -409,7 +409,7 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
    */
   static create(config: DocumentPickerInputConfig) {
     const picker = document.createElement(HTMLDocumentPickerElement.tagName) as HTMLDocumentPickerElement;
-    picker.name = config.name;
+    picker.name = config.name ?? "";
     picker.setAttribute("value", config.value || "");
     picker.type = config.type;
     foundry.applications.fields.setInputAttributes(picker, config);

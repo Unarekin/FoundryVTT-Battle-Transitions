@@ -5,7 +5,7 @@ import { InvalidTransitionError } from '../errors';
 import { BackgroundType } from '../types';
 import { editSequence } from './EditSequence';
 import { coerceScene, coerceUser } from '../coercion';
-import { LOG_ICON } from '../constants';
+import { LOG_ICON } from '../constants.js';
 import { AddStepApplication } from '../applications';
 
 export function getStepsForCategory(category: string, sequence?: TransitionConfiguration[], hidden?: boolean): StepContext[] {
@@ -95,7 +95,7 @@ export async function confirm(title: string, content: string): Promise<boolean> 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     window: ({ title } as any),
     content
-  });
+  }).then(val => !!val)
 }
 
 export function buildTransitionFromForm(html: JQuery<HTMLElement>) {
@@ -156,7 +156,7 @@ export function updateConfigurationOption(option: HTMLOptionElement, config: Tra
   option.value = option.dataset.serialized;
 }
 
-export async function customDialog(title: string, content: string, buttons: Record<string, DialogButton>, onRender?: (element: JQuery<HTMLElement>) => void, onClose?: (element: JQuery<HTMLElement>) => void): Promise<JQuery<HTMLElement>> {
+export async function customDialog(title: string, content: string, buttons: Record<string, foundry.applications.api.DialogV2.Button>, onRender?: (element: JQuery<HTMLElement>) => void, onClose?: (element: JQuery<HTMLElement>) => void): Promise<JQuery<HTMLElement>> {
   return new Promise<JQuery<HTMLElement>>((resolve, reject) => {
     let CLOSE_HOOK_ID: number = 0;
     const dialog = new foundry.applications.api.DialogV2({

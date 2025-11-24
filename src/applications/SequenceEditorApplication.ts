@@ -146,9 +146,8 @@ export class SequenceEditorApplication extends foundry.applications.api.Handleba
   }
 
 
-  _onRender(context: any, options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    super._onRender(context, options);
+  async _onRender(context: foundry.applications.api.ApplicationV2.RenderContext, options: foundry.applications.api.ApplicationV2.RenderOptions) {
+    const ctx = await super._onRender(context, options);
 
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
@@ -161,6 +160,7 @@ export class SequenceEditorApplication extends foundry.applications.api.Handleba
       },
       update: this.reorderSteps.bind(this)
     });
+    return ctx;
   }
 
   public static async RemoveStep(this: SequenceEditorApplication, event: PointerEvent, element: HTMLElement) {

@@ -142,7 +142,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       const stepClass = getStepClassByKey(step.type);
       if (!stepClass) throw new InvalidTransitionError(step.type);
 
-      const name = game.i18n?.localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`)
+      const name = game.i18n?.localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`) ?? ""
 
       const confirmed = await confirm(
         game.i18n?.format("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name }) ?? "",
@@ -240,9 +240,8 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
   }
 
 
-  _onRender(context: any, options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    super._onRender(context, options);
+  async _onRender(context: foundry.applications.api.ApplicationV2.RenderContext, options: foundry.applications.api.ApplicationV2.RenderOptions) {
+    const ctx = await super._onRender(context, options);
 
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
@@ -255,6 +254,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       },
       update: this.reorderSteps.bind(this)
     });
+    return ctx;
   }
 
   static ExportJSON(this: TransitionBuilder) {
@@ -276,7 +276,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
         if (!(scene instanceof Scene)) throw new InvalidSceneError(this.#response.scene);
       }
       const macro = generateMacro(this.#response.sequence, [], scene);
-      await Macro.createDialog({ type: "script", command: macro, img: `modules/${__MODULE_ID__}/assets/icons/crossed-swords.svg` });
+      await Macro.createDialog({ type: "script", command: macro, img: `modules/${__MODULE_ID__}/assets/icons/crossed-swords.svg`, name: "" });
     } catch (err) {
       console.error(err);
       if (err instanceof Error) ui.notifications?.error(err.message, { console: false });

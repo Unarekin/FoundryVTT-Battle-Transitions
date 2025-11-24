@@ -102,28 +102,12 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
       ...this.config
     }
 
-    if (foundry.audio?.AudioHelper) {
-      // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      // const sound = await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true) as Sound;
-      // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      // const sound = await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true) as Sound;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, false);
-      // this.#sound = sound;
-    } else {
-      // const sound = await AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, true);
-      await AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100, autoplay: true }, false);
-      // this.#sound = sound;
-    }
+    await foundry.audio.AudioHelper.play({ src: this.config.file ?? "", volume: config.volume / 100 }, false);
   }
 
   public async prepare(): Promise<void> {
-    if (foundry.audio?.AudioHelper) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    if (this.config.file)
       await foundry.audio.AudioHelper.preloadSound(this.config.file);
-    } else {
-      await AudioHelper.preloadSound(this.config.file ?? "");
-    }
   }
 
   public teardown(): void {
