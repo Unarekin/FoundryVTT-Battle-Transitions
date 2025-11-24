@@ -1,6 +1,6 @@
-import { awaitHook, getGame, log } from './utils';
+import { awaitHook, log } from './utils';
 import { SceneChangeStep } from './steps';
-import { SceneConfigV2Mixin, SceneConfigV1Mixin } from "./applications";
+import { SceneConfigMixin } from "./applications";
 import SocketHandler from "./SocketHandler";
 import { CUSTOM_HOOKS } from "./constants";
 import { registerHelpers, registerTemplates } from "./templates";
@@ -16,13 +16,11 @@ Hooks.once("canvasReady", () => {
   (Hooks as any).callAll(CUSTOM_HOOKS.INITIALIZE)
 })
 
-Hooks.once("ready", async () => {
-  const game = await getGame();
-
+Hooks.once("ready", () => {
   const entries = Object.entries(CONFIG.Scene.sheetClasses.base);
   for (const [key, { cls }] of entries) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    const mixed = game.release.isNewer("13") ? SceneConfigV2Mixin(cls as any) : SceneConfigV1Mixin(cls as any);
+    const mixed = SceneConfigMixin(cls as any);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     CONFIG.Scene.sheetClasses.base[key].cls = mixed as any;
   }

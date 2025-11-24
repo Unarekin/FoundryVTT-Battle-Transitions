@@ -299,7 +299,7 @@ function setSelectHint(html: HTMLElement, hint: string) {
   if (ui.notifications) {
     const id = ui.notifications.info(hint, { console: false, localize: true, permanent: true });
     const elem = html.querySelector(`[data-select-hint]`);
-    if (elem instanceof HTMLElement) elem.dataset.selectHint = id.toString();
+    if (elem instanceof HTMLElement) elem.dataset.selectHint = id.id.toString();
   }
 }
 

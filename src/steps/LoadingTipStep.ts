@@ -3,6 +3,7 @@ import { LoadingTipConfiguration, LoadingTipSource } from './types';
 import { deepCopy, localize, parseConfigurationFormElements } from '../utils';
 import { InvalidRollTableError, InvalidTipLocationError } from '../errors';
 import { LoadingTipConfigApplication } from '../applications';
+import { Rectangle } from 'interfaces';
 
 let ACTIVE_TEXT_ELEMENT: PIXI.HTMLText | null = null;
 
