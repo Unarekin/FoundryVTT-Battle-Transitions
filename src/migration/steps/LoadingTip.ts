@@ -1,6 +1,5 @@
 import { Migrator } from "../Migrator";
-import { LoadingTipConfiguration, LoadingTipStep } from "../../steps";
-import { log } from "../../utils";
+import { LoadingTipConfiguration } from "../../steps";
 
 export class LoadingTipMigrator extends Migrator<LoadingTipConfiguration> {
   protected migrationFunctions: { [x: string]: (old: any) => LoadingTipConfiguration } = {
@@ -19,6 +18,6 @@ function v110Migration(old: Record<string, unknown>): LoadingTipConfiguration {
     config.table = config.message;
     delete config.message;
   }
-  config.version = this.NewestVersion;
+  config.version = "2.0.12";
   return config;
 }
