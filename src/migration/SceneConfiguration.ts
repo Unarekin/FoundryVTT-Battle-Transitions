@@ -22,6 +22,17 @@ export class SceneConfigurationMigrator extends Migrator<SceneConfiguration> {
 
   public readonly NewestVersion: string = CURRENT_VERSION;
 
+  public Migrate(old: unknown): SceneConfiguration | undefined {
+    const migrated = super.Migrate(old);
+    if (!migrated) {
+      const newConfig = foundry.utils.deepClone(old) as SceneConfiguration;
+      newConfig.sequence = this.MigrateSequence(newConfig.sequence);
+      return newConfig;
+    } else {
+      return migrated;
+    }
+  }
+
   public MigrateSequence(sequence: any[]): TransitionConfiguration[] {
     return sequence.map(item => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
