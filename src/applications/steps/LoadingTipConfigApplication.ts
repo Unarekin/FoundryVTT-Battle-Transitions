@@ -111,11 +111,12 @@ export class LoadingTipConfigApplication extends StepConfigApplication<LoadingTi
 
   parseFormData(data: Record<string, unknown>): LoadingTipConfiguration {
     const parsed = super.parseFormData(data);
-    if (parsed.source === "rolltable") {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      parsed.message = (parsed as any).table;
-      delete parsed.table;
-    }
+
+    // if (parsed.source === "rolltable") {
+    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    //   parsed.message = (parsed as any).table;
+    //   delete parsed.table;
+    // }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     parsed.style.fontFamily = (parsed as any).fontFamily ?? "";
