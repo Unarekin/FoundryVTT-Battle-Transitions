@@ -2,7 +2,7 @@ import { coerceColorHex, coerceMacro, coerceScene, coerceUser } from "./coercion
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants.js";
 import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidElementError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, AngularWipeStep, LinearWipeStep, FadeStep } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, AngularWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
@@ -496,8 +496,8 @@ export class BattleTransition {
    */
   public burn(duration: number = 1000, burnSize: number = 1.3, easing: Easing = "none"): this {
     this.#sequence.push({
+      ...FireDissolveStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      type: "firedissolve",
       duration,
       burnSize,
       easing
@@ -573,8 +573,8 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(background);
 
     this.#sequence.push({
+      ...DiamondWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      type: "diamondwipe",
       serializedTexture,
       size,
       backgroundType: backgroundType(background),
@@ -625,7 +625,6 @@ export class BattleTransition {
     const config: FadeConfiguration = {
       ...FadeStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      type: "fade",
       serializedTexture,
       duration,
       easing,
@@ -667,7 +666,10 @@ export class BattleTransition {
    * @returns 
    */
   public hideOverlay(): this {
-    this.#sequence.push({ id: foundry.utils.randomID(), type: "removeoverlay", version: "1.1.0" });
+    this.#sequence.push({
+      ...RemoveOverlayStep.DefaultSettings,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 
@@ -727,7 +729,6 @@ export class BattleTransition {
     const config: LinearWipeConfiguration = {
       ...LinearWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      type: "linearwipe",
       serializedTexture,
       direction,
       duration,
@@ -798,8 +799,8 @@ export class BattleTransition {
     const actualMacro = coerceMacro(macro as any);
     if (!actualMacro) throw new InvalidMacroError(typeof macro === "string" ? macro : typeof macro);
     this.#sequence.push({
+      ...MacroStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      type: "macro",
       macro: actualMacro.uuid
     } as MacroConfiguration);
     return this;
@@ -815,8 +816,8 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(background);
 
     this.#sequence.push({
+      ...MeltStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      type: "melt",
       serializedTexture,
       duration,
       backgroundType: backgroundType(background),
@@ -1069,7 +1070,10 @@ export class BattleTransition {
    * Sets the transition overlay to visible again.
    */
   public showOverlay(): this {
-    this.#sequence.push({ id: foundry.utils.randomID(), type: "restoreoverlay", version: "1.1.0" });
+    this.#sequence.push({
+      ...RestoreOverlayStep.DefaultSettings,
+      id: foundry.utils.randomID(),
+    });
     return this;
   }
 
@@ -1089,8 +1093,8 @@ export class BattleTransition {
     const sound = typeof arg === "string" ? arg : (arg instanceof foundry.audio.Sound) ? arg.id : null;
     if (!sound) throw new InvalidSoundError(typeof arg === "string" ? arg : typeof arg);
     this.#sequence.push({
+      ...SoundStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      type: "sound",
       volume,
       file: sound
     } as SoundConfiguration);
@@ -1109,8 +1113,8 @@ export class BattleTransition {
   public spiralShutter(direction: ClockDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
     this.#sequence.push({
+      ...SpiralShutterStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      type: "spiralshutter",
       serializedTexture,
       duration,
       easing,
@@ -1136,15 +1140,13 @@ export class BattleTransition {
 
     const backgroundType = typeof serializedTexture === "string" && isColor(serializedTexture) ? "color" : "image";
     this.#sequence.push({
-      type: "spiralwipe",
+      ...SpiralWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      version: "1.1.0",
       duration,
       direction,
       clockDirection: clock,
       radial,
       easing,
-      bgSizingMode: "stretch",
       backgroundType,
       serializedTexture
     } as SpiralWipeConfiguration);
@@ -1164,8 +1166,8 @@ export class BattleTransition {
   public spotlightWipe(direction: WipeDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
     this.#sequence.push({
+      ...SpotlightWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      type: "spotlightwipe",
       direction,
       radial,
       duration,
@@ -1186,8 +1188,8 @@ export class BattleTransition {
   public textureSwap(texture: TextureLike, style: DualStyle = DualStyle.Overlay): this {
     const serializedTexture = serializeTexture(texture);
     this.#sequence.push({
+      ...TextureSwapStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      type: "textureswap",
       serializedTexture,
       backgroundType: backgroundType(texture),
       applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
@@ -1208,8 +1210,8 @@ export class BattleTransition {
    */
   public twist(duration: number = 1000, direction: ClockDirection = "clockwise", maxAngle: number = 10, easing: Easing = "none", style: DualStyle = DualStyle.Overlay): this {
     this.#sequence.push({
+      ...TwistStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      type: "twist",
       duration,
       direction,
       maxAngle,
@@ -1236,8 +1238,8 @@ export class BattleTransition {
     const serializedTexture = serializeTexture(background);
 
     this.#sequence.push({
+      ...VideoStep.DefaultSettings,
       id: foundry.utils.randomID(),
-      type: "video",
       volume,
       file,
       serializedTexture,
@@ -1266,7 +1268,7 @@ export class BattleTransition {
   public waveWipe(direction: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
     const serializedTexture = serializeTexture(background);
     this.#sequence.push({
-      type: "wavewipe",
+      ...WaveWipeStep.DefaultSettings,
       id: foundry.utils.randomID(),
       serializedTexture,
       direction,
@@ -1344,7 +1346,7 @@ export class BattleTransition {
    */
   public zoomBlur(duration: number = 1000, maxStrength: number = 0.5, innerRadius: number = 0, easing: Easing = "none", style: DualStyle = DualStyle.Overlay): this {
     this.#sequence.push({
-      type: "zoomblur",
+      ...ZoomBlurStep.DefaultSettings,
       id: foundry.utils.randomID(),
       duration,
       maxStrength,
