@@ -4,7 +4,6 @@ import { BattleTransition } from "./BattleTransition";
 import { InvalidSceneError, UnableToMigrateError } from "./errors";
 
 import { DataMigration } from "./DataMigration";
-import { log } from "./utils";
 
 const DEFAULT_CONFIG: SceneConfiguration = {
   version: "1.1.6",
@@ -177,17 +176,21 @@ export class ConfigurationHandler {
   public static GetSceneConfiguration(scene: Scene): SceneConfiguration {
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const flags = scene.flags[__MODULE_ID__] as any;
+    const flags = foundry.utils.deepClone(scene.flags[__MODULE_ID__]) as any;
     if (!flags) return DEFAULT_CONFIG
 
     // Check for data migration
     if (DataMigration.SceneConfiguration.NeedsMigration(flags)) {
-      log("Migrating scene configuration:", flags);
       const migrated = DataMigration.SceneConfiguration.Migrate(flags);
       if (!migrated) throw new UnableToMigrateError(DataMigration.SceneConfiguration.Version(flags), DataMigration.SceneConfiguration.NewestVersion);
       return migrated;
     } else {
-      return flags as SceneConfiguration;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (flags?.sequence?.length)
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+        flags.sequence = DataMigration.SceneConfiguration.MigrateSequence(flags.sequence);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return flags;
     }
   }
 

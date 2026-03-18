@@ -10,6 +10,13 @@
 
   {{! Background }}
   {{> (moduleTemplate "steps/partials/background-selector.hbs") this }}
+
+  <div class="form-group">
+    <label for="texture-replace">{{localize "BATTLETRANSITIONS.SCENECONFIG.TEXTURESWAP.REPLACE.LABEL"}}</label>
+    <input type="checkbox" id="texture-replace" name="replace" {{checked config.replace}}>
+    <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.TEXTURESWAP.REPLACE.HINT"}}</p>
+  </div>
+
   {{! Dual style }}
   {{> (moduleTemplate "steps/partials/dualstyle-selector.hbs") this }}
 </section>

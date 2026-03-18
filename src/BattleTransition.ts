@@ -1185,7 +1185,7 @@ export class BattleTransition {
    * @param {DualStyle} style - 0 = Overlay, 1 = Scene, 2 = Both
    * @returns 
    */
-  public textureSwap(texture: TextureLike, style: DualStyle = DualStyle.Overlay): this {
+  public textureSwap(texture: TextureLike, style: DualStyle = DualStyle.Overlay, replace = true): this {
     const serializedTexture = serializeTexture(texture);
     this.#sequence.push({
       ...TextureSwapStep.DefaultSettings,
@@ -1193,7 +1193,8 @@ export class BattleTransition {
       serializedTexture,
       backgroundType: backgroundType(texture),
       applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
-      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
+      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both,
+      replace
     } as TextureSwapConfiguration);
 
     return this;

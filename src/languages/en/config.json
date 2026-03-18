@@ -110,11 +110,11 @@
         },
         "BACKGROUND": {
           "COLOR": "Background Color",
-          "STYLE": "Background Style",
           "HINT": "Background color or image to show behind this step",
           "IMAGE": "Background Image",
           "LABEL": "Background",
-          "OVERLAY": "Original overlay texture"
+          "OVERLAY": "Original overlay texture",
+          "STYLE": "Background Style"
         },
         "CLOCKDIRECTION": {
           "HINT": "Clockwise or counterclockwise",
@@ -212,8 +212,8 @@
             "LABEL": "Tile"
           },
           "TOKEN": {
-            "LABEL": "Token",
-            "HINT": "Center this effect on the mid point of a token"
+            "HINT": "Center this effect on the mid point of a token",
+            "LABEL": "Token"
           }
         },
         "VOLUME": {
@@ -310,11 +310,11 @@
         }
       },
       "REPEAT": {
-        "EDITSEQUENCE": "Edit Sequence",
         "DELAY": {
           "HINT": "Time to delay between repetitions",
           "LABEL": "Delay"
         },
+        "EDITSEQUENCE": "Edit Sequence",
         "ITERATIONS": {
           "HINT": "Number of times to repeat.",
           "LABEL": "Iterations"
@@ -345,6 +345,10 @@
       },
       "TAB": "Transition",
       "TEXTURESWAP": {
+        "REPLACE": {
+          "HINT": "If enabled, will fully replace the current overlay texture.  Otherwise, will blend based on this texture's alpha value.",
+          "LABEL": "Replace Current"
+        },
         "TEXTURE": {
           "HINT": "Texture to which to swap",
           "LABEL": "Texture"

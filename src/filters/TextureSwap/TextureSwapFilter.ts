@@ -4,17 +4,19 @@ import { InvalidTextureError } from "../../errors";
 import frag from "./textureswap.frag";
 
 type TextureSwapUniforms = {
-  uTexture: PIXI.Texture
+  uTexture: PIXI.Texture,
+  uReplace: boolean;
 };
 
 
 export class TextureSwapFilter extends CustomFilter<TextureSwapUniforms> {
-  constructor(texture: PIXI.TextureSource | PIXI.ColorSource) {
+  constructor(texture: PIXI.TextureSource | PIXI.ColorSource, replace = true) {
     const actual = coerceTexture(texture);
     if (!actual) throw new InvalidTextureError();
 
     super(undefined, frag, {
-      uTexture: actual
+      uTexture: actual,
+      uReplace: replace
     });
   }
 }
