@@ -78,7 +78,9 @@ export type SpotlightWipeConfiguration = WipeTransition & ({
   radial: RadialDirection;
 });
 
-export type TextureSwapConfiguration = TransitionConfiguration & BackgroundTransition & DualTransition;
+export type TextureSwapConfiguration = TransitionConfiguration & BackgroundTransition & DualTransition & {
+  replace: boolean;
+};
 
 
 export type VideoConfiguration = BackgroundTransition & TransitionConfiguration & ({

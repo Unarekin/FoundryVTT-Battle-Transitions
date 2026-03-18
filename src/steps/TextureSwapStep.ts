@@ -14,13 +14,14 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
   public static DefaultSettings: TextureSwapConfiguration = Object.freeze({
     id: "",
     type: "textureswap",
-    version: "1.1.0",
+    version: "2.0.14",
     bgSizingMode: "stretch",
     backgroundType: "color",
     backgroundImage: "",
     backgroundColor: "#00000000",
     applyToScene: false,
-    applyToOverlay: true
+    applyToOverlay: true,
+    replace: true
   });
 
   public static hidden: boolean = false;
@@ -87,13 +88,13 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
 
     if (config.applyToOverlay) {
       const background = config.deserializedTexture ?? createColorTexture("transparent");
-      const filter = new TextureSwapFilter(background.baseTexture);
+      const filter = new TextureSwapFilter(background.baseTexture, config.replace);
       this.addFilter(container, filter);
     }
 
     if (config.applyToScene && canvas?.stage) {
       const background = config.deserializedTexture ?? createColorTexture("transparent");
-      const filter = new TextureSwapFilter(background.baseTexture);
+      const filter = new TextureSwapFilter(background.baseTexture, config.replace);
       addFilterToScene(filter, prepared.prepared);
       this.#sceneFilter = filter;
     }
