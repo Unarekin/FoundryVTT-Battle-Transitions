@@ -12,7 +12,7 @@ export async function confirm(title: string, content: string): Promise<boolean> 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     window: ({ title } as any),
     content
-  });
+  }) as Promise<boolean>;
 }
 
 export function generateMacro(sequence: TransitionConfiguration[], users: string[] = [], scene: unknown = undefined): string {

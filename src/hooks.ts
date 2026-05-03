@@ -31,7 +31,7 @@ Hooks.once("init", async () => {
   await registerTemplates();
 
   if (typeof libWrapper === "function") {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-function-type, @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     libWrapper.register(__MODULE_ID__, "Scene.prototype.update", function (this: Scene, wrapped: Function, ...args: unknown[]) {
       const delta = args[0] as Partial<Scene>;
 
@@ -55,8 +55,8 @@ Hooks.once("init", async () => {
       return wrapped(...args);
     }, "MIXED");
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-function-type, @typescript-eslint/no-unsafe-member-access
-    libWrapper.register(__MODULE_ID__, "TextureLoader.prototype.load", function (this: TextureLoader, wrapped: Function, ...args: unknown[]) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    libWrapper.register(__MODULE_ID__, "foundry.canvas.TextureLoader.prototype.load", function (this: TextureLoader, wrapped: Function, ...args: unknown[]) {
 
       if (BattleTransition.HideLoadingBar) {
         const opt = args[1] as Record<string, unknown>;
