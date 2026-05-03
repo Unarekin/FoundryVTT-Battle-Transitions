@@ -1,5 +1,6 @@
 import * as gsapType from "gsap";
 import { SceneConfiguration } from "interfaces";
+import { libWrapper as libwrapperType } from "./libwrapper"
 
 declare global {
 
@@ -11,7 +12,7 @@ declare global {
   declare var ColorPicker: any;
 
   declare var socketlib: any;
-  declare var libWrapper: any;
+  declare var libWrapper: typeof libwrapperType;
 
   declare var gsap: gsapType;
   declare var TweenMax: gsapType.TweenMax;
