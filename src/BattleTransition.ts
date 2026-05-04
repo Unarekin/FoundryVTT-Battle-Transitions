@@ -2,7 +2,7 @@ import { coerceColorHex, coerceMacro, coerceScene, coerceUser } from "./coercion
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants.js";
 import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidElementError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
@@ -356,7 +356,7 @@ export class BattleTransition {
 
   // #endregion Public Static Methods (7)
 
-  // #region Deprecated Methods
+  // #region Transition Methods
 
   /**
    * Adds an angular wipe, mimicking the battle with Brock in Pokemon Fire Red
@@ -421,29 +421,31 @@ export class BattleTransition {
    * @param {TextureLike} [background="transparent"] - {@link TextureLike}
    * @param {Easing} [easing="none"] - {@link Easing}
    */
-  public barWipe(bars: number, direction: "horizontal" | "vertical", duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const serializedTexture = serializeTexture(background);
+  public barWipe(bars: number, direction: "horizontal" | "vertical", duration: number, background: TextureLike, easing: Easing): this
+  public barWipe(config: Partial<BarWipeConfiguration>): this
+  public barWipe(...args: unknown[]): this {
 
-    if (!(direction === "horizontal" || direction === "vertical")) throw new InvalidDirectionError(direction);
-    if (isNaN(parseFloat(duration.toString()))) throw new InvalidDurationError(duration);
-    if (duration < 0) throw new InvalidDurationError(duration);
+    if (args.length !== 0 && typeof args[0] === "number") {
+      logDeprecation("BattleTransition.barWipe", "The multi-argument method signature for BattleTransition#barWipe is deprecated.\nUse the object-based configuration signature instead.", "3.0.0", "4.0.0", "https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Deprecations#bar-wipe");
+      const [bars = 4, direction = "horizontal", duration = 1000, background = "transparent", easing = "none"] = args as [number, "horizontal" | "vertical", number, TextureLike, Easing];
+      const bgType = backgroundType(background);
+      return this.barWipe({
+        duration,
+        bars,
+        direction,
+        backgroundType: bgType,
+        backgroundColor: bgType === "color" ? coerceColorHex(background) : "",
+        backgroundImage: bgType === "image" ? background as string : "",
+        easing
+      });
+    }
 
-    if (!isValidEasing(easing)) throw new InvalidEasingError(easing);
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(BarWipeStep.DefaultSettings),
+      (args[0] as Partial<BarWipeConfiguration>)
+    );
 
-
-    const step = getStepClassByKey("barwipe");
-    if (!step) throw new InvalidTransitionError("barwipe");
-    this.#sequence.push({
-      ...step.DefaultSettings,
-      id: foundry.utils.randomID(),
-      duration,
-      bars,
-      easing,
-      direction,
-      serializedTexture,
-      backgroundType: backgroundType(background)
-    } as BarWipeConfiguration);
-
+    this.#sequence.push(config);
     return this;
   }
 
