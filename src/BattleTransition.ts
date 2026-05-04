@@ -637,21 +637,35 @@ export class BattleTransition {
    * @param {number} [duration=1000] - Duration, in milliseconds, that the wipe should last
    * @param {TextureLike} [background="transparent"] - {@link TextureLike}
    * @param {Easing} [easing="none"] - {@link Easing}
-   * @returns 
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public diamondWipe(size: number = 40, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const serializedTexture = serializeTexture(background);
+  // TODO: Remove signature in 4.0
+  public diamondWipe(size: number, duration: number, background: TextureLike, easing: Easing): this
+  public diamondWipe(config: Partial<DiamondWipeConfiguration>): this
+  public diamondWipe(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("diamondWipe");
+
+      const [size = 40, duration = 1000, background = "transparent", easing = "none"] = args as [number, number, TextureLike, Easing];
+
+      return this.diamondWipe({
+        size,
+        duration,
+        easing,
+        ...generateBackgroundConfig(background)
+      })
+    }
+
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(DiamondWipeStep.DefaultSettings),
+      (args[0] ?? {}) as Partial<DiamondWipeConfiguration>
+    ) as DiamondWipeConfiguration;
 
     this.#sequence.push({
-      ...DiamondWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      serializedTexture,
-      size,
-      backgroundType: backgroundType(background),
-      duration,
-      easing
-    } as DiamondWipeConfiguration)
-
+      ...config,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 
@@ -686,25 +700,32 @@ export class BattleTransition {
    * @param {number} [duration=1000] - Duration, in milliseconds, the fade should take to complete
    * @param {TextureLike} [background="transparent"] - {@link TextureLike}
    * @param {Easing} [easing="none"] - {@link Easing}
-   * @returns 
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public fade(duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const serializedTexture = serializeTexture(background);
-    const bgType = backgroundType(background);
+  // TODO: Remove signature in 4.0
+  public fade(duration: number, background: TextureLike, easing: Easing): this
+  public fade(config: Partial<FadeConfiguration>): this
+  public fade(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("fade");
+      const [duration = 1000, background = "transparent", easing = "none"] = args as [number, TextureLike, Easing];
+      return this.fade({
+        duration,
+        easing,
+        ...generateBackgroundConfig(background)
+      })
+    }
 
-    const config: FadeConfiguration = {
-      ...FadeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      serializedTexture,
-      duration,
-      easing,
-      backgroundType: bgType,
-      backgroundColor: bgType === "color" ? coerceColorHex(background) ?? "" : "",
-      backgroundImage: bgType === "image" ? background as string : "",
-    };
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(FadeStep.DefaultSettings),
+      (args[0] ?? {}) as Partial<FadeConfiguration>
+    ) as FadeConfiguration;
 
-    this.#sequence.push(config);
-
+    this.#sequence.push({
+      ...config,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 
