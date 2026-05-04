@@ -1,8 +1,8 @@
 import { coerceColorHex, coerceMacro, coerceScene, coerceUser } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants.js";
-import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidElementError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
+import { InvalidElementError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep, BilinearWipeStep, ClearEffectsStep } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep, BilinearWipeStep, ClearEffectsStep, FlashStep, HueShiftConfiguration, HueShiftStep } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
@@ -10,7 +10,6 @@ import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, ge
 import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./applications";
 import { filters } from "./filters";
-import { isValidClockDirection, isValidEasing, isValidWipeDirection } from "./validation";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 import { logDeprecation } from "./deprecationHelper";
 
@@ -734,21 +733,32 @@ export class BattleTransition {
    * @param {TextureLike} texture - {@link TextureLike}
    * @param {number} [duration] - Duration, in milliseconds, for this effect to last
    * @param {DualStyle} [style=0] - 0 = Overlay, 1 = Scene, 2 = Both
-   * @returns 
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public flash(texture: TextureLike, duration: number, style: DualStyle = DualStyle.Overlay): this {
-    const step = getStepClassByKey("flash");
-    if (!step) throw new InvalidTransitionError("flash");
+  // TODO: Remove signature in 4.0
+  public flash(texture: TextureLike, duration: number, style: DualStyle): this
+  public flash(config: Partial<FlashConfiguration>): this
+  public flash(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("flash");
+      const [texture = "transparent", duration = 250, style = DualStyle.Overlay] = args as [TextureLike, number, DualStyle];
+      return this.flash({
+        duration,
+        ...generateBackgroundConfig(texture),
+        ...generateDualStyleConfig(style)
+      });
+    }
 
-    const serializedTexture = serializeTexture(texture);
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(FlashStep.DefaultSettings),
+      (args[0] ?? {})
+    ) as FlashConfiguration;
+
     this.#sequence.push({
-      ...step.DefaultSettings,
-      id: foundry.utils.randomID(),
-      duration,
-      serializedTexture,
-      applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
-      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
-    } as FlashConfiguration);
+      ...config,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 
@@ -770,20 +780,34 @@ export class BattleTransition {
    * @param {number} [duration=0] - Duration, in milliseconds, the shift should take to complete
    * @param {Easing} [easing="none"] - {@link Easing}
    * @param {DualStyle} [style=0] - {@link DualStyle}
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public hueShift(amount: number, duration: number = 0, easing: Easing = "none", style: DualStyle = DualStyle.Overlay): this {
-    const step = getStepClassByKey("hueshift");
-    if (!step) throw new InvalidTransitionError("hueshift");
-    const config = {
-      ...step.DefaultSettings,
-      id: foundry.utils.randomID(),
-      maxShift: amount,
-      duration,
-      easing,
-      applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
-      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
-    };
-    this.#sequence.push(config);
+  // TODO: Remove signature in 4.0
+  public hueShift(amount: number, duration: number, easing: Easing, style: DualStyle): this
+  public hueShift(config: Partial<HueShiftConfiguration>): this
+  public hueShift(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("hueShift");
+
+      const [amount, duration = 0, easing = "none", style = DualStyle.Overlay] = args as [number, number, Easing, DualStyle];
+      return this.hueShift({
+        maxShift: amount,
+        duration,
+        easing,
+        ...generateDualStyleConfig(style)
+      })
+    }
+
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(HueShiftStep.DefaultSettings),
+      (args[0] ?? {})
+    ) as HueShiftConfiguration;
+
+    this.#sequence.push({
+      ...config,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 
