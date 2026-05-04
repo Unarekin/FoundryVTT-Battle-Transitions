@@ -39,6 +39,8 @@
       "PERMISSIONDENIED": "Permision denied.",
       "PREPARETIMEDOUT": "Timed out waiting for users to signal they're ready to transition.",
       "SEQUENCETIMEDOUT": "Transition sequence timed out.",
+      "SOCKETHANDLERALREADYREGISTERED": "Socket handler is already registered: {name}",
+      "SOCKETHANDLERNOTFOUND": "Socket handler not found: {name}",
       "STEPNOTREVERSIBLE": "Transition step not reversible: {type}",
       "TRANSITIONTOSELF": "Attempting to transition to the current scene.",
       "UNABLETOMIGRATE": "Unable to migrate data from {old} to {current}"

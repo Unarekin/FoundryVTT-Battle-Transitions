@@ -1,6 +1,8 @@
 import * as gsapType from "gsap";
 import { SceneConfiguration } from "interfaces";
 import { libWrapper as libwrapperType } from "./libwrapper"
+import { BattleTransition } from "BattleTransition";
+import { SocketHandler } from "sockets";
 
 declare global {
 
@@ -11,7 +13,6 @@ declare global {
 
   declare var ColorPicker: any;
 
-  declare var socketlib: any;
   declare var libWrapper: typeof libwrapperType;
 
   declare var gsap: gsapType;
@@ -27,6 +28,13 @@ declare global {
     const content: string;
     export default content;
   }
+
+  declare interface Game {
+    BattleTransitions: {
+      transition: typeof BattleTransition;
+      socket: SocketHandler;
+    }
+  }
 }
 
 declare module "fvtt-types/configuration" {
@@ -37,12 +45,20 @@ declare module "fvtt-types/configuration" {
       "battle-transitions.transitionStart": (transition: TransitionConfiguration) => void;
       "battle-transitions.transitionEnd": (transition: TransitionConfiguration) => void;
       "battle-transitions.sceneActivated": (scene: Scene) => void;
+      "battle-transitions.socketSent": (message: string) => boolean;
+      "battle-transitions.socketReceived": (message: string) => void;
     }
   }
 
   interface FlagConfig {
     Scene: {
       [__MODULE_ID__]: SceneConfiguration
+    }
+  }
+
+  interface CONFIG {
+    BattleTransitions: {
+
     }
   }
 }

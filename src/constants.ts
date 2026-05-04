@@ -8,7 +8,9 @@ export const CUSTOM_HOOKS: Record<string, Hooks.HookName> = {
   INITIALIZE: `${__MODULE_ID__}.init`,
   TRANSITION_START: `${__MODULE_ID__}.transitionStart`,
   TRANSITION_END: `${__MODULE_ID__}.transitionEnd`,
-  SCENE_ACTIVATED: `${__MODULE_ID__}.sceneActivated`
+  SCENE_ACTIVATED: `${__MODULE_ID__}.sceneActivated`,
+  SOCKET_SEND_EVENT: `${__MODULE_ID__}.socketSent`,
+  SOCKET_RECEIVE_EVENT: `${__MODULE_ID__}.socketReceived`
 }
 
 

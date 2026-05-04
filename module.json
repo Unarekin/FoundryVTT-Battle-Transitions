@@ -28,14 +28,6 @@
         }
       },
       {
-        "id": "socketlib",
-        "type": "module",
-        "manifest": "https://raw.githubusercontent.com/manuelVo/foundryvtt-socketlib/master/module.json",
-        "compatibility": {
-          "verified": "1.1.0"
-        }
-      },
-      {
         "id": "lib-wrapper",
         "type": "module",
         "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/download/v1.13.2.0/module.json",

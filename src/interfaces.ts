@@ -20,6 +20,14 @@ export interface DataURLBuffer {
 
 export type SerializedAsset = TextureBuffer | DataURLBuffer | string;
 
+export interface SocketMessage {
+  id: string;
+  timestamp: number;
+  sender: string;
+  name: string;
+  users: string[];
+  args: unknown[];
+}
 
 export interface TransitionSequence {
   caller: string;

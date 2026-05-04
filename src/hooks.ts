@@ -1,11 +1,11 @@
 import { awaitHook, log } from './utils';
 import { SceneChangeStep } from './steps';
 import { SceneConfigMixin } from "./applications";
-import SocketHandler from "./SocketHandler";
 import { CUSTOM_HOOKS } from "./constants";
 import { registerHelpers, registerTemplates } from "./templates";
 import { ConfigurationHandler } from './ConfigurationHandler';
 import { BattleTransition } from 'BattleTransition';
+import { SocketHandler } from "./sockets";
 
 
 
@@ -17,6 +17,12 @@ Hooks.once("canvasReady", () => {
 })
 
 Hooks.once("ready", () => {
+
+  game.BattleTransitions = {
+    transition: BattleTransition,
+    socket: new SocketHandler()
+  }
+
   const entries = Object.entries(CONFIG.Scene.sheetClasses.base);
   for (const [key, { cls }] of entries) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -67,12 +73,6 @@ Hooks.once("init", async () => {
       return wrapped(...args);
     });
   }
-});
-
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-(Hooks as any).once("socketlib.ready", () => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-  SocketHandler.register(socketlib.registerModule(__MODULE_ID__));
 });
 
 
