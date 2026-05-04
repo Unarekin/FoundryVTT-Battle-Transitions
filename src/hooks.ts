@@ -116,3 +116,28 @@ Hooks.on("updateScene", (scene: Scene, delta: Scene.UpdateData, options: Scene.D
     awaitHook("canvasReady").then(() => { (Hooks as any).callAll(CUSTOM_HOOKS.SCENE_ACTIVATED, scene); }).catch(console.error);
   }
 });
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+Hooks.on("renderSceneDirectory", (app: foundry.applications.sidebar.tabs.SceneDirectory, html: HTMLElement, context: foundry.applications.sidebar.tabs.SceneDirectory.RenderContext, options: foundry.applications.sidebar.tabs.SceneDirectory.RenderOptions) => {
+  const container = document.createElement("div");
+  container.classList.add("header-actions", "action-buttons", "flexrow");
+
+  const button = document.createElement("button");
+  button.dataset.action = "openTransitionBuilder";
+  button.dataset.tooltip = game.i18n?.localize("BATTLETRANSITIONS.NAVIGATION.TOOLTIPS.TRANSITIONBUILDER");
+
+  const icon = document.createElement("i");
+  //fas bt-icon fa-fw bt-crossed-swords
+  icon.classList.add("fa-solid", "bt-icon", "fa-fw", "bt-crossed-swords");
+  button.appendChild(icon);
+  button.innerHTML += game.i18n?.localize("BATTLETRANSITIONS.NAVIGATION.CUSTOM");
+
+  container.appendChild(button);
+
+  const searchElement = html.querySelector(`search`);
+  if (searchElement instanceof HTMLElement)
+    searchElement.before(container);
+
+  button.addEventListener("click", () => { BattleTransition.BuildTransition().catch(console.error); });
+
+})
