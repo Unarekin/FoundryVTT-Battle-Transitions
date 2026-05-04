@@ -127,8 +127,8 @@ Hooks.on("renderSceneDirectory", (app: foundry.applications.sidebar.tabs.SceneDi
   button.dataset.tooltip = game.i18n?.localize("BATTLETRANSITIONS.NAVIGATION.TOOLTIPS.TRANSITIONBUILDER");
 
   const icon = document.createElement("i");
-  //fas bt-icon fa-fw bt-crossed-swords
-  icon.classList.add("fa-solid", "bt-icon", "fa-fw", "bt-crossed-swords");
+
+  icon.classList.add("fa-solid", "fa-fw", "fa-hammer");
   button.appendChild(icon);
   button.innerHTML += game.i18n?.localize("BATTLETRANSITIONS.NAVIGATION.CUSTOM");
 
