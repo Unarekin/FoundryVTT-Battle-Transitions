@@ -2,7 +2,7 @@ import { VideoConfigApplication } from "../applications";
 import { FileNotFoundError } from "../errors";
 import { ChromaKeyFilter, TextureSwapFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, getFormDataExtended } from "../utils";
+import { createColorTexture, expandedFormData } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { VideoConfiguration } from "./types";
 
@@ -65,11 +65,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
   }
 
   public static fromFormElement(form: HTMLFormElement): VideoStep {
-    const formData = getFormDataExtended(form);
-    const data = (foundry.utils.expandObject(formData.object) as Record<string, unknown>).step as Partial<VideoConfiguration>;
-
-    // data.chromaRange = [(data as any).keyRangeX, (data as any).keyRangeY];
-
+    const data = expandedFormData<Partial<VideoConfiguration>>(form);
     return new VideoStep({
       ...VideoStep.DefaultSettings,
       id: foundry.utils.randomID(),

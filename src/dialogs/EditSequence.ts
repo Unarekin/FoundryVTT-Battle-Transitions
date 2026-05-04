@@ -1,5 +1,5 @@
 import { TransitionConfiguration } from "../steps";
-import { formDataExtendedClass, getStepClassByKey, localize, renderTemplateFunc, templateDir } from "../utils";
+import { expandedFormData, getStepClassByKey, localize, renderTemplateFunc, templateDir } from "../utils";
 import { addStep, deleteSelectedStep, selectItem, setEnabledButtons, setupSequenceList } from "./functions";
 import { InvalidTransitionError } from "../errors";
 import { DeepPartial } from "./types";
@@ -131,7 +131,8 @@ async function AddStep(this: foundry.applications.api.DialogV2) {
 
 function onFormChange(form: HTMLFormElement) {
   try {
-    const data = foundry.utils.expandObject(new (formDataExtendedClass())(form).object) as Record<string, unknown>;
+
+    const data = expandedFormData(form);
 
     const currentStep = data.step as Record<string, unknown>;
     if (currentStep) {

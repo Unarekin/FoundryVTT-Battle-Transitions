@@ -1,8 +1,7 @@
 import { StepConfigApplication } from "./StepConfigApplication";
 import { SoundConfiguration, SoundStep } from "../../steps";
 import { SoundContext } from "./types";
-import { formDataExtendedClass } from "../../utils";
-import { templateDir } from "../../utils";
+import { expandedFormData, templateDir } from "../../utils";
 
 export class SoundConfigApplication extends StepConfigApplication<SoundConfiguration> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -28,7 +27,7 @@ export class SoundConfigApplication extends StepConfigApplication<SoundConfigura
 
   _onChangeForm(formConfig: foundry.applications.api.ApplicationV2.FormConfiguration, e: Event): void {
     super._onChangeForm(formConfig, e);
-    const data = foundry.utils.expandObject((new (formDataExtendedClass())(this.element as HTMLFormElement)).object) as Record<string, unknown>;
+    const data = expandedFormData(this.element as HTMLFormElement);
     const preview = this.element.querySelector(`[data-role="audio-preview"]`);
     if (preview instanceof HTMLAudioElement) {
       const url = new URL(data.file as string ?? "", window.location.href);

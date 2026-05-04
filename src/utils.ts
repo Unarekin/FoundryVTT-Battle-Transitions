@@ -664,22 +664,22 @@ export function templateDir(path: string): string {
   return `modules/${__MODULE_ID__}/templates/${path}`;
 }
 
-// Simple wrapper to handle difference in namespace between Foundry v12 and v13
-export function formDataExtendedClass(): typeof FormDataExtended {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-  if (game?.release?.isNewer("13")) return (foundry.applications as any).ux.FormDataExtended;
-  else return FormDataExtended;
-}
+// // Simple wrapper to handle difference in namespace between Foundry v12 and v13
+// export function formDataExtendedClass(): typeof FormDataExtended {
+//   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+//   if (game?.release?.isNewer("13")) return (foundry.applications as any).ux.FormDataExtended;
+//   else return FormDataExtended;
+// }
 
-export function getFormDataExtended(form: HTMLFormElement): FormDataExtended {
-  return (new (formDataExtendedClass())(form));
-}
+// export function getFormDataExtended(form: HTMLFormElement): FormDataExtended {
+//   return (new (formDataExtendedClass())(form));
+// }
 
-export function gameClass(): typeof Game {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-  if (game?.release?.isNewer("13")) return ((foundry as any).Game);
-  else return Game;
-}
+// export function gameClass(): typeof Game {
+//   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+//   if (game?.release?.isNewer("13")) return ((foundry as any).Game);
+//   else return Game;
+// }
 
 
 export function generateBackgroundConfig(background: TextureLike): { backgroundType: BackgroundType, backgroundImage: string, backgroundColor: string } {
@@ -696,4 +696,9 @@ export function generateDualStyleConfig(style: DualStyle): { applyToScene: boole
     applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
     applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
   };
+}
+
+export function expandedFormData<t extends Record<string, unknown>>(form: HTMLFormElement): t {
+  const data = new foundry.applications.ux.FormDataExtended(form);
+  return foundry.utils.expandObject(data.object) as t;
 }

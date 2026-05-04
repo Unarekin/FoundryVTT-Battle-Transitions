@@ -1,6 +1,6 @@
 import { StepConfigApplication } from "./StepConfigApplication";
 import { generateBackgroundTypeSelectOptions, VideoConfiguration, VideoStep } from "../../steps";
-import { formDataExtendedClass, templateDir } from "../../utils";
+import { expandedFormData, templateDir } from "../../utils";
 import { VideoContext } from "./types";
 import { DeepPartial } from "../types";
 
@@ -33,7 +33,7 @@ export class VideoConfigApplication extends StepConfigApplication<VideoConfigura
   _onChangeForm(formConfig: foundry.applications.api.ApplicationV2.FormConfiguration, e: Event): void {
     super._onChangeForm(formConfig, e);
 
-    const data = foundry.utils.expandObject((new (formDataExtendedClass())(this.element as HTMLFormElement)).object) as Record<string, unknown>;
+    const data = expandedFormData(this.element as HTMLFormElement);
     const preview = this.element.querySelector(`[data-role="video-preview"]`);
     if (preview instanceof HTMLVideoElement) {
       const url = new URL(data.file as string ?? "", window.location.href);

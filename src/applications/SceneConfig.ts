@@ -4,7 +4,7 @@ import { confirm, generateMacro } from "./functions";
 import { InvalidTransitionError, LocalizedError } from "../errors";
 import { SceneConfiguration } from "../interfaces";
 import { TransitionConfiguration } from "../steps";
-import { downloadJSON, formDataExtendedClass, getStepClassByKey, localize, templateDir, uploadJSON } from "../utils";
+import { downloadJSON, expandedFormData, getStepClassByKey, localize, templateDir, uploadJSON } from "../utils";
 import { AddStepApplication } from "./AddStepApplication";
 import { BattleTransition } from "../BattleTransition";
 import { SceneConfigContext } from "./types";
@@ -190,7 +190,7 @@ export function SceneConfigMixin(Base: BaseType) {
       if (!form) return;
       const data = foundry.utils.mergeObject(
         { transition: this.#sceneConfiguration },
-        foundry.utils.expandObject(new (formDataExtendedClass())(form).object)
+        expandedFormData(form)
       ) as Record<string, unknown>;
 
 

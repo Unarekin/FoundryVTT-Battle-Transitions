@@ -6,7 +6,7 @@ import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfigurati
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deserializeTexture, formDataExtendedClass, generateBackgroundConfig, generateDualStyleConfig, getStepClassByKey, localize, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
+import { backgroundType, deserializeTexture, expandedFormData, generateBackgroundConfig, generateDualStyleConfig, getStepClassByKey, localize, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./applications";
 import { filters } from "./filters";
@@ -124,7 +124,7 @@ export class BattleTransition {
           callback: (event: Event, button: HTMLButtonElement, dialog: foundry.applications.api.DialogV2.Any) => {
             const form = dialog.form;
             if (!(form instanceof HTMLFormElement)) throw new InvalidElementError();
-            const formData = foundry.utils.expandObject((new (formDataExtendedClass())(form)).object) as Record<string, unknown>
+            const formData = expandedFormData(form);
             return Promise.resolve(coerceScene(formData.scene));
           }
         }

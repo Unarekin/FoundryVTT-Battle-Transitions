@@ -1,4 +1,4 @@
-import { createColorTexture, gameClass } from "./utils";
+import { createColorTexture } from "./utils";
 
 export function coerceColor(source: unknown): PIXI.Color | undefined {
   try {
@@ -24,15 +24,15 @@ export function coerceTexture(source: unknown): PIXI.Texture | undefined {
 }
 
 export function coerceScene(arg: unknown): Scene | undefined {
-  if (!((game instanceof gameClass()) && game.scenes)) return;
+  if (!game?.scenes) return;
+
 
   if (typeof arg === "string") {
-    let scene = game.scenes.get(arg);
+    let scene: unknown = game.scenes.get(arg);
     if (scene instanceof Scene) return scene;
     scene = game.scenes.getName(arg);
     if (scene instanceof Scene) return scene;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    scene = fromUuidSync(arg) as any;
+    scene = fromUuidSync(arg as `Scene.${string}`) as any;
     if (scene instanceof Scene) return scene;
   } else if (arg instanceof Scene) {
     return arg;
@@ -63,7 +63,7 @@ export function coerceUser(arg: unknown): User | undefined {
     if (user instanceof User) return user;
     user = game?.users?.getName(arg);
     if (user instanceof User) return user;
-    user = (fromUuidSync(arg) as User | undefined);
+    user = (fromUuidSync(arg as `User.${string}`) as User | undefined);
     if (user instanceof User) return user;
   }
 }
