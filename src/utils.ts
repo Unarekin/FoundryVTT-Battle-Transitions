@@ -7,7 +7,7 @@ import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 import { bytesToBase64 } from "./lib/base64Utils";
 import { TransitionStep, BackgroundTransition, TransitionConfiguration, TargetedTransition } from "./steps";
 import * as steps from "./steps";
-import { BackgroundType, TextureLike } from "./types";
+import { BackgroundType, DualStyle, TextureLike } from "./types";
 import json from "./mime.json";
 import { DataMigration } from "./DataMigration";
 import { Migrator } from "./migration";
@@ -689,4 +689,11 @@ export function generateBackgroundConfig(background: TextureLike): { backgroundT
     backgroundColor: bgType === "color" ? coerceColorHex(background) ?? "#00000000" : "",
     backgroundImage: bgType === "image" ? background as string : "",
   }
+}
+
+export function generateDualStyleConfig(style: DualStyle): { applyToScene: boolean, applyToOverlay: boolean } {
+  return {
+    applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
+    applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
+  };
 }

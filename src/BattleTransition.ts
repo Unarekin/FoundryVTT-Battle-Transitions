@@ -1,16 +1,16 @@
 import { coerceColorHex, coerceMacro, coerceScene, coerceUser } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants.js";
-import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidElementError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
+import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidElementError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep, BilinearWipeStep } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep, BilinearWipeStep, ClearEffectsStep } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, generateBackgroundConfig, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
+import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, generateBackgroundConfig, generateDualStyleConfig, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./applications";
 import { filters } from "./filters";
-import { isValidBilinearDirection, isValidClockDirection, isValidEasing, isValidRadialDirection, isValidWipeDirection } from "./validation";
+import { isValidClockDirection, isValidEasing, isValidWipeDirection } from "./validation";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 import { logDeprecation } from "./deprecationHelper";
 
@@ -19,6 +19,10 @@ import { logDeprecation } from "./deprecationHelper";
 type TransitionSequenceCallback = (transition: BattleTransition) => BattleTransition;
 
 // #endregion Type aliases (1)
+
+function log300SignatureDeprecation(method: string) {
+  logDeprecation(`BattleTransition.${method}`, `The multi-argument method signature for BattleTransition#${method}} is deprecated.\nUse the object-based configuration signature instead.`, "3.0.0", "4.0.0", "https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Deprecations#300");
+}
 
 // #region Classes (1)
 
@@ -376,7 +380,7 @@ export class BattleTransition {
   public angularWipe(config: Partial<AngularWipeConfiguration>): this
   public angularWipe(...args: unknown[]): this {
     if (args.length !== 0 && typeof args[0] !== "object") {
-      logDeprecation("BattleTransition.angularWipe", "The multi-argument method signature for BattleTransition#angularWipe is deprecated.\nUse the object-based configuration signature instead.", "3.0.0", "4.0.0", "https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Deprecations#300");
+      log300SignatureDeprecation("angularWipe");
       const config: AngularWipeConfiguration = foundry.utils.deepClone(AngularWipeStep.DefaultSettings);
 
       const [duration = 1000, background = "transparent", easing = "none"] = args as [number | string, TextureLike, Easing];
@@ -402,7 +406,7 @@ export class BattleTransition {
 
     const config: AngularWipeConfiguration = {
       ...foundry.utils.deepClone(AngularWipeStep.DefaultSettings),
-      ...(args[0] as AngularWipeConfiguration),
+      ...(args[0] ?? {}) as AngularWipeConfiguration,
       id: foundry.utils.randomID()
     };
 
@@ -431,7 +435,7 @@ export class BattleTransition {
   public barWipe(...args: unknown[]): this {
 
     if (args.length !== 0 && typeof args[0] !== "object") {
-      logDeprecation("BattleTransition.barWipe", "The multi-argument method signature for BattleTransition#barWipe is deprecated.\nUse the object-based configuration signature instead.", "3.0.0", "4.0.0", "https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Deprecations#300");
+      log300SignatureDeprecation("barWipe");
       const [bars = 4, direction = "horizontal", duration = 1000, background = "transparent", easing = "none"] = args as [number, "horizontal" | "vertical", number, TextureLike, Easing];
       const bgType = backgroundType(background);
       return this.barWipe({
@@ -447,10 +451,13 @@ export class BattleTransition {
 
     const config = foundry.utils.mergeObject(
       foundry.utils.deepClone(BarWipeStep.DefaultSettings),
-      (args[0] as Partial<BarWipeConfiguration>)
+      (args[0] ?? {}) as Partial<BarWipeConfiguration>
     ) as BarWipeConfiguration;
 
-    this.#sequence.push(config);
+    this.#sequence.push({
+      ...config,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 
@@ -475,7 +482,7 @@ export class BattleTransition {
   public bilinearWipe(...args: unknown[]): this {
 
     if (args.length !== 0 && typeof args[0] !== "object") {
-      logDeprecation("BattleTransition.bilinearWipe", "The multi-argument method signature for BattleTransition#bilinearWipe is deprecated.\nUse the object-based configuration signature instead.", "3.0.0", "4.0.0", "https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Deprecations#300");
+      log300SignatureDeprecation("bilinearWipe");
 
       const [direction = "vertical", radial = "inside", duration = 1000, background = "transparent", easing = "none"] = args as [BilinearDirection, RadialDirection, number, TextureLike, Easing];
 
@@ -490,16 +497,20 @@ export class BattleTransition {
 
     const config = foundry.utils.mergeObject(
       foundry.utils.deepClone(BilinearWipeStep.DefaultSettings),
-      args[0] as Partial<BilinearWipeConfiguration>
+      (args[0] ?? {}) as Partial<BilinearWipeConfiguration>
     ) as BilinearWipeConfiguration
 
-    this.#sequence.push(config);
+    this.#sequence.push({
+      ...config,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 
   /**
    * Triggers an animation from the Boss Splash Screen module
    * @param {BossSplashConfiguration} config - {@link BossSplashConfiguration}
+   * @returns {BattleTransition}
    */
   public bossSplash(config: BossSplashConfiguration): this {
     if (!game?.modules?.get("boss-splash")?.active) {
@@ -524,31 +535,59 @@ export class BattleTransition {
    * @param {number} [duration=1000] - Duration, in milliseconds, the dissolve should take to complete
    * @param {number} [burnSize=1.3] - Relative size of the burn effect
    * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public burn(duration: number = 1000, burnSize: number = 1.3, easing: Easing = "none"): this {
+  // TODO: Remove signature in 4.0
+  public burn(duration: number, burnSize: number, easing: Easing): this
+  public burn(config: Partial<FireDissolveConfiguration>): this
+  public burn(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("burn");
+      const [duration = 1000, burnSize = 1.3, easing = "none"] = args as [number, number, Easing];
+      return this.burn({ duration, burnSize, easing });
+    }
+
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(FireDissolveStep.DefaultSettings),
+      (args[0] ?? {}) as Partial<FireDissolveConfiguration>
+    ) as FireDissolveConfiguration;
+
     this.#sequence.push({
-      ...FireDissolveStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      duration,
-      burnSize,
-      easing
-    } as FireDissolveConfiguration)
+      ...config,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 
   /**
    * Removes any active transition effects from the overlay, the scene, or both
    * @param {DualStyle} [style=0] - {@link DualStyle}
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public clearEffects(style: DualStyle = DualStyle.Both): this {
-    const step = getStepClassByKey("cleareffects");
-    if (!step) throw new InvalidTransitionError("cleareffects");
+  // TODO: Remove signature in 4.0
+  public clearEffects(style: DualStyle): this
+  public clearEffects(config: Partial<ClearEffectsConfiguration>): this
+  public clearEffects(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("clearEffects");
+      const [style = DualStyle.Both] = args as [DualStyle];
+      return this.clearEffects({
+        ...generateDualStyleConfig(style)
+      });
+    }
+
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(ClearEffectsStep.DefaultSettings),
+      (args[0] ?? {}) as Partial<ClearEffectsConfiguration>
+    ) as ClearEffectsConfiguration
+
     this.#sequence.push({
-      ...step.DefaultSettings,
-      id: foundry.utils.randomID(),
-      applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
-      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
-    } as ClearEffectsConfiguration);
+      ...config,
+      id: foundry.utils.randomID()
+    });
+
     return this;
   }
 
@@ -559,36 +598,36 @@ export class BattleTransition {
    * @param {number} [duration=1000] - Duration, in milliseconds, that the wipe should last
    * @param {TextureLike} [background="transparent"] - {@link TextureLike}
    * @param {Easing} [easing="none"] - {@link Easing}
-   * @returns 
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public clockWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    // Sanity check arguments
-    if (!isValidClockDirection(clockDirection)) throw new InvalidDirectionError(clockDirection);
-    if (!isValidWipeDirection(direction)) throw new InvalidDirectionError(direction);
-    if (isNaN(parseFloat(duration.toString())) || duration < 0) throw new InvalidDurationError(duration);
-    if (!isValidEasing(easing)) throw new InvalidEasingError(easing);
+  // TODO: Remove signature in 4.0
+  public clockWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number, background: TextureLike, easing: Easing): this
+  public clockWipe(config: Partial<ClockWipeConfiguration>): this
+  public clockWipe(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("clockWipe");
 
+      const [clockDirection = "clockwise", direction = "top", duration = 1000, background = "transparent", easing = "none"] = args as [ClockDirection, WipeDirection, number, TextureLike, Easing];
 
-    const serializedTexture = serializeTexture(background);
-
-    const bgType = backgroundType(background);
-
-
-    const config: ClockWipeConfiguration = {
-      ...ClockWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      serializedTexture,
-      duration,
-      clockDirection,
-      direction,
-      backgroundType: bgType,
-      backgroundColor: bgType === "color" ? coerceColorHex(background) ?? "" : "",
-      backgroundImage: bgType === "image" ? background as string : "",
-      easing
+      return this.clockWipe({
+        duration,
+        clockDirection,
+        direction,
+        easing,
+        ...generateBackgroundConfig(background)
+      });
     }
 
-    this.#sequence.push(config);
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(ClockWipeStep.DefaultSettings),
+      (args[0] ?? {}) as Partial<ClockWipeConfiguration>
+    ) as ClockWipeConfiguration;
 
+    this.#sequence.push({
+      ...config,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 
