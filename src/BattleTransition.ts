@@ -2,7 +2,7 @@ import { coerceColorHex, coerceMacro, coerceScene, coerceUser } from "./coercion
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants.js";
 import { InvalidElementError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep, BilinearWipeStep, ClearEffectsStep, FlashStep, HueShiftConfiguration, HueShiftStep } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep, BilinearWipeStep, ClearEffectsStep, FlashStep, HueShiftConfiguration, HueShiftStep, InvertStep, LoadingTipStep } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
@@ -814,17 +814,30 @@ export class BattleTransition {
   /**
    * Inverts the current overlay texture
    * @param {DualStyle} [style=0] - 0 = Overlay, 1 = Scene, 2 = Both
-   * @returns 
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public invert(style: DualStyle = DualStyle.Overlay): this {
-    const step = getStepClassByKey("invert");
-    if (!step) throw new InvalidTransitionError("invert");
+  // TODO: Remove signature in 4.0
+  public invert(style: DualStyle): this
+  public invert(config: Partial<InvertConfiguration>): this
+  public invert(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("invert");
+      const [style = DualStyle.Overlay] = args as [DualStyle];
+      return this.invert({
+        ...generateDualStyleConfig(style)
+      });
+    }
+
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(InvertStep.DefaultSettings),
+      (args[0] ?? {})
+    ) as InvertConfiguration;
+
     this.#sequence.push({
-      ...step.DefaultSettings,
-      id: foundry.utils.randomID(),
-      applyToScene: style === DualStyle.Scene || style === DualStyle.Both,
-      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both
-    } as InvertConfiguration);
+      ...config,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 
@@ -834,72 +847,89 @@ export class BattleTransition {
    * @param {number} [duration=1000] - Duration, in milliseconds, for this wipe to take to complete
    * @param {TextureLike} [background="transparent"] - {@link TextureLike}
    * @param {Easing} [easing="none"] - {@link Easing}
-   * @returns 
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public linearWipe(direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const serializedTexture = serializeTexture(background);
+  // TODO: Remove signature in 4.0
+  public linearWipe(direction: WipeDirection, duration: number, background: TextureLike, easing: Easing): this
+  public linearWipe(config: Partial<LinearWipeConfiguration>): this
+  public linearWipe(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("linearWipe");
 
-    const bgType = backgroundType(background);
+      const [direction = "left", duration = 1000, background = "transparent", easing = "none"] = args as [WipeDirection, number, TextureLike, Easing];
+      return this.linearWipe({
+        direction,
+        duration,
+        ...generateBackgroundConfig(background),
+        easing
+      });
+    }
 
-    const config: LinearWipeConfiguration = {
-      ...LinearWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      serializedTexture,
-      direction,
-      duration,
-      backgroundType: bgType,
-      backgroundColor: bgType === "color" ? coerceColorHex(background) ?? "" : "",
-      backgroundImage: bgType === "image" ? background as string : "",
-      easing,
-    };
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(LinearWipeStep.DefaultSettings),
+      (args[0] ?? {})
+    ) as LinearWipeConfiguration;
 
-    this.#sequence.push(config);
+    this.#sequence.push({
+      ...config,
+      id: foundry.utils.randomID()
+    });
+
     return this;
   }
 
+  /**
+   * Adds a bit of text to the screen
+   * @param {string} message 
+   * @param {LoadingTipLocation} location - {@link LoadingTipLocation}
+   * @param {number} duration 
+   * @param {PIXI.HTMLTextStyle} style - {@link PIXI.HTMLTextStyle}
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
+   */
+  // TODO: Remove signature in 4.0
   public loadingTip(message: string, location?: LoadingTipLocation, duration?: number, style?: PIXI.HTMLTextStyle): this
+  /**
+   * Adds a bit of text to the screen
+   * @param {string} rollTable - ID of a {@link Rolltable}
+   * @param {LoadingTipLocation} location - {@link LoadingTipLocation}
+   * @param {PIXI.HTMLTextStyle} style - {@link PIXI.HTMLTextStyle}
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
+   */
+  // TODO: Remove signature in 4.0
   public loadingTip(rollTable: string, location?: LoadingTipLocation, style?: PIXI.HTMLTextStyle): this
-  public loadingTip(source: string, location: LoadingTipLocation = "bottomcenter", ...others: unknown[]): this {
-    const step = getStepClassByKey("loadingtip");
-    if (!step) throw new InvalidTransitionError("loadingtip");
+  public loadingTip(config: Partial<LoadingTipConfiguration>): this
+  public loadingTip(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("loadingTip");
+      const [source, location = "bottomcenter"] = args as [string, LoadingTipLocation];
 
-    // Parse arguments
-    const duration: number = typeof others[0] === "number" ? others[0] : 0;
+      const table = fromUuidSync(source as `RollTable.${string}`);
 
-    let style: PIXI.HTMLTextStyle | null = null;
-    if (others[1] instanceof PIXI.HTMLTextStyle) {
-      style = others[1];
-    } else if (others[0] instanceof PIXI.HTMLTextStyle) {
-      style = others[0];
-    } else {
-      style = new PIXI.HTMLTextStyle();
-      deepCopy(style, PIXI.HTMLTextStyle.defaultStyle);
-      deepCopy(style, (step.DefaultSettings as LoadingTipConfiguration).style);
+      const style = JSON.parse(JSON.stringify(typeof args[2] === "object" ? args[2] : typeof args[3] === "object" ? args[3] : {})) as Record<string, unknown>
+
+      return this.loadingTip({
+        location,
+        source: table instanceof RollTable ? "rolltable" : "string",
+        table: table instanceof RollTable ? source : "",
+        message: table instanceof RollTable ? "" : source,
+        duration: typeof args[2] === "number" ? args[2] : 0,
+        style
+      } as LoadingTipConfiguration)
+
     }
 
-    // Check for UUID
-    const parsed = typeof foundry.utils.parseUuid === "function" ? foundry.utils.parseUuid(source) : parseUuid(source);
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(LoadingTipStep.DefaultSettings),
+      (args[0] ?? {})
+    ) as LoadingTipConfiguration;
 
-    const config: LoadingTipConfiguration = {
-      ...step.DefaultSettings as LoadingTipConfiguration,
-      id: foundry.utils.randomID(),
-      duration,
-      location
-    }
-
-    if (parsed && parsed.type === RollTable.documentName) {
-      const table: RollTable | undefined = fromUuidSync<RollTable>(source) as RollTable | undefined;
-      if (table instanceof RollTable) {
-        config.source = "rolltable";
-        config.table = table.uuid;
-      }
-    } else {
-      config.source = "string";
-      config.message = source;
-    }
-    config.style = JSON.parse(JSON.stringify(style)) as Record<string, unknown>;
-
-    this.#sequence.push(config);
+    this.#sequence.push({
+      ...config,
+      id: foundry.utils.randomID()
+    });
 
     return this;
   }
@@ -907,17 +937,29 @@ export class BattleTransition {
   /**
    * Queues up a macro execution
    * @param {string | Macro} macro - The {@link Macro} to execute
-   * @returns 
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public macro(macro: string | Macro): this {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    const actualMacro = coerceMacro(macro as any);
-    if (!actualMacro) throw new InvalidMacroError(typeof macro === "string" ? macro : typeof macro);
+  // TODO: Remove signature in 4.0
+  public macro(macro: string | Macro): this
+  public macro(config: Partial<MacroConfiguration>): this
+  public macro(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("macro");
+      return this.macro({
+        macro: typeof args[0] === "string" ? args[0] : args[0] instanceof Macro ? args[0].uuid : ""
+      });
+    }
+
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(MacroStep.DefaultSettings),
+      (args[0] ?? {})
+    ) as MacroConfiguration;
+
     this.#sequence.push({
-      ...MacroStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      macro: actualMacro.uuid
-    } as MacroConfiguration);
+      ...config,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 
