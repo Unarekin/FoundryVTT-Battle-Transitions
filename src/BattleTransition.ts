@@ -1378,19 +1378,38 @@ export class BattleTransition {
    * @param {number} [duration=1000] - Duration, in milliseconds, the wipe should last
    * @param {TextureLike} [background="transparent"] {@link TextureLike}
    * @param {Easing} [easing="none"] - {@link Easing}
-   * @returns 
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public spiralShutter(direction: ClockDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const serializedTexture = serializeTexture(background);
+  // TODO: Remove signature in 4.0
+  public spiralShutter(direction: ClockDirection, radial: RadialDirection, duration: number, background: TextureLike, easing: Easing): this
+  /**
+   * Queues up a wipe that operates much like a radial wipe, but in a spiral pattern rather than circular
+   * @param {SpiralShutterConfiguration} config - {@link SpiralShutterConfiguration}
+   * @returns {BattleTransition}
+   */
+  public spiralShutter(config: Partial<SpiralShutterConfiguration>): this
+  public spiralShutter(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("spiralShutter");
+      const [direction = "clockwise", radial = "inside", duration = 1000, background = "transparent", easing = "none"] = args as [ClockDirection, RadialDirection, number, TextureLike, Easing];
+      return this.spiralShutter({
+        direction,
+        radial,
+        duration,
+        easing,
+        ...generateBackgroundConfig(background)
+      });
+    }
+
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(SpiralShutterStep.DefaultSettings),
+      (args[0] ?? {})
+    ) as SpiralShutterConfiguration;
     this.#sequence.push({
-      ...SpiralShutterStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      serializedTexture,
-      duration,
-      easing,
-      direction,
-      radial
-    } as SpiralShutterConfiguration)
+      ...config,
+      id: foundry.utils.randomID()
+    });
 
     return this;
   }
@@ -1403,23 +1422,40 @@ export class BattleTransition {
    * @param {number} [duration=1000] - Duration, in milliseconds, for the wipe to last
    * @param {TextureLike} background - {@link TextureLike}
    * @param {Easing} easing - {@link Easing}
-   * @returns 
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public spiralWipe(clock: ClockDirection, radial: RadialDirection, direction: WipeDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const serializedTexture = serializeTexture(background);
+  // TODO: Remove signature in 4.0
+  public spiralWipe(clock: ClockDirection, radial: RadialDirection, direction: WipeDirection, background: TextureLike, easing: Easing): this
+  /**
+   * A linear spiral wipe
+   * @param {SpiralWipeConfiguration} config - {@link SpiralWipeConfiguration} 
+   * @returns {BattleTransition}
+   */
+  public spiralWipe(config: Partial<SpiralWipeConfiguration>): this
+  public spiralWipe(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("spiralWipe");
+      const [clockDirection = "clockwise", radial = "outside", direction = "left", duration = 1000, background = "transparent", easing = "none"] = args as [ClockDirection, RadialDirection, WipeDirection, number, TextureLike, Easing]
+      return this.spiralWipe({
+        clockDirection,
+        radial,
+        duration,
+        direction,
+        easing,
+        ...generateBackgroundConfig(background)
+      });
+    }
 
-    const backgroundType = typeof serializedTexture === "string" && isColor(serializedTexture) ? "color" : "image";
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(SpiralWipeStep.DefaultSettings),
+      (args[0] ?? {})
+    ) as SpiralWipeConfiguration
+
     this.#sequence.push({
-      ...SpiralWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      duration,
-      direction,
-      clockDirection: clock,
-      radial,
-      easing,
-      backgroundType,
-      serializedTexture
-    } as SpiralWipeConfiguration);
+      ...config,
+      id: foundry.utils.randomID()
+    });
 
     return this;
   }
