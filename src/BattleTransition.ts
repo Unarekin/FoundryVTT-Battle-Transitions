@@ -1,12 +1,12 @@
-import { coerceColorHex, coerceMacro, coerceScene, coerceUser } from "./coercion";
+import { coerceColorHex, coerceScene, coerceUser } from "./coercion";
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants.js";
-import { InvalidElementError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
+import { InvalidElementError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep, BilinearWipeStep, ClearEffectsStep, FlashStep, HueShiftConfiguration, HueShiftStep, InvertStep, LoadingTipStep } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep, BilinearWipeStep, ClearEffectsStep, FlashStep, HueShiftConfiguration, HueShiftStep, InvertStep, LoadingTipStep, PixelateConfiguration, PixelateStep } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, generateBackgroundConfig, generateDualStyleConfig, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
+import { backgroundType, deserializeTexture, formDataExtendedClass, generateBackgroundConfig, generateDualStyleConfig, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./applications";
 import { filters } from "./filters";
@@ -539,6 +539,11 @@ export class BattleTransition {
    */
   // TODO: Remove signature in 4.0
   public burn(duration: number, burnSize: number, easing: Easing): this
+  /**
+   * Dissolves the screen with a fire sort of effect
+   * @param {FireDissolveConfiguration} config - {@link FireDissolveConfiguration}
+   * @returns {BattleTransition}
+   */
   public burn(config: Partial<FireDissolveConfiguration>): this
   public burn(...args: unknown[]): this {
     if (args.length && typeof args[0] !== "object") {
@@ -567,6 +572,11 @@ export class BattleTransition {
    */
   // TODO: Remove signature in 4.0
   public clearEffects(style: DualStyle): this
+  /**
+   * Removes any active transition effects from the overlay, the scene, or both
+   * @param {ClearEffectsConfiguration} config - {@link ClearEffectsConfiguration}
+   * @returns {BattleTransition}
+   */
   public clearEffects(config: Partial<ClearEffectsConfiguration>): this
   public clearEffects(...args: unknown[]): this {
     if (args.length && typeof args[0] !== "object") {
@@ -602,6 +612,11 @@ export class BattleTransition {
    */
   // TODO: Remove signature in 4.0
   public clockWipe(clockDirection: ClockDirection, direction: WipeDirection, duration: number, background: TextureLike, easing: Easing): this
+  /**
+   * Adds a clock wipe to the queue
+   * @param {ClockWipeConfiguration} config - {@link ClockWipeConfiguration}
+   * @returns {BattleTransition}
+   */
   public clockWipe(config: Partial<ClockWipeConfiguration>): this
   public clockWipe(...args: unknown[]): this {
     if (args.length && typeof args[0] !== "object") {
@@ -641,6 +656,11 @@ export class BattleTransition {
    */
   // TODO: Remove signature in 4.0
   public diamondWipe(size: number, duration: number, background: TextureLike, easing: Easing): this
+  /**
+   * Adds a wipe that causes diamond-shapes to disappear over time from left to right
+   * @param {DiamondWipeConfiguration} config - {@link DiamondWipeConfiguration}
+   * @returns {BattleTransition}
+   */
   public diamondWipe(config: Partial<DiamondWipeConfiguration>): this
   public diamondWipe(...args: unknown[]): this {
     if (args.length && typeof args[0] !== "object") {
@@ -704,6 +724,11 @@ export class BattleTransition {
    */
   // TODO: Remove signature in 4.0
   public fade(duration: number, background: TextureLike, easing: Easing): this
+  /**
+   * Fades the screen
+   * @param {FadeConfiguration} config - {@link FadeConfiguration}
+   * @returns {BattleTransition}
+   */
   public fade(config: Partial<FadeConfiguration>): this
   public fade(...args: unknown[]): this {
     if (args.length && typeof args[0] !== "object") {
@@ -738,6 +763,11 @@ export class BattleTransition {
    */
   // TODO: Remove signature in 4.0
   public flash(texture: TextureLike, duration: number, style: DualStyle): this
+  /**
+   * Changes the current overlay texture to another for a specified amount of time
+   * @param {FlashConfiguration} config - {@link FlashConfiguration}
+   * @returns {BattleTransition}
+   */
   public flash(config: Partial<FlashConfiguration>): this
   public flash(...args: unknown[]): this {
     if (args.length && typeof args[0] !== "object") {
@@ -764,7 +794,7 @@ export class BattleTransition {
 
   /**
    * Sets the transition overlay to invisible, but will still allow for playing transition effects.
-   * @returns 
+   * @returns {BattleTransition}
    */
   public hideOverlay(): this {
     this.#sequence.push({
@@ -775,7 +805,7 @@ export class BattleTransition {
   }
 
   /**
-   * 
+   * Shifts the hue of the overlay or screen
    * @param {number} amount - Amount by which to shift the hue
    * @param {number} [duration=0] - Duration, in milliseconds, the shift should take to complete
    * @param {Easing} [easing="none"] - {@link Easing}
@@ -785,6 +815,11 @@ export class BattleTransition {
    */
   // TODO: Remove signature in 4.0
   public hueShift(amount: number, duration: number, easing: Easing, style: DualStyle): this
+  /**
+   * Shifts the hue of the overlay or screen
+   * @param {HueShiftConfiguration} config - {@link HueShiftConfiguration}
+   * @returns {BattleTransition}
+   */
   public hueShift(config: Partial<HueShiftConfiguration>): this
   public hueShift(...args: unknown[]): this {
     if (args.length && typeof args[0] !== "object") {
@@ -819,6 +854,11 @@ export class BattleTransition {
    */
   // TODO: Remove signature in 4.0
   public invert(style: DualStyle): this
+  /**
+   * Inverts the current overlay texture
+   * @param {InvertConfiguration} config - {@link InvertConfiguration}
+   * @returns {BattleTransition}
+   */
   public invert(config: Partial<InvertConfiguration>): this
   public invert(...args: unknown[]): this {
     if (args.length && typeof args[0] !== "object") {
@@ -852,6 +892,11 @@ export class BattleTransition {
    */
   // TODO: Remove signature in 4.0
   public linearWipe(direction: WipeDirection, duration: number, background: TextureLike, easing: Easing): this
+  /**
+   * Adds a linear wipe to the queue
+   * @param {LinearWipeConfiguration} config - {@link LinearWipeConfiguration}
+   * @returns {BattleTransition}
+   */
   public linearWipe(config: Partial<LinearWipeConfiguration>): this
   public linearWipe(...args: unknown[]): this {
     if (args.length && typeof args[0] !== "object") {
@@ -900,6 +945,11 @@ export class BattleTransition {
    */
   // TODO: Remove signature in 4.0
   public loadingTip(rollTable: string, location?: LoadingTipLocation, style?: PIXI.HTMLTextStyle): this
+  /**
+   * Adds a bit of text to the screen
+   * @param {LoadingTipConfiguration} config - {@link LoadingTipConfiguration}
+   * @returns {BattleTransition}
+   */
   public loadingTip(config: Partial<LoadingTipConfiguration>): this
   public loadingTip(...args: unknown[]): this {
     if (args.length && typeof args[0] !== "object") {
@@ -942,6 +992,11 @@ export class BattleTransition {
    */
   // TODO: Remove signature in 4.0
   public macro(macro: string | Macro): this
+  /**
+   * Queues up a macro execution
+   * @param {MacroConfiguration} config - {@link MacroConfiguration}
+   * @returns {BattleTransition}
+   */
   public macro(config: Partial<MacroConfiguration>): this
   public macro(...args: unknown[]): this {
     if (args.length && typeof args[0] !== "object") {
@@ -968,26 +1023,44 @@ export class BattleTransition {
    * @param {number} [duration=1000] - Duration, in milliseconds the melt should take to complete
    * @param {TextureLike} [background="transparent"] - {@link TextureLike}
    * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public melt(duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const serializedTexture = serializeTexture(background);
+  // TODO: Remove signature in 4.0
+  public melt(duration: number, background: TextureLike, easing: Easing): this
+  /**
+   * Queues up a Doom-style screen melt
+   * @param {MeltConfiguration} config - {@link MeltConfiguration}
+   * @returns {BattleTransition}
+   */
+  public melt(config: Partial<MeltConfiguration>): this
+  public melt(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("melt");
+      const [duration = 1000, background = "transparent", easing = "none"] = args as [number, TextureLike, Easing];
+      return this.melt({
+        duration,
+        easing,
+        ...generateBackgroundConfig(background)
+      });
+    }
+
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(MeltStep.DefaultSettings),
+      (args[0] ?? {})
+    ) as MeltConfiguration;
 
     this.#sequence.push({
-      ...MeltStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      serializedTexture,
-      duration,
-      backgroundType: backgroundType(background),
-      easing
-    } as MeltConfiguration)
-
+      ...config,
+      id: foundry.utils.randomID()
+    });
     return this;
   }
 
-  /*
+  /**
    * Queues up a set of sequences to run in parallel
-   * @param {TransitionSequenceCallback[]} callbacks - Set of {@link TransitionSequenceCallback}s to build sequences to be run in parallel.  Do NOT call `.execute` at the end of these sequences.
-   * @returns 
+   * @param {TransitionSequenceCallback[]} callbacks - Set of {@link TransitionSequenceCallback}s to build sequences to be run in parallel.  Do NOT call `.execute` at the end of these sequences. 
+   * @returns {BattleTransition}
    */
   public parallel(...callbacks: TransitionSequenceCallback[]): this {
     const sequences: TransitionConfiguration[][] = [];
@@ -1017,20 +1090,38 @@ export class BattleTransition {
    * @param {number} [duration=1000] - Duration, in milliseconds, to scale up the pixels
    * @param {Easing} [easing="none"] - {@link Easing}
    * @param {DualStyle} [style=0] - 0 for overlay, 1 for scene, 2 for both
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public pixelate(maxSize: number = 100, duration: number = 1000, easing: Easing = "none", style: DualStyle = 0): this {
-    const step = getStepClassByKey("pixelate");
-    if (!step) throw new InvalidTransitionError("pixelate");
-    const config = {
-      ...step.DefaultSettings,
-      id: foundry.utils.randomID(),
-      maxSize,
-      duration,
-      easing,
-      applyToOverlay: style === DualStyle.Overlay || style === DualStyle.Both,
-      applyToScene: style === DualStyle.Scene || style === DualStyle.Both
-    };
-    this.#sequence.push(config);
+  // TODO: Remove signature in 4.0
+  public pixelate(maxSize: number, duration: number, easing: Easing, style: DualStyle): this
+  /**
+   * Progressively increases the relative size of displayed pixels
+   * @param {PixelateConfiguration} config - {@link PixelateConfiguration}
+   * @returns {BattleTransition}
+   */
+  public pixelate(config: Partial<PixelateConfiguration>): this
+  public pixelate(...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("pixelate");
+      const [maxSize = 100, duration = 1000, easing = "none", style = DualStyle.Overlay] = args as [number, number, Easing, DualStyle];
+      return this.pixelate({
+        maxSize,
+        duration,
+        easing,
+        ...generateDualStyleConfig(style)
+      });
+    }
+
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(PixelateStep.DefaultSettings),
+      (args[0] ?? {})
+    ) as PixelateConfiguration;
+
+    this.#sequence.push({
+      ...config,
+      id: foundry.utils.randomID()
+    });
 
     return this;
   }
@@ -1043,7 +1134,10 @@ export class BattleTransition {
    * @param {ZoomArg} [target=[0.5, 0.5]] - {@link ZoomArg} target on which to center the effect.
    * @param {TextureLike} [background="transparent"] - {@link TextureLike}
    * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
+  // TODO: Remove signature in 4.0
   public radialWipe(direction: RadialDirection, duration?: number, target?: ZoomArg, background?: TextureLike, easing?: Easing): this
   /**
    * Queues up a radial wipe
@@ -1051,9 +1145,22 @@ export class BattleTransition {
    * @param {number} [duration=1000] - Duration, in milliseconds, that the wipe should take to complete.
    * @param {TextureLike} [background="transparent"] - {@link TextureLike}
    * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
+  // TODO: Remove signature in 4.0
   public radialWipe(direction: RadialDirection, duration?: number, background?: TextureLike, easing?: Easing): this
-  public radialWipe(direction: RadialDirection, duration: number = 1000, ...args: unknown[]): this {
+  /**
+   * Queues up a radial wipe.
+   * @param {RadialWipeConfiguration} config - {@link RadialWipeConfiguration}
+   * @returns {BattleTransition}
+   */
+  public radialWipe(config: Partial<RadialWipeConfiguration>): this
+  public radialWipe(...args: unknown[]): this {
+    // public radialWipe(direction: RadialDirection, duration: number = 1000, ...args: unknown[]): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("radialWipe");
+    }
     const step = getStepClassByKey("radialwipe");
     if (!step) throw new InvalidTransitionError("radialwipe");
 
@@ -1104,16 +1211,6 @@ export class BattleTransition {
     return this;
   }
 
-
-  /**
-   * Sets the transition overlay to invisible, but will still allow for playing transition effects.
-   * @deprecated since 1.1.0 please use {@link hideOverlay} instead.
-   * @see {@link hideOverlay}
-   */
-  public removeOverlay(): this {
-    ui.notifications?.warn("BATTLETRANSITIONS.WARNINGS.REMOVEOVERLAYDEPRECATION", { localize: true });
-    return this.hideOverlay();
-  }
 
   /**
    * Repeats the previous transition step a specified number of times
@@ -1176,16 +1273,6 @@ export class BattleTransition {
   }
 
   /**
-   * Sets the transition overlay to visible again.
-   * @deprecated since version 1.1.0 please use {@link showOverlay} instead.
-   * @see {@link showOverlay}
-   */
-  public restoreOverlay(): this {
-    ui.notifications?.warn("BATTLETRANSITIONS.WARNINGS.RESTOREOVERLAYDEPRECATION", { localize: true });
-    return this.showOverlay();
-  }
-
-  /**
    * Starts the destination scene's ambient playlist/track if configured.
    */
   public startPlaylist(): this {
@@ -1235,26 +1322,52 @@ export class BattleTransition {
   }
 
   /**
-   * Plays a sound.  Will NOT wait for the sound to complete before continuing.
+   * Plays a sound.
    * @param {string} sound - Path to the sound
    * @param {number} [volume=100] - Volume at which to play the sound
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
+  // TODO: Remove signature in 4.0
   public sound(sound: string, volume?: number): this
   /**
    * Plays a sound.  Will NOT wait for the sound to complete before continuing.
    * @param {foundry.audio.Sound} sound - {@link Sound} to be played
    * @param {number} [volume=100] - Volume at which to play the sound
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
+  // TODO: Remove signature in 4.0
   public sound(sound: foundry.audio.Sound, volume?: number): this
-  public sound(arg: unknown, volume: number = 100): this {
-    const sound = typeof arg === "string" ? arg : (arg instanceof foundry.audio.Sound) ? arg.id : null;
-    if (!sound) throw new InvalidSoundError(typeof arg === "string" ? arg : typeof arg);
+  /**
+   * Plays a sound. 
+   * @param {SoundConfiguration} config - {@link SoundConfiguration}
+   * @returns {BattleTransition}
+   */
+  public sound(config: Partial<SoundConfiguration>): this
+  public sound(...args: unknown[]): this {
+    // public sound(arg: unknown, volume: number = 100): this {
+    if (args.length && typeof args[0] !== "object") {
+      log300SignatureDeprecation("sound");
+      const [arg, volume = 100] = args as [foundry.audio.Sound | string, number];
+      const sound = typeof arg === "string" ? arg : (arg instanceof foundry.audio.Sound) ? arg.id : null;
+      if (!sound) throw new InvalidSoundError(typeof arg === "string" ? arg : typeof arg);
+
+      return this.sound({
+        volume,
+        file: sound as string
+      });
+    }
+
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(SoundStep.DefaultSettings),
+      (args[0] ?? {})
+    ) as SoundConfiguration;
     this.#sequence.push({
-      ...SoundStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      volume,
-      file: sound
-    } as SoundConfiguration);
+      ...config,
+      id: foundry.utils.randomID()
+    })
+
     return this;
   }
 
