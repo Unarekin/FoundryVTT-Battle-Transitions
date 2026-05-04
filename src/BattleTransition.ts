@@ -2,7 +2,7 @@ import { coerceColorHex, coerceMacro, coerceScene, coerceUser } from "./coercion
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants.js";
 import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidElementError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, AngularWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
@@ -12,6 +12,7 @@ import { TransitionBuilder } from "./applications";
 import { filters } from "./filters";
 import { isValidBilinearDirection, isValidClockDirection, isValidEasing, isValidRadialDirection, isValidWipeDirection } from "./validation";
 import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
+import { logDeprecation } from "./deprecationHelper";
 
 // #region Type aliases (1)
 
@@ -355,39 +356,59 @@ export class BattleTransition {
 
   // #endregion Public Static Methods (7)
 
-  // #region Public Methods (52)
+  // #region Deprecated Methods
 
   /**
    * Adds an angular wipe, mimicking the battle with Brock in Pokemon Fire Red
    * @param {number} [duration=1000] - Duration that the wipe should last
    * @param {TextureLike} [background="transparent"] - {@link TextureLike} representing the background
    * @param {Easing} [easing="none"] - {@link Easing} to use when animating this transition
-   * @returns 
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public angularWipe(duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    if (typeof duration === "string" && isNaN(parseFloat(duration))) throw new InvalidDurationError(duration);
-    if (typeof duration !== "number") throw new InvalidDurationError(duration);
-    if (!isValidEasing(easing)) throw new InvalidEasingError(easing);
+  // TODO: Remove signature in 4.0
+  public angularWipe(duration: number, background: TextureLike, easing: Easing): this
+  /**
+   * Adds an angular wipe, mimicking the battle with Brock in Pokemon Fire Red
+   * @param {number} [duration=1000] - Duration that the wipe should last
+   * @param {TextureLike} [background="transparent"] - {@link TextureLike} representing the background
+   * @param {Easing} [easing="none"] - {@link Easing} to use when animating this transition
+   * @returns {BattleTransition}
+   */
+  public angularWipe(config: AngularWipeConfiguration): this
+  public angularWipe(...args: unknown[]): this {
+    if (args.length !== 0 && typeof args[0] !== "object") {
+      logDeprecation("BattleTransition.angularWipe", "The multi-argument method signature for BattleTransition#angularWipe is deprecated.\nUse the object-based configuration signature instead.", "3.0.0", "4.0.0", "https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Deprecations#angular-wipe");
+      const config: AngularWipeConfiguration = foundry.utils.deepClone(AngularWipeStep.DefaultSettings);
 
-    const actualDuration = typeof duration === "string" ? parseFloat(duration) : duration;
-    if (actualDuration < 0) throw new InvalidDurationError(duration);
+      const [duration = 1000, background = "transparent", easing = "none"] = args as [number | string, TextureLike, Easing];
 
-    const serializedTexture = serializeTexture(background);
+      if (typeof duration === "number")
+        config.duration = duration;
+      else if (typeof duration === "string" && !isNaN(parseFloat(duration)))
+        config.duration = parseFloat(duration);
 
-    const bgType = backgroundType(background);
+      const serializedTexture = serializeTexture(background ?? "transparent");
+      const bgType = backgroundType(background ?? "transparent");
 
-    const config: AngularWipeConfiguration = {
-      ...AngularWipeStep.DefaultSettings,
-      id: foundry.utils.randomID(),
-      serializedTexture,
-      duration: actualDuration,
-      backgroundType: bgType,
-      backgroundColor: bgType === "color" ? coerceColorHex(background) ?? "" : "",
-      backgroundImage: bgType === "image" ? background as string : "",
-      easing
+      config.serializedTexture = serializedTexture;
+      config.backgroundType = bgType;
+
+      config.backgroundColor = bgType === "color" ? coerceColorHex(background ?? "transparent") ?? "" : "";
+      config.backgroundImage = bgType === "image" ? background as string : "";
+
+      config.easing = easing;
+
+      return this.angularWipe(config);
     }
 
-    this.#sequence.push(config);
+    const config: AngularWipeConfiguration = {
+      ...foundry.utils.deepClone(AngularWipeStep.DefaultSettings),
+      ...(args[0] as AngularWipeConfiguration),
+      id: foundry.utils.randomID()
+    };
+
+    this.sequence.push(config);
 
     return this;
   }
@@ -773,7 +794,7 @@ export class BattleTransition {
     }
 
     if (parsed && parsed.type === RollTable.documentName) {
-      const table: RollTable | undefined = fromUuidSync(source) as RollTable | undefined;
+      const table: RollTable | undefined = fromUuidSync<RollTable>(source) as RollTable | undefined;
       if (table instanceof RollTable) {
         config.source = "rolltable";
         config.table = table.uuid;
@@ -909,7 +930,7 @@ export class BattleTransition {
       target = args[0] as [number, number];
       background = args[1] as TextureLike ?? "transparent";
       easing = args[2] as Easing ?? "none";
-    } else if (typeof args[0] === "string" && fromUuidSync(args[0])) {
+    } else if (typeof args[0] === "string" && fromUuidSync<TokenDocument>(args[0])) {
       // It's a UUID
       target = args[0];
       background = args[1] as TextureLike ?? "transparent";
@@ -932,7 +953,7 @@ export class BattleTransition {
 
     if (Array.isArray(target)) {
       config.target = target;
-    } else if (typeof target === "string" && fromUuidSync(target)) {
+    } else if (typeof target === "string" && fromUuidSync<TokenDocument>(target)) {
       config.target = target;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     } else if (typeof (target as any).uuid === "string") {
@@ -1320,7 +1341,7 @@ export class BattleTransition {
 
     if (Array.isArray(arg)) {
       config.target = arg;
-    } else if (typeof arg === "string" && fromUuidSync(arg)) {
+    } else if (typeof arg === "string" && fromUuidSync<TokenDocument>(arg)) {
       config.target = arg;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     } else if (typeof (arg as any).uuid === "string") {

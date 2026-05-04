@@ -680,3 +680,4 @@ export function gameClass(): typeof Game {
   if (game?.release?.isNewer("13")) return ((foundry as any).Game);
   else return Game;
 }
+

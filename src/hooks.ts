@@ -11,9 +11,10 @@ import { SocketHandler } from "./sockets";
 
 
 Hooks.once("canvasReady", () => {
+
   BattleTransition.initialize();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-  (Hooks as any).callAll(CUSTOM_HOOKS.INITIALIZE)
+
+  Hooks.callAll(CUSTOM_HOOKS.INITIALIZE)
 })
 
 Hooks.once("ready", () => {
@@ -22,7 +23,6 @@ Hooks.once("ready", () => {
     transition: BattleTransition,
     socket: new SocketHandler()
   }
-
   const entries = Object.entries(CONFIG.Scene.sheetClasses.base);
   for (const [key, { cls }] of entries) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
