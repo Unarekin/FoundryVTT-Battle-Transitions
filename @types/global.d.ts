@@ -1,8 +1,9 @@
 import * as gsapType from "gsap";
 import { SceneConfiguration } from "interfaces";
 import { libWrapper as libwrapperType } from "./libwrapper"
-import { BattleTransition } from "BattleTransition";
+import { BattleTransition as BattleTransitionType } from "BattleTransition";
 import { SocketHandler } from "sockets";
+import { semver as semverType } from "semver";
 
 declare global {
 
@@ -18,6 +19,10 @@ declare global {
   declare var gsap: gsapType;
   declare var TweenMax: gsapType.TweenMax;
   declare var TweenLite: gsapType.TweenLite;
+
+  declare var semver: semverType;
+  declare var BattleTransition: typeof BattleTransitionType;
+
 
   declare module '*.frag' {
     const content: string;

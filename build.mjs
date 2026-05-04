@@ -26,7 +26,7 @@ const MACRO_PACK_PATH = path.join(SRC_PATH, "packs/bt-sample-macros");
 // Import module.json for some config options
 // import moduleConfig from "./module.json" with { type: "json" };
 const moduleConfig = JSON.parse(
-  (await fs.readFile("./module.json")).toString()
+  (await fs.readFile("./module.json")).toString(),
 );
 
 // Constants to be inserted into process.env during build
@@ -56,7 +56,7 @@ if (!process.argv.slice(2).includes("--no-lint")) {
     await fs.writeFile("./lint-report.html", formatter.format(lintResults));
   }
 
-  const hasErrors = lintResults.findIndex((result) => result.errorCount) !== -1;
+  const hasErrors = lintResults.findIndex(result => result.errorCount) !== -1;
   if (hasErrors) {
     if (spinner) spinner.error("Linting errors found!");
     const formatter = await linter.loadFormatter("stylish");
@@ -65,11 +65,11 @@ if (!process.argv.slice(2).includes("--no-lint")) {
   } else {
     if (spinner)
       spinner.success(
-        `Linting passed in ${((Date.now() - start) / 1000).toFixed(2)}s`
+        `Linting passed in ${((Date.now() - start) / 1000).toFixed(2)}s`,
       );
     else
       console.log(
-        `Linting passed in ${((Date.now() - start) / 1000).toFixed(2)}s`
+        `Linting passed in ${((Date.now() - start) / 1000).toFixed(2)}s`,
       );
   }
 }
@@ -87,7 +87,7 @@ const jsonMergers = (
       jsonMerge({
         entryPoints: [path.join(LANG_PATH, curr.name, "*.json")],
         outfile: path.join("languages", `${curr.name}.json`),
-        merge: (items) => deepmerge(...items),
+        merge: items => deepmerge(...items),
       }),
     ];
   else return prev;
@@ -115,7 +115,7 @@ for (const file of STATIC_FILES) {
         dereference: true,
         errorOnExists: false,
         preserveTimestamps: true,
-      })
+      }),
     );
   } catch (err) {
     // ignore ENOENT, throw others
@@ -133,10 +133,12 @@ const buildResults = await build({
     path.join(STYLE_PATH, "module.scss"),
   ],
   outdir: OUT_PATH,
-  sourcemap: __DEV__,
+  sourcemap: true,
   bundle: true,
   platform: "browser",
   minify: !__DEV__,
+  target: "es2022",
+  format: "esm",
   define: {
     __DEV__: __DEV__ === true ? "true" : "false",
     __MODULE_TITLE__: `"${__MODULE_TITLE__}"`,
@@ -180,7 +182,7 @@ const buildResults = await build({
 if (buildResults.metafile) {
   await fs.writeFile(
     "./esbuild.meta.json",
-    JSON.stringify(buildResults.metafile, null, 2)
+    JSON.stringify(buildResults.metafile, null, 2),
   );
 }
 
@@ -192,11 +194,11 @@ if (buildResults.errors.length) {
 } else {
   if (spinner)
     spinner.success(
-      `Build completed in ${((Date.now() - buildStart) / 1000).toFixed(2)}s`
+      `Build completed in ${((Date.now() - buildStart) / 1000).toFixed(2)}s`,
     );
   else
     console.log(
-      `Build completed in ${((Date.now() - buildStart) / 1000).toFixed(2)}s`
+      `Build completed in ${((Date.now() - buildStart) / 1000).toFixed(2)}s`,
     );
   // if (buildResults.warnings.length) console.warn(buildResults.warnings);
 
@@ -219,8 +221,8 @@ if (buildResults.errors.length) {
         .basename(file, path.extname(file))
         .replaceAll(" ", "_")}`;
 
-      const macroFile = macroFiles.find((macro) =>
-        macro.startsWith(macroFilePattern)
+      const macroFile = macroFiles.find(macro =>
+        macro.startsWith(macroFilePattern),
       );
       if (!macroFile)
         throw new Error(`Unable to locate macro file for ${file}`);
@@ -233,17 +235,17 @@ if (buildResults.errors.length) {
       macroFileJSON.command = `${content}`;
       await fs.writeFile(
         path.join(MACRO_PACK_PATH, macroFile),
-        JSON.stringify(macroFileJSON, null, 2)
+        JSON.stringify(macroFileJSON, null, 2),
       );
     }
 
     if (spinner)
       spinner.success(
-        `Macros built in ${((Date.now() - macroStart) / 1000).toFixed(2)}s`
+        `Macros built in ${((Date.now() - macroStart) / 1000).toFixed(2)}s`,
       );
     else
       console.log(
-        `Macros built in ${((Date.now() - macroStart) / 1000).toFixed(2)}s`
+        `Macros built in ${((Date.now() - macroStart) / 1000).toFixed(2)}s`,
       );
   } catch (err) {
     if (spinner) spinner.error("Building macros failed!");
@@ -264,16 +266,16 @@ if (buildResults.errors.length) {
       await compilePack(
         path.join(SRC_PATH, `packs`, pack),
         path.join(OUT_PATH, "packs", pack),
-        { yaml: false }
+        { yaml: false },
       );
     }
     if (spinner)
       spinner.success(
-        `Compendia packed in ${((Date.now() - packStart) / 1000).toFixed(2)}s`
+        `Compendia packed in ${((Date.now() - packStart) / 1000).toFixed(2)}s`,
       );
     else
       console.log(
-        `Compendia packed in ${((Date.now() - packStart) / 1000).toFixed(2)}s`
+        `Compendia packed in ${((Date.now() - packStart) / 1000).toFixed(2)}s`,
       );
   } catch (err) {
     if (spinner) spinner.error("Build failed!");
