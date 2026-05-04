@@ -681,3 +681,12 @@ export function gameClass(): typeof Game {
   else return Game;
 }
 
+
+export function generateBackgroundConfig(background: TextureLike): { backgroundType: BackgroundType, backgroundImage: string, backgroundColor: string } {
+  const bgType = backgroundType(background);
+  return {
+    backgroundType: bgType,
+    backgroundColor: bgType === "color" ? coerceColorHex(background) ?? "#00000000" : "",
+    backgroundImage: bgType === "image" ? background as string : "",
+  }
+}

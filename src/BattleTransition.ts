@@ -2,11 +2,11 @@ import { coerceColorHex, coerceMacro, coerceScene, coerceUser } from "./coercion
 import { CUSTOM_HOOKS, PreparedSequences } from "./constants.js";
 import { InvalidDirectionError, InvalidDurationError, InvalidEasingError, InvalidElementError, InvalidMacroError, InvalidSceneError, InvalidSoundError, InvalidTargetError, InvalidTextureError, InvalidTransitionError, ModuleNotActiveError, NoPreviousStepError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep, BilinearWipeStep } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
+import { backgroundType, deepCopy, deserializeTexture, formDataExtendedClass, generateBackgroundConfig, getStepClassByKey, isColor, localize, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./applications";
 import { filters } from "./filters";
@@ -370,15 +370,13 @@ export class BattleTransition {
   public angularWipe(duration: number, background: TextureLike, easing: Easing): this
   /**
    * Adds an angular wipe, mimicking the battle with Brock in Pokemon Fire Red
-   * @param {number} [duration=1000] - Duration that the wipe should last
-   * @param {TextureLike} [background="transparent"] - {@link TextureLike} representing the background
-   * @param {Easing} [easing="none"] - {@link Easing} to use when animating this transition
+   * @param {AngularWipeConfiguration} config - {@link AngularWipeConfiguration}
    * @returns {BattleTransition}
    */
-  public angularWipe(config: AngularWipeConfiguration): this
+  public angularWipe(config: Partial<AngularWipeConfiguration>): this
   public angularWipe(...args: unknown[]): this {
     if (args.length !== 0 && typeof args[0] !== "object") {
-      logDeprecation("BattleTransition.angularWipe", "The multi-argument method signature for BattleTransition#angularWipe is deprecated.\nUse the object-based configuration signature instead.", "3.0.0", "4.0.0", "https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Deprecations#angular-wipe");
+      logDeprecation("BattleTransition.angularWipe", "The multi-argument method signature for BattleTransition#angularWipe is deprecated.\nUse the object-based configuration signature instead.", "3.0.0", "4.0.0", "https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Deprecations#300");
       const config: AngularWipeConfiguration = foundry.utils.deepClone(AngularWipeStep.DefaultSettings);
 
       const [duration = 1000, background = "transparent", easing = "none"] = args as [number | string, TextureLike, Easing];
@@ -420,13 +418,20 @@ export class BattleTransition {
    * @param {number} [duration=1000] - Duration, in milliseconds, the wipe should take to complete
    * @param {TextureLike} [background="transparent"] - {@link TextureLike}
    * @param {Easing} [easing="none"] - {@link Easing}
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
   public barWipe(bars: number, direction: "horizontal" | "vertical", duration: number, background: TextureLike, easing: Easing): this
+  /**
+   * Generate a wipe of alternating bars either horizontally or vertically
+   * @param {BarWipeConfiguration} config - {@link BarWipeConfiguration}
+   * @returns {BattleTransition}
+   */
   public barWipe(config: Partial<BarWipeConfiguration>): this
   public barWipe(...args: unknown[]): this {
 
-    if (args.length !== 0 && typeof args[0] === "number") {
-      logDeprecation("BattleTransition.barWipe", "The multi-argument method signature for BattleTransition#barWipe is deprecated.\nUse the object-based configuration signature instead.", "3.0.0", "4.0.0", "https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Deprecations#bar-wipe");
+    if (args.length !== 0 && typeof args[0] !== "object") {
+      logDeprecation("BattleTransition.barWipe", "The multi-argument method signature for BattleTransition#barWipe is deprecated.\nUse the object-based configuration signature instead.", "3.0.0", "4.0.0", "https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Deprecations#300");
       const [bars = 4, direction = "horizontal", duration = 1000, background = "transparent", easing = "none"] = args as [number, "horizontal" | "vertical", number, TextureLike, Easing];
       const bgType = backgroundType(background);
       return this.barWipe({
@@ -443,7 +448,7 @@ export class BattleTransition {
     const config = foundry.utils.mergeObject(
       foundry.utils.deepClone(BarWipeStep.DefaultSettings),
       (args[0] as Partial<BarWipeConfiguration>)
-    );
+    ) as BarWipeConfiguration;
 
     this.#sequence.push(config);
     return this;
@@ -456,36 +461,39 @@ export class BattleTransition {
    * @param {number} [duration=1000] - Duration in milliseconds that the wipe should last
    * @param {TextureLike} [background="transparent"] - {@link TextureLike} representing the background
    * @param {Easing} [easing="none"] - {@link Easing}
-   * @returns 
+   * @returns {BattleTransition}
+   * @deprecated This signature is deprecated since version 3.0.0.  Use the object-based signature instead.
    */
-  public bilinearWipe(direction: BilinearDirection, radial: RadialDirection, duration: number = 1000, background: TextureLike = "transparent", easing: Easing = "none"): this {
-    const serializedTexture = serializeTexture(background);
+  // TODO: Remove signature in 4.0
+  public bilinearWipe(direction: BilinearDirection, radial: RadialDirection, duration: number, background: TextureLike, easing: Easing): this
+  /**
+   * Adds a bilinear wipe
+   * @param {BilinearWipeConfiguration} config - {@link BilinearWipeConfiguration}
+   * @returns {BattleTransition}
+   */
+  public bilinearWipe(config: Partial<BilinearWipeConfiguration>): this
+  public bilinearWipe(...args: unknown[]): this {
 
-    if (!serializedTexture) throw new InvalidTextureError();
+    if (args.length !== 0 && typeof args[0] !== "object") {
+      logDeprecation("BattleTransition.bilinearWipe", "The multi-argument method signature for BattleTransition#bilinearWipe is deprecated.\nUse the object-based configuration signature instead.", "3.0.0", "4.0.0", "https://github.com/Unarekin/FoundryVTT-Battle-Transitions/wiki/Deprecations#300");
 
-    if (!isValidBilinearDirection(direction)) throw new InvalidDirectionError(direction);
-    if (!isValidRadialDirection(radial)) throw new InvalidDirectionError(radial);
-    if (!isValidEasing(easing)) throw new InvalidEasingError(easing);
-    if (isNaN(parseFloat(duration.toString()))) throw new InvalidDurationError(duration);
-    if (duration < 0) throw new InvalidDurationError(duration);
+      const [direction = "vertical", radial = "inside", duration = 1000, background = "transparent", easing = "none"] = args as [BilinearDirection, RadialDirection, number, TextureLike, Easing];
 
-
-    const step = getStepClassByKey("bilinearwipe");
-    if (!step) throw new InvalidTransitionError("bilinearwipe");
-
-    const config: BilinearWipeConfiguration = {
-      ...(step.DefaultSettings as BilinearWipeConfiguration),
-      id: foundry.utils.randomID(),
-      serializedTexture,
-      backgroundType: backgroundType(background),
-      duration,
-      direction,
-      radial,
-      easing,
+      return this.bilinearWipe({
+        direction,
+        radial,
+        duration,
+        easing,
+        ...generateBackgroundConfig(background),
+      })
     }
 
-    this.#sequence.push(config);
+    const config = foundry.utils.mergeObject(
+      foundry.utils.deepClone(BilinearWipeStep.DefaultSettings),
+      args[0] as Partial<BilinearWipeConfiguration>
+    ) as BilinearWipeConfiguration
 
+    this.#sequence.push(config);
     return this;
   }
 
