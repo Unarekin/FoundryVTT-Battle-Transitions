@@ -164,18 +164,13 @@ const buildResults = await build({
   },
   metafile: __DEV__,
   plugins: [
-    nodeExternalsPlugin(),
+    nodeExternalsPlugin({
+      allowList: ["semver", "handlebars-group-by"],
+    }),
     cleanPlugin({ patterns: "./dist/**" }),
     sassPlugin(),
     ...copyPlugins,
     ...jsonMergers,
-    externalizeAllPackagesExcept([
-      "semver",
-      "handlebars-group-by",
-      "lunr",
-      "handlebars-async-helpers-ts",
-    ]),
-    // externalizeAllPackagesExcept(["rxjs", "mini-rx-store", "tslib", "mime", "@pixi/gif"])
   ],
 });
 
