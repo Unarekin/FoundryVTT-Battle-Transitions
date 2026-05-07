@@ -80,3 +80,9 @@ export interface vec4 {
   b: number;
   a: number;
 }
+
+export interface BTScene extends Scene {
+  battleTransitionConfiguration: SceneConfiguration;
+  battleTransition: TransitionConfiguration[];
+  hasBattleTransition: boolean;
+}

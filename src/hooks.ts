@@ -7,7 +7,7 @@ import { ConfigurationHandler } from './ConfigurationHandler';
 import { BattleTransition } from 'BattleTransition';
 import { SocketHandler } from "./sockets";
 
-
+import { SceneMixin } from "./SceneMixin";
 
 
 Hooks.once("canvasReady", () => {
@@ -35,6 +35,8 @@ Hooks.once("ready", () => {
 Hooks.once("init", async () => {
   registerHelpers();
   await registerTemplates();
+
+  CONFIG.Scene.documentClass = SceneMixin(CONFIG.Scene.documentClass);
 
   if (typeof libWrapper === "function") {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
