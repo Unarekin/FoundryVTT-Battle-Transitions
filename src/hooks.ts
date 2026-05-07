@@ -1,5 +1,5 @@
 import { awaitHook, log } from './utils';
-import { SceneChangeStep } from './steps';
+import { SceneChangeConfiguration, SceneChangeStep, TransitionConfiguration } from './steps';
 import { SceneConfigMixin } from "./applications";
 import { CUSTOM_HOOKS } from "./constants";
 import { registerHelpers, registerTemplates } from "./templates";
@@ -76,11 +76,6 @@ Hooks.once("init", async () => {
 });
 
 
-Hooks.on("getSceneContextOptions", (app: foundry.applications.ui.SceneNavigation, options: ContextMenu.Entry<HTMLElement>[]) => {
-  ConfigurationHandler.AddToNavigationBar(options);
-  return options;
-});
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 Hooks.on("preUpdatePlaylist", (playlist: Playlist, delta: Playlist.UpdateData, options: Playlist.Database.PreUpdateOptions, userId: string) => {
   if (delta.playing && BattleTransition.SuppressSoundUpdates)
@@ -140,4 +135,67 @@ Hooks.on("renderSceneDirectory", (app: foundry.applications.sidebar.tabs.SceneDi
 
   button.addEventListener("click", () => { BattleTransition.BuildTransition().catch(console.error); });
 
+})
+
+function getScene(elem: HTMLElement): Scene | undefined {
+  const sceneId = elem.dataset.sceneId;
+  if (!sceneId) return undefined;
+  return game.scenes?.get(sceneId);
+}
+
+function hasTransition(elem: HTMLElement): boolean {
+  const scene = getScene(elem);
+  if (!(scene instanceof Scene)) return false;
+
+  return ConfigurationHandler.HasTransition(scene, true);
+}
+
+function getTransition(elem: HTMLElement): TransitionConfiguration[] {
+  const scene = getScene(elem);
+  if (!scene) return [];
+
+  if (!ConfigurationHandler.HasTransition(scene)) return [];
+  return foundry.utils.deepClone(ConfigurationHandler.GetSceneTransition(scene));
+}
+
+Hooks.on("getSceneContextOptions" as Hooks.HookName, (app: foundry.applications.api.ApplicationV2, options: foundry.applications.ux.ContextMenu.Entry<HTMLElement>[]) => {
+
+  if (app instanceof foundry.applications.sidebar.tabs.SceneDirectory || app instanceof foundry.applications.ui.SceneNavigation) {
+    // Directory stuff
+    options.push({
+      label: "BATTLETRANSITIONS.NAVIGATION.TRIGGER",
+      icon: `<i class="fa-solid bt-icon fa-fw bt-crossed-swords"></i>`,
+      visible(li: HTMLElement) { return hasTransition(li); },
+      onClick(e: PointerEvent, elem: HTMLElement) {
+        // TODO: Migrate to Scene mixin
+        const scene = getScene(elem);
+        if (!scene) return;
+
+        const sequence = getTransition(elem);
+
+        if (scene !== canvas?.scene) {
+          const sceneChange: SceneChangeConfiguration = {
+            ...SceneChangeStep.DefaultSettings,
+            id: foundry.utils.randomID(),
+            scene: scene.id ?? ""
+          };
+          sequence.unshift(sceneChange);
+        }
+
+        BattleTransition.ExecuteSequence(sequence).catch(console.error);
+      }
+    }, {
+      label: "BATTLETRANSITIONS.NAVIGATION.BYPASS",
+      icon: `<i class="fa-solid bt-icon fa-fw bt-step-over"></i>`,
+      visible(li: HTMLElement) { return hasTransition(li); },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      onClick(e: PointerEvent, elem: HTMLElement) {
+        // TODO: Re-implement
+      }
+    });
+
+
+  }
+
+  return options;
 })
