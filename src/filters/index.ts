@@ -19,7 +19,7 @@ import { SpiralWipeFilter } from './SpiralWipe/SpiralWipeFilter';
 import { HueShiftFilter } from './HueShift/HueShiftFilter';
 import { BarWipeFilter } from "./BarWipe/BarWipeFilter";
 import { ZoomFilter } from './Zoom/ZoomFilter';
-
+import { DummyTransitionFilter } from "./DummyTransitionFilter";
 
 export {
   CustomFilter,
@@ -42,7 +42,8 @@ export {
   SpiralWipeFilter,
   HueShiftFilter,
   BarWipeFilter,
-  ZoomFilter
+  ZoomFilter,
+  DummyTransitionFilter
 }
 
 export const filters = {

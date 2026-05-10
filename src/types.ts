@@ -44,3 +44,14 @@ export enum DualStyle {
   Scene = 1,
   Both = 2
 }
+
+
+export interface _playOptions {
+  duration: number;
+  easing: (input: number) => number;
+}
+export type _playFunction = (options: _playOptions) => Promise<void>;
+
+export type TransitionContainer = foundry.canvas.containers.UnboundContainer & ({
+  _play(options: _playOptions): Promise<void>;
+})

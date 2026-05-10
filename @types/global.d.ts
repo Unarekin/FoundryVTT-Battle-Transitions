@@ -1,5 +1,5 @@
 import * as gsapType from "gsap";
-import { SceneConfiguration } from "interfaces";
+import { BTScene, SceneConfiguration, SceneTransition } from "interfaces";
 import { libWrapper as libwrapperType } from "./libwrapper"
 import { BattleTransition as BattleTransitionType } from "BattleTransition";
 import { SocketHandler } from "sockets";
@@ -40,6 +40,20 @@ declare global {
       socket: SocketHandler;
     }
   }
+
+  interface CONFIG {
+    Canvas: {
+      sceneTransitions: Record<string, {
+        id: string;
+        label: string;
+        defaultDuration: number;
+        filterClass: typeof foundry.canvas.rendering.filters.TextureTransitionFilter;
+      }>
+    }
+    BattleTransitions: {
+
+    }
+  }
 }
 
 declare module "fvtt-types/configuration" {
@@ -61,10 +75,15 @@ declare module "fvtt-types/configuration" {
     }
   }
 
-  interface CONFIG {
-    BattleTransitions: {
-
-    }
+  // TODO: Remove when fvtt-types adds v14 support
+  interface Scene {
+    transition: SceneTransition;
   }
+
+  interface Canvas {
+    transition: foundry.canvas.containers.UnboundContainer;
+    scene: BTScene;
+  }
+
 }
 

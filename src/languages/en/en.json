@@ -8,7 +8,8 @@
   },
   "BATTLETRANSITIONS": {
     "COMMON": {
-      "TRANSITION": "Transition"
+      "TRANSITION": "Transition",
+      "TRANSITIONTYPE": "Battle Transition"
     },
     "DOCUMENTPICKER": {
       "PLACEHOLDER": "Please select a(n) {type}",

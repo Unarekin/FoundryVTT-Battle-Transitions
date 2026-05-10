@@ -1,13 +1,16 @@
-import { awaitHook, log } from './utils';
+import { log } from './utils';
 import { SceneChangeConfiguration, SceneChangeStep, TransitionConfiguration } from './steps';
 import { SceneConfigMixin } from "./applications";
-import { CUSTOM_HOOKS } from "./constants";
+import { CONSTANTS, CUSTOM_HOOKS } from "./constants";
 import { registerHelpers, registerTemplates } from "./templates";
 import { ConfigurationHandler } from './ConfigurationHandler';
 import { BattleTransition } from 'BattleTransition';
 import { SocketHandler } from "./sockets";
-
 import { SceneMixin } from "./SceneMixin";
+import { DummyTransitionFilter } from 'filters';
+import { _playFunction, _playOptions } from "./types";
+import { BTScene } from 'interfaces';
+
 
 
 Hooks.once("canvasReady", () => {
@@ -32,49 +35,56 @@ Hooks.once("ready", () => {
   }
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+(CONFIG.Canvas as unknown as Record<string, any>).sceneTransitions[CONSTANTS.TRANSITION_TYPE] = {
+  id: CONSTANTS.TRANSITION_TYPE,
+  label: "BATTLETRANSITIONS.COMMON.TRANSITIONTYPE",
+  defaultDoration: 0,
+  filterClass: DummyTransitionFilter
+};
+
 Hooks.once("init", async () => {
   registerHelpers();
   await registerTemplates();
 
   CONFIG.Scene.documentClass = SceneMixin(CONFIG.Scene.documentClass);
 
-  if (typeof libWrapper === "function") {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    libWrapper.register(__MODULE_ID__, "Scene.prototype.update", function (this: Scene, wrapped: Function, ...args: unknown[]) {
-      const delta = args[0] as Partial<Scene>;
+  libWrapper.register<_playFunction>(__MODULE_ID__, "foundry.canvas.TransitionContainer.prototype._play", function (this: foundry.canvas.containers.UnboundContainer, wrapped: _playFunction, options: _playOptions) {
+    if (!canvas?.scene) return Promise.resolve();
 
-      if (delta.active && ConfigurationHandler.ShouldAutoTrigger(this)) {
-        // const config = ConfigurationHandler.GetSceneConfiguration(this);
-        // if (delta.active && config.autoTrigger && config.sequence?.length && !(this.flags[__MODULE_ID__] as any).isTriggered) {
-        const config = ConfigurationHandler.GetSceneConfiguration(this);
-        delete delta.active;
-        const sceneChangeStep = new SceneChangeStep({ scene: this.id ?? "" });
-        void BattleTransition.ExecuteSequence([
-          {
-            ...SceneChangeStep.DefaultSettings,
-            id: foundry.utils.randomID(),
-            ...sceneChangeStep.config
-          },
+    let retPromise: Promise<void> | undefined = undefined;
+
+    if (canvas.scene.transition.type === "battleTransition") {
+
+      BattleTransition.HideLoadingBar = true;
+
+      const config = (canvas.scene as BTScene).battleTransitionConfiguration;
+
+      if (config.autoTrigger && !config.bypassTransition) {
+        const sceneChange: SceneChangeConfiguration = {
+          ...foundry.utils.deepClone(SceneChangeStep.DefaultSettings),
+          id: foundry.utils.randomID(),
+          scene: canvas.scene.id
+        };
+        retPromise = BattleTransition.ExecuteSequence([
+          sceneChange,
           ...config.sequence
         ]);
-        if (Object.keys(delta).length === 0) return false;
+      } else {
+        retPromise = Promise.resolve();
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return wrapped(...args);
-    }, "MIXED");
+    } else {
+      retPromise = wrapped(options);
+    }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    libWrapper.register(__MODULE_ID__, "foundry.canvas.TextureLoader.prototype.load", function (this: TextureLoader, wrapped: Function, ...args: unknown[]) {
+    retPromise ??= Promise.resolve();
 
-      if (BattleTransition.HideLoadingBar) {
-        const opt = args[1] as Record<string, unknown>;
-        opt.displayProgress = false;
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return wrapped(...args);
+    return retPromise.finally(() => {
+      canvas.transition.visible = false;
+      canvas.transition.removeChildren();
+      BattleTransition.HideLoadingBar = false;
     });
-  }
+  });
 });
 
 
@@ -101,18 +111,6 @@ Hooks.on("preUpdatePlaylistSound", (sound: PlaylistSound, delta: PlaylistSound.U
   log("Transition end:", args);
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-Hooks.on("updateScene", (scene: Scene, delta: Scene.UpdateData, options: Scene.Database.UpdateOptions, userId: string) => {
-  if (delta.active) {
-    if (scene.canUserModify(game.user as User, "update")) {
-      void scene.unsetFlag(__MODULE_ID__, "isTriggered");
-      void scene.unsetFlag(__MODULE_ID__, "bypassTransition");
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    awaitHook("canvasReady").then(() => { (Hooks as any).callAll(CUSTOM_HOOKS.SCENE_ACTIVATED, scene); }).catch(console.error);
-  }
-});
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 Hooks.on("renderSceneDirectory", (app: foundry.applications.sidebar.tabs.SceneDirectory, html: HTMLElement, context: foundry.applications.sidebar.tabs.SceneDirectory.RenderContext, options: foundry.applications.sidebar.tabs.SceneDirectory.RenderOptions) => {
@@ -200,4 +198,4 @@ Hooks.on("getSceneContextOptions" as Hooks.HookName, (app: foundry.applications.
   }
 
   return options;
-})
+});

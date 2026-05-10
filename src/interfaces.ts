@@ -86,3 +86,9 @@ export interface BTScene extends Scene {
   battleTransition: TransitionConfiguration[];
   hasBattleTransition: boolean;
 }
+
+export interface SceneTransition {
+  activeOnly: boolean;
+  duration: number;
+  type: string;
+}
