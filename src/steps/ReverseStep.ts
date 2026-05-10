@@ -27,7 +27,7 @@ export class ReverseStep extends TransitionStep<ReverseConfiguration> {
 
 
   static getListDescription(config?: ReverseConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.REVERSE.LABEL", { delay: config.delay }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.REVERSE.LABEL", { delay: config.delay }) ?? "";
     else return "";
   }
 

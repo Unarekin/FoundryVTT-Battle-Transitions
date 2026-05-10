@@ -1,7 +1,7 @@
 import { coerceScene } from "../coercion"
 import { InvalidTransitionError, LocalizedError } from "../errors"
 import { TransitionConfiguration } from "../steps"
-import { getStepClassByKey, localize, templateDir } from "../utils"
+import { getStepClassByKey, templateDir } from "../utils"
 import { AddStepApplication } from "./AddStepApplication"
 import { confirm } from "./functions"
 import { DeepPartial, SequenceEditorConfiguration, SequenceEditorContext } from "./types"
@@ -21,7 +21,7 @@ export class SequenceEditorApplication extends foundry.applications.api.Handleba
 
   public static DEFAULT_OPTIONS: DeepPartial<foundry.applications.api.ApplicationV2.Configuration> = {
     window: {
-      title: localize("BATTLETRANSITIONS.DIALOGS.SEQUENCE.EDIT"),
+      title: "BATTLETRANSITIONS.DIALOGS.SEQUENCE.EDIT",
       icon: "fa-solid fa-hammer",
       contentClasses: ["standard-form", "transition-builder"]
     },
@@ -94,7 +94,7 @@ export class SequenceEditorApplication extends foundry.applications.api.Handleba
   public static async ClearSteps(this: SequenceEditorApplication) {
     try {
       if (!this.sequence.length) return;
-      const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
+      const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", _loc("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
       if (!confirmed) return;
       this.sequence.splice(0, this.sequence.length);
       await this.render();
@@ -174,10 +174,10 @@ export class SequenceEditorApplication extends foundry.applications.api.Handleba
       const stepClass = getStepClassByKey(step.type);
       if (!stepClass) throw new InvalidTransitionError(step.type);
 
-      const name = localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`);
+      const name = _loc(`BATTLETRANSITIONS.${stepClass.name}.NAME`);
       const confirmed = await confirm(
-        game.i18n?.format("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name }) ?? "",
-        game.i18n?.format("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name }) ?? ""
+        _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name }) ?? "",
+        _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name }) ?? ""
       );
       if (!confirmed) return;
 

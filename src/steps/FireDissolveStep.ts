@@ -34,7 +34,7 @@ export class FireDissolveStep extends TransitionStep<FireDissolveConfiguration> 
   // #region Public Static Methods (7)
 
   static getListDescription(config?: FireDissolveConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.FIREDISSOLVE.LABEL", { duration: config.duration, burnSize: config.burnSize }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.FIREDISSOLVE.LABEL", { duration: config.duration, burnSize: config.burnSize }) ?? "";
     else return "";
   }
 

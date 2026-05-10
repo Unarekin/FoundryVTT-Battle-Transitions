@@ -5,7 +5,7 @@ import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
 import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep, BilinearWipeStep, ClearEffectsStep, FlashStep, HueShiftConfiguration, HueShiftStep, InvertStep, LoadingTipStep, PixelateConfiguration, PixelateStep, RepeatStep, ZoomStep, RadialWipeStep } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deserializeTexture, expandedFormData, generateBackgroundConfig, generateDualStyleConfig, getStepClassByKey, localize, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
+import { backgroundType, deserializeTexture, expandedFormData, generateBackgroundConfig, generateDualStyleConfig, getStepClassByKey, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./applications";
 import { filters } from "./filters";
@@ -105,19 +105,19 @@ export class BattleTransition {
 
     return foundry.applications.api.DialogV2.wait({
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      window: ({ title: localize("BATTLETRANSITIONS.DIALOGS.SCENESELECTOR.TITLE") } as any),
+      window: ({ title: "BATTLETRANSITIONS.DIALOGS.SCENESELECTOR.TITLE" } as any),
       content,
       rejectClose: false,
       buttons: [
         {
           icon: "fas fa-times",
-          label: localize("Cancel"),
+          label: _loc("Cancel"),
           action: "cancel",
           callback: () => Promise.resolve(undefined)
         },
         {
           icon: "fas fa-check",
-          label: localize("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
+          label: _loc("BATTLETRANSITIONS.DIALOGS.BUTTONS.OK"),
           action: "ok",
           callback: (event: Event, button: HTMLButtonElement, dialog: foundry.applications.api.DialogV2.Any) => {
             const form = dialog.form;

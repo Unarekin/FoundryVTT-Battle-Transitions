@@ -1,7 +1,7 @@
 import { ZoomBlurConfigApplication } from '../applications';
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
-import { localize, parseConfigurationFormElements } from '../utils';
+import { parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { ZoomBlurConfiguration } from './types';
 
@@ -36,9 +36,9 @@ export class ZoomBlurStep extends TransitionStep<ZoomBlurConfiguration> {
   // #region Public Static Methods (7)
   static getListDescription(config?: ZoomBlurConfiguration): string {
     if (config) {
-      return localize("BATTLETRANSITIONS.ZOOMBLUR.LABEL", {
+      return _loc("BATTLETRANSITIONS.ZOOMBLUR.LABEL", {
         duration: config.duration,
-        target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY"),
+        target: _loc(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY"),
         strength: config.maxStrength
       })
     } else {

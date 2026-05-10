@@ -1,7 +1,7 @@
 import { ZoomFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
-import { createColorTexture, localize, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SceneChangeConfiguration, TransitionConfiguration, ZoomConfiguration } from "./types";
 import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTargetSelectEventListeners, validateTarget } from "./targetSelectFunctions";
@@ -51,10 +51,10 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
 
   static getListDescription(config?: ZoomConfiguration): string {
     if (config) {
-      return localize("BATTLETRANSITIONS.ZOOM.LABEL", {
+      return _loc("BATTLETRANSITIONS.ZOOM.LABEL", {
         duration: config.duration,
         amount: config.amount * 100,
-        target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
+        target: _loc(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
       })
     } else {
       return "";
@@ -148,7 +148,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
 
     // Check for our target in the current (new) scene
     if (!Array.isArray(config.target)) {
-      const obj = await fromUuid(config.target);
+      const obj = await fromUuid(config.target as `Token.${string}`);
       if (!obj) throw new InvalidTargetError(config.target);
       const parsed = foundry.utils.parseUuid(config.target);
       if (parsed?.primaryType !== "Scene") throw new InvalidTargetError(config.target);
@@ -187,7 +187,7 @@ export class ZoomStep extends TransitionStep<ZoomConfiguration> {
       this.#screenLocation = config.target;
     } else {
       // Check if the target is in our current (old) scene.
-      const obj = await fromUuid(config.target);
+      const obj = await fromUuid(config.target as `Token.${string}`);
       if (!obj) throw new InvalidTargetError(config.target);
       const parsed = foundry.utils.parseUuid(config.target);
       if (parsed?.primaryType !== "Scene") throw new InvalidTargetError(config.target);

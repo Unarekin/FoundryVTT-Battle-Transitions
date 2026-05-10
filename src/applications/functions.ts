@@ -123,11 +123,11 @@ function generatePreviewTooltip(step: typeof TransitionStep): string {
   }
 
   const title = document.createElement("h4");
-  title.innerText = game.i18n?.localize(`BATTLETRANSITIONS.${step.name}.NAME`) ?? "";
+  title.innerText = _loc(`BATTLETRANSITIONS.${step.name}.NAME`) ?? "";
   tooltip.appendChild(title);
 
   const desc = document.createElement("p");
-  desc.innerText = game.i18n?.localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`) ?? "";
+  desc.innerText = _loc(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`) ?? "";
   tooltip.appendChild(desc);
 
   if (step.reversible) {
@@ -140,7 +140,7 @@ function generatePreviewTooltip(step: typeof TransitionStep): string {
     const strong = document.createElement("strong");
     reversible.appendChild(strong);
 
-    strong.innerHTML = game.i18n?.localize(`BATTLETRANSITIONS.DIALOGS.REVERSIBLE`) ?? "";
+    strong.innerHTML = _loc(`BATTLETRANSITIONS.DIALOGS.REVERSIBLE`) ?? "";
     desc.appendChild(reversible);
   }
 

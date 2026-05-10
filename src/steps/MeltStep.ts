@@ -41,7 +41,7 @@ export class MeltStep extends TransitionStep<MeltConfiguration> {
 
 
   static getListDescription(config?: MeltConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.MELT.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.MELT.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
     else return "";
   }
 

@@ -1,6 +1,6 @@
 import { WaitConfiguration } from "./types";
 import { TransitionStep } from "./TransitionStep";
-import { localize, parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements } from "../utils";
 import { WaitConfigApplication } from "../applications";
 
 const CURRENT_VERSION = "1.1.0";
@@ -29,7 +29,7 @@ export class WaitStep extends TransitionStep<WaitConfiguration> {
   // #region Public Static Methods (7)
 
   public static getListDescription(config?: WaitConfiguration): string {
-    if (config) return localize("BATTLETRANSITIONS.WAIT.LABEL", { duration: config.duration });
+    if (config) return _loc("BATTLETRANSITIONS.WAIT.LABEL", { duration: config.duration });
     else return "";
   }
 

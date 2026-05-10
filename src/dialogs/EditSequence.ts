@@ -1,5 +1,5 @@
 import { TransitionConfiguration } from "../steps";
-import { expandedFormData, getStepClassByKey, localize, renderTemplateFunc, templateDir } from "../utils";
+import { expandedFormData, getStepClassByKey, renderTemplateFunc, templateDir } from "../utils";
 import { addStep, deleteSelectedStep, selectItem, setEnabledButtons, setupSequenceList } from "./functions";
 import { InvalidTransitionError } from "../errors";
 import { DeepPartial } from "./types";
@@ -9,7 +9,7 @@ import { DeepPartial } from "./types";
 export async function addSequence(): Promise<TransitionConfiguration[] | undefined> {
   return sequenceEditDialog([], {
     window: {
-      title: localize("BATTLETRANSITIONS.DIALOGS.SEQUENCE.ADD")
+      title: "BATTLETRANSITIONS.DIALOGS.SEQUENCE.ADD"
     }
   });
 }
@@ -17,7 +17,7 @@ export async function addSequence(): Promise<TransitionConfiguration[] | undefin
 export async function editSequence(sequence: TransitionConfiguration[]): Promise<TransitionConfiguration[] | undefined> {
   return sequenceEditDialog(sequence, {
     window: {
-      title: localize("BATTLETRANSITIONS.DIALOGS.SEQUENCE.EDIT")
+      title: "BATTLETRANSITIONS.DIALOGS.SEQUENCE.EDIT"
     }
   })
 }
@@ -39,12 +39,12 @@ async function sequenceEditDialog(sequence: TransitionConfiguration[], options?:
       {
         action: "cancel",
         icon: "fas fa-fw fa-times",
-        label: localize("Cancel")
+        label: "Cancel"
       },
       {
         action: "ok",
         icon: "fas fa-fw fa-check",
-        label: localize("Save"),
+        label: "Save",
         // eslint-disable-next-line @typescript-eslint/require-await
         callback: async (event: PointerEvent | SubmitEvent, button: HTMLButtonElement, dialog: foundry.applications.api.DialogV2 | HTMLElement) => {
           const elem = dialog instanceof foundry.applications.api.DialogV2 ? dialog.element : dialog;

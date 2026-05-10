@@ -111,13 +111,13 @@ Hooks.on("renderSceneDirectory", (app: foundry.applications.sidebar.tabs.SceneDi
 
   const button = document.createElement("button");
   button.dataset.action = "openTransitionBuilder";
-  button.dataset.tooltip = game.i18n?.localize("BATTLETRANSITIONS.NAVIGATION.TOOLTIPS.TRANSITIONBUILDER");
+  button.dataset.tooltip = _loc("BATTLETRANSITIONS.NAVIGATION.TOOLTIPS.TRANSITIONBUILDER");
 
   const icon = document.createElement("i");
 
   icon.classList.add("fa-solid", "fa-fw", "fa-hammer");
   button.appendChild(icon);
-  button.innerHTML += game.i18n?.localize("BATTLETRANSITIONS.NAVIGATION.CUSTOM");
+  button.innerHTML += _loc("BATTLETRANSITIONS.NAVIGATION.CUSTOM");
 
   container.appendChild(button);
 

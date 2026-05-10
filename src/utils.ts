@@ -190,7 +190,7 @@ let gameReadyPromise: Promise<void> | undefined = undefined;
 
 export function getSortedSteps(): (typeof TransitionStep)[] {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return Object.values(steps).sort((a, b) => localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${(a as any).name}`).localeCompare(localize(`BATTLETRANSITIONS.TRANSITIONTYPES.${(b as any).name}`))) as (typeof TransitionStep)[];
+  return Object.values(steps).sort((a, b) => _loc(`BATTLETRANSITIONS.TRANSITIONTYPES.${(a as any).name}`).localeCompare(_loc(`BATTLETRANSITIONS.TRANSITIONTYPES.${(b as any).name}`))) as (typeof TransitionStep)[];
 }
 
 export function getStepClassByKey(key: string): (typeof TransitionStep) | undefined {
@@ -230,9 +230,6 @@ export function lerp(a: number, b: number, progress: number) {
   return a + progress * (b - progress);
 }
 
-export function localize(key: string, data: Record<string, string> = {}): string {
-  return game.i18n?.format(key, data) ?? key;
-}
 
 export function log(...args: unknown[]) {
   console.log(LOG_ICON, __MODULE_TITLE__, "|", ...args);
@@ -462,7 +459,7 @@ export async function timeout(time: number, err?: Error): Promise<void> {
 }
 
 export function formatDuration(duration: number): string {
-  return localize(`BATTLETRANSITIONS.FORMATTERS.MILLISECONDS`, { value: duration.toLocaleString() });
+  return _loc(`BATTLETRANSITIONS.FORMATTERS.MILLISECONDS`, { value: duration.toLocaleString() });
 }
 
 

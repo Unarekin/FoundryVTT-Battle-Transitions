@@ -40,7 +40,7 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
   }
 
   get title() {
-    if (this.StepClass) return game.i18n?.localize(`BATTLETRANSITIONS.${this.StepClass.name}.NAME`) ?? "";
+    if (this.StepClass) return _loc(`BATTLETRANSITIONS.${this.StepClass.name}.NAME`) ?? "";
     else return "";
   }
 

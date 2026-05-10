@@ -1,6 +1,6 @@
 import { TransitionSequence, PreparedTransitionHash } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
-import { localize, parseConfigurationFormElements } from '../utils';
+import { parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { TwistConfiguration } from './types';
 import { TwistConfigApplication } from '../applications';
@@ -37,9 +37,9 @@ export class TwistStep extends TransitionStep<TwistConfiguration> {
 
   static getListDescription(config?: TwistConfiguration): string {
     if (config) {
-      return localize("BATTLETRANSITIONS.TWIST.LABEL", {
+      return _loc("BATTLETRANSITIONS.TWIST.LABEL", {
         duration: config.duration,
-        target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY"),
+        target: _loc(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY"),
         angle: config.maxAngle
       })
     } else {

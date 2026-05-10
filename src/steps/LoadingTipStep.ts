@@ -1,6 +1,6 @@
 import { TransitionStep } from './TransitionStep';
 import { LoadingTipConfiguration, LoadingTipSource } from './types';
-import { deepCopy, localize, parseConfigurationFormElements } from '../utils';
+import { deepCopy, parseConfigurationFormElements } from '../utils';
 import { InvalidRollTableError, InvalidTipLocationError } from '../errors';
 import { LoadingTipConfigApplication } from '../applications';
 import { Rectangle } from 'interfaces';
@@ -35,7 +35,7 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
   public static ConfigurationApplication = LoadingTipConfigApplication as any;
 
   public static getListDescription(config?: LoadingTipConfiguration): string {
-    if (config) return localize("BATTLETRANSITIONS.LOADINGTIP.LABEL", { location: localize(`BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.${config.location.toUpperCase()}`).toLocaleLowerCase() })
+    if (config) return _loc("BATTLETRANSITIONS.LOADINGTIP.LABEL", { location: _loc(`BATTLETRANSITIONS.SCENECONFIG.LOADINGTIP.LOCATION.${config.location.toUpperCase()}`).toLocaleLowerCase() })
     else return "";
   }
 

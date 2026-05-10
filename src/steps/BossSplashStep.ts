@@ -1,7 +1,7 @@
 import { BossSplashConfigApplication } from '../applications';
 import { ModuleNotActiveError } from '../errors';
 import { TransitionSequence } from '../interfaces';
-import { isValidFontSize, localize, parseConfigurationFormElements, parseFontSize, wait } from '../utils';
+import { isValidFontSize, parseConfigurationFormElements, parseFontSize, wait } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { BossSplashConfiguration } from './types';
 
@@ -63,7 +63,7 @@ export class BossSplashStep extends TransitionStep<BossSplashConfiguration> {
   static getListDescription(config?: BossSplashConfiguration): string {
     if (config) {
       const actual = coerceConfig(config);
-      return localize("BATTLETRANSITIONS.BOSSSPLASH.LABEL", {
+      return _loc("BATTLETRANSITIONS.BOSSSPLASH.LABEL", {
         message: actual.message,
         duration: config.duration
       })

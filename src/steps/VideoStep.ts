@@ -43,7 +43,7 @@ export class VideoStep extends TransitionStep<VideoConfiguration> {
   // #region Public Static Methods (6)
   // #region Public Static Methods (8)
   static getListDescription(config?: VideoConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.VIDEO.LABEL", { file: config.file }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.VIDEO.LABEL", { file: config.file }) ?? "";
     else return "";
   }
 

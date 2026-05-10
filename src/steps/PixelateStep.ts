@@ -1,7 +1,7 @@
 import { PixelateConfigApplication } from '../applications';
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
-import { localize, parseConfigurationFormElements } from '../utils';
+import { parseConfigurationFormElements } from '../utils';
 import { TransitionStep } from './TransitionStep';
 import { PixelateConfiguration } from './types';
 
@@ -36,9 +36,9 @@ export class PixelateStep extends TransitionStep<PixelateConfiguration> {
 
 
   static getListDescription(config?: PixelateConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.PIXELATE.LABEL", {
+    if (config) return _loc("BATTLETRANSITIONS.PIXELATE.LABEL", {
       duration: config.duration,
-      target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
+      target: _loc(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
     }) ?? "";
     else return "";
   }

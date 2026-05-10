@@ -40,7 +40,7 @@ export class BilinearWipeStep extends TransitionStep<BilinearWipeConfiguration> 
   // #region Public Static Methods (7)
 
   static getListDescription(config?: BilinearWipeConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.BILINEARWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay", direction: config.direction, radial: config.radial }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.BILINEARWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay", direction: config.direction, radial: config.radial }) ?? "";
     else return "";
   }
 

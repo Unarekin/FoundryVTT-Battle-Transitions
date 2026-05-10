@@ -1,4 +1,3 @@
-import { localize } from "../utils";
 
 // #region Functions (13)
 
@@ -34,7 +33,7 @@ export function generateClockDirectionSelectOptions(): { [x: string]: string } {
 }
 
 export function generateDrawingSelectOptions(scene: Scene): { [x: string]: string } {
-  return scene ? Object.fromEntries(scene.drawings.contents.map(drawing => [drawing.uuid, localize(`BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.SHAPES.${drawingType(drawing)}`)])) : {};
+  return scene ? Object.fromEntries(scene.drawings.contents.map(drawing => [drawing.uuid, _loc(`BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.SHAPES.${drawingType(drawing)}`)])) : {};
 }
 
 export function generateDualStyleSelectOptions(): { [x: string]: string } {
@@ -140,14 +139,14 @@ export function _oldgenerateTargetTypeSelectOptions(oldScene?: Scene, newScene?:
     targetTypeSelect: {
       point: "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.POINT.LABEL",
       ...(oldScene ? {} : { prompt: "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.PROMPT.LABEL" }),
-      ...(oldHasTokens ? { oldtoken: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.CURRENTSCENE.LABEL", { scene: oldScene.name }) } : {}),
-      ...(oldHasTiles ? { oldtile: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.CURRENTSCENE.LABEL", { scene: oldScene.name }) } : {}),
-      ...(oldHasNotes ? { oldnote: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.CURRENTSCENE.LABEL", { scene: oldScene.name }) } : {}),
-      ...(oldHasDrawings ? { olddrawing: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.CURRENTSCENE.LABEL", { scene: oldScene.name }) } : {}),
-      ...(newHasTokens ? { newtoken: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.NEWSCENE.LABEL", { scene: newScene.name }) } : {}),
-      ...(newHasTiles ? { newtile: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.NEWSCENE.LABEL", { scene: newScene.name }) } : {}),
-      ...(newHasNotes ? { newnote: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.NEWSCENE.LABEL", { scene: newScene.name }) } : {}),
-      ...(newHasDrawings ? { newdrawing: localize("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.NEWSCENE.LABEL", { scene: newScene.name }) } : {})
+      ...(oldHasTokens ? { oldtoken: _loc("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.CURRENTSCENE.LABEL", { scene: oldScene.name }) } : {}),
+      ...(oldHasTiles ? { oldtile: _loc("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.CURRENTSCENE.LABEL", { scene: oldScene.name }) } : {}),
+      ...(oldHasNotes ? { oldnote: _loc("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.CURRENTSCENE.LABEL", { scene: oldScene.name }) } : {}),
+      ...(oldHasDrawings ? { olddrawing: _loc("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.CURRENTSCENE.LABEL", { scene: oldScene.name }) } : {}),
+      ...(newHasTokens ? { newtoken: _loc("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TOKEN.NEWSCENE.LABEL", { scene: newScene.name }) } : {}),
+      ...(newHasTiles ? { newtile: _loc("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.TILE.NEWSCENE.LABEL", { scene: newScene.name }) } : {}),
+      ...(newHasNotes ? { newnote: _loc("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.NOTE.NEWSCENE.LABEL", { scene: newScene.name }) } : {}),
+      ...(newHasDrawings ? { newdrawing: _loc("BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETTYPE.DRAWING.NEWSCENE.LABEL", { scene: newScene.name }) } : {})
     },
     oldTokenSelect: oldScene ? generateTokenSelectOptions(oldScene) : {},
     oldTileSelect: oldScene ? generateTileSelectOptions(oldScene) : {},

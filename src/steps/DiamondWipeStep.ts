@@ -38,7 +38,7 @@ export class DiamondWipeStep extends TransitionStep<DiamondWipeConfiguration> {
 
 
   static getListDescription(config?: DiamondWipeConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.DIAMONDWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.DIAMONDWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
     else return "";
   }
 

@@ -1,6 +1,6 @@
 import { SpotlightWipeFilter } from "../filters";
 import { TransitionSequence } from '../interfaces';
-import { createColorTexture, localize, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SpotlightWipeConfiguration } from "./types";
 import { SpotlightWipeConfigApplication } from "../applications";
@@ -43,7 +43,7 @@ export class SpotlightWipeStep extends TransitionStep<SpotlightWipeConfiguration
 
   // #region Public Static Methods (7)
   public static getListDescription(config?: SpotlightWipeConfiguration): string {
-    if (config) return localize("BATTLETRANSITIONS.SPOTLIGHTWIPE.LABEL", { direction: config.direction, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay", duration: config.duration });
+    if (config) return _loc("BATTLETRANSITIONS.SPOTLIGHTWIPE.LABEL", { direction: config.direction, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay", duration: config.duration });
     else return "";
   }
 

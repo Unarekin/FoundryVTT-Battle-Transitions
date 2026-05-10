@@ -70,7 +70,7 @@ export function registerHelpers() {
   Handlebars.registerHelper("stepName", function (config: TransitionConfiguration) {
     const stepClass = getStepClassByKey(config.type);
     if (!stepClass) throw new InvalidTransitionError(config.type);
-    return game.i18n?.localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`) ?? "";
+    return _loc(`BATTLETRANSITIONS.${stepClass.name}.NAME`) ?? "";
   });
 
   Handlebars.registerHelper("moduleTemplate", function (path: string) {

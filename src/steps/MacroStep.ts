@@ -1,7 +1,7 @@
 import { MacroConfigApplication } from "../applications";
 import { InvalidMacroError } from "../errors";
 import { TransitionSequence } from "../interfaces";
-import { localize, parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { MacroConfiguration } from "./types";
 
@@ -31,7 +31,7 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
   static getListDescription(config?: MacroConfiguration): string {
     if (config) {
       const macro = fromUuidSync(config.macro) as Macro;
-      return localize("BATTLETRANSITIONS.MACRO.LABEL", { macro: macro?.name ?? typeof undefined });
+      return _loc("BATTLETRANSITIONS.MACRO.LABEL", { macro: macro?.name ?? typeof undefined });
     } else {
       return "";
     }
@@ -69,7 +69,7 @@ export class MacroStep extends TransitionStep<MacroConfiguration> {
       ...MacroStep.DefaultSettings,
       ...this.config
     }
-    const macro = fromUuidSync(config.macro);
+    const macro = fromUuidSync(config.macro as `Macro.${string}`);
     if (!(macro instanceof Macro)) throw new InvalidMacroError(config.macro);
     return macro.execute() as void | Promise<void>
   }

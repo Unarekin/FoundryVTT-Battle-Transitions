@@ -20,7 +20,7 @@ export class ClearEffectsStep extends TransitionStep<ClearEffectsConfiguration> 
   public static category = "technical";
 
   static getListDescription(config?: ClearEffectsConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.CLEAREFFECTS.LABEL") ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.CLEAREFFECTS.LABEL") ?? "";
     else return "";
   }
 

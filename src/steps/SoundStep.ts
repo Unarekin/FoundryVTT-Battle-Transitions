@@ -32,7 +32,7 @@ export class SoundStep extends TransitionStep<SoundConfiguration> {
 
   // #region Public Static Methods (8)
   static getListDescription(config?: SoundConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.SOUND.LABEL", { file: config.file }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.SOUND.LABEL", { file: config.file }) ?? "";
     else return "";
   }
 

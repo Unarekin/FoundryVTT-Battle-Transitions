@@ -2,7 +2,7 @@ import { InvertConfigApplication } from "../applications";
 import { InvertFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
-import { localize, parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { InvertConfiguration } from "./types";
 
@@ -31,8 +31,8 @@ export class InvertStep extends TransitionStep<InvertConfiguration> {
 
   // #region Public Static Methods (6)
   static getListDescription(config?: InvertConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.INVERT.LABEL", {
-      target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
+    if (config) return _loc("BATTLETRANSITIONS.INVERT.LABEL", {
+      target: _loc(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
     }) ?? "";
     else return "";
   }

@@ -1,5 +1,4 @@
 import { LocalizedError } from "./errors";
-import { localize } from "./utils";
 
 const ELEMENT_STYLE = `
 .container {
@@ -76,7 +75,7 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
 
   public get document(): t | undefined {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    if (this.value) return (fromUuidSync(this.value) as any) ?? undefined;
+    if (this.value) return (fromUuidSync(this.value as `Actor.${string}`) as any) ?? undefined;
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -119,7 +118,7 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
   protected viewButtonClicked() {
     try {
       if (!this.#input?.value) return;
-      fromUuid(this.#input.value)
+      fromUuid(this.#input.value as `Actor.${string}`)
         .then(obj => {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
           if (obj instanceof foundry.abstract.Document) (obj as any)?.sheet.render(true);
@@ -378,11 +377,12 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
   }
 
   protected setTooltips() {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const translatedDocType = this.documentType ? localize(`DOCUMENT.${(this.documentType as any).name}`) : typeof undefined;
-    if (this.#input) this.#input.placeholder = localize("BATTLETRANSITIONS.DOCUMENTPICKER.PLACEHOLDER", { type: translatedDocType });
-    if (this.#selectButton) this.#selectButton.dataset.tooltip = localize("BATTLETRANSITIONS.DOCUMENTPICKER.TOOLTIP", { type: translatedDocType });
-    if (this.#clearButton) this.#clearButton.dataset.tooltip = localize("BATTLETRANSITIONS.DOCUMENTPICKER.CLEARTOOLTIP", { type: translatedDocType });
+
+    const translatedDocType = _loc(`DOCUMENT.${this.documentType?.name ?? ""}`);
+
+    if (this.#input) this.#input.placeholder = _loc("BATTLETRANSITIONS.DOCUMENTPICKER.PLACEHOLDER", { type: translatedDocType });
+    if (this.#selectButton) this.#selectButton.dataset.tooltip = _loc("BATTLETRANSITIONS.DOCUMENTPICKER.TOOLTIP", { type: translatedDocType });
+    if (this.#clearButton) this.#clearButton.dataset.tooltip = _loc("BATTLETRANSITIONS.DOCUMENTPICKER.CLEARTOOLTIP", { type: translatedDocType });
   }
 
   protected setEnabledButtons() {
@@ -427,7 +427,9 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
 
 
 
-customElements.define(HTMLDocumentPickerElement.tagName, HTMLDocumentPickerElement);
+if (!customElements.get(HTMLDocumentPickerElement.tagName))
+  customElements.define(HTMLDocumentPickerElement.tagName, HTMLDocumentPickerElement);
+
 
 Hooks.on("renderCompendium", (app: foundry.applications.api.ApplicationV2, html: HTMLElement | JQuery<HTMLElement>) => {
 

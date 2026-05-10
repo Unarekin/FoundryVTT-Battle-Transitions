@@ -39,7 +39,7 @@ export class AngularWipeStep extends TransitionStep<AngularWipeConfiguration> {
 
 
   static getListDescription(config?: AngularWipeConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.ANGULARWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.ANGULARWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
     else return "";
   }
 

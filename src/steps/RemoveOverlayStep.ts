@@ -25,7 +25,7 @@ export class RemoveOverlayStep extends TransitionStep<RemoveOverlayConfiguration
 
 
   static getListDescription(config?: RemoveOverlayConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.HIDEOVERLAY.LABEL") ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.HIDEOVERLAY.LABEL") ?? "";
     else return "";
   }
 

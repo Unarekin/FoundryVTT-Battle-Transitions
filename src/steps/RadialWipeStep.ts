@@ -1,5 +1,5 @@
 import { RadialWipeFilter } from "../filters";
-import { createColorTexture, localize, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { RadialWipeConfiguration, SceneChangeConfiguration, TransitionConfiguration } from "./types";
 import { getTargetFromForm, normalizePosition, onTargetSelectDialogClosed, setTargetSelectEventListeners, validateTarget } from "./targetSelectFunctions";
@@ -43,7 +43,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
 
   static getListDescription(config?: RadialWipeConfiguration): string {
     if (config) {
-      return localize("BATTLETRANSITIONS.RADIALWIPE.LABEL", { duration: config.duration, radial: config.radial });
+      return _loc("BATTLETRANSITIONS.RADIALWIPE.LABEL", { duration: config.duration, radial: config.radial });
     } else {
       return "";
     }
@@ -118,7 +118,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
     }
     // Check for our target in the current (new) scene
     if (!Array.isArray(config.target)) {
-      const obj = await fromUuid(config.target);
+      const obj = await fromUuid(config.target as `Token.${string}`);
       if (!obj) throw new InvalidTargetError(config.target);
       const parsed = foundry.utils.parseUuid(config.target);
       if (parsed?.primaryType !== "Scene") throw new InvalidTargetError(config.target);
@@ -141,7 +141,7 @@ export class RadialWipeStep extends TransitionStep<RadialWipeConfiguration> {
       this.#screenLocation = config.target;
     } else {
       // Check if the target is in our current (old) scene
-      const obj = await fromUuid(config.target);
+      const obj = await fromUuid(config.target as `Token.${string}`);
       if (!obj) throw new InvalidTargetError(config.target);
       const parsed = foundry.utils.parseUuid(config.target);
       if (parsed?.primaryType !== "Scene") throw new InvalidTargetError(config.target);

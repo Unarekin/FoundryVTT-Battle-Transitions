@@ -42,7 +42,7 @@ export class BarWipeStep extends TransitionStep<BarWipeConfiguration> {
 
 
   static getListDescription(config?: BarWipeConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.BARWIPE.LABEL", { bars: config.bars, direction: config.direction, duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.BARWIPE.LABEL", { bars: config.bars, direction: config.direction, duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
     else return "";
   }
 

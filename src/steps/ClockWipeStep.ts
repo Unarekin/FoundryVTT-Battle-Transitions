@@ -44,7 +44,7 @@ export class ClockWipeStep extends TransitionStep<ClockWipeConfiguration> {
 
 
   static getListDescription(config?: ClockWipeConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.CLOCKWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay", direction: config.direction, clockDirection: config.clockDirection }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.CLOCKWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay", direction: config.direction, clockDirection: config.clockDirection }) ?? "";
     else return "";
   }
 

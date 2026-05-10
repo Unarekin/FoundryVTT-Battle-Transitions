@@ -2,7 +2,7 @@ import { TextureSwapConfigApplication } from "../applications";
 import { TextureSwapFilter } from "../filters";
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { addFilterToScene, removeFilterFromScene } from "../transitionUtils";
-import { createColorTexture, localize, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { TextureSwapConfiguration } from "./types";
 
@@ -37,9 +37,9 @@ export class TextureSwapStep extends TransitionStep<TextureSwapConfiguration> {
   // #region Public Static Methods (6)
 
   static getListDescription(config?: TextureSwapConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.TEXTURESWAP.LABEL", {
+    if (config) return _loc("BATTLETRANSITIONS.TEXTURESWAP.LABEL", {
       background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay",
-      target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
+      target: _loc(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
     }) ?? "";
     else return "";
   }

@@ -2,7 +2,7 @@ import { BattleTransition } from "../BattleTransition";
 import { coerceScene } from "../coercion";
 import { InvalidSceneError, InvalidTransitionError, LocalizedError } from "../errors";
 import { TransitionConfiguration } from "../steps";
-import { downloadJSON, getStepClassByKey, localize, templateDir, uploadJSON } from "../utils";
+import { downloadJSON, getStepClassByKey, templateDir, uploadJSON } from "../utils";
 import { AddStepApplication } from "./AddStepApplication";
 import { generateMacro, confirm } from "./functions";
 import { DeepPartial } from "./types";
@@ -61,7 +61,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
 
   public static DEFAULT_OPTIONS: DeepPartial<foundry.applications.api.ApplicationV2.Configuration> = {
     window: {
-      title: localize("BATTLETRANSITIONS.TRANSITIONBUILDER.TITLE"),
+      title: "BATTLETRANSITIONS.TRANSITIONBUILDER.TITLE",
       icon: "fa-solid fa-hammer",
       contentClasses: ["standard-form", "transition-builder"]
     },
@@ -144,11 +144,11 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       const stepClass = getStepClassByKey(step.type);
       if (!stepClass) throw new InvalidTransitionError(step.type);
 
-      const name = game.i18n?.localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`) ?? ""
+      const name = _loc(`BATTLETRANSITIONS.${stepClass.name}.NAME`) ?? ""
 
       const confirmed = await confirm(
-        game.i18n?.format("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name }) ?? "",
-        game.i18n?.format("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name }) ?? ""
+        _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name }) ?? "",
+        _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name }) ?? ""
       );
       if (!confirmed) return;
       const index = this.#response.sequence.findIndex(item => item.id === id);
@@ -197,7 +197,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
   static async ClearSteps(this: TransitionBuilder) {
     try {
       if (!this.#response?.sequence.length) return;
-      const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
+      const confirmed = await confirm("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE", _loc("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE"));
       if (!confirmed) return;
       this.#response.sequence.splice(0, this.#response.sequence.length);
       await this.render();
@@ -210,7 +210,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
   static async ImportJSON(this: TransitionBuilder) {
     try {
       if (this.#response?.sequence.length) {
-        const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
+        const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", _loc("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
         if (!confirmation) return;
       }
 
@@ -262,7 +262,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
   static ExportJSON(this: TransitionBuilder) {
     try {
       if (!this.#response.sequence.length) return;
-      downloadJSON(this.#response.sequence, `${localize("BATTLETRANSITIONS.COMMON.TRANSITION")}.json`);
+      downloadJSON(this.#response.sequence, `${_loc("BATTLETRANSITIONS.COMMON.TRANSITION")}.json`);
     } catch (err) {
       console.error(err);
       if (err instanceof Error) ui.notifications?.error(err.message, { console: false })

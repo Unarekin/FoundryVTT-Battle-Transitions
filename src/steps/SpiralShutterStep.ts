@@ -35,7 +35,7 @@ export class SpiralShutterStep extends TransitionStep<SpiralShutterConfiguration
   public static ConfigurationApplication = SpiralShutterConfigApplication as any;
 
   static getListDescription(config?: SpiralShutterConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.SPIRALSHUTTER.LABEL", { duration: config.duration, direction: config.direction, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay", radial: config.radial }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.SPIRALSHUTTER.LABEL", { duration: config.duration, direction: config.direction, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay", radial: config.radial }) ?? "";
     else return "";
   }
 

@@ -6,7 +6,7 @@ import { DataMigration } from "./DataMigration";
 import { TransitionSequence } from "./interfaces";
 import { StartPlaylistConfiguration, StartPlaylistStep, TransitionConfiguration } from "./steps";
 import { sequenceDuration } from "./transitionUtils";
-import { localize, log, wait } from "./utils";
+import { log, wait } from "./utils";
 
 const TIMEOUT_PERIOD = 3000;
 
@@ -66,7 +66,7 @@ class SocketHandler {
       ]);
 
       if (usersPrepared.length < users.length)
-        ui.notifications?.warn(localize("BATTLETRANSITIONS.WARNINGS.PREPARETIMEOUT"), { console: false });
+        ui.notifications?.warn(_loc("BATTLETRANSITIONS.WARNINGS.PREPARETIMEOUT"), { console: false });
 
       // Execute
       await Promise.any([

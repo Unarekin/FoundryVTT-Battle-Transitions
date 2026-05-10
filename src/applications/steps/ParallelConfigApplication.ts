@@ -1,7 +1,7 @@
 import { StepConfigApplication } from "./StepConfigApplication";
 import { ParallelConfiguration, ParallelStep } from "../../steps";
 import { ParallelContext, StepConfigConfiguration } from "./types";
-import { localize, templateDir } from "../../utils";
+import { templateDir } from "../../utils";
 import { DeepPartial } from "../types";
 import { SequenceEditorApplication } from "../SequenceEditorApplication";
 import { confirm } from "../functions";
@@ -60,8 +60,8 @@ export class ParallelConfigApplication extends StepConfigApplication<ParallelCon
       const index = parseInt(elem.dataset.seq ?? "");
       if (isNaN(index)) return;
       const confirmed = await confirm(
-        localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name: localize("BATTLETRANSITIONS.DIALOGS.SEQUENCE.NAME", { index }) }),
-        localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name: localize("BATTLETRANSITIONS.DIALOGS.SEQUENCE.NAME", { index }) }),
+        _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name: _loc("BATTLETRANSITIONS.DIALOGS.SEQUENCE.NAME", { index }) }),
+        _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name: _loc("BATTLETRANSITIONS.DIALOGS.SEQUENCE.NAME", { index }) }),
       );
       if (!confirmed) return;
       this.config.sequences.splice(index, 1);

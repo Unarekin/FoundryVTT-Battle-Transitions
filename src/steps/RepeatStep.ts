@@ -3,7 +3,7 @@ import { BattleTransition } from "../BattleTransition";
 import { InvalidTransitionError, NoPreviousStepError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { getStepClassByKey, localize, parseConfigurationFormElements } from "../utils";
+import { getStepClassByKey, parseConfigurationFormElements } from "../utils";
 import { getPreviousStep } from "./functions";
 import { TransitionStep } from "./TransitionStep";
 import { RepeatConfiguration, TransitionConfiguration, WaitConfiguration } from './types';
@@ -48,8 +48,8 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
 
   public static getListDescription(config?: RepeatConfiguration): string {
     if (config) {
-      if (config.style === "previous") return localize("BATTLETRANSITIONS.REPEAT.LABELPREV", { iterations: config.iterations });
-      else return localize("BATTLETRANSITIONS.REPEAT.LABELSEQUENCE", { iterations: config.iterations })
+      if (config.style === "previous") return _loc("BATTLETRANSITIONS.REPEAT.LABELPREV", { iterations: config.iterations });
+      else return _loc("BATTLETRANSITIONS.REPEAT.LABELSEQUENCE", { iterations: config.iterations })
     } else {
       return "";
     }

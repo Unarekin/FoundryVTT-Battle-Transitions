@@ -37,7 +37,7 @@ export class FadeStep extends TransitionStep<FadeConfiguration> {
   // #region Public Static Methods (7)
 
   static getListDescription(config?: FadeConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.FADE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.FADE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
     else return "";
   }
 

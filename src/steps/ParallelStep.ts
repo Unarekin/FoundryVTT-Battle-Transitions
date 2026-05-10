@@ -2,7 +2,7 @@ import { ParallelConfigApplication } from "../applications";
 import { BattleTransition } from "../BattleTransition";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { localize, parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { ParallelConfiguration, TransitionConfiguration } from './types';
 
@@ -35,7 +35,7 @@ export class ParallelStep extends TransitionStep<ParallelConfiguration> {
 
   public static getListDescription(config?: ParallelConfiguration): string {
     if (config) {
-      return localize("BATTLETRANSITIONS.PARALLEL.LABEL", { count: config.sequences.length })
+      return _loc("BATTLETRANSITIONS.PARALLEL.LABEL", { count: config.sequences.length })
     } else {
       return ""
     }

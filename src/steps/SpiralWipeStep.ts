@@ -40,7 +40,7 @@ export class SpiralWipeStep extends TransitionStep<SpiralWipeConfiguration> {
 
 
   static getListDescription(config?: SpiralWipeConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.SPIRALWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.SPIRALWIPE.LABEL", { duration: config.duration, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
     else return "";
   }
 

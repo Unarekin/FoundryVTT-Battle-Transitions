@@ -45,7 +45,7 @@ export class LinearWipeStep extends TransitionStep<LinearWipeConfiguration> {
   // #region Public Static Methods (7)
 
   static getListDescription(config?: LinearWipeConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.LINEARWIPE.LABEL", { duration: config.duration, direction: config.direction, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.LINEARWIPE.LABEL", { duration: config.duration, direction: config.direction, background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay" }) ?? "";
     else return "";
   }
 

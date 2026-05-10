@@ -1,6 +1,6 @@
 import { WaveWipeFilter } from "../filters";
 import { TransitionSequence } from "../interfaces";
-import { createColorTexture, localize, parseConfigurationFormElements } from "../utils";
+import { createColorTexture, parseConfigurationFormElements } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { WaveWipeConfiguration } from "./types";
 import { WaveWipeConfigApplication } from "../applications";
@@ -40,7 +40,7 @@ export class WaveWipeStep extends TransitionStep<WaveWipeConfiguration> {
 
   static getListDescription(config?: WaveWipeConfiguration): string {
     if (config) {
-      return localize("BATTLETRANSITIONS.WAVEWIPE.LABEL", {
+      return _loc("BATTLETRANSITIONS.WAVEWIPE.LABEL", {
         duration: config.duration,
         background: config.backgroundType === "image" ? config.backgroundImage : config.backgroundType === "color" ? config.backgroundColor : "overlay",
         direction: config.direction

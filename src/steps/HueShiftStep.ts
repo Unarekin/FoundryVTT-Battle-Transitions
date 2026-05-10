@@ -1,7 +1,7 @@
 import { HueShiftConfiguration } from './types';
 import { TransitionStep } from './TransitionStep';
 import { HueShiftFilter } from '../filters';
-import { localize, parseConfigurationFormElements } from '../utils';
+import { parseConfigurationFormElements } from '../utils';
 import { addFilterToScene, removeFilterFromScene } from '../transitionUtils';
 import { PreparedTransitionHash, TransitionSequence } from '../interfaces';
 import { HueShiftConfigApplication } from '../applications';
@@ -35,10 +35,10 @@ export class HueShiftStep extends TransitionStep<HueShiftConfiguration> {
   // #region Public Static Methods (7)
 
   static getListDescription(config?: HueShiftConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.HUESHIFT.LABEL", {
+    if (config) return _loc("BATTLETRANSITIONS.HUESHIFT.LABEL", {
       duration: config.duration,
       maxShift: `${(config?.maxShift * 100)}%`,
-      target: localize(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
+      target: _loc(config?.applyToOverlay && config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETBOTH" : config?.applyToScene ? "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETSCENE" : "BATTLETRANSITIONS.SCENECONFIG.COMMON.TARGETOVERLAY")
     }) ?? "";
     else return "";
   }

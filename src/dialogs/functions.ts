@@ -1,5 +1,5 @@
 import { BackgroundTransition, TransitionConfiguration, TransitionStep } from '../steps';
-import { getSortedSteps, getStepClassByKey, localize, mimeType, renderTemplateFunc, templateDir, uploadJSON } from '../utils';
+import { getSortedSteps, getStepClassByKey, mimeType, renderTemplateFunc, templateDir, uploadJSON } from '../utils';
 import { StepContext } from './types';
 import { InvalidTransitionError } from '../errors';
 import { BackgroundType } from '../types';
@@ -65,11 +65,11 @@ function generatePreviewTooltip(step: typeof TransitionStep): string {
   }
 
   const title = document.createElement("h4");
-  title.innerText = game.i18n?.localize(`BATTLETRANSITIONS.${step.name}.NAME`) ?? "";
+  title.innerText = _loc(`BATTLETRANSITIONS.${step.name}.NAME`) ?? "";
   tooltip.appendChild(title);
 
   const desc = document.createElement("p");
-  desc.innerText = game.i18n?.localize(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`) ?? "";
+  desc.innerText = _loc(`BATTLETRANSITIONS.${step.name}.DESCRIPTION`) ?? "";
   tooltip.appendChild(desc);
 
   if (step.reversible) {
@@ -82,7 +82,7 @@ function generatePreviewTooltip(step: typeof TransitionStep): string {
     const strong = document.createElement("strong");
     reversible.appendChild(strong);
 
-    strong.innerHTML = game.i18n?.localize(`BATTLETRANSITIONS.DIALOGS.REVERSIBLE`) ?? "";
+    strong.innerHTML = _loc(`BATTLETRANSITIONS.DIALOGS.REVERSIBLE`) ?? "";
     desc.appendChild(reversible);
   }
 
@@ -118,7 +118,7 @@ export async function importSequence(parent: HTMLElement): Promise<void> {
 
   const current = buildTransitionFromForm($(parent));
   if (current.length) {
-    const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
+    const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", _loc("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
     if (!confirmation) return;
   }
 
@@ -136,7 +136,7 @@ export async function importSequence(parent: HTMLElement): Promise<void> {
     };
 
     const option = createConfigurationOption(config);
-    option.innerText = localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`);
+    option.innerText = _loc(`BATTLETRANSITIONS.${stepClass.name}.NAME`);
     list.appendChild(option);
   }
 }
@@ -161,11 +161,11 @@ export async function customDialog(title: string, content: string, buttons: Reco
     let CLOSE_HOOK_ID: number = 0;
     const dialog = new foundry.applications.api.DialogV2({
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      window: ({ title: localize(title) } as any),
+      window: ({ title: title } as any),
       content,
       buttons: Object.entries(buttons).map(([key, value]) => ({
         action: key,
-        label: `${value.icon ? `${value.icon} ` : ""}${localize(value.label)}`,
+        label: `${value.icon ? `${value.icon} ` : ""}${_loc(value.label)}`,
         callback: () => {
           if (value.callback) value.callback($(dialog.element));
           return Promise.resolve();
@@ -288,8 +288,8 @@ export async function deleteSelectedStep(parent: HTMLElement) {
   if (!step) throw new InvalidTransitionError(deserialized.type);
 
   const confirmed = await confirm(
-    localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) }),
-    localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name: localize(`BATTLETRANSITIONS.${step.name}.NAME`) })
+    _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name: _loc(`BATTLETRANSITIONS.${step.name}.NAME`) }),
+    _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name: _loc(`BATTLETRANSITIONS.${step.name}.NAME`) })
   )
   if (!confirmed) return;
 
@@ -324,7 +324,7 @@ export async function addStep(html: HTMLElement): Promise<TransitionConfiguratio
   };
   const option = createConfigurationOption(config);
 
-  option.innerText = localize(`BATTLETRANSITIONS.${step.name}.NAME`);
+  option.innerText = _loc(`BATTLETRANSITIONS.${step.name}.NAME`);
 
   const stepList = html.querySelector(`#stepList`)
   if (stepList instanceof HTMLSelectElement) stepList.options.add(option);
@@ -384,7 +384,7 @@ export function generateMacro(sequence: TransitionConfiguration[], users: string
 export async function renderSequenceItem(sequence: TransitionConfiguration[], index: number): Promise<HTMLElement> {
   const content = await (renderTemplateFunc())(templateDir(`config/sequence-item.hbs`), {
     index,
-    name: localize("BATTLETRANSITIONS.DIALOGS.SEQUENCE.NAME", { index: index + 1 }),
+    name: _loc("BATTLETRANSITIONS.DIALOGS.SEQUENCE.NAME", { index: index + 1 }),
     serialized: JSON.stringify(sequence)
   });
   const elem = document.createElement("section");
@@ -393,10 +393,10 @@ export async function renderSequenceItem(sequence: TransitionConfiguration[], in
 }
 
 export async function deleteSequenceItem(parent: HTMLElement, index: number): Promise<void> {
-  const name = localize("BATTLETRANSITIONS.DIALOGS.SEQUENCE.NAME", { index: index + 1 });
+  const name = _loc("BATTLETRANSITIONS.DIALOGS.SEQUENCE.NAME", { index: index + 1 });
   const confirmed = await confirm(
-    localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name }),
-    localize("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name })
+    _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name }),
+    _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name })
   );
   if (!confirmed) return;
 
@@ -435,7 +435,7 @@ export function setupSequenceList(parent: HTMLElement, sequence: TransitionConfi
         ...stepClass.DefaultSettings,
         ...step
       });
-      option.innerText = localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`);
+      option.innerText = _loc(`BATTLETRANSITIONS.${stepClass.name}.NAME`);
       stepList.options.add(option);
     }
   }

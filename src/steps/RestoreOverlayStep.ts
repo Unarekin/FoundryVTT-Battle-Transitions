@@ -26,7 +26,7 @@ export class RestoreOverlayStep extends TransitionStep<RestoreOverlayConfigurati
   // #region Public Static Methods (6)
 
   static getListDescription(config?: RestoreOverlayConfiguration): string {
-    if (config) return game.i18n?.format("BATTLETRANSITIONS.SHOWOVERLAY.LABEL") ?? "";
+    if (config) return _loc("BATTLETRANSITIONS.SHOWOVERLAY.LABEL") ?? "";
     else return "";
   }
 
