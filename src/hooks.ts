@@ -12,6 +12,8 @@ import { _playFunction, _playOptions } from "./types";
 import { BTScene } from 'interfaces';
 import * as steps from "./steps";
 import { filters } from "./filters";
+import { TextureLoaderMixin } from "./TextureLoader";
+import { ScenesMixin } from "./ScenesMixin";
 
 Hooks.once("ready", () => {
 
@@ -26,6 +28,10 @@ Hooks.once("ready", () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     CONFIG.Scene.sheetClasses.base[key].cls = mixed as any;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+  foundry.canvas.TextureLoader.loader = new (TextureLoaderMixin(foundry.canvas.TextureLoader) as any)();
+
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -37,14 +43,16 @@ Hooks.once("ready", () => {
 };
 
 CONFIG.BattleTransitions = {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  steps: Object.fromEntries(Object.values(steps).filter((cls: typeof TransitionStep) => cls.key !== undefined).map(cls => [cls.key, { id: cls.key, label: `BATTLETRANSITIONS.${cls.name}.NAME`, cls }])) as Record<TransitionType, StepConfigurationDefinition>,
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  steps: Object.fromEntries(Object.values(steps).filter(cls => (cls as any).key !== undefined).map((cls: typeof TransitionStep) => [cls.key, { id: cls.key, label: `BATTLETRANSITIONS.${cls.name}.NAME`, cls }])) as Record<TransitionType, StepConfigurationDefinition>,
   filters: filters as unknown as Record<string, typeof PIXI.Filter>
 }
 
 Hooks.once("init", () => {
   registerHelpers();
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  CONFIG.Scene.collection = ScenesMixin(CONFIG.Scene.collection as any);
   CONFIG.Scene.documentClass = SceneMixin(CONFIG.Scene.documentClass);
 
   libWrapper.register<_playFunction>(__MODULE_ID__, "foundry.canvas.TransitionContainer.prototype._play", function (this: foundry.canvas.containers.UnboundContainer, wrapped: _playFunction, options: _playOptions) {

@@ -99,3 +99,8 @@ export interface StepConfigurationDefinition {
   cls: typeof TransitionStep;
   default: TransitionConfiguration;
 }
+
+export interface BTTextureLoader extends foundry.canvas.TextureLoader {
+  hideLoadingBar: boolean;
+  isPreloading: boolean;
+}

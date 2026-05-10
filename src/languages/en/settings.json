@@ -1,0 +1,10 @@
+{
+  "BATTLETRANSITIONS": {
+    "SETTINGS": {
+      "ALWAYSHIDELOADINGBAR": {
+        "LABEL": "Always Hide Loading Bar",
+        "HINT": "When enabled, will always hide the loading progress bar when changing scenes."
+      }
+    }
+  }
+}

@@ -61,6 +61,11 @@ declare global {
 }
 
 declare module "fvtt-types/configuration" {
+
+  interface SettingConfig {
+    "battle-transitions.alwaysHideLoadingBar": boolean;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Hooks {
     interface HookConfig {
