@@ -2,10 +2,10 @@ import { coerceColorHex, coerceScene, coerceUser } from "./coercion";
 import { PreparedSequences } from "./constants.js";
 import { InvalidElementError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ModuleNotActiveError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
-import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep, BilinearWipeStep, ClearEffectsStep, FlashStep, HueShiftConfiguration, HueShiftStep, InvertStep, LoadingTipStep, PixelateConfiguration, PixelateStep, RepeatStep, ZoomStep, RadialWipeStep } from "./steps";
+import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep, BilinearWipeStep, ClearEffectsStep, FlashStep, HueShiftConfiguration, HueShiftStep, InvertStep, LoadingTipStep, PixelateConfiguration, PixelateStep, RepeatStep, ZoomStep, RadialWipeStep, SceneChangeStep, BossSplashStep, ParallelStep, StartPlaylistStep, ReverseStep } from "./steps";
 import SocketHandler from "./SocketHandler";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
-import { backgroundType, deserializeTexture, expandedFormData, generateBackgroundConfig, generateDualStyleConfig, getStepClassByKey, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
+import { backgroundType, deserializeTexture, expandedFormData, generateBackgroundConfig, generateDualStyleConfig, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./applications";
 import { filters } from "./filters";
@@ -57,13 +57,9 @@ export class BattleTransition {
       if (arg) {
         const scene = coerceScene(arg);
         if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof arg === "string" ? arg : typeof arg);
-        // if (scene.id !== canvas?.scene?.id) {
-        // if (scene.id === canvas?.scene?.id) throw new TransitionToSelfError();
-        const changeStep = getStepClassByKey("scenechange");
-        if (!changeStep) throw new InvalidTransitionError("scenechange");
 
         this.#sequence.push({
-          ...changeStep?.DefaultSettings,
+          ...SceneChangeStep.DefaultSettings,
           id: foundry.utils.randomID(),
           scene: scene.id
         } as SceneChangeConfiguration);
@@ -238,11 +234,9 @@ export class BattleTransition {
       const scene = (args[0] instanceof Scene) ? args[0] : coerceScene(args[0]);
       if (!(scene instanceof Scene)) throw new InvalidSceneError(typeof args[0] === "string" ? args[0] : typeof args[0]);
       if (scene.active) throw new TransitionToSelfError();
-      const sceneStepClass = getStepClassByKey("scenechange");
-      if (!sceneStepClass) throw new InvalidTransitionError("scenechange");
 
       const sceneStep: SceneChangeConfiguration = {
-        ...sceneStepClass.DefaultSettings,
+        ...SceneChangeStep.DefaultSettings,
         id: foundry.utils.randomID(),
         scene: scene.id ?? ""
       };
@@ -343,11 +337,11 @@ export class BattleTransition {
     try {
       const validated: TransitionConfiguration[] = [];
       for (const step of sequence) {
-        const handler = getStepClassByKey(step.type);
-        // const handler = BattleTransition.StepTypes[step.type];
+        const handler = CONFIG.BattleTransitions.steps[step.type];
+
         if (!handler) throw new InvalidTransitionError(step.type);
 
-        const valid = await handler.validate(step, sequence);
+        const valid = await handler.cls.validate(step, sequence);
         if (valid instanceof Error) return valid;
         validated.push(valid);
       }
@@ -517,10 +511,10 @@ export class BattleTransition {
       ui.notifications?.error(err.message, { console: false });
       throw err;
     }
-    const step = getStepClassByKey("bosssplash");
-    if (!step) throw new InvalidTransitionError("bosssplash");
+    // const step = getStepClassByKey("bosssplash");
+    // if (!step) throw new InvalidTransitionError("bosssplash");
     const newConfig: BossSplashConfiguration = {
-      ...step.DefaultSettings,
+      ...foundry.utils.deepClone(BossSplashStep.DefaultSettings),
       ...config,
       id: foundry.utils.randomID()
     };
@@ -1070,11 +1064,8 @@ export class BattleTransition {
       sequences.push(res.sequence);
     }
 
-    const step = getStepClassByKey("parallel");
-    if (!step) throw new InvalidTransitionError("parallel");
-
     const config: ParallelConfiguration = {
-      ...step?.DefaultSettings,
+      ...foundry.utils.deepClone(ParallelStep.DefaultSettings),
       id: foundry.utils.randomID(),
       sequences
     };
@@ -1296,10 +1287,9 @@ export class BattleTransition {
    * @returns {BattleTransition}
    */
   public startPlaylist(): this {
-    const step = getStepClassByKey("startplaylist");
-    if (!step) throw new InvalidTransitionError("startplaylist");
+
     this.#sequence.push({
-      ...step.DefaultSettings,
+      ...foundry.utils.deepClone(StartPlaylistStep.DefaultSettings),
       id: foundry.utils.randomID()
     });
 
@@ -1312,16 +1302,14 @@ export class BattleTransition {
    * @returns {BattleTransition}
    */
   public reverse(delay: number = 0): this {
-    const step = getStepClassByKey("reverse");
-    if (!step) throw new InvalidTransitionError("reverse");
-
     if (this.#sequence.length === 0) throw new InvalidTransitionError("reverse");
-    const prevStep = getStepClassByKey(this.#sequence[this.#sequence.length - 1].type);
+
+    const prevStep = CONFIG.BattleTransitions.steps[this.#sequence[this.#sequence.length - 1].type];
     if (!prevStep) throw new InvalidTransitionError("reverse");
-    if (!prevStep.reversible) throw new StepNotReversibleError(prevStep.key);
+    if (!prevStep.cls.reversible) throw new StepNotReversibleError(prevStep.id);
 
     const config: ReverseConfiguration = {
-      ...step.DefaultSettings,
+      ...foundry.utils.deepClone(ReverseStep.DefaultSettings),
       delay,
       id: foundry.utils.randomID()
     }
@@ -1875,9 +1863,9 @@ export class BattleTransition {
 // #region Functions (1)
 
 function getStepInstance(step: TransitionConfiguration): TransitionStep {
-  const handler = getStepClassByKey(step.type);
+  const handler = CONFIG.BattleTransitions.steps[step.type];
   if (!handler) throw new InvalidTransitionError(step.type);
-  return handler.from(step);
+  return handler.cls.from(step);
 }
 
 

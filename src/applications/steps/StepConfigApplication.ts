@@ -2,7 +2,6 @@ import { coerceScene } from "../../coercion";
 import { DeepPartial } from "../../dialogs";
 import { InvalidTransitionError, LocalizedError } from "../../errors";
 import { TransitionConfiguration, TransitionStep } from "../../steps";
-import { getStepClassByKey } from "../../utils";
 import { AddStepApplication } from "../AddStepApplication";
 import { StepConfigContext, StepConfigConfiguration } from "./types";
 
@@ -71,7 +70,7 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
     return foundry.utils.mergeObject(
       foundry.utils.deepClone(this.StepClass?.DefaultSettings) ?? {},
       data
-    ) as t;
+    ) as unknown as t;
   }
 
   static onFormSubmit(this: StepConfigApplication<any>, e: Event, form: HTMLFormElement, formData: FormDataExtended) {
@@ -116,8 +115,8 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
     return data;
   }
 
-  _onRender(context: StepConfigContext, options: foundry.applications.api.ApplicationV2.RenderOptions) {
-    super._onRender(context, options);
+  async _onRender(context: StepConfigContext, options: foundry.applications.api.ApplicationV2.RenderOptions) {
+    await super._onRender(context, options);
 
     this.toggleBackgroundSelector();
 
@@ -185,8 +184,11 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
   protected async addSubStep(sequence: TransitionConfiguration[] = []): Promise<TransitionConfiguration | undefined> {
     const key = await AddStepApplication.add({ sequence });
     if (!key) return;
-    const stepClass = getStepClassByKey(key);
-    if (!stepClass) throw new InvalidTransitionError(key);
+    const stepDef = CONFIG.BattleTransitions.steps[key];
+
+    if (!stepDef) throw new InvalidTransitionError(key);
+    const stepClass = stepDef.cls;
+
     let config: TransitionConfiguration | null = null;
     if (!stepClass.skipConfig) {
       if (!stepClass.ConfigurationApplication) throw new LocalizedError("NOCONFIGAPP");

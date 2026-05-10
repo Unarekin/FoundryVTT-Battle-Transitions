@@ -92,3 +92,10 @@ export interface SceneTransition {
   duration: number;
   type: string;
 }
+
+export interface StepConfigurationDefinition {
+  id: string;
+  label: string;
+  cls: typeof TransitionStep;
+  default: TransitionConfiguration;
+}

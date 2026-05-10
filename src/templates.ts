@@ -6,7 +6,7 @@
 import { InvalidTransitionError } from "./errors";
 import groupBy from "./lib/groupBy";
 import { TransitionConfiguration } from "./steps";
-import { formatDuration, getStepClassByKey, templateDir } from "./utils";
+import { formatDuration, templateDir } from "./utils";
 
 
 
@@ -56,21 +56,22 @@ export function registerHelpers() {
   });
 
   Handlebars.registerHelper("stepDescription", function (config: TransitionConfiguration) {
-    const stepClass = getStepClassByKey(config.type);
+    const stepClass = CONFIG.BattleTransitions.steps[config.type];
+
     if (!stepClass) return "";
-    return new Handlebars.SafeString(stepClass.getListDescription(config));
+    return new Handlebars.SafeString(stepClass.cls.getListDescription(config));
   });
 
   Handlebars.registerHelper("shouldConfigureStep", function (config: TransitionConfiguration) {
-    const stepClass = getStepClassByKey(config.type);
+    const stepClass = CONFIG.BattleTransitions.steps[config.type];
     if (!stepClass) throw new InvalidTransitionError(config.type);
-    return !stepClass.skipConfig
+    return !stepClass.cls.skipConfig
   })
 
   Handlebars.registerHelper("stepName", function (config: TransitionConfiguration) {
-    const stepClass = getStepClassByKey(config.type);
+    const stepClass = CONFIG.BattleTransitions.steps[config.type];
     if (!stepClass) throw new InvalidTransitionError(config.type);
-    return _loc(`BATTLETRANSITIONS.${stepClass.name}.NAME`) ?? "";
+    return _loc(stepClass.label) ?? "";
   });
 
   Handlebars.registerHelper("moduleTemplate", function (path: string) {

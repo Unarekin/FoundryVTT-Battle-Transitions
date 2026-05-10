@@ -1,5 +1,5 @@
 import { TransitionConfiguration } from "../steps";
-import { expandedFormData, getStepClassByKey, renderTemplateFunc, templateDir } from "../utils";
+import { expandedFormData, renderTemplateFunc, templateDir } from "../utils";
 import { addStep, deleteSelectedStep, selectItem, setEnabledButtons, setupSequenceList } from "./functions";
 import { InvalidTransitionError } from "../errors";
 import { DeepPartial } from "./types";
@@ -140,9 +140,10 @@ function onFormChange(form: HTMLFormElement) {
       const typeElem = form.querySelector(`[data-role="transition-config"] [data-transition-type]`);
       if (typeElem instanceof HTMLElement) {
         const stepType = typeElem.dataset.transitionType as string;
-        const step = getStepClassByKey(stepType);
-        if (!step) throw new InvalidTransitionError(stepType);
+        const stepDef = CONFIG.BattleTransitions.steps[stepType];
 
+        if (!stepDef) throw new InvalidTransitionError(stepType);
+        const step = stepDef.cls;
         const { config } = step.from(form);
 
         const option = form.querySelector(`select#stepList [data-id="${config.id}"]`);

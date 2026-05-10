@@ -1,7 +1,7 @@
 import { ReverseConfigApplication } from "../applications";
 import { InvalidTransitionError, StepNotReversibleError } from "../errors";
 import { TransitionSequence, PreparedTransitionHash } from "../interfaces";
-import { getStepClassByKey, parseConfigurationFormElements, wait } from "../utils";
+import { parseConfigurationFormElements, wait } from "../utils";
 import { getPreviousStep } from "./functions";
 import { TransitionStep } from "./TransitionStep";
 import { ReverseConfiguration, TransitionConfiguration } from "./types";
@@ -38,9 +38,9 @@ export class ReverseStep extends TransitionStep<ReverseConfiguration> {
     if (sequence.length === 0) return false;
 
     const prev = sequence[sequence.length - 1];
-    const stepClass = getStepClassByKey(prev.type);
+    const stepClass = CONFIG.BattleTransitions.steps[prev.type];
 
-    return !!stepClass?.reversible;
+    return !!stepClass?.cls.reversible;
   }
 
   public static from(config: ReverseConfiguration): ReverseStep
@@ -64,9 +64,9 @@ export class ReverseStep extends TransitionStep<ReverseConfiguration> {
     const prev = getPreviousStep(config.id, sequence);
     if (!prev) throw new InvalidTransitionError("reverse");
 
-    const step = getStepClassByKey(prev.type);
+    const step = CONFIG.BattleTransitions.steps[prev.type];
     if (!step) throw new InvalidTransitionError(typeof prev.type === "string" ? prev.type : typeof prev.type);
-    if (!step.reversible) throw new StepNotReversibleError(step.key);
+    if (!step.cls.reversible) throw new StepNotReversibleError(step.id);
     return config;
   }
 

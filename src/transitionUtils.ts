@@ -1,5 +1,5 @@
 import { InvalidSceneError, InvalidTransitionError } from './errors';
-import { awaitHook, getStepClassByKey } from "./utils";
+import { awaitHook } from "./utils";
 import { coerceScene } from "./coercion";
 import { TransitionConfiguration } from "./steps";
 import { PreparedTransitionSequence } from "./interfaces";
@@ -73,11 +73,12 @@ export function removeFilter(element: PIXI.DisplayObject, filter: PIXI.Filter) {
 export async function sequenceDuration(sequence: TransitionConfiguration[]): Promise<number> {
   let duration: number = 0;
   for (const config of sequence) {
-    const step = getStepClassByKey(config.type);
+    const step = CONFIG.BattleTransitions.steps[config.type];
+
     if (!step) throw new InvalidTransitionError(typeof config.type === "string" ? config.type : typeof config.type);
-    if (step.addDurationToTotal) {
+    if (step.cls.addDurationToTotal) {
       try {
-        const res = step.getDuration(config, sequence);
+        const res = step.cls.getDuration(config, sequence);
         duration += res instanceof Promise ? await res : res;
       } catch (err) {
         ui.notifications?.error((err as Error).message, { console: false });

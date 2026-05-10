@@ -1,7 +1,6 @@
 import { SceneConfiguration } from "../interfaces";
 import { Migrator } from "./Migrator";
 import { InvalidTransitionError, MigratorNotFoundError } from "../errors";
-import { getStepClassByKey } from "../utils";
 import { TransitionConfiguration } from "../steps";
 import { DataMigration } from "../DataMigration";
 
@@ -33,17 +32,14 @@ export class SceneConfigurationMigrator extends Migrator<SceneConfiguration> {
     }
   }
 
-  public MigrateSequence(sequence: any[]): TransitionConfiguration[] {
+  public MigrateSequence(sequence: TransitionConfiguration[]): TransitionConfiguration[] {
     return sequence.map(item => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-      const stepClass = getStepClassByKey(item.type);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      const stepClass = CONFIG.BattleTransitions.steps[item.type];
       if (!stepClass) throw new InvalidTransitionError(typeof item.type === "string" ? item.type : typeof item.type);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const migrator = (DataMigration.TransitionSteps as any)[stepClass.key] as Migrator<TransitionConfiguration>;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+      const migrator = (DataMigration.TransitionSteps as any)[stepClass.id] as Migrator<TransitionConfiguration>;
       if (!migrator) throw new MigratorNotFoundError(typeof item.type === "string" ? item.type : typeof item.type, typeof undefined, typeof undefined);
-      return migrator.NeedsMigration(item) ? migrator.Migrate(item) : item as TransitionConfiguration;
+      return migrator.NeedsMigration(item) ? migrator.Migrate(item) : item;
     }) as TransitionConfiguration[];
   }
 }
@@ -79,29 +75,26 @@ function v10X(old: V10Config): SceneConfiguration {
     autoTrigger: old.config?.autoTrigger ?? false,
     version: "1.1.6",
     isTriggered: false,
-    sequence: migrateSequence(old.steps as any[])
+    sequence: migrateSequence(old.steps as unknown as TransitionConfiguration[])
   } as SceneConfiguration;
 }
 
-function migrateSequence(sequence: any[]): TransitionConfiguration[] {
+function migrateSequence(sequence: TransitionConfiguration[]): TransitionConfiguration[] {
   if (Array.isArray(sequence)) {
     if (!sequence.length) return [];
     return sequence.map(step => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-      const stepClass = getStepClassByKey(step.type);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-      if (!stepClass) throw new InvalidTransitionError(typeof step.type === "string" ? step.type : typeof step.class);
+      const stepClass = CONFIG.BattleTransitions.steps[step.type];
+
+      if (!stepClass) throw new InvalidTransitionError(typeof step.type === "string" ? step.type : typeof undefined);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       const migrator = (DataMigration as any).TransitionSteps[step.type] as Migrator<TransitionConfiguration>;
       if (!migrator) throw new MigratorNotFoundError(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
         typeof step.type === "string" ? step.type : typeof step.type,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+
         typeof step.version === "string" ? step.version : typeof step.version,
         CURRENT_VERSION);
       // if (!migrator) throw new UnableToMigrateError(typeof undefined, __MODULE_VERSION__);
       if (migrator.NeedsMigration(step)) return migrator.Migrate(step);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       else return step;
     }) as TransitionConfiguration[];
 

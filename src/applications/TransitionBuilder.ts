@@ -2,7 +2,7 @@ import { BattleTransition } from "../BattleTransition";
 import { coerceScene } from "../coercion";
 import { InvalidSceneError, InvalidTransitionError, LocalizedError } from "../errors";
 import { TransitionConfiguration } from "../steps";
-import { downloadJSON, getStepClassByKey, templateDir, uploadJSON } from "../utils";
+import { downloadJSON, templateDir, uploadJSON } from "../utils";
 import { AddStepApplication } from "./AddStepApplication";
 import { generateMacro, confirm } from "./functions";
 import { DeepPartial } from "./types";
@@ -113,8 +113,10 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       const config = this.#response.sequence.find(item => item.id === id);
       if (!config) throw new InvalidTransitionError(id);
 
-      const stepClass = getStepClassByKey(config.type);
-      if (!stepClass) throw new InvalidTransitionError(config.type);
+      const step = CONFIG.BattleTransitions.steps[config.type];
+
+      if (!step) throw new InvalidTransitionError(config.type);
+      const stepClass = step.cls;
       if (!stepClass.ConfigurationApplication) throw new LocalizedError("NOCONFIGAPP");
 
       const app = new stepClass.ConfigurationApplication(foundry.utils.deepClone(config), {
@@ -141,8 +143,10 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       const step = this.#response.sequence.find(item => item.id === id);
       if (!step) throw new InvalidTransitionError(id);
 
-      const stepClass = getStepClassByKey(step.type);
-      if (!stepClass) throw new InvalidTransitionError(step.type);
+      const stepDef = CONFIG.BattleTransitions.steps[step.type];
+
+      if (!stepDef) throw new InvalidTransitionError(step.type);
+      const stepClass = stepDef.cls;
 
       const name = _loc(`BATTLETRANSITIONS.${stepClass.name}.NAME`) ?? ""
 
@@ -165,8 +169,11 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     try {
       const key = await AddStepApplication.add({ sequence: this.#response.sequence });
       if (!key) return;
-      const stepClass = getStepClassByKey(key);
-      if (!stepClass) throw new InvalidTransitionError(key);
+      const stepDef = CONFIG.BattleTransitions.steps[key];
+
+      if (!stepDef) throw new InvalidTransitionError(key);
+      const stepClass = stepDef.cls;
+
       let config: TransitionConfiguration | null = null;
       if (!stepClass.skipConfig) {
         if (!stepClass.ConfigurationApplication) throw new LocalizedError("NOCONFIGAPP");

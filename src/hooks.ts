@@ -10,7 +10,8 @@ import { SceneMixin } from "./SceneMixin";
 import { DummyTransitionFilter } from 'filters';
 import { _playFunction, _playOptions } from "./types";
 import { BTScene } from 'interfaces';
-
+import * as steps from "./steps";
+import { filters } from "./filters";
 
 Hooks.once("ready", () => {
 
@@ -34,6 +35,12 @@ Hooks.once("ready", () => {
   defaultDoration: 0,
   filterClass: DummyTransitionFilter
 };
+
+CONFIG.BattleTransitions = {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  steps: Object.fromEntries(Object.values(steps).filter(cls => cls.key !== undefined).map(cls => [cls.key, { id: cls.key, label: `BATTLETRANSITIONS.${cls.name}.NAME`, cls }])) as Record<TransitionType, StepConfigurationDefinition>,
+  filters
+}
 
 Hooks.once("init", async () => {
   registerHelpers();

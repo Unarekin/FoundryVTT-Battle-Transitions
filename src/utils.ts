@@ -193,11 +193,6 @@ export function getSortedSteps(): (typeof TransitionStep)[] {
   return Object.values(steps).sort((a, b) => _loc(`BATTLETRANSITIONS.TRANSITIONTYPES.${(a as any).name}`).localeCompare(_loc(`BATTLETRANSITIONS.TRANSITIONTYPES.${(b as any).name}`))) as (typeof TransitionStep)[];
 }
 
-export function getStepClassByKey(key: string): (typeof TransitionStep) | undefined {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return Object.values(steps).find((obj: any) => obj.key === key) as (typeof TransitionStep) | undefined;
-}
-
 /**
  * Inverts a {@link PIXI.Texture}
  * @param {PIXI.Texture} texture {@link PIXI.Texture} to be inverted
@@ -488,19 +483,20 @@ export async function importSequence(): Promise<TransitionConfiguration[] | null
 
   // Data migration step
   const migrated = json.map(config => {
-    const step = getStepClassByKey(config.type);
+    const step = CONFIG.BattleTransitions.steps[config.type];
+
     if (!step) throw new InvalidImportError();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const migrator = (DataMigration.TransitionSteps as any)[config.type] as Migrator<TransitionConfiguration>;
-    if (!migrator) throw new MigratorNotFoundError(config.type, typeof config.version === "string" ? config.version : typeof config.version, step.DefaultSettings.version);
+    if (!migrator) throw new MigratorNotFoundError(config.type, typeof config.version === "string" ? config.version : typeof config.version, step.cls.DefaultSettings.version);
     if (migrator.NeedsMigration(config)) return migrator.Migrate(config);
     else return config;
   }).filter(item => !!item);
 
   for (const config of migrated) {
-    const step = getStepClassByKey(config.type);
+    const step = CONFIG.BattleTransitions.steps[config.type];
     if (!step) throw new InvalidImportError();
-    const res = step.validate(config, migrated);
+    const res = step.cls.validate(config, migrated);
     const actual = (res instanceof Promise) ? await res : res;
     if (actual instanceof Error) throw actual;
     sequence.push(actual);

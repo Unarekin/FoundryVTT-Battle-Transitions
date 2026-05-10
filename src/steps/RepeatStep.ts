@@ -3,7 +3,7 @@ import { BattleTransition } from "../BattleTransition";
 import { InvalidTransitionError, NoPreviousStepError } from "../errors";
 import { PreparedTransitionHash, TransitionSequence } from "../interfaces";
 import { sequenceDuration } from "../transitionUtils";
-import { getStepClassByKey, parseConfigurationFormElements } from "../utils";
+import { parseConfigurationFormElements } from "../utils";
 import { getPreviousStep } from "./functions";
 import { TransitionStep } from "./TransitionStep";
 import { RepeatConfiguration, TransitionConfiguration, WaitConfiguration } from './types';
@@ -85,10 +85,10 @@ export class RepeatStep extends TransitionStep<RepeatConfiguration> {
     if (config.style === "previous") {
       const prev = getPreviousStep(config.id, sequence);
       if (!prev) throw new NoPreviousStepError();
+      const step = CONFIG.BattleTransitions.steps[prev.type];
 
-      const step = getStepClassByKey(prev.type);
       if (!step) throw new InvalidTransitionError(typeof prev.type === "string" ? prev.type : typeof prev.type);
-      const res = step.getDuration(prev, sequence);
+      const res = step.cls.getDuration(prev, sequence);
       const duration = res instanceof Promise ? await res : res;
       return ((duration + config.delay) * (config.iterations - 1)) + config.delay;
     } else {

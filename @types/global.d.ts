@@ -1,9 +1,10 @@
 import * as gsapType from "gsap";
-import { BTScene, SceneConfiguration, SceneTransition } from "interfaces";
+import { BTScene, SceneConfiguration, SceneTransition, StepConfigurationDefinition } from "interfaces";
 import { libWrapper as libwrapperType } from "./libwrapper"
 import { BattleTransition as BattleTransitionType } from "BattleTransition";
 import { SocketHandler } from "sockets";
 import { semver as semverType } from "semver";
+import { TransitionStep } from "steps";
 
 
 declare global {
@@ -53,7 +54,8 @@ declare global {
       }>
     }
     BattleTransitions: {
-
+      filters: Record<string, typeof PIXI.Filter>;
+      steps: Record<TransitionType, StepConfigurationDefinition>
     }
   }
 }

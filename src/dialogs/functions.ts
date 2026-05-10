@@ -1,5 +1,5 @@
 import { BackgroundTransition, TransitionConfiguration, TransitionStep } from '../steps';
-import { getSortedSteps, getStepClassByKey, mimeType, renderTemplateFunc, templateDir, uploadJSON } from '../utils';
+import { getSortedSteps, mimeType, renderTemplateFunc, templateDir, uploadJSON } from '../utils';
 import { StepContext } from './types';
 import { InvalidTransitionError } from '../errors';
 import { BackgroundType } from '../types';
@@ -19,7 +19,7 @@ export function getStepsForCategory(category: string, sequence?: TransitionConfi
       let enabled = true;
 
       if (Array.isArray(sequence)) {
-        const stepClass = getStepClassByKey(curr.key)
+        const stepClass = CONFIG.BattleTransitions.steps[curr.key]?.cls;
         if (stepClass && !stepClass.canBeAddedToSequence(sequence)) enabled = false;
       }
 
@@ -128,15 +128,15 @@ export async function importSequence(parent: HTMLElement): Promise<void> {
   list.innerHTML = "";
 
   for (const step of sequence) {
-    const stepClass = getStepClassByKey(step.type);
+    const stepClass = CONFIG.BattleTransitions.steps[step.type];
     if (!stepClass) throw new InvalidTransitionError(step.type);
     const config = {
-      ...stepClass.DefaultSettings,
+      ...foundry.utils.deepClone(stepClass.cls.DefaultSettings),
       ...step
     };
 
     const option = createConfigurationOption(config);
-    option.innerText = _loc(`BATTLETRANSITIONS.${stepClass.name}.NAME`);
+    option.innerText = _loc(stepClass.label);
     list.appendChild(option);
   }
 }
@@ -205,10 +205,11 @@ export async function selectItem(parent: HTMLElement, id: string) {
   if (!serialized) throw new InvalidTransitionError(id);
   const deserialized = JSON.parse(serialized) as TransitionConfiguration;
 
-  const step = getStepClassByKey(deserialized.type);
+  const step = CONFIG.BattleTransitions.steps[deserialized.type];
+
   if (!step) throw new InvalidTransitionError(deserialized.type);
 
-  if (!step.skipConfig) {
+  if (!step.cls.skipConfig) {
     // const content = await step.RenderTemplate({
     //   ...deserialized,
     //   isV1: false
@@ -216,7 +217,7 @@ export async function selectItem(parent: HTMLElement, id: string) {
 
     // configArea.innerHTML = content;
 
-    step.addEventListeners(configArea, deserialized);
+    step.cls.addEventListeners(configArea, deserialized);
   } else {
     configArea.innerHTML = "";
   }
@@ -284,12 +285,13 @@ export async function deleteSelectedStep(parent: HTMLElement) {
   if (!(option instanceof HTMLOptionElement)) throw new InvalidTransitionError(id);
   const serialized = option.dataset.serialized as string;
   const deserialized = JSON.parse(serialized) as TransitionConfiguration;
-  const step = getStepClassByKey(deserialized.type);
+  const step = CONFIG.BattleTransitions.steps[deserialized.type];
+
   if (!step) throw new InvalidTransitionError(deserialized.type);
 
   const confirmed = await confirm(
-    _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name: _loc(`BATTLETRANSITIONS.${step.name}.NAME`) }),
-    _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name: _loc(`BATTLETRANSITIONS.${step.name}.NAME`) })
+    _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name: _loc(step.label) }),
+    _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name: _loc(step.label) })
   )
   if (!confirmed) return;
 
@@ -314,17 +316,18 @@ export function setTargetConfig(html: HTMLElement) {
 export async function addStep(html: HTMLElement): Promise<TransitionConfiguration | undefined> {
   const key = await AddStepApplication.add();
   if (!key) return;
-  const step = getStepClassByKey(key);
+  const step = CONFIG.BattleTransitions.steps[key];
+
   if (!step) throw new InvalidTransitionError(key);
 
   // Inject step
   const config = {
-    ...step.DefaultSettings,
+    ...foundry.utils.deepClone(step.cls.DefaultSettings),
     id: foundry.utils.randomID()
   };
   const option = createConfigurationOption(config);
 
-  option.innerText = _loc(`BATTLETRANSITIONS.${step.name}.NAME`);
+  option.innerText = _loc(step.label);
 
   const stepList = html.querySelector(`#stepList`)
   if (stepList instanceof HTMLSelectElement) stepList.options.add(option);
@@ -429,13 +432,13 @@ export function setupSequenceList(parent: HTMLElement, sequence: TransitionConfi
   if (stepList instanceof HTMLSelectElement) {
     stepList.innerHTML = "";
     for (const step of sequence) {
-      const stepClass = getStepClassByKey(step.type);
+      const stepClass = CONFIG.BattleTransitions.steps[step.type];
       if (!stepClass) throw new InvalidTransitionError(step.type);
       const option = createConfigurationOption({
-        ...stepClass.DefaultSettings,
+        ...foundry.utils.deepClone(stepClass.cls.DefaultSettings),
         ...step
       });
-      option.innerText = _loc(`BATTLETRANSITIONS.${stepClass.name}.NAME`);
+      option.innerText = _loc(stepClass.label);
       stepList.options.add(option);
     }
   }

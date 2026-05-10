@@ -1,7 +1,7 @@
 import { coerceScene } from "../coercion"
 import { InvalidTransitionError, LocalizedError } from "../errors"
 import { TransitionConfiguration } from "../steps"
-import { getStepClassByKey, templateDir } from "../utils"
+import { templateDir } from "../utils"
 import { AddStepApplication } from "./AddStepApplication"
 import { confirm } from "./functions"
 import { DeepPartial, SequenceEditorConfiguration, SequenceEditorContext } from "./types"
@@ -62,8 +62,11 @@ export class SequenceEditorApplication extends foundry.applications.api.Handleba
     try {
       const key = await AddStepApplication.add({ sequence: this.sequence });
       if (!key) return;
-      const stepClass = getStepClassByKey(key);
-      if (!stepClass) throw new InvalidTransitionError(key);
+      const step = CONFIG.BattleTransitions.steps[key];
+
+      if (!step) throw new InvalidTransitionError(key);
+      const stepClass = step.cls;
+
       let config: TransitionConfiguration | null = null;
       if (!stepClass.skipConfig) {
         if (!stepClass.ConfigurationApplication) throw new LocalizedError("NOCONFIGAPP");
@@ -111,9 +114,10 @@ export class SequenceEditorApplication extends foundry.applications.api.Handleba
       if (!id) throw new InvalidTransitionError(id);
       const config = this.sequence.find(item => item.id === id);
       if (!config) throw new InvalidTransitionError(id);
+      const step = CONFIG.BattleTransitions.steps[config.type];
 
-      const stepClass = getStepClassByKey(config.type);
-      if (!stepClass) throw new InvalidTransitionError(config.type);
+      if (!step) throw new InvalidTransitionError(config.type);
+      const stepClass = step.cls;
       if (!stepClass.ConfigurationApplication) throw new LocalizedError("NOCONFIGAPP");
 
       const app = new stepClass.ConfigurationApplication(foundry.utils.deepClone(config), {
@@ -171,10 +175,10 @@ export class SequenceEditorApplication extends foundry.applications.api.Handleba
       if (!id) throw new InvalidTransitionError(id);
       const step = this.sequence.find(item => item.id === id);
       if (!step) throw new InvalidTransitionError(id);
-      const stepClass = getStepClassByKey(step.type);
+      const stepClass = CONFIG.BattleTransitions.steps[step.type];
       if (!stepClass) throw new InvalidTransitionError(step.type);
 
-      const name = _loc(`BATTLETRANSITIONS.${stepClass.name}.NAME`);
+      const name = _loc(`BATTLETRANSITIONS.${stepClass.label}.NAME`);
       const confirmed = await confirm(
         _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name }) ?? "",
         _loc("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name }) ?? ""

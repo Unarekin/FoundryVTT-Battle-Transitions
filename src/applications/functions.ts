@@ -1,7 +1,7 @@
 import { coerceScene, coerceUser } from '../coercion';
 import { LOG_ICON } from '../constants.js';
 import { TransitionConfiguration, TransitionStep } from '../steps';
-import { getSortedSteps, getStepClassByKey, mimeType } from '../utils';
+import { getSortedSteps, mimeType } from '../utils';
 import { StepContext } from './types';
 
 
@@ -77,8 +77,8 @@ export function getStepsForCategory(category: string, sequence?: TransitionConfi
       let enabled = true;
 
       if (Array.isArray(sequence)) {
-        const stepClass = getStepClassByKey(curr.key)
-        if (stepClass && !stepClass.canBeAddedToSequence(sequence)) enabled = false;
+        const stepClass = CONFIG.BattleTransitions.steps[curr.key];
+        if (stepClass && !stepClass.cls.canBeAddedToSequence(sequence)) enabled = false;
       }
 
       return [

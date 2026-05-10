@@ -1,4 +1,3 @@
-// export const WipeDirections = ["left", "right", "top", "bottom", "bottomleft", "bottomright", "topleft", "topright"] as const;
 export const WipeDirections = ["top", "topright", "right", "bottomright", "bottom", "bottomleft", "left", "topleft"] as const;
 export type WipeDirection = typeof WipeDirections[number];
 
