@@ -1,5 +1,5 @@
 import { BackgroundTransition, TransitionConfiguration, TransitionStep } from '../steps';
-import { getSortedSteps, mimeType, renderTemplateFunc, templateDir, uploadJSON } from '../utils';
+import { getSortedSteps, renderTemplateFunc, templateDir, uploadJSON } from '../utils';
 import { StepContext } from './types';
 import { InvalidTransitionError } from '../errors';
 import { BackgroundType } from '../types';
@@ -43,8 +43,7 @@ function generatePreviewTooltip(step: typeof TransitionStep): string {
   tooltip.classList.add("toolclip", "themed", "theme-dark");
 
   if (step.preview) {
-    const mime = mimeType(step.preview).split("/");
-    if (mime[0] === "video") {
+    if (foundry.helpers.media.VideoHelper.hasVideoExtension(step.preview)) {
       const vid = document.createElement("video");
       vid.style.height = "auto";
       vid.autoplay = true;
@@ -55,7 +54,7 @@ function generatePreviewTooltip(step: typeof TransitionStep): string {
       vid.appendChild(src);
 
       tooltip.appendChild(vid);
-    } else if (mime[0] === "image") {
+    } else if (foundry.helpers.media.ImageHelper.hasImageExtension(step.preview)) {
       const img = document.createElement("img");
       img.src = step.preview;
 

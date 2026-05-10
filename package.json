@@ -7,8 +7,7 @@
     "watch": "npx onchange src/**/* -i -- yarn build",
     "build": "node build.mjs",
     "build:prod": "NODE_ENV=production node build.mjs",
-    "typedoc": "npx typedoc",
-    "build:mime": "node build-mimedb.mjs"
+    "typedoc": "npx typedoc"
   },
   "author": "Unarekin",
   "license": "MIT",

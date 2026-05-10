@@ -1,7 +1,7 @@
 import { coerceScene, coerceUser } from '../coercion';
 import { LOG_ICON } from '../constants.js';
 import { TransitionConfiguration, TransitionStep } from '../steps';
-import { getSortedSteps, mimeType } from '../utils';
+import { getSortedSteps } from '../utils';
 import { StepContext } from './types';
 
 
@@ -101,8 +101,7 @@ function generatePreviewTooltip(step: typeof TransitionStep): string {
   tooltip.classList.add("toolclip", "themed", "theme-dark");
 
   if (step.preview) {
-    const mime = mimeType(step.preview).split("/");
-    if (mime[0] === "video") {
+    if (foundry.helpers.media.VideoHelper.hasVideoExtension(step.preview)) {
       const vid = document.createElement("video");
       vid.style.height = "auto";
       vid.autoplay = true;
@@ -113,7 +112,7 @@ function generatePreviewTooltip(step: typeof TransitionStep): string {
       vid.appendChild(src);
 
       tooltip.appendChild(vid);
-    } else if (mime[0] === "image") {
+    } else if (foundry.helpers.media.ImageHelper.hasImageExtension(step.preview)) {
       const img = document.createElement("img");
       img.src = step.preview;
 

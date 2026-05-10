@@ -7,7 +7,6 @@ import { bytesToBase64 } from "./lib/base64Utils";
 import { TransitionStep, BackgroundTransition, TransitionConfiguration, TargetedTransition } from "./steps";
 import * as steps from "./steps";
 import { BackgroundType, DualStyle, TextureLike } from "./types";
-import json from "./mime.json";
 import { DataMigration } from "./DataMigration";
 import { Migrator } from "./migration";
 import { isValidColor } from "./validation";
@@ -601,18 +600,6 @@ export function isValidFontSize(input: string): boolean {
   const temp = document.createElement("div");
   temp.style.fontSize = size;
   return temp.style.fontSize !== "";
-}
-
-
-
-
-const mimeDB = json as Record<string, string>;
-
-export function mimeType(path: string) {
-  const ext = path.split(".").pop();
-  if (!ext) return "application/octet-stream";
-  else if (mimeDB[ext]) return mimeDB[ext];
-  else return "application/octet-stream";
 }
 
 // Simple wrapper to handle difference in namespace between Foundry v12 and v13
