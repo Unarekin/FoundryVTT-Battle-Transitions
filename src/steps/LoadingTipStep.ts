@@ -1,6 +1,6 @@
 import { TransitionStep } from './TransitionStep';
 import { LoadingTipConfiguration, LoadingTipSource } from './types';
-import { deepCopy, parseConfigurationFormElements } from '../utils';
+import { parseConfigurationFormElements } from '../utils';
 import { InvalidRollTableError, InvalidTipLocationError } from '../errors';
 import { LoadingTipConfigApplication } from '../applications';
 import { Rectangle } from 'interfaces';
@@ -141,7 +141,7 @@ export class LoadingTipStep extends TransitionStep<LoadingTipConfiguration> {
 
 function styleFromJSON(json: object): PIXI.HTMLTextStyle {
   const style = new PIXI.HTMLTextStyle();
-  deepCopy(style, json);
+  foundry.utils.mergeObject(style, json);
   return style;
 }
 
@@ -150,7 +150,7 @@ function messageFromConfig(config: LoadingTipConfiguration): string {
   // Check for UUID
   if (config.source === "rolltable") {
     if (!config.table) throw new InvalidRollTableError(config.table);
-    const table = fromUuidSync(config.table)
+    const table = fromUuidSync(config.table as `RollTable.${string}`)
     if (!(table instanceof RollTable)) throw new InvalidRollTableError(config.table);
     return table.results.contents[Math.floor(Math.random() * table.results.contents.length)].text;
   } else {

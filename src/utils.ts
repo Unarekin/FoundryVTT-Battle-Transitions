@@ -1,6 +1,6 @@
 import { coerceColorHex, coerceTexture } from "./coercion";
 import { LOG_ICON } from "./constants.js";
-import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidImportError, InvalidObjectError, InvalidTargetError, InvalidTextureError, MigratorNotFoundError, NoFileError } from "./errors";
+import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidImportError, InvalidTargetError, InvalidTextureError, MigratorNotFoundError, NoFileError } from "./errors";
 import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
 import { bytesToBase64 } from "./lib/base64Utils";
@@ -462,25 +462,6 @@ export function formatDuration(duration: number): string {
   return _loc(`BATTLETRANSITIONS.FORMATTERS.MILLISECONDS`, { value: duration.toLocaleString() });
 }
 
-
-export function deepCopy(target: any, source: any): void {
-  if (typeof target !== "object") throw new InvalidObjectError(target);
-  if (typeof source !== "object") throw new InvalidObjectError(source);
-
-  for (const prop in source) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (Array.isArray(source[prop]))
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      target[prop] = source[prop].slice();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    else if (typeof source[prop] === "object")
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      deepCopy(target[prop], source[prop]);
-    else
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-      target[prop] = source[prop];
-  }
-}
 
 export function backgroundType(background: TextureLike): BackgroundType {
   if (typeof background === "string" && background === "overlay") return "overlay";
