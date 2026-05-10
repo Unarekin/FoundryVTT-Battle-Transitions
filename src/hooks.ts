@@ -1,8 +1,8 @@
 import { log } from './utils';
-import { SceneChangeConfiguration, SceneChangeStep, TransitionConfiguration } from './steps';
+import { SceneChangeConfiguration, SceneChangeStep, TransitionConfiguration, TransitionStep } from './steps';
 import { SceneConfigMixin } from "./applications";
 import { CONSTANTS, CUSTOM_HOOKS } from "./constants";
-import { registerHelpers, registerTemplates } from "./templates";
+import { registerHelpers } from "./helpers";
 import { ConfigurationHandler } from './ConfigurationHandler';
 import { BattleTransition } from 'BattleTransition';
 import { SocketHandler } from "./sockets";
@@ -38,13 +38,12 @@ Hooks.once("ready", () => {
 
 CONFIG.BattleTransitions = {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  steps: Object.fromEntries(Object.values(steps).filter(cls => cls.key !== undefined).map(cls => [cls.key, { id: cls.key, label: `BATTLETRANSITIONS.${cls.name}.NAME`, cls }])) as Record<TransitionType, StepConfigurationDefinition>,
-  filters
+  steps: Object.fromEntries(Object.values(steps).filter((cls: typeof TransitionStep) => cls.key !== undefined).map(cls => [cls.key, { id: cls.key, label: `BATTLETRANSITIONS.${cls.name}.NAME`, cls }])) as Record<TransitionType, StepConfigurationDefinition>,
+  filters: filters as unknown as Record<string, typeof PIXI.Filter>
 }
 
-Hooks.once("init", async () => {
+Hooks.once("init", () => {
   registerHelpers();
-  await registerTemplates();
 
   CONFIG.Scene.documentClass = SceneMixin(CONFIG.Scene.documentClass);
 

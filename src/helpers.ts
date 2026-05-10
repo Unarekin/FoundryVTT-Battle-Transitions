@@ -78,15 +78,3 @@ export function registerHelpers() {
     return templateDir(`${path}`);
   })
 }
-
-export async function registerTemplates() {
-
-  return (game?.release?.isNewer("13") ? (foundry.applications as any).handlebars.loadTemplates : loadTemplates)([
-    templateDir(`scene-config.hbs`),
-    templateDir(`transition-step.hbs`),
-    templateDir(`scene-selector.hbs`),
-    templateDir(`transition-steps.hbs`),
-    templateDir(`font-selector.hbs`),
-    templateDir(`actor-selector.hbs`)
-  ]) as Promise<Handlebars.TemplateDelegate[]>;
-}
