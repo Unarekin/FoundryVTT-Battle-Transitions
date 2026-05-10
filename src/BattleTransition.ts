@@ -1,16 +1,14 @@
 import { coerceColorHex, coerceScene, coerceUser } from "./coercion";
-import { CUSTOM_HOOKS, PreparedSequences } from "./constants.js";
+import { PreparedSequences } from "./constants.js";
 import { InvalidElementError, InvalidSceneError, InvalidSoundError, InvalidTransitionError, ModuleNotActiveError, ParallelExecuteError, RepeatExecuteError, StepNotReversibleError, TransitionToSelfError } from "./errors";
 import { PreparedTransitionSequence, TransitionSequence } from "./interfaces";
 import { AngularWipeConfiguration, BackgroundTransition, BilinearWipeConfiguration, ClockWipeConfiguration, DiamondWipeConfiguration, FadeConfiguration, FireDissolveConfiguration, FlashConfiguration, InvertConfiguration, LinearWipeConfiguration, MacroConfiguration, MeltConfiguration, RadialWipeConfiguration, SceneChangeConfiguration, SoundConfiguration, SpiralWipeConfiguration, SpiralShutterConfiguration, SpotlightWipeConfiguration, TextureSwapConfiguration, TransitionConfiguration, TwistConfiguration, VideoConfiguration, WaitConfiguration, WaveWipeConfiguration, ZoomBlurConfiguration, BossSplashConfiguration, ParallelConfiguration, BarWipeConfiguration, RepeatConfiguration, ZoomConfiguration, ZoomArg, LoadingTipLocation, LoadingTipConfiguration, ReverseConfiguration, ClearEffectsConfiguration, ClockWipeStep, LinearWipeStep, FadeStep, MacroStep, FireDissolveStep, DiamondWipeStep, RemoveOverlayStep, MeltStep, RestoreOverlayStep, SoundStep, SpiralShutterStep, SpiralWipeStep, SpotlightWipeStep, TextureSwapStep, TwistStep, VideoStep, WaveWipeStep, ZoomBlurStep, AngularWipeStep, BarWipeStep, BilinearWipeStep, ClearEffectsStep, FlashStep, HueShiftConfiguration, HueShiftStep, InvertStep, LoadingTipStep, PixelateConfiguration, PixelateStep, RepeatStep, ZoomStep, RadialWipeStep } from "./steps";
 import SocketHandler from "./SocketHandler";
-import { cleanupTransition, hideLoadingBar, hideTransitionCover, removeFiltersFromScene, setupTransition, showLoadingBar } from "./transitionUtils";
 import { BilinearDirection, ClockDirection, DualStyle, Easing, RadialDirection, TextureLike, WipeDirection } from "./types";
 import { backgroundType, deserializeTexture, expandedFormData, generateBackgroundConfig, generateDualStyleConfig, getStepClassByKey, localize, renderTemplateFunc, serializeTexture, templateDir } from "./utils";
 import { TransitionStep } from "./steps/TransitionStep";
 import { TransitionBuilder } from "./applications";
 import { filters } from "./filters";
-import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 import { logDeprecation } from "./deprecationHelper";
 
 // #region Type aliases (1)
@@ -135,69 +133,71 @@ export class BattleTransition {
 
   public static HideLoadingBar = false;
 
+  // TODO: Reimplement
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static async executePreparedSequence(id: string): Promise<void> {
-    const prepared = PreparedSequences[id];
-    if (!prepared) throw new InvalidTransitionError(typeof prepared);
+    // const prepared = PreparedSequences[id];
+    // if (!prepared) throw new InvalidTransitionError(typeof prepared);
 
-    const sceneChange = prepared.original.sequence.find(item => item.type === "scenechange" || item.type === "viewscene") as SceneChangeConfiguration | undefined;
-    const skipTransition = sceneChange && sceneChange.scene === canvas?.scene?.id;
+    // const sceneChange = prepared.original.sequence.find(item => item.type === "scenechange" || item.type === "viewscene") as SceneChangeConfiguration | undefined;
+    // const skipTransition = sceneChange && sceneChange.scene === canvas?.scene?.id;
 
-    Hooks.callAll(CUSTOM_HOOKS.TRANSITION_START, prepared.original);
+    // Hooks.callAll(CUSTOM_HOOKS.TRANSITION_START, prepared.original);
 
-    let container: PIXI.Container | null = null;
+    // let container: PIXI.Container | null = null;
 
-    try {
-      container = setupTransition();
-      prepared.overlay = [...container.children];
+    // try {
+    //   container = setupTransition();
+    //   prepared.overlay = [...container.children];
 
-      hideLoadingBar();
+    //   hideLoadingBar();
 
-      BattleTransition.SuppressSoundUpdates = true;
+    //   BattleTransition.SuppressSoundUpdates = true;
 
-      if (!canvasGroup) {
-        Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
-          if (container) canvasGroup?.addChild(container);
-        });
-      } else {
-        canvasGroup.addChild(container);
-      }
+    //   if (!canvasGroup) {
+    //     Hooks.once(CUSTOM_HOOKS.INITIALIZE, () => {
+    //       if (container) canvasGroup?.addChild(container);
+    //     });
+    //   } else {
+    //     canvasGroup.addChild(container);
+    //   }
 
-      if (!sceneChange) hideTransitionCover();
+    //   if (!sceneChange) hideTransitionCover();
 
 
-      // Execute
-      for (const step of prepared.prepared.sequence) {
-        const stepClass = getStepClassByKey(step.config.type ?? "");
+    //   // Execute
+    //   for (const step of prepared.prepared.sequence) {
+    //     const stepClass = getStepClassByKey(step.config.type ?? "");
 
-        if (stepClass?.skipWhenSceneViewed && skipTransition) continue;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        if ((step.config as any).backgroundType === "overlay" || (step.config as any).serializedTexture === "overlay") {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          (step.config as any).deserializedTexture = (container.children[0] as PIXI.Sprite).texture
-        }
+    //     if (stepClass?.skipWhenSceneViewed && skipTransition) continue;
+    //     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    //     if ((step.config as any).backgroundType === "overlay" || (step.config as any).serializedTexture === "overlay") {
+    //       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    //       (step.config as any).deserializedTexture = (container.children[0] as PIXI.Sprite).texture
+    //     }
 
-        const exec = step.execute(container, prepared.original, prepared);
-        if (exec instanceof Promise) await exec;
-      }
+    //     const exec = step.execute(container, prepared.original, prepared);
+    //     if (exec instanceof Promise) await exec;
+    //   }
 
-      BattleTransition.SuppressSoundUpdates = false;
+    //   BattleTransition.SuppressSoundUpdates = false;
 
-      // Teardown
-      for (const step of prepared.prepared.sequence) {
-        await step.teardown(container);
-      }
+    //   // Teardown
+    //   for (const step of prepared.prepared.sequence) {
+    //     await step.teardown(container);
+    //   }
 
-      removeFiltersFromScene(prepared.prepared);
-    } catch (err) {
-      ui.notifications?.error((err as Error).message, { console: false });
-      console.error(err);
-    } finally {
-      setTimeout(() => { showLoadingBar(); }, 250);
-      if (container) cleanupTransition(container);
-      if (prepared) Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END, prepared.original)
-      else Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END);
-      delete PreparedSequences[id];
-    }
+    //   removeFiltersFromScene(prepared.prepared);
+    // } catch (err) {
+    //   ui.notifications?.error((err as Error).message, { console: false });
+    //   console.error(err);
+    // } finally {
+    //   setTimeout(() => { showLoadingBar(); }, 250);
+    //   if (container) cleanupTransition(container);
+    //   if (prepared) Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END, prepared.original)
+    //   else Hooks.callAll(CUSTOM_HOOKS.TRANSITION_END);
+    //   delete PreparedSequences[id];
+    // }
   }
 
   /**
@@ -1867,16 +1867,8 @@ export class BattleTransition {
   }
 
   // #endregion Public Methods (52)
-
-  public static get overlayGroup() { return canvasGroup; }
-
-  static initialize() {
-    canvasGroup = new ScreenSpaceCanvasGroup();
-    canvas?.stage?.addChild(canvasGroup);
-  }
 }
 
-let canvasGroup: ScreenSpaceCanvasGroup | undefined = undefined;
 
 // #endregion Classes (1)
 

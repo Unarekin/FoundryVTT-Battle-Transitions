@@ -5,7 +5,6 @@ export const TRANSLATION_KEY = "BATTLETRANSITIONS";
 export const LOG_ICON = "⚔️";
 
 export const CONSTANTS: Record<string, string> = Object.freeze({
-  COVER_ID: "transition-cover",
   TRANSLATION_KEY: "BATTLETRANSITIONS",
   LOG_ICON: "⚔️",
   TRANSITION_TYPE: "battleTransition"

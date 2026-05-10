@@ -12,14 +12,6 @@ import { _playFunction, _playOptions } from "./types";
 import { BTScene } from 'interfaces';
 
 
-
-Hooks.once("canvasReady", () => {
-
-  BattleTransition.initialize();
-
-  Hooks.callAll(CUSTOM_HOOKS.INITIALIZE)
-})
-
 Hooks.once("ready", () => {
 
   game.BattleTransitions = {

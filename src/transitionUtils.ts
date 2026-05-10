@@ -1,6 +1,5 @@
-import { COVER_ID } from "./constants.js";
-import { CanvasNotFoundError, NotInitializedError, InvalidSceneError, InvalidTransitionError } from './errors';
-import { awaitHook, getStepClassByKey, log } from "./utils";
+import { InvalidSceneError, InvalidTransitionError } from './errors';
+import { awaitHook, getStepClassByKey } from "./utils";
 import { coerceScene } from "./coercion";
 import { TransitionConfiguration } from "./steps";
 import { PreparedTransitionSequence } from "./interfaces";
@@ -8,55 +7,7 @@ import { BattleTransition } from "./BattleTransition";
 
 
 
-// Create cover HTMLElement
-const transitionCover = document.createElement("canvas");
-transitionCover.style.display = "none";
-transitionCover.style.position = "absolute";
-transitionCover.style.width = "100%";
-transitionCover.style.height = "100%";
-transitionCover.style.backgroundRepeat = "no-repeat";
-transitionCover.style.pointerEvents = "none";
-transitionCover.id = COVER_ID;
 
-document.body.appendChild(transitionCover);
-
-
-export function createSnapshot() {
-  if (!canvas) throw new CanvasNotFoundError();
-
-  if (!(canvas.app?.renderer && canvas?.stage)) throw new NotInitializedError();
-  const start = Date.now();
-  const renderer = canvas.app.renderer;
-
-  // const coverCanvas = document.createElement("canvas");
-  // const ctx = coverCanvas.getContext("2d");
-  // if (!ctx) throw new CanvasNotFoundError();
-
-  // Render to RenderTexture for later
-  const rt = PIXI.RenderTexture.create({ width: window.innerWidth, height: window.innerHeight });
-  const fillColor = canvas.scene ? canvas.scene.backgroundColor as unknown as number : 0x000000;
-  const graphics = new PIXI.Graphics();
-  graphics.beginFill(fillColor);
-  graphics.drawRect(0, 0, rt.width, rt.height);
-  graphics.endFill();
-  renderer.render(graphics, { renderTexture: rt, skipUpdateTransform: true, clear: false });
-
-  if (canvas.scene) renderer.render(canvas.stage, { renderTexture: rt, skipUpdateTransform: true, clear: false });
-
-
-  const pixels = Uint8ClampedArray.from(renderer.extract.pixels(rt));
-  const imageData = new ImageData(pixels, rt.width, rt.height);
-  transitionCover.width = rt.width;
-  transitionCover.height = rt.height;
-  const ctx = transitionCover.getContext("2d");
-  if (!ctx) throw new CanvasNotFoundError();
-  ctx.putImageData(imageData, 0, 0);
-  transitionCover.style.display = "block";
-
-  const duration = Date.now() - start;
-  log(`Snapshot duration: ${duration}ms (${duration / 16} frames)`);
-  return PIXI.Sprite.from(rt);
-}
 
 export function removeFiltersFromScene(sequence: PreparedTransitionSequence) {
   sequence.sceneFilters.forEach(filter => removeFilterFromScene(filter));
@@ -73,35 +24,6 @@ export function removeFilterFromScene(filter: PIXI.Filter) {
   filter.destroy();
 }
 
-export function setupTransition(): PIXI.Container {
-  // if (!canvasGroup) throw new CannotInitializeCanvasError();
-  const snapshot = createSnapshot();
-  const container = new PIXI.Container();
-  container.width = window.innerWidth;
-  container.height = window.innerHeight;
-  container.addChild(snapshot);
-  // canvasGroup.addChild(container);
-  return container;
-}
-
-export function cleanupTransition(container?: PIXI.DisplayObject) {
-  // Ensure our cover is hidden
-  transitionCover.style.display = "none";
-  transitionCover.style.backgroundImage = "";
-  if (container) {
-    if (Array.isArray(container.children) && container.children.length) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const children = [...(container.children ?? [])];
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      for (const child of children) child.destroy();
-    }
-    container.destroy();
-  }
-
-  // // Ensure no scene is set to trigger
-  // // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-  // void Promise.all((game.scenes as any).contents.map((scene: any) => scene.unsetFlag(__MODULE_ID__, "autoTriggered")));
-}
 
 export function hideLoadingBar() {
   const loadingBar = document.getElementById('loading');
@@ -113,12 +35,6 @@ export function showLoadingBar() {
   const loadingBar = document.getElementById("loading");
   if (loadingBar) loadingBar.style.removeProperty("opacity");
   BattleTransition.HideLoadingBar = false;
-}
-
-export function hideTransitionCover() {
-  log("Hiding transition cover");
-  transitionCover.style.display = "none";
-  transitionCover.style.removeProperty("backgroundImage");
 }
 
 export async function activateScene(name: string): Promise<Scene>

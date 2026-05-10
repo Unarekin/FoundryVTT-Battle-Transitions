@@ -1,7 +1,7 @@
 import { CUSTOM_HOOKS } from "../constants.js";
 import { InvalidSceneError } from "../errors";
 import { TransitionSequence } from "../interfaces";
-import { activateScene, hideTransitionCover } from "../transitionUtils";
+import { activateScene } from "../transitionUtils";
 import { awaitHook, parseConfigurationFormElements, renderTemplateFunc, templateDir } from "../utils";
 import { TransitionStep } from "./TransitionStep";
 import { SceneChangeConfiguration } from "./types";
@@ -66,7 +66,8 @@ export class SceneChangeStep extends TransitionStep<SceneChangeConfiguration> {
     }.scene);
     else if (this.config.scene !== canvas?.scene?.id && canvas?.scene?.active) await awaitHook(CUSTOM_HOOKS.SCENE_ACTIVATED);
 
-    hideTransitionCover();
+    if (canvas?.transition)
+      canvas.transition.visible = false;
   }
 
   public async validate(): Promise<boolean | Error> {

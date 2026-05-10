@@ -3,7 +3,6 @@ import { LOG_ICON } from "./constants.js";
 import { CannotInitializeCanvasError, CanvasNotFoundError, InvalidImportError, InvalidObjectError, InvalidTargetError, InvalidTextureError, MigratorNotFoundError, NoFileError } from "./errors";
 import { DataURLBuffer, TextureBuffer } from "./interfaces";
 import { createNoise2D, RandomFn } from "./lib/simplex-noise";
-import { ScreenSpaceCanvasGroup } from "./ScreenSpaceCanvasGroup";
 import { bytesToBase64 } from "./lib/base64Utils";
 import { TransitionStep, BackgroundTransition, TransitionConfiguration, TargetedTransition } from "./steps";
 import * as steps from "./steps";
@@ -188,17 +187,6 @@ export function formatBackgroundSummary(flag: any): string {
 }
 let gameReadyPromise: Promise<void> | undefined = undefined;
 
-
-export function getCanvasGroup(): ScreenSpaceCanvasGroup | undefined {
-  return canvas?.stage?.children.find(child => child instanceof ScreenSpaceCanvasGroup);
-}
-
-export function getCurrentOverlayObject(): PIXI.DisplayObject | undefined {
-  const canvasGroup = getCanvasGroup();
-  if (!canvasGroup) throw new CanvasNotFoundError();
-  if (canvasGroup.children.length === 0) return;
-  return canvasGroup.children[canvasGroup.children.length - 1];
-}
 
 export function getSortedSteps(): (typeof TransitionStep)[] {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

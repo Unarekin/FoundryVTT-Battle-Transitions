@@ -3,7 +3,6 @@ import { TransitionStep } from './TransitionStep';
 import { parseConfigurationFormElements, renderTemplateFunc, templateDir } from '../utils';
 import { InvalidSceneError } from '../errors';
 import { TransitionSequence } from '../interfaces';
-import { hideTransitionCover } from '../transitionUtils';
 
 export class ViewSceneStep extends TransitionStep<ViewSceneConfiguration> {
 
@@ -69,6 +68,7 @@ export class ViewSceneStep extends TransitionStep<ViewSceneConfiguration> {
     const scene = game?.scenes?.get(config.scene);
     if (!(scene instanceof Scene)) throw new InvalidSceneError(config.scene);
     await scene.view();
-    hideTransitionCover()
+    if (canvas?.transition)
+      canvas.transition.visible = false;
   }
 }
