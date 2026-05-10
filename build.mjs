@@ -35,10 +35,12 @@ const __MODULE_TITLE__ = moduleConfig.title;
 const __MODULE_ID__ = moduleConfig.id;
 const __MODULE_VERSION__ = moduleConfig.version;
 
-const start = Date.now();
 let spinner = null;
 
 if (!process.argv.slice(2).includes("--no-lint")) {
+  if (process.argv.slice(2).includes("--no-cache"))
+    await fs.unlink("./.eslintcache");
+
   const lintStart = Date.now();
   if (!process.env.GITHUB_ACTIONS)
     spinner = yoctoSpinner({ text: "Linting..." }).start();
@@ -65,11 +67,11 @@ if (!process.argv.slice(2).includes("--no-lint")) {
   } else {
     if (spinner)
       spinner.success(
-        `Linting passed in ${((Date.now() - start) / 1000).toFixed(2)}s`,
+        `Linting passed in ${((Date.now() - lintStart) / 1000).toFixed(2)}s`,
       );
     else
       console.log(
-        `Linting passed in ${((Date.now() - start) / 1000).toFixed(2)}s`,
+        `Linting passed in ${((Date.now() - lintStart) / 1000).toFixed(2)}s`,
       );
   }
 }
