@@ -201,7 +201,7 @@ export class SequenceEditorApplication extends foundry.applications.api.Handleba
       });
     }
 
-    if (!this.rendered) await this.render(true);
+    if (!this.rendered) await this.render({ force: true });
     return this.#promise;
   }
 
@@ -228,6 +228,7 @@ export class SequenceEditorApplication extends foundry.applications.api.Handleba
     const context = await super._prepareContext(options) as unknown as SequenceEditorContext;
 
     context.sequence = foundry.utils.deepClone(this.sequence);
+    context.rootId = this.id;
 
     context.buttons = [
       { type: "button", icon: "fas fa-times", label: "Cancel", action: "cancel" },

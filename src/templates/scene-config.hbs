@@ -3,8 +3,8 @@
   {{#with battleTransition }}
   {{log "Context" this}}
     <div class="form-group">
-      <label for="battleTransition.autoTrigger">{{localize "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.LABEL"}}</label>
-      <input type="checkbox" name="battleTransition.autoTrigger" id="battleTransition.autoTrigger" {{checked transition.autoTrigger}}>
+      <label for="{{@root.rootId}}-battleTransition.autoTrigger">{{localize "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.LABEL"}}</label>
+      <input type="checkbox" name="battleTransition.autoTrigger" id="{{@root.rootId}}-battleTransition.autoTrigger" {{checked transition.autoTrigger}}>
       <p class="hint">{{localize "BATTLETRANSITIONS.SCENECONFIG.AUTOTRIGGER.HINT"}}</p>
     </div>
 

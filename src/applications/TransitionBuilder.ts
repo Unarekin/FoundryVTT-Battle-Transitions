@@ -15,13 +15,14 @@ type BuilderResponse = {
 
 interface TransitionBuilderConfiguration extends foundry.applications.api.ApplicationV2.Configuration {
   scene?: string;
+  allowUserSelect?: boolean;
 }
 
 interface TransitionBuilderContext {
   scene?: string;
   users?: string[];
   sequence: TransitionConfiguration[];
-
+  allowUserSelect: boolean;
   usersSelect: Record<string, string>;
   scenesSelect: Record<string, string>;
   canCreateMacro: boolean;
@@ -36,6 +37,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
   #resolve: ((response: BuilderResponse | undefined) => void) | undefined = undefined;
   #promise: Promise<BuilderResponse | undefined> | undefined = undefined;
   #submitted = false;
+  #allowUserSelect = true;
 
   #response: BuilderResponse = {
     scene: "",
@@ -299,7 +301,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       this.#response.scene = actualScene.uuid;
     }
 
-    if (!this.rendered) await this.render(true);
+    if (!this.rendered) await this.render({ force: true });
     return this.#promise;
   }
 
@@ -334,6 +336,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
     if (this.#response.scene) context.scene = this.#response.scene;
     if (this.#response.users) context.users = [...this.#response.users];
     context.sequence = foundry.utils.deepClone(this.#response.sequence);
+    context.allowUserSelect = this.#allowUserSelect;
 
     context.usersSelect = Object.fromEntries(
       (game?.users?.contents ?? []).map(user => [user.uuid, user.name])
@@ -362,5 +365,7 @@ export class TransitionBuilder extends foundry.applications.api.HandlebarsApplic
       if (!(scene instanceof Scene)) throw new InvalidSceneError(options.scene);
       this.#response.scene = scene.uuid;
     }
+    if (options?.allowUserSelect)
+      this.#allowUserSelect = options.allowUserSelect;
   }
 }

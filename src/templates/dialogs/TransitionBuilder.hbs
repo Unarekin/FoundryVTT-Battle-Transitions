@@ -7,13 +7,15 @@
     </select>
   {{/unless}}
 
-  <div class="form-group">
-    <label for="users">{{localize "DOCUMENT.Users"}}</label>
-    <multi-select name="users" id="users">
-      {{selectOptions usersSelect}}
-    </multi-select>
-    <p class="hint">{{localize "BATTLETRANSITIONS.TRANSITIONBUILDER.USERS.HINT"}}</p>
-  </div>
+  {{#if allowUserSelect}}
+    <div class="form-group">
+      <label for="users">{{localize "DOCUMENT.Users"}}</label>
+      <multi-select name="users" id="users">
+        {{selectOptions usersSelect}}
+      </multi-select>
+      <p class="hint">{{localize "BATTLETRANSITIONS.TRANSITIONBUILDER.USERS.HINT"}}</p>
+    </div>
+  {{/if}}
 
   <div class="form-group">
     <label for="import">{{localize "BATTLETRANSITIONS.SCENECONFIG.IMPORT.LABEL"}}</label>

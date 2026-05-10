@@ -79,7 +79,8 @@
         "ADDSTEP": "Add Step",
         "CLEARSTEPS": "Clear Steps",
         "CONFIGURE": "Configure {name}",
-        "REMOVE": "Remove {name}"
+        "REMOVE": "Remove {name}",
+        "CONFIGURETRANSITION": "Configure Battle Transition"
       },
       "CHROMAKEY": {
         "ENABLE": {

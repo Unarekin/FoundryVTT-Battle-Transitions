@@ -1,275 +1,177 @@
-import { ConfigurationHandler } from "../ConfigurationHandler";
-import { DeepPartial } from "../dialogs";
-import { confirm, generateMacro } from "./functions";
-import { InvalidTransitionError, LocalizedError } from "../errors";
-import { SceneConfiguration } from "../interfaces";
-import { TransitionConfiguration } from "../steps";
-import { downloadJSON, expandedFormData, getStepClassByKey, localize, templateDir, uploadJSON } from "../utils";
-import { AddStepApplication } from "./AddStepApplication";
-import { BattleTransition } from "../BattleTransition";
-import { SceneConfigContext } from "./types";
+import { expandedFormData, log } from "utils";
+import { DeepPartial } from "./types";
+import { BTScene, SceneTransition, SceneConfiguration } from "interfaces";
+import { ConfigurationHandler } from "ConfigurationHandler";
+import { SequenceEditorApplication } from "./SequenceEditorApplication";
 
-type BaseType = typeof foundry.applications.api.DocumentSheetV2<Scene>;
+type BaseType = typeof foundry.applications.api.DocumentSheetV2<BTScene>;
+type RenderContext = foundry.applications.api.DocumentSheetV2.RenderContext<BTScene>;
+type RenderOptions = foundry.applications.api.DocumentSheetV2.RenderOptions;
+
+interface FormData {
+  transition: SceneTransition;
+  [key: string]: unknown;
+}
 
 export function SceneConfigMixin(Base: BaseType) {
+  return class BattleTransitionSceneConfig extends Base {
 
+    #battleTransitionConfiguration: SceneConfiguration | undefined = undefined;
 
-  class Mixed extends Base {
-    #sceneConfiguration: SceneConfiguration | undefined = undefined;
-
-    // Default options here
-    public static DEFAULT_OPTIONS: DeepPartial<foundry.applications.api.Application.Configuration> = {
+    public static DEFAULT_OPTIONS: DeepPartial<foundry.applications.api.DocumentSheetV2.Configuration<Scene>> = {
+      window: {
+        controls: [
+          {
+            icon: "fa-solid fa-fw bt-icon bt-crossed-swords",
+            label: "BATTLETRANSITIONS.COMMON.TRANSITIONTYPE",
+            action: "editBattleTransition"
+          }
+        ]
+      },
       actions: {
         // eslint-disable-next-line @typescript-eslint/unbound-method
-        importJson: Mixed.ImportJson,
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        exportJson: Mixed.ExportJson,
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        addStep: Mixed.AddStep,
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        removeStep: Mixed.RemoveStep,
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        clearSteps: Mixed.ClearSteps,
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        editStep: Mixed.EditStep,
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        saveMacro: Mixed.SaveMacro
+        editBattleTransition: BattleTransitionSceneConfig.EditBattleTransition
       }
     }
 
-    static async SaveMacro(this: Mixed) {
+
+    static async EditBattleTransition(this: BattleTransitionSceneConfig) {
       try {
-        if (!this.#sceneConfiguration?.sequence.length) return;
-        const macro = generateMacro(this.#sceneConfiguration.sequence, [], this.document);
-        await Macro.createDialog({ type: "script", command: macro, img: `modules/${__MODULE_ID__}/assets/icons/crossed-swords.svg`, name: "" });
+        // const transition = await (new TransitionBuilder({ scene: this.document.id ?? "", allowUserSelect: false })).build();
+        const transition = await SequenceEditorApplication.edit({ sequence: this.#battleTransitionConfiguration?.sequence ?? [], oldScene: this.document.id ?? "", window: { title: "BATTLETRANSITIONS.SCENECONFIG.BUTTONS.CONFIGURETRANSITION" } });
+        if (transition) {
+          this.#battleTransitionConfiguration ??= foundry.utils.deepClone(this.document.battleTransitionConfiguration);
+          this.#battleTransitionConfiguration.sequence = foundry.utils.deepClone(transition);
+        }
+
+
       } catch (err) {
         console.error(err);
         if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
       }
     }
 
-    static async EditStep(this: Mixed, e: PointerEvent, elem: HTMLElement) {
-      try {
-        if (!this.#sceneConfiguration?.sequence.length) return;
-        const id = elem.dataset.step as string ?? "";
-        if (!id) throw new InvalidTransitionError(id);
-        const config = this.#sceneConfiguration.sequence.find(item => item.id === id);
-        if (!config) throw new InvalidTransitionError(id);
-
-        const stepClass = getStepClassByKey(config.type);
-        if (!stepClass) throw new InvalidTransitionError(config.type);
-        if (!stepClass.ConfigurationApplication) throw new LocalizedError("NOCONFIGAPP");
-
-        const app = new stepClass.ConfigurationApplication(foundry.utils.deepClone(config), {
-          newScene: this.document.uuid
-        });
-        const newConfig = await app.configure();
-        if (!newConfig) return;
-        const index = this.#sceneConfiguration.sequence.findIndex(item => item.id === id);
-        if (index !== -1) this.#sceneConfiguration.sequence.splice(index, 1, newConfig);
-        await this.render();
-      } catch (err) {
-        console.error(err);
-        if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
-      }
+    protected _iterateElements(selectors: string[], fn: ((elem: HTMLElement) => void)) {
+      const elements: HTMLElement[] = Array.from(this.element.querySelectorAll(selectors.join(",")));
+      for (const element of elements)
+        fn(element);
     }
 
-    static async ClearSteps(this: Mixed) {
-      try {
-        if (!this.#sceneConfiguration?.sequence.length) return;
-        const confirmed = await confirm(
-          "BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.TITLE",
-          game.i18n?.localize("BATTLETRANSITIONS.DIALOGS.CLEARSTEPS.MESSAGE") ?? ""
-        );
-        if (!confirmed) return;
-
-        this.#sceneConfiguration.sequence.splice(0, this.#sceneConfiguration.sequence.length);
-        await this.render();
-      } catch (err) {
-        console.error(err);
-        if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
-      }
+    protected _hideElements(...selectors: string[]) {
+      this._iterateElements(selectors, elem => { elem.style.display = "none"; });
     }
 
-
-    static async RemoveStep(this: Mixed, event: PointerEvent, element: HTMLElement) {
-      try {
-        if (!this.#sceneConfiguration?.sequence.length) return;
-        const id = element.dataset.step as string ?? "";
-        if (!id) throw new InvalidTransitionError(id);
-        const step = this.#sceneConfiguration.sequence.find(item => item.id === id);
-        if (!step) throw new InvalidTransitionError(id);
-
-        const stepClass = getStepClassByKey(step.type);
-        if (!stepClass) throw new InvalidTransitionError(step.type);
-
-        const name = game.i18n?.localize(`BATTLETRANSITIONS.${stepClass.name}.NAME`) ?? "";
-
-        const confirmed = await confirm(
-          game.i18n?.format("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.TITLE", { name }) ?? "",
-          game.i18n?.format("BATTLETRANSITIONS.DIALOGS.REMOVECONFIRM.CONTENT", { name }) ?? ""
-        );
-        if (!confirmed) return;
-
-        const index = this.#sceneConfiguration.sequence.findIndex(item => item.id === id);
-        if (index !== -1) this.#sceneConfiguration.sequence.splice(index, 1);
-        await this.render();
-      } catch (err) {
-        console.error(err);
-        if (err instanceof Error) ui.notifications?.error(err.message, { console: false })
-      }
+    protected _showElements(...selectors: string[]) {
+      this._iterateElements(selectors, elem => { elem.style.display = "flex"; });
     }
 
-    static async AddStep(this: Mixed) {
-      try {
-        const key = await AddStepApplication.add({ sequence: this.#sceneConfiguration?.sequence ?? [] });
-        if (!key) return;
-        const stepClass = getStepClassByKey(key);
-        if (!stepClass) throw new InvalidTransitionError(key);
-        let config: TransitionConfiguration | null = null;
-        if (!stepClass.skipConfig) {
-          if (!stepClass.ConfigurationApplication) throw new LocalizedError("NOCONFIGAPP");
-          const app = new stepClass.ConfigurationApplication(foundry.utils.mergeObject(
-            foundry.utils.deepClone(stepClass.DefaultSettings),
-            { id: foundry.utils.randomID() }
-          ), {
-            newScene: this.document.uuid
-          });
-          config = await app.configure() ?? null;
+    protected _enableElements(...selectors: string[]) {
+      this._iterateElements(selectors, elem => {
+        if (elem instanceof HTMLInputElement || elem instanceof HTMLSelectElement) {
+          elem.disabled = false;
         } else {
-          config = {
-            ...foundry.utils.deepClone(stepClass.DefaultSettings),
-            id: foundry.utils.randomID()
-          }
+          elem.classList.remove("disabled");
+          elem.removeAttribute("disabled")
         }
-        if (!config) return;
-        if (this.#sceneConfiguration?.sequence) this.#sceneConfiguration.sequence.push(config);
-        await this.render();
-      } catch (err) {
-        console.error(err);
-        if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
-      }
+      });
     }
 
-    static ExportJson(this: Mixed) {
-      try {
-        if (!this.#sceneConfiguration?.sequence?.length) return;
-        downloadJSON(this.#sceneConfiguration.sequence, `${this.document.name}.json`);
-      } catch (err) {
-        console.error(err);
-        if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
-      }
-    }
-
-    static async ImportJson(this: Mixed) {
-      try {
-        if (!this.#sceneConfiguration) this.#sceneConfiguration = ConfigurationHandler.GetSceneConfiguration(this.document);
-
-        if (this.#sceneConfiguration?.sequence.length) {
-          const confirmation = await confirm("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.TITLE", localize("BATTLETRANSITIONS.DIALOGS.IMPORTCONFIRM.MESSAGE"));
-          if (!confirmation) return;
+    protected _disableElements(...selectors: string[]) {
+      this._iterateElements(selectors, elem => {
+        if (elem instanceof HTMLInputElement || elem instanceof HTMLSelectElement) {
+          elem.disabled = true;
+        } else {
+          elem.classList.add("disabled");
+          elem.setAttribute("disabled", "disabled");
         }
+      })
+    }
 
-        //  const sequence = await uploadJSON<TransitionConfiguration[]>();
-        const sequence = await uploadJSON<TransitionConfiguration[]>();
-        if (!sequence) return;
-        const valid = await BattleTransition.validateSequence(sequence);
-        if (valid instanceof Error) throw valid;
+    protected toggleBattleTransitionConfiguration() {
+      if (this.form) {
+        const data = expandedFormData<FormData>(this.form);
+        const container = this.element.querySelector(`[data-role="battle-transition-config"]`);
+        if (container instanceof HTMLElement)
+          container.style.display = data.transition.type === "battleTransition" ? "block" : "none";
 
-        this.#sceneConfiguration.sequence = sequence;
-
-        await this.render();
-      } catch (err) {
-        console.error(err);
-        if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
+        const selectors = [`[name="transition.duration"]`, `[name="transition.activeOnly"]`];
+        if (data.transition.type === "battleTransition") {
+          this._disableElements(...selectors);
+          this._hideElements(...selectors.map(selector => `.form-group:has(${selector})`));
+        } else {
+          this._enableElements(...selectors);
+          this._showElements(...selectors.map(selector => `.form-group:has(${selector})`));
+        }
       }
     }
 
-    async _onSubmitForm(formConfig: foundry.applications.api.ApplicationV2.FormConfiguration, event: Event | SubmitEvent): Promise<void> {
-      const form = this.form;
-      if (!form) return;
-      const data = foundry.utils.mergeObject(
-        { transition: this.#sceneConfiguration },
-        expandedFormData(form)
-      ) as Record<string, unknown>;
+    // #region Form Handlers
 
+    protected _onClose(options: RenderOptions): void {
+      this.#battleTransitionConfiguration = undefined;
 
-      if (data.battleTransition) {
-        const config = data.battleTransition as SceneConfiguration;
-        console.log("Configuration:", config);
-        void ConfigurationHandler.SetSceneConfiguration((this as unknown as SceneConfig).document, config)
+      super._onClose(options);
+    }
+
+    async _onSubmitForm(formConfig: foundry.applications.api.ApplicationV2.FormConfiguration, event: Event) {
+      if (this.#battleTransitionConfiguration) {
+        log("Saving configuration:", foundry.utils.deepClone(this.#battleTransitionConfiguration));
+
+        ConfigurationHandler.SetSceneConfiguration(this.document, this.#battleTransitionConfiguration)
           .catch((err: Error) => {
             console.error(err);
-            if (err instanceof Error) ui.notifications?.error(err.message, { console: false });
+            ui.notifications?.error(err.message, { console: false });
           });
       }
 
       await super._onSubmitForm(formConfig, event);
     }
 
-    protected reorderSteps() {
-      if (!this.#sceneConfiguration?.sequence.length) return;
-
-      // Sort data
-      const items = Array.from(this.element.querySelectorAll(`.step-item[data-step]`));
-      const ids = items.map(item => (item as HTMLElement).dataset?.step).filter(id => !!id);
-      const originalList = [
-        ...this.#sceneConfiguration.sequence
-      ];
-
-      const sorted = ids.map(id => originalList.find(item => item.id === id)).filter(item => !!item);
-      this.#sceneConfiguration.sequence.splice(0, this.#sceneConfiguration.sequence.length, ...sorted);
+    _onChangeForm(formConfig: foundry.applications.api.ApplicationV2.FormConfiguration, e: Event) {
+      super._onChangeForm(formConfig, e);
+      this.toggleBattleTransitionConfiguration();
     }
 
-    async _onRender(context: foundry.applications.api.DocumentSheetV2.RenderContext<Scene>, options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      ($(this.element).find(`[data-role="transition-steps"]`) as any).sortable({
-        handle: ".drag-handle",
-        containment: "parent",
-        axis: "y",
-        classes: {
-          "ui-sortable-helper": "application ui-sortable-helper"
-        },
-        update: this.reorderSteps.bind(this)
-      });
-      return super._onRender(context, options);
-    }
+    public async _onRender(context: RenderContext, options: RenderOptions) {
+      await super._onRender(context, options);
 
-    async _prepareContext(options: foundry.applications.api.DocumentSheetV2.RenderOptions) {
-      if (options.isFirstRender) this.#sceneConfiguration = foundry.utils.deepClone(ConfigurationHandler.GetSceneConfiguration(this.document));
-      const context = await super._prepareContext(options) as SceneConfigContext;
+      const typeContainer = this.element.querySelector(`.form-group:has([name="transition.type"])`);
+      if (typeContainer instanceof HTMLElement) {
+        const container = document.createElement("section");
+        container.dataset.role = "battle-transition-config";
 
-      context.battleTransition = {
-        canCreateMacro: Macro.canUserCreate(game.user as User),
-        transition: foundry.utils.deepClone(this.#sceneConfiguration)
+        const buttonRow = document.createElement("div");
+        container.appendChild(buttonRow);
+
+        buttonRow.classList.add("flexrow");
+
+        // configContainer.appendChild(label);
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.dataset.action = "editBattleTransition";
+
+        const icon = document.createElement("i");
+        icon.classList.add("fa-solid", "bt-icon", "fa-fw", "bt-crossed-swords");
+        button.appendChild(icon);
+        button.innerHTML += _loc("BATTLETRANSITIONS.SCENECONFIG.BUTTONS.CONFIGURETRANSITION");
+
+        buttonRow.appendChild(button);
+
+        typeContainer.after(container);
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return context as any;
+      this.toggleBattleTransitionConfiguration();
     }
+
+    public async _prepareContext(options: RenderOptions): Promise<RenderContext> {
+      const context = await super._prepareContext(options);
+
+      this.#battleTransitionConfiguration ??= foundry.utils.deepClone(this.document.battleTransitionConfiguration);
+
+      return context;
+    }
+
+    // #endregion
   }
-
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  const parts = (Mixed as any).PARTS as Record<string, foundry.applications.api.HandlebarsApplicationMixin.HandlebarsTemplatePart>;
-  const footer = parts.footer;
-  delete parts.footer;
-
-  foundry.utils.mergeObject(parts, {
-    battleTransition: {
-      template: templateDir(`scene-config.hbs`)
-    },
-    footer
-  })
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  foundry.utils.mergeObject((Mixed as any).PARTS ?? {}, parts);
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-  (Mixed as any).TABS.sheet.tabs.push({
-    id: "battleTransition",
-    icon: "fa-solid bt-icon fa-fw bt-crossed-swords",
-  });
-
-  return Mixed
 
 }

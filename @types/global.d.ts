@@ -5,6 +5,8 @@ import { BattleTransition as BattleTransitionType } from "BattleTransition";
 import { SocketHandler } from "sockets";
 import { semver as semverType } from "semver";
 
+
+
 declare global {
 
   declare var __DEV__: boolean;
@@ -23,6 +25,7 @@ declare global {
   declare var semver: semverType;
   declare var BattleTransition: typeof BattleTransitionType;
 
+  declare var _loc: (stringId: string, data?: Record<string, unknown>) => string;
 
   declare module '*.frag' {
     const content: string;
