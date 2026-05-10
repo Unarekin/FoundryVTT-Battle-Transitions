@@ -60,8 +60,7 @@ export interface SequenceEditorContext {
 }
 
 export interface SceneConfigContext extends foundry.applications.api.DocumentSheetV2.RenderContext<Scene> {
-  transition: {
-    isV1: boolean;
+  battleTransition: {
     canCreateMacro: boolean;
     transition?: SceneConfiguration;
   }

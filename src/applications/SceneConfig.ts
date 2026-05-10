@@ -194,8 +194,9 @@ export function SceneConfigMixin(Base: BaseType) {
       ) as Record<string, unknown>;
 
 
-      if (data.transition) {
-        const config = data.transition as SceneConfiguration;
+      if (data.battleTransition) {
+        const config = data.battleTransition as SceneConfiguration;
+        console.log("Configuration:", config);
         void ConfigurationHandler.SetSceneConfiguration((this as unknown as SceneConfig).document, config)
           .catch((err: Error) => {
             console.error(err);
@@ -238,8 +239,7 @@ export function SceneConfigMixin(Base: BaseType) {
       if (options.isFirstRender) this.#sceneConfiguration = foundry.utils.deepClone(ConfigurationHandler.GetSceneConfiguration(this.document));
       const context = await super._prepareContext(options) as SceneConfigContext;
 
-      context.transition = {
-        isV1: false,
+      context.battleTransition = {
         canCreateMacro: Macro.canUserCreate(game.user as User),
         transition: foundry.utils.deepClone(this.#sceneConfiguration)
       }
@@ -255,7 +255,7 @@ export function SceneConfigMixin(Base: BaseType) {
   delete parts.footer;
 
   foundry.utils.mergeObject(parts, {
-    transition: {
+    battleTransition: {
       template: templateDir(`scene-config.hbs`)
     },
     footer
@@ -266,8 +266,8 @@ export function SceneConfigMixin(Base: BaseType) {
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   (Mixed as any).TABS.sheet.tabs.push({
-    id: "transition",
-    icon: "fa-solid bt-icon fa-fw bt-crossed-swords v13",
+    id: "battleTransition",
+    icon: "fa-solid bt-icon fa-fw bt-crossed-swords",
   });
 
   return Mixed

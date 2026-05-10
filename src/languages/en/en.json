@@ -2,7 +2,7 @@
   "SCENE": {
     "TABS": {
       "SHEET": {
-        "transition": "Transition"
+        "battleTransition": "Transition"
       }
     }
   },
