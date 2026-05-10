@@ -121,7 +121,7 @@ export class HTMLDocumentPickerElement<t extends foundry.abstract.Document.Any =
       fromUuid(this.#input.value as `Actor.${string}`)
         .then(obj => {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-          if (obj instanceof foundry.abstract.Document) (obj as any)?.sheet.render(true);
+          if (obj instanceof foundry.abstract.Document) (obj as any)?.sheet.render({ force: true });
         })
         .catch((err: Error) => {
           console.error(err);

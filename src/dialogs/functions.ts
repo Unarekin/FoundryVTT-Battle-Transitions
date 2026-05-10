@@ -172,7 +172,7 @@ export async function customDialog(title: string, content: string, buttons: Reco
         }
       }))
     });
-    dialog.render(true).then(val => {
+    dialog.render({ force: true }).then(val => {
       if (onRender) onRender($(val.element));
       const elem = val.element;
       CLOSE_HOOK_ID = Hooks.on("closeDialogV2", (closedDialog: foundry.applications.api.DialogV2) => {

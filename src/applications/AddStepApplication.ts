@@ -146,7 +146,7 @@ export class AddStepApplication extends foundry.applications.api.HandlebarsAppli
       this.#reject = reject;
     });
 
-    await this.render(true);
+    await this.render({ force: true });
 
     return this.#promise;
   }

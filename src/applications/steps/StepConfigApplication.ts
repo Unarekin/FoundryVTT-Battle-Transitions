@@ -62,7 +62,7 @@ export class StepConfigApplication<t extends TransitionConfiguration> extends fo
         this.#reject = reject;
       });
     }
-    if (!this.rendered) await this.render(true);
+    if (!this.rendered) await this.render({ force: true });
 
     return this.#configPromise;
   }
